@@ -1,0 +1,4 @@
+**/node_modules
+.tox
+setup.sh
+build

@@ -1,0 +1,8 @@
+/cloud-harness
+.idea
+**/helm
+/build
+.vscode
+skaffold.yaml
+/deployment.yaml
+**/__pycache__

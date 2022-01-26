@@ -1,0 +1,200 @@
+openapi: 3.0.2
+info:
+  title: ''
+  version: ''
+paths:
+  /api/experiment/:
+    get:
+      operationId: listExperiments
+      description: 'This viewset automatically provides `list`, `create`, `retrieve`,
+
+        `update` and `destroy` actions.
+
+
+        Additionally we also provide an extra `magic` action.'
+      parameters: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Experiment'
+          description: ''
+      tags:
+      - api
+    post:
+      operationId: createExperiment
+      description: 'This viewset automatically provides `list`, `create`, `retrieve`,
+
+        `update` and `destroy` actions.
+
+
+        Additionally we also provide an extra `magic` action.'
+      parameters: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Experiment'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Experiment'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Experiment'
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Experiment'
+          description: ''
+      tags:
+      - api
+  /api/experiment/{id}/:
+    get:
+      operationId: retrieveExperiment
+      description: 'This viewset automatically provides `list`, `create`, `retrieve`,
+
+        `update` and `destroy` actions.
+
+
+        Additionally we also provide an extra `magic` action.'
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: A unique integer value identifying this experiment.
+        schema:
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Experiment'
+          description: ''
+      tags:
+      - api
+    put:
+      operationId: updateExperiment
+      description: 'This viewset automatically provides `list`, `create`, `retrieve`,
+
+        `update` and `destroy` actions.
+
+
+        Additionally we also provide an extra `magic` action.'
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: A unique integer value identifying this experiment.
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Experiment'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Experiment'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Experiment'
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Experiment'
+          description: ''
+      tags:
+      - api
+    patch:
+      operationId: partialUpdateExperiment
+      description: 'This viewset automatically provides `list`, `create`, `retrieve`,
+
+        `update` and `destroy` actions.
+
+
+        Additionally we also provide an extra `magic` action.'
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: A unique integer value identifying this experiment.
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Experiment'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Experiment'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Experiment'
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Experiment'
+          description: ''
+      tags:
+      - api
+    delete:
+      operationId: destroyExperiment
+      description: 'This viewset automatically provides `list`, `create`, `retrieve`,
+
+        `update` and `destroy` actions.
+
+
+        Additionally we also provide an extra `magic` action.'
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: A unique integer value identifying this experiment.
+        schema:
+          type: string
+      responses:
+        '204':
+          description: ''
+      tags:
+      - api
+components:
+  schemas:
+    Experiment:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        date_created:
+          type: string
+          format: date
+        name:
+          type: string
+          maxLength: 100
+        description:
+          type: string
+        is_private:
+          type: boolean
+        owner_user_id:
+          type: string
+          maxLength: 40
+        last_modified:
+          type: string
+          format: date
+          readOnly: true
+      required:
+      - date_created
+      - name
+      - description
+      - owner_user_id

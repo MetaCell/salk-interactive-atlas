@@ -1,0 +1,18 @@
+harness:
+  subdomain: workspaces
+  secured: true
+  service:
+    port: 8080
+    auto: true
+  deployment:
+    auto: true
+    port: 8080
+  livenessProbe:
+    path: /api/ui
+  readinessProbe:
+    path: /api/ui
+  dependencies:
+    build:
+    - cloudharness-base
+    hard:
+    - accounts
