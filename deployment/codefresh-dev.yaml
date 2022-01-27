@@ -412,7 +412,6 @@ steps:
     - HELM_REPO_CONTEXT_PATH=
     - TIMEOUT=600s
     - VALUESFILE_values=./deployment/helm/values.yaml
-    - CUSTOM_apps_accounts_harness_secrets_api__user__username=${{API__USER__USERNAME}}
   publish:
     type: parallel
     stage: publish
