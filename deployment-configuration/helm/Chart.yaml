@@ -1,0 +1,13 @@
+apiVersion: v1
+appVersion: 0.0.1
+description: 'Salk Helm Chart'
+metadata:
+  name: salk
+  namespace: salk
+  labels:
+    app.kubernetes.io/managed-by: Helm
+maintainers:
+  - email: zoran@metacell.us
+    name: 'Zoran Sinnema'
+name: SALK
+version: 0.0.1
