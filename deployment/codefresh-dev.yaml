@@ -412,16 +412,6 @@ steps:
     - HELM_REPO_CONTEXT_PATH=
     - TIMEOUT=600s
     - VALUESFILE_values=./deployment/helm/values.yaml
-    type: helm
-    arguments:
-      action: install
-      chart_name: ./deployment/helm
-      release_name: '${{NAMESPACE}}'
-      kube_context: '${{CLUSTER_NAME}}'
-      namespace: '${{NAMESPACE}}'
-      chart_version: '${{DEPLOYMENT_PUBLISH_TAG}}'
-      timeout: 600s
-      custom_value_files: ./deployment/helm/values.yaml
   publish:
     type: parallel
     stage: publish
