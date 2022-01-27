@@ -7,3 +7,4 @@ skaffold.yaml
 /deployment.yaml
 **/__pycache__
 **/*.egg-info
+/build
