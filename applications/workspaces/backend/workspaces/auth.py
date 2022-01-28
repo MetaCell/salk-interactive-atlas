@@ -4,7 +4,8 @@ from django.urls import reverse
 from rest_framework import authentication
 from rest_framework import exceptions
 
-from cloudharness.auth.keycloak import AuthClient
+# from cloudharness.auth.keycloak import AuthClient
+from ch import AuthClient
 
 ac = AuthClient()
 
