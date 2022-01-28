@@ -15,7 +15,7 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
-from django.views.generic import TemplateView
+from django.views.generic import TemplateView, RedirectView
 
 from rest_framework.schemas import get_schema_view
 from rest_framework.schemas.openapi import SchemaGenerator
@@ -53,6 +53,8 @@ urlpatterns = [
         template_name='workspaces/swagger-ui.html',
         extra_context={'schema_url':'openapi-schema'}
     ), name='swagger-ui'),
+
+    path('', RedirectView.as_view(url='/api/ui', permanent=True)),
 
     path('api/experiment/', include("experiment.urls")),
 ]
