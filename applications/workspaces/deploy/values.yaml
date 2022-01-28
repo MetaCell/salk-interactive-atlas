@@ -1,6 +1,6 @@
 harness:
   subdomain: workspaces
-  secured: true
+  secured: false
   service:
     port: 8000
     auto: true
