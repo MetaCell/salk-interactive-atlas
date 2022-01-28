@@ -8,3 +8,4 @@ skaffold.yaml
 **/__pycache__
 **/*.egg-info
 /build
+applications/workspaces/backend/static
