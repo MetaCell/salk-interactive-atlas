@@ -2,11 +2,11 @@ harness:
   subdomain: workspaces
   secured: true
   service:
-    port: 8080
+    port: 8000
     auto: true
   deployment:
     auto: true
-    port: 8080
+    port: 8000
   livenessProbe:
     path: /api/ui
   readinessProbe:
@@ -16,3 +16,5 @@ harness:
     - cloudharness-base
     hard:
     - accounts
+    - kafka
+    - events

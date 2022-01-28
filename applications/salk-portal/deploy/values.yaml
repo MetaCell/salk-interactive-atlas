@@ -24,3 +24,4 @@ harness:
       - workflows
       - jupyterhub
       - jupyterlab
+      - hub

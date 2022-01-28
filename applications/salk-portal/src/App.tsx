@@ -34,12 +34,8 @@ export const App = (props: any) => {
             <div className={classes.mainContainer}>
               <Header />
 
-
               <Switch>
-                <Route exact={true} path="/">
-                  <HomePage />
-                </Route>
-                <ProtectedRoute exact={true} path="/home">
+                <ProtectedRoute exact={true} path="/">
                   <HomePage />
                 </ProtectedRoute>
               </Switch>

@@ -1,6 +1,6 @@
 # SALK
 
-An updated version of the Open Source Brain platform
+The SALK Mouse Cord Atlas
 
 ## Deploy
 

@@ -13,7 +13,7 @@ import {
 } from "@material-ui/core";
 import PersonIcon from "@material-ui/icons/Person";
 
-const title = "Open Source Brain";
+const title = "Salk Mouse Cord Atlas";
 
 const useStyles = makeStyles((theme) => ({
   toolbar: {
