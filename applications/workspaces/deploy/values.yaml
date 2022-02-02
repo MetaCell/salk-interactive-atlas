@@ -7,14 +7,13 @@ harness:
   deployment:
     auto: true
     port: 8000
-  livenessProbe:
-    path: /api/ui
-  readinessProbe:
-    path: /api/ui
+  # livenessProbe:
+  #   path: /api/ui
+  # readinessProbe:
+  #   path: /api/ui
   dependencies:
     build:
     - cloudharness-base
     hard:
     - accounts
-    - kafka
     - events

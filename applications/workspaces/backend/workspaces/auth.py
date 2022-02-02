@@ -1,11 +1,11 @@
+import contextvars
 from django.contrib.auth.models import User
 from django.urls import reverse
 
 from rest_framework import authentication
 from rest_framework import exceptions
 
-# from cloudharness.auth.keycloak import AuthClient
-from ch import AuthClient
+from cloudharness.auth.keycloak import AuthClient
 
 ac = AuthClient()
 
