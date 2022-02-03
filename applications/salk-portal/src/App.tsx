@@ -2,11 +2,11 @@ import * as React from "react";
 import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 import { ThemeProvider } from "@material-ui/core/styles";
 import { CssBaseline, makeStyles } from "@material-ui/core";
-import SentryErrorBoundary from "./components/sentry/SentryErrorBoundary";
+import '@metacell/geppetto-meta-ui/flex-layout/style/dark.scss'
 import HomePage from "./pages/HomePage";
 import theme from "./theme";
-
-import { Header, ErrorDialog, ProtectedRoute, } from "./components/index";
+import { Header, ErrorDialog, ProtectedRoute, } from "./components";
+import ExperimentsPage from "./pages/ExperimentsPage";
 
 const useStyles = makeStyles(() => ({
   mainContainer: {
@@ -37,6 +37,9 @@ export const App = (props: any) => {
               <Switch>
                 <ProtectedRoute exact={true} path="/">
                   <HomePage />
+                </ProtectedRoute>
+                <ProtectedRoute exact={true} path="/experiments">
+                  <ExperimentsPage />
                 </ProtectedRoute>
               </Switch>
 

@@ -81,6 +81,14 @@ module.exports = env => {
           test: /\.obj|\.drc|\.gltf/,
           loader: 'url-loader',
         },
+        {
+          test: /\.s[a|c]ss$/,
+          use: [
+            { loader: 'style-loader' },
+            { loader: 'css-loader' },
+            { loader: 'sass-loader' },
+          ],
+        },
       ]
     },
 
