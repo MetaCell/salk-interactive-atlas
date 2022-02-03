@@ -27,14 +27,25 @@ module.exports = env => {
 
     resolve: {
       // Add '.ts' and '.tsx' as resolvable extensions.
-      extensions: [".ts", ".tsx", ".js"]
+      extensions: [".ts", ".tsx", ".js", ".jsx"]
     },
 
     module: {
       rules: [
         {
+          test: /\.(js|jsx)$/,
+          exclude: /node_modules\/(?!(@metacell)\/).*/,
+          loader: 'babel-loader',
+          options: {
+            presets: [
+              ['@babel/preset-env', { modules: false }],
+              '@babel/preset-react',
+              { plugins: ['@babel/plugin-proposal-class-properties', '@babel/transform-runtime', '@babel/plugin-transform-modules-commonjs'] },
+            ],
+          },
+        },
+        {
           test: /\.ts(x?)$/,
-          include: path.resolve(__dirname, 'src'),
           use: [
             {
               loader: "ts-loader",
@@ -61,6 +72,14 @@ module.exports = env => {
         {
           test: /\.css$/i,
           use: ['style-loader', 'css-loader'],
+        },
+        {
+          test: /\.(png|gif|jpg|cur)$/i,
+          loader: 'url-loader',
+        },
+        {
+          test: /\.obj|\.drc|\.gltf/,
+          loader: 'url-loader',
         },
       ]
     },
