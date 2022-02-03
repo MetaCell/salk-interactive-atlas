@@ -1,13 +1,13 @@
-import { combineReducers } from '@reduxjs/toolkit'
 import user from './reducers/user'
 import error from './reducers/error';
 
-const rootReducer = combineReducers({
+const rootReducer = {
   error,
   user,
-})
+}
 
 
+// @ts-ignore
 export type RootState = ReturnType<typeof rootReducer>
 
 export default rootReducer

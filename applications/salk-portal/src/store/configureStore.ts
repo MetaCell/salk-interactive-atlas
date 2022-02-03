@@ -1,19 +1,28 @@
-import { applyMiddleware, createStore, Action } from "redux";
-import { composeWithDevTools } from 'redux-devtools-extension';
 import loggerMiddleware from "redux-logger";
-import rootReducer, { RootState } from "./rootReducer";
+// @ts-ignore
+import {createStore} from '@metacell/geppetto-meta-client/common';
 import salkMiddleware from "../middleware/salkbackend";
+import baseLayout from '../components/layout/defaultLayout';
+import componentMap from '../components/layout/componentMap';
+import rootReducer from "./rootReducer";
+import {UserInfo} from "../types/user";
 
+interface STATE {
+  user: UserInfo;
+  error: string;
+}
 
 export default function configureStore() {
   const middlewares = [loggerMiddleware, salkMiddleware];
-  const middlewareEnhancer = applyMiddleware(...middlewares);
-  const composedEnhancers = composeWithDevTools(middlewareEnhancer);
+  const INIT_STATE : STATE = {
+    user: null,
+    error: null
+  };
 
-  const store = createStore<RootState, Action<any>, {}, {}>(
-    rootReducer,
-    composedEnhancers
+  return createStore(
+      rootReducer,
+      INIT_STATE,
+      middlewares,
+      {baseLayout, componentMap}
   );
-
-  return store;
 }
