@@ -7,6 +7,20 @@ import HomePage from "./pages/HomePage";
 import theme from "./theme";
 import { Header, ErrorDialog, ProtectedRoute, } from "./components";
 import ExperimentsPage from "./pages/ExperimentsPage";
+// tslint:disable-next-line:no-var-requires
+const Manager = require('@metacell/geppetto-meta-client/common/Manager').default;
+
+const GEPPETTO = {};
+// @ts-ignore
+window.GEPPETTO = GEPPETTO;
+// @ts-ignore
+// tslint:disable-next-line:no-var-requires
+GEPPETTO.Resources = require('@metacell/geppetto-meta-core/Resources').default;
+
+// @ts-ignore
+GEPPETTO.Manager = new Manager();
+// @ts-ignore
+window.Instances = [];
 
 const useStyles = makeStyles(() => ({
   mainContainer: {
@@ -20,6 +34,7 @@ const useStyles = makeStyles(() => ({
     }
   },
 }));
+
 
 export const App = (props: any) => {
   const classes = useStyles();
