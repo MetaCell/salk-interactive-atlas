@@ -4,12 +4,12 @@ import React, {Component} from 'react';
 import * as THREE from 'three';
 import {withStyles} from '@material-ui/core';
 import Canvas from "@metacell/geppetto-meta-ui/3d-canvas/Canvas";
+import CameraControls from "@metacell/geppetto-meta-ui/camera-controls/CameraControls";
 import SimpleInstance from "@metacell/geppetto-meta-core/model/SimpleInstance";
 import {augmentInstancesArray} from '@metacell/geppetto-meta-core/Instances';
 import Resources from '@metacell/geppetto-meta-core/Resources';
 import ocord from '../assets/atlas_meshes/simplified/open_cord_simp.obj'
 import icord from '../assets/atlas_meshes/simplified/inside_cord_simp.obj'
-import DummyCameraControls from "./dummy/DummyCameraControls";
 import DummyCaptureControls from "./dummy/DummyCaptureControls";
 
 const COLOR_MAP = {
@@ -22,8 +22,6 @@ const GREEN = 0x00FF00
 const BLUE = 0x0000FF
 
 const SPHERE_COLORS = [YELLOW, GREEN, BLUE]
-const SPHERES_COUNT = 1000
-
 
 function mapToCanvasData(data) {
     return data.map(item => (
@@ -66,7 +64,7 @@ function loadInstances() {
 
 function getProxyInstances() {
     return window.Instances.map(i => (
-        {instancePath: i.getId(), }))
+        {instancePath: i.getId(),}))
 }
 
 function getDefaultOptions() {
@@ -77,7 +75,7 @@ function getDefaultOptions() {
             far: 5000,
             baseZoom: 1,
             cameraControls: {
-                instance: DummyCameraControls,
+                instance: CameraControls,
                 props: {wireframeButtonEnabled: false},
             },
             reset: false,
@@ -141,13 +139,13 @@ class CanvasExample extends Component {
             const geometry = new THREE.SphereGeometry(1, 32, 16);
             const dummy = new THREE.Object3D();
             const position = new THREE.Vector3();
-            const material = new THREE.MeshBasicMaterial({color});
+            const material = new THREE.MeshBasicMaterial({color:color, transparent: true, opacity: 0.5});
             const amount = 10
             const mesh = new THREE.InstancedMesh(geometry, material, Math.pow(amount, 3));
             mesh.frustumCulled = false
             for (let i = 0; i < mesh.count; i++) {
                 position.set(
-                    Math.random() * 800,
+                    Math.random() * 750,
                     50 + Math.random() * 40,
                     80 + Math.random() * 60
                 )

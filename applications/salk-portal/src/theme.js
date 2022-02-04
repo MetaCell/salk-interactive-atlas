@@ -27,16 +27,6 @@ const spacing = [0, gutter / 2, gutter * 2 / 3, gutter, 24, 40, 50, 100, 150, 20
 const theme = {
   darkMode: true,
   spacing,
-  typography: {
-    useNextVariants: true,
-    htmlFontSize: 12,
-    fontSize: 10,
-    fontFamily: font,
-    button: {
-      textTransform: "none",
-      fontSize: "1.0rem"
-    }
-  },
   palette: {
     type: 'dark',
     primary: {
@@ -53,6 +43,7 @@ const theme = {
       default: bgDarker,
       paper: bgRegular
     },
+    button: { main: primaryColor },
   },
   typography: {
     fontFamily: font,
@@ -65,11 +56,9 @@ const theme = {
     h2: {
       fontSize: '1.1rem',
       fontWeight: 700,
-      fontWeight: "bold",
       marginBottom: spacing[3],
       lineHeight: "1.25rem",
       paddingBottom: spacing[2],
-      fontSize: '1.1rem',
       borderBottom: `3px solid ${bgInputs}`
     },
     h3: {
@@ -229,7 +218,6 @@ const theme = {
     },
     MuiAccordionDetails: { root: { padding: 0, margin: 0, minHeight: 'unset!important', flexDirection: 'column' } },
     MuiAccordion: { root: { padding: 0, margin: '0px!important', minHeight: 'unset' } },
-    MuiAutocomplete: { popupIndicator: { marginRight: 0 } },
     MuiCardContent: {
       root: {
         '&:last-child': {
