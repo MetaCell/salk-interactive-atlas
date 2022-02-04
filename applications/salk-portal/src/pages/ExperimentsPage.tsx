@@ -1,4 +1,3 @@
-
 import React, {useEffect, useState} from 'react';
 import {useStore, useDispatch} from 'react-redux';
 import {makeStyles} from '@material-ui/core/styles';
@@ -6,9 +5,9 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 // @ts-ignore
 import {getLayoutManagerInstance} from "@metacell/geppetto-meta-client/common/layout/LayoutManager";
 // @ts-ignore
-import { WidgetStatus } from "@metacell/geppetto-meta-client/common/layout/model";
+import {WidgetStatus} from "@metacell/geppetto-meta-client/common/layout/model";
 // @ts-ignore
-import { addWidget } from '@metacell/geppetto-meta-client/common/layout/actions';
+import {addWidget} from '@metacell/geppetto-meta-client/common/layout/actions';
 import {Box, Button} from "@material-ui/core";
 
 
@@ -16,7 +15,7 @@ const useStyles = makeStyles({
     layoutContainer: {
         position: 'relative',
         width: '100%',
-        height: '90vh',
+        height: '100%',
         '&> div': {
             height: '100%',
         }
@@ -25,7 +24,7 @@ const useStyles = makeStyles({
 
 export const CanvasWidget = {
     id: 'canvasWidget',
-    name: "3D Canvas",
+    name: "Spinal Cord Atlas",
     component: "canvas",
     panelName: "leftPanel",
     enableClose: false,
@@ -43,6 +42,10 @@ const ExperimentsPage = () => {
     const [LayoutComponent, setLayoutManager] = useState(undefined);
 
     useEffect(() => {
+        dispatch(addWidget(CanvasWidget));
+    }, [])
+
+    useEffect(() => {
         if (LayoutComponent === undefined) {
             const myManager = getLayoutManagerInstance();
             if (myManager) {
@@ -51,20 +54,11 @@ const ExperimentsPage = () => {
         }
     }, [store])
 
-    const onAddWidgetClick = (widget: { id: string; name: string; component: string; panelName: string; enableClose: boolean; status: any; }) =>
-    {
-        dispatch(addWidget(widget));
-    }
-
-
     return (
-        <Box display="flex" >
-            <Button color="secondary" onClick={() => onAddWidgetClick(CanvasWidget)}>Add Canvas</Button>
-            <Box className={classes.layoutContainer}>
-                <div className={classes.layoutContainer}>
-                    {LayoutComponent === undefined ? <CircularProgress/> : <LayoutComponent/>}
-                </div>
-            </Box>
+        <Box className={classes.layoutContainer}>
+            <div className={classes.layoutContainer}>
+                {LayoutComponent === undefined ? <CircularProgress/> : <LayoutComponent/>}
+            </div>
         </Box>
 
     );
