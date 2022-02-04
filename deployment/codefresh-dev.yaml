@@ -30,7 +30,7 @@ steps:
     stage: prepare
     working_directory: .
     commands:
-    - pip install cloud-harness/utilities
+    - pip install cloud-harness/tools
     - harness-deployment cloud-harness . -m build -t ${{CF_BUILD_ID}} -d ${{DOMAIN}}
       -r ${{REGISTRY}} -n ${{NAMESPACE}} -rs ${{REGISTRY_SECRET}} -e dev -i salk-portal
   prepare_deployment_view:
@@ -92,38 +92,6 @@ steps:
     type: parallel
     stage: build
     steps:
-      events:
-        type: build
-        stage: build
-        tag: '${{CF_BUILD_ID}}'
-        dockerfile: Dockerfile
-        registry: '${{CODEFRESH_REGISTRY}}'
-        buildkit: true
-        build_arguments:
-        - TAG=${{CF_BUILD_ID}}
-        - NAMESPACE=${{NAMESPACE}}
-        - DOMAIN=${{DOMAIN}}
-        - NOCACHE=${{CF_BUILD_ID}}
-        - REGISTRY=${{REGISTRY}}/salk/
-        image_name: salk/events
-        title: Events
-        working_directory: ./build/applications/events
-      accounts:
-        type: build
-        stage: build
-        tag: '${{CF_BUILD_ID}}'
-        dockerfile: Dockerfile
-        registry: '${{CODEFRESH_REGISTRY}}'
-        buildkit: true
-        build_arguments:
-        - TAG=${{CF_BUILD_ID}}
-        - NAMESPACE=${{NAMESPACE}}
-        - DOMAIN=${{DOMAIN}}
-        - NOCACHE=${{CF_BUILD_ID}}
-        - REGISTRY=${{REGISTRY}}/salk/
-        image_name: salk/accounts
-        title: Accounts
-        working_directory: ./build/applications/accounts
       common:
         type: build
         stage: build
@@ -141,7 +109,7 @@ steps:
         image_name: salk/common
         title: Common
         working_directory: ./build/applications/common/server
-      workspaces:
+      accounts:
         type: build
         stage: build
         tag: '${{CF_BUILD_ID}}'
@@ -154,10 +122,9 @@ steps:
         - DOMAIN=${{DOMAIN}}
         - NOCACHE=${{CF_BUILD_ID}}
         - REGISTRY=${{REGISTRY}}/salk/
-        - CLOUDHARNESS_BASE=${{REGISTRY}}/salk/cloudharness-base:${{CF_BUILD_ID}}
-        image_name: salk/workspaces
-        title: Workspaces
-        working_directory: ./build/applications/workspaces
+        image_name: salk/accounts
+        title: Accounts
+        working_directory: ./build/applications/accounts
       volumemanager:
         type: build
         stage: build
@@ -175,6 +142,22 @@ steps:
         image_name: salk/volumemanager
         title: Volumemanager
         working_directory: ./build/applications/volumemanager/server
+      events:
+        type: build
+        stage: build
+        tag: '${{CF_BUILD_ID}}'
+        dockerfile: Dockerfile
+        registry: '${{CODEFRESH_REGISTRY}}'
+        buildkit: true
+        build_arguments:
+        - TAG=${{CF_BUILD_ID}}
+        - NAMESPACE=${{NAMESPACE}}
+        - DOMAIN=${{DOMAIN}}
+        - NOCACHE=${{CF_BUILD_ID}}
+        - REGISTRY=${{REGISTRY}}/salk/
+        image_name: salk/events
+        title: Events
+        working_directory: ./build/applications/events
       salk-portal:
         type: build
         stage: build
@@ -191,6 +174,23 @@ steps:
         image_name: salk/salk-portal
         title: Salk portal
         working_directory: ./build/applications/salk-portal
+      workspaces:
+        type: build
+        stage: build
+        tag: '${{CF_BUILD_ID}}'
+        dockerfile: Dockerfile
+        registry: '${{CODEFRESH_REGISTRY}}'
+        buildkit: true
+        build_arguments:
+        - TAG=${{CF_BUILD_ID}}
+        - NAMESPACE=${{NAMESPACE}}
+        - DOMAIN=${{DOMAIN}}
+        - NOCACHE=${{CF_BUILD_ID}}
+        - REGISTRY=${{REGISTRY}}/salk/
+        - CLOUDHARNESS_BASE=${{REGISTRY}}/salk/cloudharness-base:${{CF_BUILD_ID}}
+        image_name: salk/workspaces
+        title: Workspaces
+        working_directory: ./build/applications/workspaces
   deployment:
     stage: deploy
     image: codefresh/cfstep-helm:3.6.2
@@ -225,11 +225,11 @@ steps:
         tags:
         - '${{DEPLOYMENT_PUBLISH_TAG}}'
         registry: '${{REGISTRY_PUBLISH_URL}}'
-      publish_events:
+      publish_common:
         stage: publish
         type: push
-        title: Events
-        candidate: '${{REGISTRY}}/salk/events:${{CF_BUILD_ID}}'
+        title: Common
+        candidate: '${{REGISTRY}}/salk/common:${{CF_BUILD_ID}}'
         tags:
         - '${{DEPLOYMENT_PUBLISH_TAG}}'
         registry: '${{REGISTRY_PUBLISH_URL}}'
@@ -241,22 +241,6 @@ steps:
         tags:
         - '${{DEPLOYMENT_PUBLISH_TAG}}'
         registry: '${{REGISTRY_PUBLISH_URL}}'
-      publish_common:
-        stage: publish
-        type: push
-        title: Common
-        candidate: '${{REGISTRY}}/salk/common:${{CF_BUILD_ID}}'
-        tags:
-        - '${{DEPLOYMENT_PUBLISH_TAG}}'
-        registry: '${{REGISTRY_PUBLISH_URL}}'
-      publish_workspaces:
-        stage: publish
-        type: push
-        title: Workspaces
-        candidate: '${{REGISTRY}}/salk/workspaces:${{CF_BUILD_ID}}'
-        tags:
-        - '${{DEPLOYMENT_PUBLISH_TAG}}'
-        registry: '${{REGISTRY_PUBLISH_URL}}'
       publish_volumemanager:
         stage: publish
         type: push
@@ -265,11 +249,27 @@ steps:
         tags:
         - '${{DEPLOYMENT_PUBLISH_TAG}}'
         registry: '${{REGISTRY_PUBLISH_URL}}'
+      publish_events:
+        stage: publish
+        type: push
+        title: Events
+        candidate: '${{REGISTRY}}/salk/events:${{CF_BUILD_ID}}'
+        tags:
+        - '${{DEPLOYMENT_PUBLISH_TAG}}'
+        registry: '${{REGISTRY_PUBLISH_URL}}'
       publish_salk-portal:
         stage: publish
         type: push
         title: Salk portal
         candidate: '${{REGISTRY}}/salk/salk-portal:${{CF_BUILD_ID}}'
+        tags:
+        - '${{DEPLOYMENT_PUBLISH_TAG}}'
+        registry: '${{REGISTRY_PUBLISH_URL}}'
+      publish_workspaces:
+        stage: publish
+        type: push
+        title: Workspaces
+        candidate: '${{REGISTRY}}/salk/workspaces:${{CF_BUILD_ID}}'
         tags:
         - '${{DEPLOYMENT_PUBLISH_TAG}}'
         registry: '${{REGISTRY_PUBLISH_URL}}'
