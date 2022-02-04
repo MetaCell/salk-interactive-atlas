@@ -50,7 +50,8 @@
     "redux-logger": "^3.0.6",
     "rehype-raw": "^5.1.0",
     "remark": "^13.0.0",
-    "remark-gfm": "^1.0.0"
+    "remark-gfm": "^1.0.0",
+    "three": "0.111.0"
   },
   "devDependencies": {
     "@babel/core": "^7.8.4",
