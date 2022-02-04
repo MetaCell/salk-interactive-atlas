@@ -64,7 +64,7 @@ function loadInstances() {
 
 function getProxyInstances() {
     return window.Instances.map(i => (
-        {instancePath: i.getId(),}))
+        {instancePath: i.getId(), }))
 }
 
 function getDefaultOptions() {
@@ -139,7 +139,7 @@ class CanvasExample extends Component {
             const geometry = new THREE.SphereGeometry(1, 32, 16);
             const dummy = new THREE.Object3D();
             const position = new THREE.Vector3();
-            const material = new THREE.MeshBasicMaterial({color:color, transparent: true, opacity: 0.5});
+            const material = new THREE.MeshBasicMaterial({color, transparent: true, opacity: 0.5});
             const amount = 10
             const mesh = new THREE.InstancedMesh(geometry, material, Math.pow(amount, 3));
             mesh.frustumCulled = false
