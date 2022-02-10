@@ -13,8 +13,8 @@ import icord from '../assets/atlas_meshes/simplified/inside_cord_simp.obj'
 import DummyCaptureControls from "./dummy/DummyCaptureControls";
 
 const COLOR_MAP = {
-    'OpenCordOBJ': {r: 0.25, g: 0.06, b: 0.25, a: 0.5},
-    'InsideCordOBJ': {r: 0.25, g: 0.06, b: 0.25, a: 0.5},
+    'OpenCordOBJ': {r: 0.30, g: 0.54, b: 0.59, a: 0.5},
+    'InsideCordOBJ': {r: 0.30, g: 0.54, b: 0.59, a: 0.5},
 }
 
 const YELLOW = 0xffff00
@@ -174,7 +174,7 @@ class CanvasExample extends Component {
                 data={canvasData}
                 cameraOptions={cameraOptions}
                 captureOptions={captureOptions}
-                backgroundColor={0x000000}
+                backgroundColor={0x2d2e30}
                 onSelection={this.onSelection}
                 onMount={this.onMount}
                 hoverListeners={[this.hoverHandler]}
