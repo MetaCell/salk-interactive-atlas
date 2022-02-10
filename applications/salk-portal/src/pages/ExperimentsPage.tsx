@@ -8,7 +8,8 @@ import {getLayoutManagerInstance} from "@metacell/geppetto-meta-client/common/la
 import {WidgetStatus} from "@metacell/geppetto-meta-client/common/layout/model";
 // @ts-ignore
 import {addWidget} from '@metacell/geppetto-meta-client/common/layout/actions';
-import {Box, Button} from "@material-ui/core";
+import { Box, Button } from "@material-ui/core";
+import { font, bodyBgColor } from "../theme";
 
 
 const useStyles = makeStyles({
@@ -16,8 +17,18 @@ const useStyles = makeStyles({
         position: 'relative',
         width: '100%',
         height: '100%',
+
+        '& *': {
+          fontFamily: font
+        },
+
         '&> div': {
-            height: '100%',
+          height: '100%',
+          background: bodyBgColor,
+          padding: '0.5rem',
+          '&> div': {
+            position: 'relative',
+          }
         }
     }
 });
