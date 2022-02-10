@@ -11,6 +11,7 @@ import Resources from '@metacell/geppetto-meta-core/Resources';
 import ocord from '../assets/atlas_meshes/simplified/open_cord_simp.obj'
 import icord from '../assets/atlas_meshes/simplified/inside_cord_simp.obj'
 import DummyCaptureControls from "./dummy/DummyCaptureControls";
+import { canvasBg } from "../theme";
 
 const COLOR_MAP = {
     'OpenCordOBJ': {r: 0.25, g: 0.06, b: 0.25, a: 0.5},
@@ -174,7 +175,7 @@ class CanvasExample extends Component {
                 data={canvasData}
                 cameraOptions={cameraOptions}
                 captureOptions={captureOptions}
-                backgroundColor={0x000000}
+                backgroundColor={canvasBg}
                 onSelection={this.onSelection}
                 onMount={this.onMount}
                 hoverListeners={[this.hoverHandler]}
