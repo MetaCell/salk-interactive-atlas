@@ -12,14 +12,14 @@ import {
   makeStyles,
 } from "@material-ui/core";
 import PersonIcon from "@material-ui/icons/Person";
-import { headerBorderColor, headerButtonBorderColor } from "../../theme";
+import { headerBorderColor, headerButtonBorderColor, headerBg } from "../../theme";
 import LOGO from "../../assets/images/logo.png";
 
 const title = "Salk Mouse Cord Atlas";
 
 const useStyles = makeStyles((theme) => ({
   toolbar: {
-    backgroundColor: "#27292B",
+    backgroundColor: headerBg,
     paddingRight: "0.5rem",
     paddingLeft: "0",
     justifyContent: "space-between",
