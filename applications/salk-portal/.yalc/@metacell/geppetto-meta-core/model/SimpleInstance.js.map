@@ -1,0 +1,1 @@
+{"version":3,"sources":["../../src/model/SimpleInstance.js"],"names":["SimpleInstance","ASimpleInstance"],"mappings":";;;;;;;;;AAAA;;;;;;;;;;;;;;;;;;;;IAEqBA,c;;;;;;;;;;;;EAAuBC,4B","sourcesContent":["import ASimpleInstance from './ASimpleInstance';\n\nexport default class SimpleInstance extends ASimpleInstance{\n\n\n}"],"file":"SimpleInstance.js"}
