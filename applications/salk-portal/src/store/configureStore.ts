@@ -23,6 +23,7 @@ export default function configureStore() {
       rootReducer,
       INIT_STATE,
       middlewares,
-      {componentMap}
+      { baseLayout, componentMap },
+
   );
 }
