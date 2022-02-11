@@ -11,6 +11,7 @@ import Resources from '@metacell/geppetto-meta-core/Resources';
 import ocord from '../assets/atlas_meshes/simplified/open_cord_simp.obj'
 import icord from '../assets/atlas_meshes/simplified/inside_cord_simp.obj'
 import DummyCaptureControls from "./dummy/DummyCaptureControls";
+import cells from '../assets/atlas_meshes/transformed_cells.json'
 
 const COLOR_MAP = {
     'OpenCordOBJ': {r: 0.30, g: 0.54, b: 0.59, a: 0.5},
@@ -64,7 +65,7 @@ function loadInstances() {
 
 function getProxyInstances() {
     return window.Instances.map(i => (
-        {instancePath: i.getId(), }))
+        {instancePath: i.getId(),}))
 }
 
 function getDefaultOptions() {
@@ -135,29 +136,27 @@ class CanvasExample extends Component {
 
     // tslint:disable-next-line:no-empty
     onMount(scene) {
-        for (const color of SPHERE_COLORS) {
-            const geometry = new THREE.SphereGeometry(1, 32, 16);
-            const dummy = new THREE.Object3D();
-            const position = new THREE.Vector3();
-            const material = new THREE.MeshBasicMaterial({color, transparent: true, opacity: 0.5});
-            const amount = 10
-            const mesh = new THREE.InstancedMesh(geometry, material, Math.pow(amount, 3));
-            mesh.frustumCulled = false
-            for (let i = 0; i < mesh.count; i++) {
-                position.set(
-                    Math.random() * 750,
-                    50 + Math.random() * 40,
-                    80 + Math.random() * 60
-                )
+        const geometry = new THREE.SphereGeometry(1, 32, 16);
+        const dummy = new THREE.Object3D();
+        const position = new THREE.Vector3();
+        const material = new THREE.MeshBasicMaterial({color: YELLOW, transparent: true, opacity: 0.5});
+        const mesh = new THREE.InstancedMesh(geometry, material, cells.length);
+        mesh.frustumCulled = false
+        for (let i = 0; i < cells.length; i++) {
+            const cell = cells[i]
+            position.set(
+                cell.x,
+                cell.y,
+                cell.z
+            )
 
-                dummy.position.copy(position)
-                dummy.updateMatrix()
+            dummy.position.copy(position)
+            dummy.updateMatrix()
 
-                mesh.setMatrixAt(i, dummy.matrix);
-            }
-            scene.add(mesh);
-
+            mesh.setMatrixAt(i, dummy.matrix);
         }
+        scene.add(mesh);
+
     }
 
     // tslint:disable-next-line:no-empty
