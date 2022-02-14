@@ -4,6 +4,7 @@ import lessToJs from 'less-vars-to-js';
 
 import './css/mui.less';
 import './css/main.less';
+import './css/flexLayout.less';
 import { Hidden } from '@material-ui/core';
 
 // Read the less file in as string: using the raw-loader to override the default loader
@@ -14,7 +15,7 @@ vars.gutter = vars.gutter.replace('px', '') * 1;
 
 export const {
   primaryColor, secondaryColor, font, fontColor, linkColor, teal, purple, bgLightest, paragraph, bgLightestShade,
-  bgLight, bgRegular, bgDark, bgDarker, bgDarkest, bgInputs, gutter, radius, checkBoxColor, bgLighter, textColor
+  bgLight, bgRegular, bgDark, bgDarker, bgDarkest, bgInputs, gutter, radius, checkBoxColor, bgLighter, textColor, canvasBg, headerBorderColor,headerButtonBorderColor, bodyBgColor, headerBg,
 } = vars;
 
 const verticalFill = {
@@ -100,8 +101,8 @@ const theme = {
         label: {
           fontSize: '0.8rem',
         },
-        
-         
+
+
           "& .MuiChip-avatar": {
             width: ".63rem",
             height: ".63rem",
@@ -112,7 +113,7 @@ const theme = {
               color: purple,
             },
           },
-        
+
       },
       outlined: {
         backgroundColor: bgDarker,

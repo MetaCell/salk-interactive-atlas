@@ -12,6 +12,7 @@ import ocord from '../assets/atlas_meshes/simplified/open_cord_simp.obj'
 import icord from '../assets/atlas_meshes/simplified/inside_cord_simp.obj'
 import DummyCaptureControls from "./dummy/DummyCaptureControls";
 import cells from '../assets/atlas_meshes/transformed_cells.json'
+import { canvasBg } from "../theme";
 
 const COLOR_MAP = {
     'OpenCordOBJ': {r: 0.30, g: 0.54, b: 0.59, a: 0.5},
@@ -65,7 +66,7 @@ function loadInstances() {
 
 function getProxyInstances() {
     return window.Instances.map(i => (
-        {instancePath: i.getId(),}))
+        {instancePath: i.getId(), }))
 }
 
 function getDefaultOptions() {
@@ -173,7 +174,7 @@ class CanvasExample extends Component {
                 data={canvasData}
                 cameraOptions={cameraOptions}
                 captureOptions={captureOptions}
-                backgroundColor={0x2d2e30}
+                backgroundColor={canvasBg}
                 onSelection={this.onSelection}
                 onMount={this.onMount}
                 hoverListeners={[this.hoverHandler]}

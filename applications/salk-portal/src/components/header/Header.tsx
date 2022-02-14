@@ -12,15 +12,23 @@ import {
   makeStyles,
 } from "@material-ui/core";
 import PersonIcon from "@material-ui/icons/Person";
+import { headerBorderColor, headerButtonBorderColor, headerBg } from "../../theme";
+import LOGO from "../../assets/images/logo.png";
 
 const title = "Salk Mouse Cord Atlas";
 
 const useStyles = makeStyles((theme) => ({
   toolbar: {
-    backgroundColor: theme.palette.background.paper,
-    paddingRight: theme.spacing(1),
-    paddingLeft: theme.spacing(1),
+    backgroundColor: headerBg,
+    paddingRight: "0.5rem",
+    paddingLeft: "0",
     justifyContent: "space-between",
+    borderBottom: `0.0625rem solid ${headerBorderColor}`,
+    height: '3rem',
+
+    '& img': {
+      display: 'block',
+    },
   },
   toolbarTitle: {
     flex: 1,
@@ -39,6 +47,12 @@ const useStyles = makeStyles((theme) => ({
   },
   button: {
     textTransform: "none",
+    padding: "0 0.75rem",
+    height: '2rem',
+
+    '&.MuiButton-outlined': {
+      border: `0.0625rem solid ${headerButtonBorderColor}`,
+    },
   },
   logoChip: {
     backgroundColor: "rgba(255, 255, 255, 0.2)",
@@ -51,9 +65,7 @@ const useStyles = makeStyles((theme) => ({
     fontWeight: 700,
     marginLeft: '1em',
     alignSelf: 'flex-start'
-
-
-  }
+  },
 }));
 
 export const Header = (props: any) => {
@@ -105,6 +117,7 @@ export const Header = (props: any) => {
           onClick={handleMenuToggle}
           startIcon={<PersonIcon fontSize="large" />}
           className={classes.button}
+          variant="outlined"
         >
           {user.username}
         </Button>
@@ -124,14 +137,13 @@ export const Header = (props: any) => {
         <Box display="flex">
           <a href="/" onClick={handleToggleDrawer}>
             <img
-              src="https://www.salk.edu/wp-content/themes/salk/images/salk@2x.png"
+              src={LOGO}
               alt={title}
               title={title}
-              height="25"
             />
 
           </a>
-          <sup className={classes.logoChip} >alpha</sup>
+          {/* <sup className={classes.logoChip} >alpha</sup> */}
         </Box>
         <Box>
           {/* <IconButton>
