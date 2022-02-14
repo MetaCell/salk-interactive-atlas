@@ -20,10 +20,6 @@ const COLOR_MAP = {
 }
 
 const YELLOW = 0xffff00
-const GREEN = 0x00FF00
-const BLUE = 0x0000FF
-
-const SPHERE_COLORS = [YELLOW, GREEN, BLUE]
 
 function mapToCanvasData(data) {
     return data.map(item => (
@@ -125,17 +121,9 @@ class CanvasExample extends Component {
         this.state = {
             data: getProxyInstances(),
         };
-        this.hoverHandler = this.hoverHandler.bind(this);
-        this.onSelection = this.onSelection.bind(this)
         this.onMount = this.onMount.bind(this);
     }
 
-
-    // tslint:disable-next-line:no-empty
-    hoverHandler(objs, canvasX, canvasY) {
-    }
-
-    // tslint:disable-next-line:no-empty
     onMount(scene) {
         const geometry = new THREE.SphereGeometry(1, 32, 16);
         const dummy = new THREE.Object3D();
@@ -160,10 +148,6 @@ class CanvasExample extends Component {
 
     }
 
-    // tslint:disable-next-line:no-empty
-    onSelection(selectedInstances) {
-    }
-
     render() {
         const {classes} = this.props
         const {data} = this.state
@@ -175,9 +159,7 @@ class CanvasExample extends Component {
                 cameraOptions={cameraOptions}
                 captureOptions={captureOptions}
                 backgroundColor={canvasBg}
-                onSelection={this.onSelection}
                 onMount={this.onMount}
-                hoverListeners={[this.hoverHandler]}
             />
         </div>)
     }
