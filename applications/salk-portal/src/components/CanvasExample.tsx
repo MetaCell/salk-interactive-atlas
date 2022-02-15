@@ -5,18 +5,20 @@ import * as THREE from 'three';
 import {withStyles} from '@material-ui/core';
 import Canvas from "@metacell/geppetto-meta-ui/3d-canvas/Canvas";
 import CameraControls from "@metacell/geppetto-meta-ui/camera-controls/CameraControls";
+import CaptureControls from "@metacell/geppetto-meta-ui/capture-controls/CaptureControls";
 import SimpleInstance from "@metacell/geppetto-meta-core/model/SimpleInstance";
 import {augmentInstancesArray} from '@metacell/geppetto-meta-core/Instances';
 import Resources from '@metacell/geppetto-meta-core/Resources';
-import ocord from '../assets/atlas_meshes/simplified/open_cord_simp.obj'
+// import ocord from '../assets/atlas_meshes/simplified/open_cord_simp.obj'
 import icord from '../assets/atlas_meshes/simplified/inside_cord_simp.obj'
-import DummyCaptureControls from "./dummy/DummyCaptureControls";
+import ccord from '../assets/atlas_meshes/simplified/closed_cord_simp.obj'
 import cells from '../assets/atlas_meshes/transformed_cells.json'
 import { canvasBg } from "../theme";
 
 const COLOR_MAP = {
+    'ClosedCordOBJ': {r: 0.30, g: 0.54, b: 0.59, a: 0.5},
     'OpenCordOBJ': {r: 0.30, g: 0.54, b: 0.59, a: 0.5},
-    'InsideCordOBJ': {r: 0.30, g: 0.54, b: 0.59, a: 0.5},
+    'InsideCordOBJ': {r: 0.4525, g: 0.2624, b: 0.2852, a: 0.7},
 }
 
 const YELLOW = 0xffff00
@@ -30,17 +32,27 @@ function mapToCanvasData(data) {
     ))
 }
 
-
-const instance2spec = {
+const instance1spec = {
     "eClass": "SimpleInstance",
-    "id": "OpenCordOBJ",
-    "name": "Open Cord OBJ",
+    "id": "ClosedCordOBJ",
+    "name": "Closed Cord OBJ",
     "type": {"eClass": "SimpleType"},
     "visualValue": {
         "eClass": Resources.OBJ,
-        'obj': ocord
+        'obj': ccord
     }
 }
+
+// const instance2spec = {
+//     "eClass": "SimpleInstance",
+//     "id": "OpenCordOBJ",
+//     "name": "Open Cord OBJ",
+//     "type": {"eClass": "SimpleType"},
+//     "visualValue": {
+//         "eClass": Resources.OBJ,
+//         'obj': ocord
+//     }
+// }
 
 const instance3spec = {
     "eClass": "SimpleInstance",
@@ -49,14 +61,15 @@ const instance3spec = {
     "type": {"eClass": "SimpleType"},
     "visualValue": {
         "eClass": Resources.OBJ,
-        'obj': icord
+        'obj': icord,
     }
 }
 
 function loadInstances() {
-    const instance2 = new SimpleInstance(instance2spec)
+    const instance1 = new SimpleInstance(instance1spec)
+    // const instance2 = new SimpleInstance(instance2spec)
     const instance3 = new SimpleInstance(instance3spec)
-    window.Instances = [instance2, instance3]
+    window.Instances = [instance1, instance3]
     augmentInstancesArray(window.Instances);
 }
 
@@ -82,7 +95,7 @@ function getDefaultOptions() {
         },
         'captureOptions': {
             captureControls: {
-                instance: DummyCaptureControls,
+                instance: CaptureControls,
                 props: {}
             },
             recorderOptions: {
@@ -123,9 +136,18 @@ class CanvasExample extends Component {
             data: getProxyInstances(),
         };
         this.onMount = this.onMount.bind(this);
+        this.updateEnded = this.updateEnded.bind(this);
+    }
+    updateEnded(){
+        this.scene.children[4].children[0].material.side = THREE.DoubleSide;
+        this.scene.children[4].children[0].material.needsUpdate = true;
+        this.scene.children[4].children[0].renderOrder = 1;
+        this.scene.children[5].children[0].material.side = THREE.DoubleSide;
+        this.scene.children[5].children[0].material.needsUpdate = true;
     }
 
     onMount(scene) {
+        this.scene = scene;
         const geometry = new THREE.SphereGeometry(1, 32, 16);
         const dummy = new THREE.Object3D();
         const position = new THREE.Vector3();
@@ -146,7 +168,6 @@ class CanvasExample extends Component {
             mesh.setMatrixAt(i, dummy.matrix);
         }
         scene.add(mesh);
-
     }
 
     render() {
@@ -161,6 +182,7 @@ class CanvasExample extends Component {
                 captureOptions={captureOptions}
                 backgroundColor={canvasBg}
                 onMount={this.onMount}
+                updateEnded={this.updateEnded}
             />
         </div>)
     }
