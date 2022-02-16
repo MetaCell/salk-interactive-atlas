@@ -285,7 +285,7 @@ div.kc-logo-text span {
 #kc-info-wrapper {
     font-size: 13px;
     padding: 15px 35px;
-    background-color: #F0F0F0;
+    /* background-color: #F0F0F0; */
 }
 
 #kc-form-options span {
