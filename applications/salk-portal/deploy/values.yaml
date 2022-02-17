@@ -1,6 +1,6 @@
 harness:
   subdomain: www
-  secured: false
+  secured: true
   deployment:
     auto: true
     port: 80
@@ -25,3 +25,7 @@ harness:
       # - jupyterhub
       # - jupyterlab
       # - hub
+  uri_role_mapping:
+    - uri: /*
+      roles:
+        - default-roles-salk
