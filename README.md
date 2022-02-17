@@ -19,7 +19,7 @@ conda activate salk
 To install CloudHarness:
 
 ```
-git clone https://github.com/MetaCell/cloud-harness.git
+git clone --branch release/1.0.0 https://github.com/MetaCell/cloud-harness.git
 cd cloud-harness
 pip install -r requirements.txt
 ```
