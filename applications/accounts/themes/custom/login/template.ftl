@@ -66,7 +66,7 @@
             <a href="javascript:void(0)">FAQ</a>
           </li>
           <li class="primary-header_btn">
-             <a tabindex="6" href="${url.registrationUrl}">Create my account</a>
+            <a href="javascript:void(0)">Create my account</a>
           </li>
         </ul>
       </div>
