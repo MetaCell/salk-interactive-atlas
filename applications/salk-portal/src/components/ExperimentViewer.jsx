@@ -126,7 +126,7 @@ const styles = () => ({
 });
 
 
-class CanvasExample extends Component {
+class ExperimentViewer extends Component {
     constructor(props) {
         super(props);
         loadInstances()
@@ -186,4 +186,4 @@ class CanvasExample extends Component {
     }
 }
 
-export default withStyles(styles)(CanvasExample);
+export default withStyles(styles)(ExperimentViewer);

@@ -1,7 +1,7 @@
-import CanvasExample from "../CanvasExample";
+import ExperimentViewer from "../ExperimentViewer";
 
 const componentMap = {
-    'canvas': CanvasExample,
+    'canvas': ExperimentViewer,
 };
 
 export default componentMap;
