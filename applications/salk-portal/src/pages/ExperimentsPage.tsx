@@ -8,7 +8,7 @@ import {getLayoutManagerInstance} from "@metacell/geppetto-meta-client/common/la
 import {WidgetStatus} from "@metacell/geppetto-meta-client/common/layout/model";
 // @ts-ignore
 import {addWidget} from '@metacell/geppetto-meta-client/common/layout/actions';
-import { Box, Button } from "@material-ui/core";
+import { Box} from "@material-ui/core";
 import { font, bodyBgColor } from "../theme";
 
 

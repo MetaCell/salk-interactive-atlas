@@ -1,5 +1,3 @@
-// @ts-nocheck
-
 import React, {Component} from 'react';
 import * as THREE from 'three';
 import {withStyles} from '@material-ui/core';
