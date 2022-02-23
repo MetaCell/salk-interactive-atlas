@@ -4,6 +4,7 @@ import lessToJs from 'less-vars-to-js';
 
 import './css/mui.less';
 import './css/main.less';
+import './css/flexLayout.less';
 import { Hidden } from '@material-ui/core';
 
 // Read the less file in as string: using the raw-loader to override the default loader
@@ -14,7 +15,7 @@ vars.gutter = vars.gutter.replace('px', '') * 1;
 
 export const {
   primaryColor, secondaryColor, font, fontColor, linkColor, teal, purple, bgLightest, paragraph, bgLightestShade,
-  bgLight, bgRegular, bgDark, bgDarker, bgDarkest, bgInputs, gutter, radius, checkBoxColor, bgLighter, textColor
+  bgLight, bgRegular, bgDark, bgDarker, bgDarkest, bgInputs, gutter, radius, checkBoxColor, bgLighter, textColor, canvasBg, headerBorderColor,headerButtonBorderColor, bodyBgColor, headerBg,
 } = vars;
 
 const verticalFill = {
@@ -27,16 +28,6 @@ const spacing = [0, gutter / 2, gutter * 2 / 3, gutter, 24, 40, 50, 100, 150, 20
 const theme = {
   darkMode: true,
   spacing,
-  typography: {
-    useNextVariants: true,
-    htmlFontSize: 12,
-    fontSize: 10,
-    fontFamily: font,
-    button: {
-      textTransform: "none",
-      fontSize: "1.0rem"
-    }
-  },
   palette: {
     type: 'dark',
     primary: {
@@ -53,6 +44,7 @@ const theme = {
       default: bgDarker,
       paper: bgRegular
     },
+    button: { main: primaryColor },
   },
   typography: {
     fontFamily: font,
@@ -65,11 +57,9 @@ const theme = {
     h2: {
       fontSize: '1.1rem',
       fontWeight: 700,
-      fontWeight: "bold",
       marginBottom: spacing[3],
       lineHeight: "1.25rem",
       paddingBottom: spacing[2],
-      fontSize: '1.1rem',
       borderBottom: `3px solid ${bgInputs}`
     },
     h3: {
@@ -111,8 +101,8 @@ const theme = {
         label: {
           fontSize: '0.8rem',
         },
-        
-         
+
+
           "& .MuiChip-avatar": {
             width: ".63rem",
             height: ".63rem",
@@ -123,7 +113,7 @@ const theme = {
               color: purple,
             },
           },
-        
+
       },
       outlined: {
         backgroundColor: bgDarker,
@@ -229,7 +219,6 @@ const theme = {
     },
     MuiAccordionDetails: { root: { padding: 0, margin: 0, minHeight: 'unset!important', flexDirection: 'column' } },
     MuiAccordion: { root: { padding: 0, margin: '0px!important', minHeight: 'unset' } },
-    MuiAutocomplete: { popupIndicator: { marginRight: 0 } },
     MuiCardContent: {
       root: {
         '&:last-child': {

@@ -2,11 +2,25 @@ import * as React from "react";
 import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 import { ThemeProvider } from "@material-ui/core/styles";
 import { CssBaseline, makeStyles } from "@material-ui/core";
-import SentryErrorBoundary from "./components/sentry/SentryErrorBoundary";
+import '@metacell/geppetto-meta-ui/flex-layout/style/dark.scss'
 import HomePage from "./pages/HomePage";
 import theme from "./theme";
+import { Header, ErrorDialog, ProtectedRoute, } from "./components";
+import ExperimentsPage from "./pages/ExperimentsPage";
+// tslint:disable-next-line:no-var-requires
+const Manager = require('@metacell/geppetto-meta-client/common/Manager').default;
 
-import { Header, ErrorDialog, ProtectedRoute, } from "./components/index";
+const GEPPETTO = {};
+// @ts-ignore
+window.GEPPETTO = GEPPETTO;
+// @ts-ignore
+// tslint:disable-next-line:no-var-requires
+GEPPETTO.Resources = require('@metacell/geppetto-meta-core/Resources').default;
+
+// @ts-ignore
+GEPPETTO.Manager = new Manager();
+// @ts-ignore
+window.Instances = [];
 
 const useStyles = makeStyles(() => ({
   mainContainer: {
@@ -20,6 +34,7 @@ const useStyles = makeStyles(() => ({
     }
   },
 }));
+
 
 export const App = (props: any) => {
   const classes = useStyles();
@@ -37,6 +52,9 @@ export const App = (props: any) => {
               <Switch>
                 <ProtectedRoute exact={true} path="/">
                   <HomePage />
+                </ProtectedRoute>
+                <ProtectedRoute exact={true} path="/experiments">
+                  <ExperimentsPage />
                 </ProtectedRoute>
               </Switch>
 

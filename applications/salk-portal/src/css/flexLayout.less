@@ -1,0 +1,66 @@
+@import "variables";
+
+.flexlayout {
+  &__tabset {
+    background: transparent;
+    &-selected {
+      background: transparent;
+    }
+
+    &_tabbar {
+      &_inner_tab_container_top {
+        border-top: none;
+      }
+      &_outer {
+        background: transparent;
+        &_top {
+          border: none;
+        }
+      }
+    }
+  }
+
+  &__border_bottom {
+    display: none;
+  }
+
+  &__tab {
+    border-radius: 8px;
+    border-top-left-radius: 0;
+    &_button {
+      background-color: @canvasBg;
+      &_top {
+        border-top-left-radius: 8px;
+        border-top-right-radius: 8px;
+        box-shadow: none;
+        margin: 0 2px 0 0;
+      }
+      &_content {
+        letter-spacing: 0.005em;
+        color: @canvasIconColor;
+        font-size: 12px;
+        line-height: 16px;
+      }
+      &--selected {
+        background-color: @canvasBg;
+      }
+      &:hover {
+        background-color: @canvasBg;
+      }
+    }
+  }
+}
+
+.position-toolbar {
+  .MuiButtonBase-root {
+    color: @canvasIconColor;
+  }
+  .svg-inline--fa {
+    width: 12px;
+    height: 12px;
+  }
+  .squareB {
+    width: 12px!important;
+    height: 12px!important;
+  }
+}
