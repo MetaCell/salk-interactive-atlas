@@ -5,10 +5,10 @@ import { canvasIconColor, headerBg } from "../theme";
 import TOGGLE from "../assets/images/icons/toggle.png";
 import ATLAS from "../assets/images/icons/atlas.png";
 import SUBDIVISIONS from "../assets/images/icons/subdivisions.png";
-import POPULATIONS from "../assets/images/icons/populations.png";
 import OVERLAYS from "../assets/images/icons/overlays.png";
 import ADD from "../assets/images/icons/add.png";
 import UP_ICON from "../assets/images/icons/up.png";
+import POPULATION from "../assets/images/icons/pop.svg";
 
 const useStyles = makeStyles({
   sidebar: {
@@ -228,7 +228,7 @@ const Sidebar = (props) => {
               expandIcon={<img src={UP_ICON} alt="" />}
             >
               <Typography>
-                <img src={POPULATIONS} alt="" />
+                <img src={POPULATION} alt="" />
                 Populations
               </Typography>
             </AccordionSummary>
