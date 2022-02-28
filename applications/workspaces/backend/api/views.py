@@ -3,8 +3,8 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework import permissions
 
-from experiment.models import Experiment
-from experiment.serializers import ExperimentSerializer
+from api.models import Experiment
+from api.serializers import ExperimentSerializer
 
 class ExperimentViewSet(viewsets.ModelViewSet):
     """
@@ -13,8 +13,9 @@ class ExperimentViewSet(viewsets.ModelViewSet):
 
     Additionally we also provide an extra `magic` action.
     """
-    queryset = Experiment.objects.all()
+    permission_classes = [permissions.IsAuthenticated]
     serializer_class = ExperimentSerializer
+    queryset = Experiment.objects.all()
 
     # def list(self, request, *args, **kwargs):
     #     queryset = self.filter_queryset(self.get_queryset())

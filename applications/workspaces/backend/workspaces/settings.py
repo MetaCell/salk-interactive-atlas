@@ -38,11 +38,6 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-
-    'rest_framework',
-
-    "workspaces",
-    "experiment",
 ]
 
 MIDDLEWARE = [
@@ -53,8 +48,6 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-
-    'cloudharness.middleware.django.CloudharnessMiddleware',
 ]
 
 ROOT_URLCONF = 'workspaces.urls'
@@ -76,17 +69,6 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'workspaces.wsgi.application'
-
-
-# Database
-# https://docs.djangoproject.com/en/4.0/ref/settings/#databases
-
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
-}
 
 
 # Password validation
@@ -140,3 +122,121 @@ REST_FRAMEWORK = {
         'workspaces.auth.BearerAuthentication',
     ]
 }
+
+
+# ***********************************************************************
+# * Salk settings
+# ***********************************************************************
+from cloudharness.applications import get_configuration
+from cloudharness.utils.config import CloudharnessConfig, ALLVALUES_PATH
+
+
+# add the 3rd party apps
+INSTALLED_APPS += [
+    'rest_framework',
+    'mozilla_django_oidc',
+    'admin_extra_buttons',
+]
+
+
+# add the local apps
+INSTALLED_APPS += [
+    "workspaces",
+    "api",
+    "k8s",
+]
+
+
+# add the CH authentication middleware
+MIDDLEWARE += [
+    'cloudharness.middleware.django.CloudharnessMiddleware',
+]
+
+
+# override django admin base template with a local template
+# to add some custom styling
+TEMPLATES[0]['DIRS'] = [BASE_DIR / 'templates']
+
+
+# Persistent storage
+PERSISTENT_ROOT = os.path.join(BASE_DIR, 'persistent')
+
+
+# Database
+# https://docs.djangoproject.com/en/3.2/ref/settings/#databases
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': os.path.join(PERSISTENT_ROOT, 'salk.sqlite3')
+    },
+}
+
+
+# Static files (CSS, JavaScript, Images)
+MEDIA_ROOT = PERSISTENT_ROOT
+STATIC_ROOT= os.path.join(BASE_DIR,'static')
+MEDIA_URL = '/media/'
+STATIC_URL = '/static/'
+
+
+# Keycloak Rest Framework
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES' : [
+        'mozilla_django_oidc.contrib.drf.OIDCAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
+    ],
+    # 'DEFAULT_AUTHENTICATION_CLASSES': [
+    #     'workspaces.auth.BearerAuthentication',
+    # ]
+}
+AUTHENTICATION_BACKENDS = ['workspaces.auth.WorkspacesOIDCAB',]
+
+
+# test if the kubernetes CH all values exists, if so then set up the OIDC config
+# IMPROTANT NOTE:
+#   when testing/debugging copy the deployment/helm/values.yaml to the ALLVALUES_PATH
+if os.path.isfile(ALLVALUES_PATH):
+    # try to setup the env needed to run
+
+    # get the application CH configs
+    accounts_app = get_configuration("accounts")
+    current_app = get_configuration("workspaces")
+
+    client_id = accounts_app.conf.webclient.id # Client ID configured in the Auth Server
+    client_secret = accounts_app.conf.webclient.secret
+    realm = CloudharnessConfig.get_namespace()
+    accounts_public_url = accounts_app.get_public_address()
+
+    # Setup OIDC
+    KEYCLOAK_EXEMPT_URIS = []
+    KEYCLOAK_CONFIG = {
+        'KEYCLOAK_SERVER_URL': f'{accounts_public_url}/auth',
+        'KEYCLOAK_REALM': realm,
+        'KEYCLOAK_CLIENT_ID': client_id,
+        'KEYCLOAK_CLIENT_SECRET_KEY': client_secret
+    }
+    auth_uri = f"{accounts_public_url}/auth/realms/{realm}"
+    public_uri = ''
+
+    OIDC_OP_AUTHORIZATION_ENDPOINT = auth_uri + '/protocol/openid-connect/auth'
+    OIDC_OP_TOKEN_ENDPOINT = auth_uri + '/protocol/openid-connect/token'
+    OIDC_OP_USER_ENDPOINT = auth_uri + '/protocol/openid-connect/userinfo'
+    LOGIN_REDIRECT_URL = public_uri + '/admin/'
+    LOGOUT_REDIRECT_URL = auth_uri + '/protocol/openid-connect/logout?redirect_uri=' + public_uri
+    OIDC_RP_CLIENT_ID = client_id
+    OIDC_RP_CLIENT_SECRET = ''
+    OIDC_RP_SCOPES = 'email openid profile'
+    OIDC_RP_SIGN_ALGO = 'RS256'
+    OIDC_OP_JWKS_ENDPOINT = auth_uri + '/protocol/openid-connect/certs'
+
+    # Fields to look for in the userinfo returned from Keycloak
+    OIDC_CLAIMS_VERIFICATION = 'preferred_username sub'
+
+    # Allow this user to not have an email address during OIDC claims verification.
+    KEYCLOAK_ADMIN_USER = 'mnp'
+
+    # Some login changes
+    LOGIN_URL = '/openid/authenticate'
+
+    # if secured then set USE_X_FORWARDED_HOST because we are behind the GK proxy
+    USE_X_FORWARDED_HOST = current_app.harness.secured

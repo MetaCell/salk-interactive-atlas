@@ -18,7 +18,12 @@ kubectl -n salk get secrets accounts -o yaml|grep api_user_password|cut -d " " -
 
 mkdir -p /opt/cloudharness/resources/auth/
 kubectl -n salk get secrets accounts -o yaml|grep api_user_password|cut -d " " -f 4|base64 -d > /opt/cloudharness/resources/auth/api_user_password
+
+# Make the cloudharness application configuration available on your local machine
+cp the deployment/helm/values.yaml to /opt/cloudharness/resources/alvalues.yaml
 ```
+
+you can use the default python django debug configuration or a custom one.
 
 example Visual Studio Code launch entry:
 ```
@@ -30,9 +35,6 @@ example Visual Studio Code launch entry:
     "program": "workspaces/__main__.py",
     "request": "launch",
     "type": "python",
-    "env": {
-        "CH_CURRENT_USER_ID": "<PUT HERE YOUR KEYCLOAK USER ID>",
-    }
 }
 ```
 

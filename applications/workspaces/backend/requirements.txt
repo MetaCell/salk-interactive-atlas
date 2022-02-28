@@ -4,3 +4,10 @@ coreapi==2.3.3
 pyyaml
 uritemplate==4.1.1
 cherrypy==18.6.1
+
+mozilla-django-oidc
+
+Pillow
+psycopg2-binary
+
+django-admin-extra-buttons
