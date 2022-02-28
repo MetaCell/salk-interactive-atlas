@@ -10,6 +10,7 @@ import {WidgetStatus} from "@metacell/geppetto-meta-client/common/layout/model";
 import {addWidget} from '@metacell/geppetto-meta-client/common/layout/actions';
 import { Box} from "@material-ui/core";
 import { font, bodyBgColor } from "../theme";
+import Sidebar from "../components/Sidebar";
 
 
 const useStyles = makeStyles({
@@ -17,6 +18,8 @@ const useStyles = makeStyles({
         position: 'relative',
         width: '100%',
         height: '100%',
+        background: bodyBgColor,
+        padding: '0.5rem',
 
         '& *': {
           fontFamily: font
@@ -24,8 +27,6 @@ const useStyles = makeStyles({
 
         '&> div': {
           height: '100%',
-          background: bodyBgColor,
-          padding: '0.5rem',
           '&> div': {
             position: 'relative',
           }
@@ -65,13 +66,13 @@ const ExperimentsPage = () => {
         }
     }, [store])
 
-    return (
+  return (
+      <Box display="flex">
+        <Sidebar />
         <Box className={classes.layoutContainer}>
-            <div className={classes.layoutContainer}>
-                {LayoutComponent === undefined ? <CircularProgress/> : <LayoutComponent/>}
-            </div>
+          {LayoutComponent === undefined ? <CircularProgress/> : <LayoutComponent/>}
         </Box>
-
+      </Box>
     );
 }
 

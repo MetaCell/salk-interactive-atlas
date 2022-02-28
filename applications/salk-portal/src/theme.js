@@ -15,7 +15,7 @@ vars.gutter = vars.gutter.replace('px', '') * 1;
 
 export const {
   primaryColor, secondaryColor, font, fontColor, linkColor, teal, purple, bgLightest, paragraph, bgLightestShade,
-  bgLight, bgRegular, bgDark, bgDarker, bgDarkest, bgInputs, gutter, radius, checkBoxColor, bgLighter, textColor, canvasBg, headerBorderColor,headerButtonBorderColor, bodyBgColor, headerBg,
+  bgLight, bgRegular, bgDark, bgDarker, bgDarkest, bgInputs, gutter, radius, checkBoxColor, bgLighter, textColor, canvasBg, headerBorderColor,headerButtonBorderColor, bodyBgColor, headerBg, switchActiveColor, canvasIconColor,
 } = vars;
 
 const verticalFill = {
@@ -60,7 +60,7 @@ const theme = {
       marginBottom: spacing[3],
       lineHeight: "1.25rem",
       paddingBottom: spacing[2],
-      borderBottom: `3px solid ${bgInputs}`
+      borderBottom: `0.1875rem solid ${bgInputs}`
     },
     h3: {
       fontSize: '1rem',
@@ -155,7 +155,7 @@ const theme = {
         color: 'inherit', backgroundColor: bgRegular, flex: 1
       },
       rounded: {
-        borderRadius: '5px'
+        borderRadius: '0.3125rem'
       },
     },
     MuiBottomNavigationAction: {
@@ -205,20 +205,47 @@ const theme = {
     MuiDialogTitle: { root: { fontWeight: 600, fontSize: '1rem' } },
     MuiDialogContent: { root: { paddingBottom: gutter } },
     MuiCollapse: {
+      root: { borderTop: `0.0625rem solid ${headerBorderColor}`},
       container: { padding: 0 },
-      wrapper: { padding: "0px!important" }
+      wrapper: { padding: "0 !important" }
     },
     MuiIcon: { fontSizeLarge: { fontSize: '1.75rem' } },
     MuiAccordionSummary: {
       root: {
-        padding: '0px!important', margin: 0, minHeight: 'unset!important', display: "flex",
-        flexDirection: "row-reverse"
+        padding: '0 .5rem 0 1rem !important', margin: 0, minHeight: '3rem !important', display: "flex",
       },
-      content: { margin: '0px!important', cursor: 'auto' },
+      content: {
+        margin: '0 !important', cursor: 'auto',
+
+        '& p': {
+          display: 'flex',
+          alignItems: 'center',
+          fontWeight: '600',
+          fontSize: '0.75rem',
+          lineHeight: '1rem',
+          letterSpacing: '0.005em',
+          color: canvasIconColor,
+
+          '& img': {
+            marginRight: '0.875rem',
+          },
+        },
+      },
       expandIcon: { marginRight: 0 }
     },
-    MuiAccordionDetails: { root: { padding: 0, margin: 0, minHeight: 'unset!important', flexDirection: 'column' } },
-    MuiAccordion: { root: { padding: 0, margin: '0px!important', minHeight: 'unset' } },
+    MuiAccordionDetails: { root: { padding: '1rem 1rem 1rem 3rem', margin: 0, minHeight: 'unset!important', flexDirection: 'column', } },
+    MuiAccordion: {
+      root: {
+        padding: 0, margin: '0 !important', minHeight: 'unset', background: 'transparent',
+
+        '&:before': {
+          backgroundColor: headerBorderColor,
+          display: 'block !important',
+          opacity: '1 !important',
+          content: '""',
+        },
+      }
+    },
     MuiCardContent: {
       root: {
         '&:last-child': {
@@ -240,8 +267,8 @@ const theme = {
     },
     MuiTabs: {
       root: {
-        minHeight: '20px',
-        height: '20px',
+        minHeight: '1.25rem',
+        height: '1.25rem',
       },
       indicator: {
         backgroundColor: 'transparent',
@@ -252,18 +279,18 @@ const theme = {
         textTransform: 'none',
         fontSize: '1.1rem',
         fontWeight: 400,
-        padding: '0 8px 0 0',
+        padding: '0 0.5rem 0 0',
         textDecoration: 'none',
         border: 0,
-        minHeight: '20px',
-        height: '20px',
-        minWidth: '150px !important',
+        minHeight: '1.25rem',
+        height: '1.25rem',
+        minWidth: '9.375rem !important',
         textAlign: 'left',
         '&:first-child': {
-          borderRight: '1px solid #FFF',
+          borderRight: `0.0625rem solid ${secondaryColor}`,
         },
         '&:last-child': {
-          padding: '0 0 0 8px',
+          padding: '0 0 0 0.5rem',
         }
       }
     },
@@ -274,15 +301,15 @@ const theme = {
     },
     MuiAutocomplete: {
       root: {
-        border: `2px solid #4a4a4a`,
-        paddingTop: '10px',
-        paddingBottom: '10px',
-        borderRadius: '2px',
+        border: `0.125rem solid ${bgLight}`,
+        paddingTop: '0.625rem',
+        paddingBottom: '0.625rem',
+        borderRadius: '0.125rem',
         '& div:first-child': {
-            paddingBottom: '0px',
+            paddingBottom: '0',
         },
         '& .MuiInputBase-root': {
-          paddingTop: '0px !important',
+          paddingTop: '0 !important',
           backgroundColor: 'transparent',
           '& .MuiAutocomplete-endAdornment': {
             display: 'none',
@@ -296,6 +323,77 @@ const theme = {
         },
       },
     },
+
+    MuiFormControlLabel: {
+      labelPlacementStart: {
+        marginLeft: 0,
+        marginRight: 0,
+      },
+
+      label: {
+        fontSize: '0.75rem',
+        lineHeight: '0.9375rem',
+        color: canvasIconColor,
+        flexGrow: 1,
+        userSelect: 'none',
+      },
+    },
+
+    MuiSwitch: {
+      root: {
+        width: '2rem',
+        height: '1rem',
+        padding: 0,
+      },
+      track: {
+        opacity: '0.2',
+        borderRadius: '3.125rem',
+      },
+
+      input: {
+        width: 'auto',
+      },
+
+      switchBase: {
+        padding: 0,
+        background: canvasIconColor,
+        boxShadow: '0 0.125rem 0.25rem rgba(0, 0, 0, 0.3)',
+        borderRadius: '0.3125rem',
+        top: '0.1875rem',
+        left: '0.1875rem',
+
+        '&.Mui-checked': {
+          transform: 'translateX(1rem)',
+        },
+      },
+
+      thumb: {
+        width: '0.625rem',
+        height: '0.625rem',
+      },
+
+      colorPrimary: {
+        '&.Mui-checked': {
+          color: secondaryColor,
+
+          '& + .MuiSwitch-track': {
+            backgroundColor: switchActiveColor,
+          },
+        },
+      },
+    },
+
+    MuiRadio: {
+      root: {
+        padding: 0,
+        color: 'rgba(255, 255, 255, 0.4)',
+
+        '& .MuiSvgIcon-root': {
+          width: '0.875rem',
+          height: '0.875rem',
+        },
+      }
+    }
   },
 }
 
