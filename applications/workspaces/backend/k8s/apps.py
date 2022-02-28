@@ -1,6 +1,6 @@
 from django.apps import AppConfig
 
 
-class ExperimentConfig(AppConfig):
+class K8SConfig(AppConfig):
     default_auto_field = 'django.db.models.BigAutoField'
-    name = 'experiment'
+    name = 'k8s'
