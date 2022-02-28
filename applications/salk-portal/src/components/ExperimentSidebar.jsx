@@ -1,45 +1,46 @@
 import React, { useState } from 'react';
 import {makeStyles} from '@material-ui/core/styles';
 import { Box, Typography, IconButton, Accordion, AccordionSummary, AccordionDetails, Switch, FormControlLabel, FormControl, RadioGroup, Radio, Button } from '@material-ui/core';
-import { canvasIconColor, headerBg } from "../theme";
-import TOGGLE from "../assets/images/icons/toggle.png";
-import ATLAS from "../assets/images/icons/atlas.png";
-import SUBDIVISIONS from "../assets/images/icons/subdivisions.png";
-import OVERLAYS from "../assets/images/icons/overlays.png";
-import ADD from "../assets/images/icons/add.png";
-import UP_ICON from "../assets/images/icons/up.png";
-import POPULATION from "../assets/images/icons/pop.svg";
+import { canvasIconColor, headerBg, headerBorderColor } from "../theme";
+import TOGGLE from "../assets/images/icons/toggle.svg";
+import ATLAS from "../assets/images/icons/atlas.svg";
+import SUBDIVISIONS from "../assets/images/icons/subdivisions.svg";
+import OVERLAYS from "../assets/images/icons/overlays.svg";
+import ADD from "../assets/images/icons/add.svg";
+import UP_ICON from "../assets/images/icons/up.svg";
+import POPULATION from "../assets/images/icons/population.svg";
 
 const useStyles = makeStyles({
   sidebar: {
     height: 'calc(100vh - 3rem)',
     width: '15rem',
     flexShrink: 0,
-    borderRight: `0.0625rem solid #3C3E40`,
+    borderRight: `0.0625rem solid ${headerBorderColor}`,
     background: '#27292B',
     overflow: 'auto',
-  
+
+    '& .sidebar-title': {
+      flexGrow: 1,
+      fontWeight: 600,
+      fontSize: '0.75rem',
+      lineHeight: '1rem',
+      letterSpacing: '0.005em',
+      color: canvasIconColor,
+      transition: "all ease-in-out .3s"
+    },
+
     '& .sidebar-header': {
       padding: '0 .5rem 0 1rem',
       height: '3rem',
-      background: '#3C3E40',
+      background: headerBorderColor,
       display: 'flex',
       alignItems: 'center',
       position: 'sticky',
       top: 0,
       zIndex: 9,
-    
+
       '& button': {
         transform: 'rotate(0deg)',
-      },
-
-      '& p': {
-        flexGrow: 1,
-        fontWeight: 600,
-        fontSize: '0.75rem',
-        lineHeight: '1rem',
-        letterSpacing: '0.005em',
-        color: canvasIconColor,
       },
     },
 
@@ -93,19 +94,19 @@ const useStyles = makeStyles({
       '& button': {
         transform: 'rotate(180deg)',
       },
+    },
 
-      '& p': {
-        position: 'absolute',
-        left: '-1.4375',
-        transform: 'rotate(-90deg)',
-        top: '6.25rem',
-        whiteSpace: 'nowrap',
-      },
+    '& .sidebar-title': {
+      transform: 'rotate(-180deg)',
+      textOrientation: 'revert-layer',
+      writingMode: 'vertical-lr',
+      padding: '1rem 15px',
+      cursor: 'default',
     },
   },
 });
 
-const Sidebar = (props) => {
+const ExperimentSidebar = () => {
   const classes = useStyles();
   const [shrink, setShrink] = useState(false);
   const [value, setValue] = useState('female');
@@ -118,16 +119,18 @@ const Sidebar = (props) => {
     setShrink((prevState) => !prevState)
   };
 
-  const sidebarClass = shrink ? `${classes.sidebar} ${classes.shrink}` : classes.sidebar;
+  const sidebarClass = `${classes.sidebar} scrollbar ${shrink ? `${classes.shrink}` : ``}`;
 
   return (
     <Box className={sidebarClass}>
       <Box className="sidebar-header">
-        <Typography>Customize Data</Typography>
+        {!shrink && <Typography className='sidebar-title'>Customize Data</Typography>}
         <IconButton onClick={toggleSidebar}>
           <img src={TOGGLE} alt="Toggle_Icon" title="" />
         </IconButton>
       </Box>
+
+      {shrink && <Typography className='sidebar-title'>Customize Data</Typography>}
 
       {!shrink && (
         <>
@@ -141,15 +144,15 @@ const Sidebar = (props) => {
               </Typography>
             </AccordionSummary>
             <AccordionDetails>
-              <Button>
+              <Button disableRipple>
                 Add an atlas
                 <img src={ADD} alt="add" />
               </Button>
               <FormControl component="fieldset">
                 <RadioGroup aria-label="atlas" name="atlas1" value={value} onChange={handleChange}>
-                  <FormControlLabel value="Allen Atlas" control={<Radio />} label="Allen Atlas" labelPlacement='start' />
-                  <FormControlLabel value="Salk Atlas" control={<Radio />} label="Salk Atlas" labelPlacement='start' />
-                  <FormControlLabel value="Columbia Atlas" control={<Radio />} label="Columbia Atlas" labelPlacement='start' />
+                  <FormControlLabel value="Allen Atlas" control={<Radio color='primary' />} label="Allen Atlas" labelPlacement='start' />
+                  <FormControlLabel value="Salk Atlas" control={<Radio color='primary' />} label="Salk Atlas" labelPlacement='start' />
+                  <FormControlLabel value="Columbia Atlas" control={<Radio color='primary' />} label="Columbia Atlas" labelPlacement='start' />
                 </RadioGroup>
               </FormControl>
             </AccordionDetails>
@@ -173,6 +176,141 @@ const Sidebar = (props) => {
                   />
                 }
                 label="All subdivisions"
+                labelPlacement="start"
+              />
+              <FormControlLabel
+                control={
+                  <Switch
+                    color="primary"
+                  />
+                }
+                label="C1"
+                labelPlacement="start"
+              />
+              <FormControlLabel
+                control={
+                  <Switch
+                    color="primary"
+                  />
+                }
+                label="C1"
+                labelPlacement="start"
+              />
+              <FormControlLabel
+                control={
+                  <Switch
+                    color="primary"
+                  />
+                }
+                label="C1"
+                labelPlacement="start"
+              />
+              <FormControlLabel
+                control={
+                  <Switch
+                    color="primary"
+                  />
+                }
+                label="C2"
+                labelPlacement="start"
+              />
+              <FormControlLabel
+                control={
+                  <Switch
+                    color="primary"
+                  />
+                }
+                label="C3"
+                labelPlacement="start"
+              />
+              <FormControlLabel
+                control={
+                  <Switch
+                    color="primary"
+                  />
+                }
+                label="C1"
+                labelPlacement="start"
+              />
+              <FormControlLabel
+                control={
+                  <Switch
+                    color="primary"
+                  />
+                }
+                label="C1"
+                labelPlacement="start"
+              />
+              <FormControlLabel
+                control={
+                  <Switch
+                    color="primary"
+                  />
+                }
+                label="C1"
+                labelPlacement="start"
+              />
+              <FormControlLabel
+                control={
+                  <Switch
+                    color="primary"
+                  />
+                }
+                label="C2"
+                labelPlacement="start"
+              />
+              <FormControlLabel
+                control={
+                  <Switch
+                    color="primary"
+                  />
+                }
+                label="C3"
+                labelPlacement="start"
+              />
+              <FormControlLabel
+                control={
+                  <Switch
+                    color="primary"
+                  />
+                }
+                label="C1"
+                labelPlacement="start"
+              />
+              <FormControlLabel
+                control={
+                  <Switch
+                    color="primary"
+                  />
+                }
+                label="C1"
+                labelPlacement="start"
+              />
+              <FormControlLabel
+                control={
+                  <Switch
+                    color="primary"
+                  />
+                }
+                label="C1"
+                labelPlacement="start"
+              />
+              <FormControlLabel
+                control={
+                  <Switch
+                    color="primary"
+                  />
+                }
+                label="C2"
+                labelPlacement="start"
+              />
+              <FormControlLabel
+                control={
+                  <Switch
+                    color="primary"
+                  />
+                }
+                label="C3"
                 labelPlacement="start"
               />
               <FormControlLabel
@@ -267,7 +405,7 @@ const Sidebar = (props) => {
                     color="primary"
                   />
                 }
-                label="Population 123"
+                label="Population CDG"
                 labelPlacement="start"
               />
             </AccordionDetails>
@@ -318,4 +456,4 @@ const Sidebar = (props) => {
   )
 };
 
-export default Sidebar;
+export default ExperimentSidebar;

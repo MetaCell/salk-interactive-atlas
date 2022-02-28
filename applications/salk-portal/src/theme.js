@@ -215,7 +215,7 @@ const theme = {
         padding: '0 .5rem 0 1rem !important', margin: 0, minHeight: '3rem !important', display: "flex",
       },
       content: {
-        margin: '0 !important', cursor: 'auto',
+        margin: '0 !important',
 
         '& p': {
           display: 'flex',
@@ -392,7 +392,13 @@ const theme = {
           width: '0.875rem',
           height: '0.875rem',
         },
-      }
+      },
+
+      colorPrimary: {
+        '&.Mui-checked': {
+          color: switchActiveColor,
+        },
+      },
     }
   },
 }
