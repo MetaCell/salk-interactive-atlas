@@ -16,7 +16,7 @@ const useStyles = makeStyles({
     width: '15rem',
     flexShrink: 0,
     borderRight: `0.0625rem solid ${headerBorderColor}`,
-    background: '#27292B',
+    background: headerBg,
     overflow: 'auto',
 
     '& .sidebar-title': {
@@ -44,7 +44,7 @@ const useStyles = makeStyles({
       },
     },
 
-    '& .MuiCollapse-root': {
+    '& .MuiCollapse-wrapperInner': {
       maxHeight: '15.625rem',
       overflow: 'auto',
     },
@@ -100,16 +100,21 @@ const useStyles = makeStyles({
       transform: 'rotate(-180deg)',
       textOrientation: 'revert-layer',
       writingMode: 'vertical-lr',
-      padding: '1rem 15px',
+      padding: '1rem 0.9375rem',
       cursor: 'default',
     },
   },
 });
 
+const atlasses = ['Allen Atlas', 'Salk Atlas', 'Columbia Atlas'];
+const overlays = ['Density Map', 'Populations Map', 'Neuronal Locations'];
+const populations = ['Population XYZ', 'Population ABC', 'Population TYU'];
+const subdivisions = ['C1', 'C2', 'C3', 'C4', 'C5', 'C6'];
+
 const ExperimentSidebar = () => {
   const classes = useStyles();
   const [shrink, setShrink] = useState(false);
-  const [value, setValue] = useState('female');
+  const [value, setValue] = useState('');
 
   const handleChange = (event) => {
     setValue(event.target.value);
@@ -125,7 +130,7 @@ const ExperimentSidebar = () => {
     <Box className={sidebarClass}>
       <Box className="sidebar-header">
         {!shrink && <Typography className='sidebar-title'>Customize Data</Typography>}
-        <IconButton onClick={toggleSidebar}>
+        <IconButton onClick={toggleSidebar} disableRipple>
           <img src={TOGGLE} alt="Toggle_Icon" title="" />
         </IconButton>
       </Box>
@@ -150,9 +155,8 @@ const ExperimentSidebar = () => {
               </Button>
               <FormControl component="fieldset">
                 <RadioGroup aria-label="atlas" name="atlas1" value={value} onChange={handleChange}>
-                  <FormControlLabel value="Allen Atlas" control={<Radio color='primary' />} label="Allen Atlas" labelPlacement='start' />
-                  <FormControlLabel value="Salk Atlas" control={<Radio color='primary' />} label="Salk Atlas" labelPlacement='start' />
-                  <FormControlLabel value="Columbia Atlas" control={<Radio color='primary' />} label="Columbia Atlas" labelPlacement='start' />
+                  { atlasses.map(atlas => <FormControlLabel key={atlas} value={atlas} control={<Radio />} label={atlas} labelPlacement='start' />)
+                  }
                 </RadioGroup>
               </FormControl>
             </AccordionDetails>
@@ -171,193 +175,12 @@ const ExperimentSidebar = () => {
               <FormControlLabel
                 className='bold'
                 control={
-                  <Switch
-                    color="primary"
-                  />
+                  <Switch />
                 }
                 label="All subdivisions"
                 labelPlacement="start"
               />
-              <FormControlLabel
-                control={
-                  <Switch
-                    color="primary"
-                  />
-                }
-                label="C1"
-                labelPlacement="start"
-              />
-              <FormControlLabel
-                control={
-                  <Switch
-                    color="primary"
-                  />
-                }
-                label="C1"
-                labelPlacement="start"
-              />
-              <FormControlLabel
-                control={
-                  <Switch
-                    color="primary"
-                  />
-                }
-                label="C1"
-                labelPlacement="start"
-              />
-              <FormControlLabel
-                control={
-                  <Switch
-                    color="primary"
-                  />
-                }
-                label="C2"
-                labelPlacement="start"
-              />
-              <FormControlLabel
-                control={
-                  <Switch
-                    color="primary"
-                  />
-                }
-                label="C3"
-                labelPlacement="start"
-              />
-              <FormControlLabel
-                control={
-                  <Switch
-                    color="primary"
-                  />
-                }
-                label="C1"
-                labelPlacement="start"
-              />
-              <FormControlLabel
-                control={
-                  <Switch
-                    color="primary"
-                  />
-                }
-                label="C1"
-                labelPlacement="start"
-              />
-              <FormControlLabel
-                control={
-                  <Switch
-                    color="primary"
-                  />
-                }
-                label="C1"
-                labelPlacement="start"
-              />
-              <FormControlLabel
-                control={
-                  <Switch
-                    color="primary"
-                  />
-                }
-                label="C2"
-                labelPlacement="start"
-              />
-              <FormControlLabel
-                control={
-                  <Switch
-                    color="primary"
-                  />
-                }
-                label="C3"
-                labelPlacement="start"
-              />
-              <FormControlLabel
-                control={
-                  <Switch
-                    color="primary"
-                  />
-                }
-                label="C1"
-                labelPlacement="start"
-              />
-              <FormControlLabel
-                control={
-                  <Switch
-                    color="primary"
-                  />
-                }
-                label="C1"
-                labelPlacement="start"
-              />
-              <FormControlLabel
-                control={
-                  <Switch
-                    color="primary"
-                  />
-                }
-                label="C1"
-                labelPlacement="start"
-              />
-              <FormControlLabel
-                control={
-                  <Switch
-                    color="primary"
-                  />
-                }
-                label="C2"
-                labelPlacement="start"
-              />
-              <FormControlLabel
-                control={
-                  <Switch
-                    color="primary"
-                  />
-                }
-                label="C3"
-                labelPlacement="start"
-              />
-              <FormControlLabel
-                control={
-                  <Switch
-                    color="primary"
-                  />
-                }
-                label="C1"
-                labelPlacement="start"
-              />
-              <FormControlLabel
-                control={
-                  <Switch
-                    color="primary"
-                  />
-                }
-                label="C1"
-                labelPlacement="start"
-              />
-              <FormControlLabel
-                control={
-                  <Switch
-                    color="primary"
-                  />
-                }
-                label="C1"
-                labelPlacement="start"
-              />
-              <FormControlLabel
-                control={
-                  <Switch
-                    color="primary"
-                  />
-                }
-                label="C2"
-                labelPlacement="start"
-              />
-              <FormControlLabel
-                control={
-                  <Switch
-                    color="primary"
-                  />
-                }
-                label="C3"
-                labelPlacement="start"
-              />
+                { subdivisions.map(atlas => <FormControlLabel key={atlas} control={<Switch />} label={atlas} labelPlacement="start"/>) }
             </AccordionDetails>
           </Accordion>
 
@@ -374,40 +197,12 @@ const ExperimentSidebar = () => {
               <FormControlLabel
                 className='bold'
                 control={
-                  <Switch
-                    color="primary"
-                  />
+                  <Switch />
                 }
                 label="Show all"
                 labelPlacement="start"
               />
-              <FormControlLabel
-                control={
-                  <Switch
-                    color="primary"
-                  />
-                }
-                label="Population ABC"
-                labelPlacement="start"
-              />
-              <FormControlLabel
-                control={
-                  <Switch
-                    color="primary"
-                  />
-                }
-                label="Population XYZ"
-                labelPlacement="start"
-              />
-              <FormControlLabel
-                control={
-                  <Switch
-                    color="primary"
-                  />
-                }
-                label="Population CDG"
-                labelPlacement="start"
-              />
+              { populations.map(atlas => <FormControlLabel key={atlas} control={<Switch />} label={atlas} labelPlacement="start"/>) }
             </AccordionDetails>
           </Accordion>
 
@@ -421,33 +216,7 @@ const ExperimentSidebar = () => {
               </Typography>
             </AccordionSummary>
             <AccordionDetails>
-              <FormControlLabel
-                control={
-                  <Switch
-                    color="primary"
-                  />
-                }
-                label="Density Map"
-                labelPlacement="start"
-              />
-              <FormControlLabel
-                control={
-                  <Switch
-                    color="primary"
-                  />
-                }
-                label="Probability Map"
-                labelPlacement="start"
-              />
-              <FormControlLabel
-                control={
-                  <Switch
-                    color="primary"
-                  />
-                }
-                label="Neuronal Locations"
-                labelPlacement="start"
-              />
+              { overlays.map(atlas => <FormControlLabel key={atlas} control={<Switch />} label={atlas} labelPlacement="start"/>) }
             </AccordionDetails>
           </Accordion>
         </>

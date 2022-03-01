@@ -58,9 +58,8 @@
 
 
 .scrollbarStyle {
-
   &::-webkit-scrollbar {
-    width: @gutter / 4;
+    width: 0.25rem;
   }
 
   &::-webkit-scrollbar-button {
@@ -68,12 +67,12 @@
   }
 
   &::-webkit-scrollbar-thumb {
-    background: white;
-    border-radius: 0;
+    background: rgba(255, 255, 255, 0.25);
+    border-radius: 0.25rem;
   }
 
   &::-webkit-scrollbar-track {
-    background-color: @bgRegular;
+    background-color: transparent;
     border-radius: 0;
   }
 }

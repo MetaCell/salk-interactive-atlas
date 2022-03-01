@@ -5,7 +5,6 @@ import lessToJs from 'less-vars-to-js';
 import './css/mui.less';
 import './css/main.less';
 import './css/flexLayout.less';
-import { Hidden } from '@material-ui/core';
 
 // Read the less file in as string: using the raw-loader to override the default loader
 const lessFile = require('!!raw-loader!./css/variables.less').default;
@@ -372,7 +371,7 @@ const theme = {
         height: '0.625rem',
       },
 
-      colorPrimary: {
+      colorSecondary: {
         '&.Mui-checked': {
           color: secondaryColor,
 
@@ -394,7 +393,7 @@ const theme = {
         },
       },
 
-      colorPrimary: {
+      colorSecondary: {
         '&.Mui-checked': {
           color: switchActiveColor,
         },
