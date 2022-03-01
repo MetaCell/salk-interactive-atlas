@@ -205,7 +205,6 @@ const theme = {
     MuiDialogContent: { root: { paddingBottom: gutter } },
     MuiCollapse: {
       root: { borderTop: `0.0625rem solid ${headerBorderColor}`},
-      container: { padding: 0 },
       wrapper: { padding: "0 !important" }
     },
     MuiIcon: { fontSizeLarge: { fontSize: '1.75rem' } },
