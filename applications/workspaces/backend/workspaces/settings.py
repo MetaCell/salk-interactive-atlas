@@ -24,7 +24,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-)5@5h(+e1@_h2$%1957726%e%6wt_+pwdtk2p@^71=e$*m^ew*'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False if os.environ.get("PRODUCTION", None) else True
 
 ALLOWED_HOSTS = ['*',]
 
@@ -114,15 +114,6 @@ STATIC_ROOT= os.path.join(BASE_DIR,'static/')
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-REST_FRAMEWORK = {
-    'DEFAULT_PERMISSION_CLASSES': [
-        'rest_framework.permissions.IsAuthenticated',
-    ],
-    'DEFAULT_AUTHENTICATION_CLASSES': [
-        'workspaces.auth.BearerAuthentication',
-    ]
-}
-
 
 # ***********************************************************************
 # * Salk settings
@@ -167,7 +158,7 @@ PERSISTENT_ROOT = os.path.join(BASE_DIR, 'persistent')
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(PERSISTENT_ROOT, 'salk.sqlite3')
+        'NAME': os.path.join(PERSISTENT_ROOT, 'workspaces.sqlite3')
     },
 }
 
@@ -179,17 +170,23 @@ MEDIA_URL = '/media/'
 STATIC_URL = '/static/'
 
 
+REST_FRAMEWORK = {
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.IsAuthenticated',
+    ],
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'workspaces.oidc.BearerAuthentication',
+    ]
+}
+
 # Keycloak Rest Framework
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES' : [
         'mozilla_django_oidc.contrib.drf.OIDCAuthentication',
         'rest_framework.authentication.SessionAuthentication',
     ],
-    # 'DEFAULT_AUTHENTICATION_CLASSES': [
-    #     'workspaces.auth.BearerAuthentication',
-    # ]
 }
-AUTHENTICATION_BACKENDS = ['workspaces.auth.WorkspacesOIDCAB',]
+AUTHENTICATION_BACKENDS = ['workspaces.oidc.WorkspacesOIDCAB',]
 
 
 # test if the kubernetes CH all values exists, if so then set up the OIDC config

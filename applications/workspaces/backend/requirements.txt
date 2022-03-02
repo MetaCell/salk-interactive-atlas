@@ -11,3 +11,5 @@ Pillow
 psycopg2-binary
 
 django-admin-extra-buttons
+git+https://github.com/coelias/python-keycloak
+
