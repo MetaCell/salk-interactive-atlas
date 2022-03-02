@@ -162,14 +162,14 @@ export const Header = (props: any) => {
             />
           </a>
         </Box>
-        <Box>
-          { onExperimentsPage && (<Breadcrumbs aria-label="breadcrumb">
+        { onExperimentsPage && ( <Box>
+          <Breadcrumbs aria-label="breadcrumb">
             <Link color="inherit" href="/">
               My experiments
             </Link>
             <Typography color="textPrimary">Exploration of the spinal cord</Typography>
-          </Breadcrumbs>) }
-        </Box>
+          </Breadcrumbs>
+        </Box> ) }
         <Box>
           {headerText}
         </Box>
