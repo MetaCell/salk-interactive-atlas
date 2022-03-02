@@ -47,12 +47,20 @@ class ExperimentViewSet(viewsets.ModelViewSet):
             teams__user=self.request.user # my teams experiments
         )
 
-    # def list(self, request):
-    #     queryset = self.filter_queryset(
-    #         self.my_experiments().union(self.team_experiments()).union(self.public_experiments())
-    #     )
-    #     serializer = self.get_serializer(queryset, many=True)
-    #     return Response(serializer.data)
+    def collaborate_experiments(self):
+        return self.get_queryset().filter(
+            collaborators__collaborator__user=self.request.user # my teams experiments
+        )
+
+    def list(self, request):
+        queryset = self.filter_queryset(
+            self.my_experiments() \
+                .union(self.team_experiments()) \
+                .union(self.public_experiments()) \
+                .union(self.collaborate_experiments())
+        )
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
 
     @action(detail=False)
     def mine(self, request):
@@ -71,9 +79,17 @@ class ExperimentViewSet(viewsets.ModelViewSet):
         return Response(serializer.data)
 
     @action(detail=False)
-    def team(self, request):
+    def myteams(self, request):
         queryset = self.filter_queryset(
             self.team_experiments()
+        )
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
+
+    @action(detail=False)
+    def sharedwithme(self, request):
+        queryset = self.filter_queryset(
+            self.collaborate_experiments()
         )
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)

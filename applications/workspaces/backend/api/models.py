@@ -27,7 +27,7 @@ class Experiment(models.Model):
     last_modified = models.DateField(auto_now=True)
     owner = models.ForeignKey(User, on_delete=models.DO_NOTHING)
     teams = models.ManyToManyField(Group)
-    collaborators = models.ManyToManyField(User, related_name="collaborators2", through="Collaborator")
+    collaborators = models.ManyToManyField(User, related_name="collaborators", through="Collaborator")
 
     def __str__(self):
         return self.name
@@ -41,9 +41,9 @@ class CollaboratorRole(models.TextChoices):
     EDITOR = 'e', 'Editor'
 
 class Collaborator(models.Model):
-    collaborator = models.ForeignKey(User, on_delete=models.DO_NOTHING)
+    user = models.ForeignKey(User, on_delete=models.DO_NOTHING)
     experiment = models.ForeignKey(Experiment, on_delete=models.DO_NOTHING)
     role = models.CharField(max_length=1, choices=CollaboratorRole.choices, default=CollaboratorRole.VIEWER)
 
     def __str__(self):
-        return f"{self.collaborator.first_name} {self.collaborator.last_name}, {self.experiment} ({CollaboratorRole.to_str(self.role)})"
+        return f"{self.user.first_name} {self.user.last_name}, {self.experiment} ({CollaboratorRole.to_str(self.role)})"

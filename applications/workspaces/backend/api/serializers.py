@@ -2,21 +2,32 @@ from rest_framework import serializers
 
 from django.contrib.auth.models import User, Group
 
-from api.models import Experiment, Collaborator
+from api.models import Experiment, Collaborator, CollaboratorRole
 
 class GroupSerializer(serializers.ModelSerializer):
     class Meta:
         model = Group
-        fields = "__all__"
+        fields = ("id","name",)
+
+class UserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ("id","first_name","last_name","email")
+
+class CollaboratorRoleField(serializers.RelatedField):
+    def to_representation(self, value):
+        return {"role": value, "description": CollaboratorRole.to_str(value)}
 
 class CollaboratorSerializer(serializers.ModelSerializer):
+    user = UserSerializer(read_only=True)
+    role = CollaboratorRoleField(read_only=True)
     class Meta:
         model = Collaborator
-        fields = ("collaborator2__experiment",)
+        fields = ("user","role",)
 
 class ExperimentSerializer(serializers.ModelSerializer):
     teams = GroupSerializer(many=True, read_only=True)
-    collaborators = CollaboratorSerializer(many=True, read_only=True)
+    collaborators = CollaboratorSerializer(source='collaborator_set', many=True, read_only=True)
     class Meta:
         model = Experiment
         fields = ("name","date_created","description","is_private","teams","collaborators")
