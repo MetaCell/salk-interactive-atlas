@@ -7,9 +7,36 @@ export default {
         borderBarSize: 0,
     },
     layout: {
-        type: 'tabset',
+        type: "tabset",
         weight: 100,
-        id: 'root',
-        children: [],
-    },
+        id: "root",
+        children: [
+            {
+                type: "row",
+                weight: 100,
+                children: [
+                    {
+                        type: "tabset",
+                        weight: 100,
+                        id: "leftPanel",
+                        enableDeleteWhenEmpty: false,
+                        children: []
+                    }
+                ]
+            },
+            {
+                type: "row",
+                weight: 0,
+                children: [
+                    {
+                        type: "tabset",
+                        weight: 100,
+                        id: "rightPanel",
+                        enableDeleteWhenEmpty: false,
+                        children: []
+                    }
+                ]
+            }
+        ]
+    }
 };
