@@ -14,7 +14,7 @@ vars.gutter = vars.gutter.replace('px', '') * 1;
 
 export const {
   primaryColor, secondaryColor, font, fontColor, linkColor, teal, purple, bgLightest, paragraph, bgLightestShade,
-  bgLight, bgRegular, bgDark, bgDarker, bgDarkest, bgInputs, gutter, radius, checkBoxColor, bgLighter, textColor, canvasBg, headerBorderColor,headerButtonBorderColor, bodyBgColor, headerBg, switchActiveColor, canvasIconColor,
+  bgLight, bgRegular, bgDark, bgDarker, bgDarkest, bgInputs, gutter, radius, checkBoxColor, bgLighter, textColor, canvasBg, headerBorderColor,headerButtonBorderColor, bodyBgColor, headerBg, switchActiveColor, canvasIconColor, breadcrumbTextColor,
 } = vars;
 
 const verticalFill = {
@@ -169,14 +169,15 @@ const theme = {
 
       },
       outlined: {
-        borderWidth: 2,
-        borderColor: fontColor,
         marginRight: gutter / 2,
+        border: `0.0625rem solid ${headerButtonBorderColor}`,
         '&:last-child': {
           marginRight: 0
         }
       },
       contained: {
+        backgroundColor: switchActiveColor,
+        color: secondaryColor,
         "&:hover": {
           opacity: 0.9,
         },
@@ -384,7 +385,7 @@ const theme = {
     MuiRadio: {
       root: {
         padding: 0,
-        color: 'rgba(255, 255, 255, 0.4)',
+        color: breadcrumbTextColor,
 
         '& .MuiSvgIcon-root': {
           width: '0.875rem',
@@ -397,7 +398,39 @@ const theme = {
           color: switchActiveColor,
         },
       },
-    }
+    },
+
+    MuiBreadcrumbs: {
+      root: {
+        letterSpacing: '-0.01em',
+        fontSize: '0.75rem',
+        lineHeight: '1.25rem',
+
+        '&.MuiTypography-colorTextSecondary': {
+          color: breadcrumbTextColor,
+        },
+      },
+
+      li: {
+        '& .MuiTypography-root': {
+          letterSpacing: '-0.01em',
+          fontSize: '0.75rem',
+          lineHeight: '1.25rem',
+        },
+      },
+
+      separator: {
+        marginLeft: '0.3125rem',
+        marginRight: '0.3125rem',
+      },
+    },
+
+    MuiAvatar: {
+      colorDefault: {
+        backgroundColor: secondaryColor,
+        color: headerBg,
+      },
+    },
   },
 }
 
