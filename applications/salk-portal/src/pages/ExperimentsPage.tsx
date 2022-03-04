@@ -64,6 +64,7 @@ const ExperimentsPage = () => {
 
     useEffect(() => {
         dispatch(addWidget(CanvasWidget));
+        dispatch(addWidget(ElectrophysiologyWidget));
     }, [])
 
     useEffect(() => {
