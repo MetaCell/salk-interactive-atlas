@@ -11,5 +11,7 @@ Pillow
 psycopg2-binary
 
 django-admin-extra-buttons
-git+https://github.com/coelias/python-keycloak
 
+# temporary use this fork of python keycloak
+# because of bug: https://github.com/marcospereirampj/python-keycloak/pull/267
+git+https://github.com/coelias/python-keycloak

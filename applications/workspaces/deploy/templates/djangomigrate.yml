@@ -48,4 +48,4 @@ spec:
             claimName: {{ .Values.apps.workspaces.harness.deployment.volume.name }}
         {{- end }}
       restartPolicy: Never
-  backoffLimit: 10
+  backoffLimit: 20

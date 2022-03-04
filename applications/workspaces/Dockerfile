@@ -25,9 +25,7 @@ WORKDIR ${APP_DIR}
 COPY backend/requirements.txt .
 RUN apk add jpeg-dev zlib-dev git && \
     python3 -m pip install --upgrade pip && \
-    python3 -m pip install -r requirements.txt --no-cache-dir --upgrade && \
-    git clone -b feature/449 https://github.com/MetaCell/cloud-harness && \
-    python3 -m pip install --upgrade cloud-harness/libraries/cloudharness-common
+    python3 -m pip install -r requirements.txt --no-cache-dir --upgrade
 
 COPY backend ${APP_DIR}
 RUN python3 -m pip install -e . && \
