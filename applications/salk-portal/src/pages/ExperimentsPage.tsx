@@ -37,8 +37,17 @@ const useStyles = makeStyles({
 export const CanvasWidget = {
     id: 'canvasWidget',
     name: "Spinal Cord Atlas",
-    component: "canvas",
+    component: "experimentViewer",
     panelName: "leftPanel",
+    enableClose: false,
+    status: WidgetStatus.ACTIVE,
+};
+
+export const ElectrophysiologyWidget = {
+    id: 'epWidget',
+    name: "Electrophysiology",
+    component: "electrophysiologyViewer",
+    panelName: "rightPanel",
     enableClose: false,
     status: WidgetStatus.ACTIVE,
 };
@@ -55,6 +64,7 @@ const ExperimentsPage = () => {
 
     useEffect(() => {
         dispatch(addWidget(CanvasWidget));
+        dispatch(addWidget(ElectrophysiologyWidget));
     }, [])
 
     useEffect(() => {
@@ -66,7 +76,7 @@ const ExperimentsPage = () => {
         }
     }, [store])
 
-  return (
+    return (
       <Box display="flex">
         <Sidebar />
         <Box className={classes.layoutContainer}>
