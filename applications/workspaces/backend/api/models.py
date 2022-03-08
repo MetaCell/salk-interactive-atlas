@@ -10,7 +10,7 @@ class Experiment(models.Model):
     date_created = models.DateField(auto_created=True)
     last_modified = models.DateField(auto_now=True)
     owner = models.ForeignKey(User, on_delete=models.DO_NOTHING)
-    teams = models.ManyToManyField(Group)
+    teams = models.ManyToManyField(Group, blank=True)
     collaborators = models.ManyToManyField(User, related_name="collaborators", through="Collaborator")
 
     def __str__(self):

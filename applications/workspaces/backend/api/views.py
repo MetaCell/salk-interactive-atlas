@@ -5,7 +5,7 @@ from rest_framework.response import Response
 
 from django.contrib.auth.models import User, Group
 
-from api.models import Experiment
+from api.models import Experiment, CollaboratorRole
 from api.serializers import ExperimentSerializer, UserTeamSerializer, TeamSerializer
 
 from kcoidc.models import Team, Member
@@ -29,8 +29,11 @@ class ExperimentViewSet(viewsets.ModelViewSet):
     def has_write_access(self, experiment, user):
         # user is owner or user is member of team of the experiment
         return  experiment.owner == user or \
-                (experiment.team and 
-                    len(experiment.team.group.user_set.filter(id=user.id))>0
+                (experiment.teams and \
+                    len(experiment.teams.filter(team__group__user=user))>0 \
+                ) or \
+                (experiment.collaborators and \
+                    len(experiment.collaborator_set.filter(user=user.id, role=CollaboratorRole.EDITOR))>0
                 )
 
     def public_experiments(self):
