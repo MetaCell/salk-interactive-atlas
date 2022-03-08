@@ -31,8 +31,8 @@ const useStyles = makeStyles((theme) => ({
     height: '3rem',
 
     '& .MuiAvatar-root': {
-      width: '2rem',
-      height: '2rem',
+      width: '1.5rem',
+      height: '1.5rem',
     },
 
     '& img': {
@@ -63,6 +63,7 @@ const useStyles = makeStyles((theme) => ({
     lineHeight: '1rem',
     letterSpacing: '0.01em',
     color: headerButtonBorderColor,
+    borderRadius: '0.375rem',
 
     '&:not(:first-child)': {
       marginLeft: '0.5rem',
@@ -121,6 +122,7 @@ export const Header = (props: any) => {
                 size="large"
                 className={classes.button}
                 variant="contained"
+                disableElevation
               >
                 Create a new experiment
               </Button>
@@ -145,6 +147,7 @@ export const Header = (props: any) => {
                 size="large"
                 className={classes.button}
                 variant="contained"
+                disableElevation
               >
                 Save in My Experiments
               </Button>
