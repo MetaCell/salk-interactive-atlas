@@ -29,6 +29,7 @@ const useStyles = makeStyles((theme) => ({
     justifyContent: "space-between",
     borderBottom: `0.0625rem solid ${headerBorderColor}`,
     height: '3rem',
+    flexShrink: 0,
 
     '& .MuiAvatar-root': {
       width: '1.5rem',

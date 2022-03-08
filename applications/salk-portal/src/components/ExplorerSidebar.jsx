@@ -22,6 +22,7 @@ import SHARED from "../assets/images/icons/shared.svg";
 import TEAMS from "../assets/images/icons/teams.svg";
 import COMMUNITY from "../assets/images/icons/community.svg";
 import HELP from "../assets/images/icons/help.svg";
+import UP_ICON from "../assets/images/icons/up.svg";
 
 
 const useStyles = makeStyles({
@@ -58,7 +59,7 @@ const useStyles = makeStyles({
         lineHeight: '1rem',
         letterSpacing: '0.005em',
         color: secondaryColor,
-        '&:placeholder': {
+        '&::placeholder': {
           color: headerButtonBorderColor,
         },
       },
@@ -77,7 +78,8 @@ const useStyles = makeStyles({
       borderBottom: `0.0625rem solid ${headerBorderColor}`,
       borderTop: 'none',
       '& .MuiListItem-root': {
-        paddingLeft: '3rem'
+        paddingLeft: '3rem',
+        '& .MuiTypography-root': {fontWeight: 'normal',},
       },
     },
 
@@ -129,6 +131,10 @@ const useStyles = makeStyles({
     '& .MuiListItemIcon-root': {
       minWidth: '2.215rem',
     },
+  },
+
+  rotate: {
+    transform: 'rotate(180deg)',
   },
 
   footer: {
@@ -203,7 +209,7 @@ const Sidebar = () => {
             <img src={TEAMS} alt="Teams" />
           </ListItemIcon>
           <ListItemText primary="Teams" />
-          {open ? <ExpandLess /> : <ExpandMore />}
+          <img src={UP_ICON} className={open ? classes.rotate : ''} alt="arrow" />
         </ListItem>
         <Collapse in={open} timeout="auto" unmountOnExit>
           <List component="div" disablePadding>
@@ -218,7 +224,12 @@ const Sidebar = () => {
             </ListItemLink>
           </List>
         </Collapse>
+      </List>
 
+      <List
+        component="nav"
+        disablePadding
+      >
         <ListItemLink href="#simple-list">
           <ListItemIcon>
             <img src={COMMUNITY} alt="Community" />
@@ -226,12 +237,6 @@ const Sidebar = () => {
           <ListItemText primary="Community" />
           <Badge badgeContent={4} />
         </ListItemLink>
-      </List>
-
-      <List
-        component="nav"
-        disablePadding
-      >
         <ListItemLink href="#simple-list">
           <ListItemIcon>
             <img src={HELP} alt="help" />
