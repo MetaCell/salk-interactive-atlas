@@ -31,7 +31,6 @@ REST_FRAMEWORK = getattr(
     'REST_FRAMEWORK',
     {
     'DEFAULT_AUTHENTICATION_CLASSES' : [
-        'rest_framework.permissions.IsAuthenticated',
         'mozilla_django_oidc.contrib.drf.OIDCAuthentication',
         'rest_framework.authentication.SessionAuthentication',
     ],
