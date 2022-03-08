@@ -9,3 +9,4 @@ skaffold.yaml
 **/*.egg-info
 /build
 applications/workspaces/backend/static
+.overrides

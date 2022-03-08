@@ -23,6 +23,14 @@ spec:
       - name: "{{ .Values.apps.workspaces.harness.deployment.name }}-migrate"
         image: "{{- .Values.apps.workspaces.harness.deployment.image }}"
         command: ["python",  "manage.py", "migrate"]
+        env:
+        - name: CH_CURRENT_APP_NAME
+          value: {{ .Values.apps.workspaces.harness.name | quote }}
+          {{- include "deploy_utils.env" . | nindent 8 }}
+          {{- include "deploy_utils.privenv" . | nindent 8 }}
+          {{- if .Values.apps.workspaces.harness.env }}
+            {{- .Values.apps.workspaces.harness.env | toYaml | nindent 8 }}
+          {{- end }}
         volumeMounts:
           - name: cloudharness-allvalues
             mountPath: /opt/cloudharness/resources
@@ -47,5 +55,5 @@ spec:
           persistentVolumeClaim:
             claimName: {{ .Values.apps.workspaces.harness.deployment.volume.name }}
         {{- end }}
-      restartPolicy: Never
+      restartPolicy: OnFailure
   backoffLimit: 20

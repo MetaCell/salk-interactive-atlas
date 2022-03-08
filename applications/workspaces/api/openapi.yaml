@@ -3,15 +3,12 @@ info:
   title: ''
   version: ''
 paths:
-  /api/experiment/:
+  /api/experiments/:
     get:
       operationId: listExperiments
       description: 'This viewset automatically provides `list`, `create`, `retrieve`,
 
-        `update` and `destroy` actions.
-
-
-        Additionally we also provide an extra `magic` action.'
+        `update` and `destroy` actions.'
       parameters: []
       responses:
         '200':
@@ -28,10 +25,7 @@ paths:
       operationId: createExperiment
       description: 'This viewset automatically provides `list`, `create`, `retrieve`,
 
-        `update` and `destroy` actions.
-
-
-        Additionally we also provide an extra `magic` action.'
+        `update` and `destroy` actions.'
       parameters: []
       requestBody:
         content:
@@ -53,15 +47,76 @@ paths:
           description: ''
       tags:
       - api
-  /api/experiment/{id}/:
+  /api/experiments/mine/:
+    get:
+      operationId: mineExperiment
+      description: 'This viewset automatically provides `list`, `create`, `retrieve`,
+
+        `update` and `destroy` actions.'
+      parameters: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Experiment'
+          description: ''
+      tags:
+      - api
+  /api/experiments/myteams/:
+    get:
+      operationId: myteamsExperiment
+      description: 'This viewset automatically provides `list`, `create`, `retrieve`,
+
+        `update` and `destroy` actions.'
+      parameters: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Experiment'
+          description: ''
+      tags:
+      - api
+  /api/experiments/public/:
+    get:
+      operationId: publicExperiment
+      description: 'This viewset automatically provides `list`, `create`, `retrieve`,
+
+        `update` and `destroy` actions.'
+      parameters: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Experiment'
+          description: ''
+      tags:
+      - api
+  /api/experiments/sharedwithme/:
+    get:
+      operationId: sharedwithmeExperiment
+      description: 'This viewset automatically provides `list`, `create`, `retrieve`,
+
+        `update` and `destroy` actions.'
+      parameters: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Experiment'
+          description: ''
+      tags:
+      - api
+  /api/experiments/{id}/:
     get:
       operationId: retrieveExperiment
       description: 'This viewset automatically provides `list`, `create`, `retrieve`,
 
-        `update` and `destroy` actions.
-
-
-        Additionally we also provide an extra `magic` action.'
+        `update` and `destroy` actions.'
       parameters:
       - name: id
         in: path
@@ -82,10 +137,7 @@ paths:
       operationId: updateExperiment
       description: 'This viewset automatically provides `list`, `create`, `retrieve`,
 
-        `update` and `destroy` actions.
-
-
-        Additionally we also provide an extra `magic` action.'
+        `update` and `destroy` actions.'
       parameters:
       - name: id
         in: path
@@ -117,10 +169,7 @@ paths:
       operationId: partialUpdateExperiment
       description: 'This viewset automatically provides `list`, `create`, `retrieve`,
 
-        `update` and `destroy` actions.
-
-
-        Additionally we also provide an extra `magic` action.'
+        `update` and `destroy` actions.'
       parameters:
       - name: id
         in: path
@@ -152,10 +201,7 @@ paths:
       operationId: destroyExperiment
       description: 'This viewset automatically provides `list`, `create`, `retrieve`,
 
-        `update` and `destroy` actions.
-
-
-        Additionally we also provide an extra `magic` action.'
+        `update` and `destroy` actions.'
       parameters:
       - name: id
         in: path
@@ -168,33 +214,388 @@ paths:
           description: ''
       tags:
       - api
+  /api/users/:
+    get:
+      operationId: listUsers
+      description: This viewset automatically provides `list` actions.
+      parameters: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/UserTeam'
+          description: ''
+      tags:
+      - api
+  /api/teams/:
+    get:
+      operationId: listGroups
+      description: 'This viewset automatically provides `list`, `create`, `retrieve`,
+
+        `update` actions.
+
+
+        Additionally we also provide extra `magic` actions `members`,
+
+        `members add` and `members delete`.'
+      parameters: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Team'
+          description: ''
+      tags:
+      - api
+    post:
+      operationId: createGroup
+      description: 'This viewset automatically provides `list`, `create`, `retrieve`,
+
+        `update` actions.
+
+
+        Additionally we also provide extra `magic` actions `members`,
+
+        `members add` and `members delete`.'
+      parameters: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Team'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Team'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Team'
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Team'
+          description: ''
+      tags:
+      - api
+  /api/teams/{id}/:
+    get:
+      operationId: retrieveGroup
+      description: 'This viewset automatically provides `list`, `create`, `retrieve`,
+
+        `update` actions.
+
+
+        Additionally we also provide extra `magic` actions `members`,
+
+        `members add` and `members delete`.'
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: A unique integer value identifying this group.
+        schema:
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Team'
+          description: ''
+      tags:
+      - api
+    put:
+      operationId: updateGroup
+      description: 'This viewset automatically provides `list`, `create`, `retrieve`,
+
+        `update` actions.
+
+
+        Additionally we also provide extra `magic` actions `members`,
+
+        `members add` and `members delete`.'
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: A unique integer value identifying this group.
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Team'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Team'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Team'
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Team'
+          description: ''
+      tags:
+      - api
+    patch:
+      operationId: partialUpdateGroup
+      description: 'This viewset automatically provides `list`, `create`, `retrieve`,
+
+        `update` actions.
+
+
+        Additionally we also provide extra `magic` actions `members`,
+
+        `members add` and `members delete`.'
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: A unique integer value identifying this group.
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Team'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Team'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Team'
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Team'
+          description: ''
+      tags:
+      - api
+  /api/teams/{id}/members/:
+    get:
+      operationId: membersGroup
+      description: 'This viewset automatically provides `list`, `create`, `retrieve`,
+
+        `update` actions.
+
+
+        Additionally we also provide extra `magic` actions `members`,
+
+        `members add` and `members delete`.'
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: A unique integer value identifying this group.
+        schema:
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Team'
+          description: ''
+      tags:
+      - api
+  /api/teams/{id}/members/{user_id}/:
+    post:
+      operationId: addMemberGroup
+      description: 'This viewset automatically provides `list`, `create`, `retrieve`,
+
+        `update` actions.
+
+
+        Additionally we also provide extra `magic` actions `members`,
+
+        `members add` and `members delete`.'
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: A unique integer value identifying this group.
+        schema:
+          type: string
+      - name: user_id
+        in: path
+        required: true
+        description: ''
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Team'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Team'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Team'
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Team'
+          description: ''
+      tags:
+      - api
+    delete:
+      operationId: delMemberGroup
+      description: 'This viewset automatically provides `list`, `create`, `retrieve`,
+
+        `update` actions.
+
+
+        Additionally we also provide extra `magic` actions `members`,
+
+        `members add` and `members delete`.'
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: A unique integer value identifying this group.
+        schema:
+          type: string
+      - name: user_id
+        in: path
+        required: true
+        description: ''
+        schema:
+          type: string
+      responses:
+        '204':
+          description: ''
+      tags:
+      - api
 components:
   schemas:
     Experiment:
       type: object
       properties:
-        id:
-          type: integer
-          readOnly: true
-        date_created:
-          type: string
-          format: date
         name:
           type: string
           maxLength: 100
+        date_created:
+          type: string
+          format: date
         description:
           type: string
         is_private:
           type: boolean
-        owner_user_id:
-          type: string
-          maxLength: 40
-        last_modified:
-          type: string
-          format: date
+        teams:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: integer
+                readOnly: true
+              name:
+                type: string
+                maxLength: 150
+            required:
+            - name
+          readOnly: true
+        collaborators:
+          type: array
+          items:
+            type: object
+            properties:
+              user:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                    readOnly: true
+                  first_name:
+                    type: string
+                    maxLength: 150
+                  last_name:
+                    type: string
+                    maxLength: 150
+                  email:
+                    type: string
+                    format: email
+                    maxLength: 254
+                readOnly: true
+              role:
+                type: string
+                readOnly: true
           readOnly: true
       required:
-      - date_created
       - name
+      - date_created
       - description
-      - owner_user_id
+    UserTeam:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        username:
+          type: string
+          description: Required. 150 characters or fewer. Letters, digits and @/./+/-/_
+            only.
+          pattern: ^[\w.@+-]+\z
+          maxLength: 150
+        first_name:
+          type: string
+          maxLength: 150
+        last_name:
+          type: string
+          maxLength: 150
+        email:
+          type: string
+          format: email
+          maxLength: 254
+        groups:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: integer
+                readOnly: true
+              name:
+                type: string
+                maxLength: 150
+            required:
+            - name
+          readOnly: true
+      required:
+      - username
+    Team:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        name:
+          type: string
+          maxLength: 150
+      required:
+      - name
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+security:
+- bearerAuth: []

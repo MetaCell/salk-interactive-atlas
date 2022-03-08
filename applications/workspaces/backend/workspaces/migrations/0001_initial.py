@@ -4,10 +4,11 @@ from django.db import migrations
 
 
 def create_kc_client_and_roles(apps, schema_editor):
-    from workspaces.services.auth import create_client
     if os.environ.get('KUBERNETES_SERVICE_HOST', None):
         # running in K8S so create the KC client and roles
-        create_client()
+        import workspaces.auth
+        from kcoidc.services import get_auth_service
+        get_auth_service().create_client()
 
 class Migration(migrations.Migration):
 

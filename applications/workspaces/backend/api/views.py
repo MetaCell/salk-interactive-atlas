@@ -5,10 +5,11 @@ from rest_framework.response import Response
 
 from django.contrib.auth.models import User, Group
 
-from api.models import Experiment, Team, Member
-from api.serializers import ExperimentSerializer, UserSerializer, TeamSerializer
+from api.models import Experiment
+from api.serializers import ExperimentSerializer, UserTeamSerializer, TeamSerializer
 
-from workspaces.services.user import user_service
+from kcoidc.models import Team, Member
+from kcoidc.services import get_user_service
 
 
 class ExperimentViewSet(viewsets.ModelViewSet):
@@ -130,7 +131,7 @@ class UserViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     This viewset automatically provides `list` actions.
     """
     permission_classes = [permissions.IsAuthenticated]
-    serializer_class = UserSerializer
+    serializer_class = UserTeamSerializer
     queryset = User.objects.all()
 
     def list(self, request):
@@ -194,7 +195,7 @@ class GroupViewSet(mixins.CreateModelMixin,
             already_member = len(instance.user_set.filter(id=user_id))>0
             if not already_member:
                 new_member = User.objects.get(id=user_id)
-                user_service.add_user_to_team(new_member, instance.name)
+                get_user_service().add_user_to_team(new_member, instance.name)
                 instance.user_set.add(new_member)
                 instance.save()
             serializer = self.get_serializer(instance)
@@ -223,19 +224,19 @@ class GroupViewSet(mixins.CreateModelMixin,
 
     def perform_create(self, serializer):
         group = serializer.save()
-        kc_group = user_service.create_team(group.name)
+        kc_group = get_user_service().create_team(group.name)
         team = Team.objects.create(
             owner=self.request.user, # set the owner of the team
             kc_id=kc_group["id"],
             group=group)
         team.save()
         # add the user to the team
-        user_service.add_user_to_team(self.request.user, group.name)
+        get_user_service().add_user_to_team(self.request.user, group.name)
 
     def perform_update(self, serializer):
         if self.is_team_manager(serializer.instance, self.request.user):
             group = serializer.save()
-            user_service.update_team(group)
+            get_user_service().update_team(group)
         else:
             # user is not a team manager of team
             raise PermissionDenied()

@@ -1,6 +1,6 @@
 from rest_framework import authentication
 from mozilla_django_oidc.auth import OIDCAuthenticationBackend
-from workspaces.services.user import user_service
+from workspaces.services.user import get_user_service
 
 class WorkspacesOIDCAB(OIDCAuthenticationBackend):
 
@@ -9,11 +9,11 @@ class WorkspacesOIDCAB(OIDCAuthenticationBackend):
 
     def create_user(self, claims):
         user = super(WorkspacesOIDCAB, self).create_user(claims)
-        user = user_service.map_kc_user(user)
+        user = get_user_service().map_kc_user(user)
         user.save()
         return user
 
     def update_user(self, user, claims):
-        user = user_service.map_kc_user(user)
+        user = get_user_service().map_kc_user(user)
         user.save()
         return user
