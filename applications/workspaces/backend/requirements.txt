@@ -1,13 +1,6 @@
 Django==3.2.11
-djangorestframework==3.13.1
-coreapi==2.3.3
-pyyaml
 uritemplate==4.1.1
 cherrypy==18.6.1
-
-mozilla-django-oidc
-
+django-kcoidc
 Pillow
 psycopg2-binary
-
-django-admin-extra-buttons
