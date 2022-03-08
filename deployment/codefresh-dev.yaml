@@ -107,7 +107,7 @@ steps:
         - REGISTRY=${{REGISTRY}}/salk/
         image_name: salk/accounts
         title: Accounts
-        working_directory: ./cloud-harness/applications/accounts
+        working_directory: ./.overrides/applications/accounts
       common:
         type: build
         stage: build
