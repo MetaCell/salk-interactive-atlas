@@ -13,10 +13,11 @@ import {
   Typography,
   Breadcrumbs,
   Link,
+  Avatar,
 } from "@material-ui/core";
-import PersonIcon from "@material-ui/icons/Person";
 import { headerBorderColor, headerButtonBorderColor, headerBg } from "../../theme";
 import LOGO from "../../assets/images/logo.svg";
+import USER from "../../assets/images/icons/user.svg";
 
 const title = "Salk Mouse Cord Atlas";
 
@@ -28,6 +29,11 @@ const useStyles = makeStyles((theme) => ({
     justifyContent: "space-between",
     borderBottom: `0.0625rem solid ${headerBorderColor}`,
     height: '3rem',
+
+    '& .MuiAvatar-root': {
+      width: '2rem',
+      height: '2rem',
+    },
 
     '& img': {
       display: 'block',
@@ -98,48 +104,60 @@ export const Header = (props: any) => {
         Sign in
       </Button>
     ) : (
-      <Box alignItems="center" display="flex">
-        { !onExperimentsPage ? (
-          <>
-            <Popper open={Boolean(menuOpen)} anchorEl={menuAnchorRef.current}>
-              <Paper>
-                <ClickAwayListener onClickAway={handleMenuClose}>
-                  <MenuList autoFocusItem={menuOpen} id="user-menu">
-                    <MenuItem onClick={handleUserLogout}>Logout</MenuItem>
-                  </MenuList>
-                </ClickAwayListener>
-              </Paper>
-            </Popper>
+        <Box alignItems="center" display="flex">
+          {!onExperimentsPage ? (
+            <>
+              <Popper open={Boolean(menuOpen)} anchorEl={menuAnchorRef.current}>
+                <Paper>
+                  <ClickAwayListener onClickAway={handleMenuClose}>
+                    <MenuList autoFocusItem={menuOpen} id="user-menu">
+                      <MenuItem onClick={handleUserLogout}>Logout</MenuItem>
+                    </MenuList>
+                  </ClickAwayListener>
+                </Paper>
+              </Popper>
 
-            <Button
-              size="large"
-              ref={menuAnchorRef}
-              aria-controls={menuOpen && "user-menu"}
-              aria-haspopup="true"
-              onClick={handleMenuToggle}
-              startIcon={<PersonIcon fontSize="large" />}
-              className={classes.button}
-              variant="outlined"
-            >
-              {user.username}
-            </Button>
-          </> ) : <>
-          <Button
-            size="large"
-            className={classes.button}
-            variant="contained"
-          >
-            Save in My Experiments
-          </Button>
+              <Button
+                size="large"
+                className={classes.button}
+                variant="contained"
+              >
+                Create a new experiment
+              </Button>
 
-          <Button
-            size="large"
-            className={classes.button}
-            variant="outlined"
-          >
-            Share
-          </Button>
-          </>}
+              <Button
+                size="large"
+                ref={menuAnchorRef}
+                aria-controls={menuOpen && "user-menu"}
+                aria-haspopup="true"
+                onClick={handleMenuToggle}
+                className={classes.button}
+                variant="outlined"
+              >
+                My account
+                </Button>
+
+              <Avatar alt={user.username} title={user.username} src={USER} />
+            </>
+          ) : (
+            <>
+              <Button
+                size="large"
+                className={classes.button}
+                variant="contained"
+              >
+                Save in My Experiments
+              </Button>
+
+              <Button
+                size="large"
+                className={classes.button}
+                variant="outlined"
+              >
+                Share
+              </Button>
+            </>
+          )}
       </Box>
     );
 

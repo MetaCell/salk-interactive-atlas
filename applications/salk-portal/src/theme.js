@@ -179,7 +179,7 @@ const theme = {
         backgroundColor: switchActiveColor,
         color: secondaryColor,
         "&:hover": {
-          opacity: 0.9,
+          backgroundColor: primaryColor,
         },
       },
       text: {
