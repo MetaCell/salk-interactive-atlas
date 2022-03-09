@@ -7,10 +7,10 @@ from django.urls import reverse
 from keycloak.exceptions import KeycloakGetError
 
 from cloudharness import log
-from cloudharness.auth import AuthClient
+from cloudharness.auth import AuthClient, get_auth_realm
 from cloudharness.utils.config import ALLVALUES_PATH
 
-from kcoidc.exceptions import KeycloakOIDCNoAdminRole, KeycloakOIDCAuthServiceNotInitError
+from kcoidc.exceptions import KeycloakOIDCNoAdminRole, KeycloakOIDCAuthServiceNotInitError, KeycloakOIDCNoDefaultUserRole
 
 
 class AuthorizationLevel(Enum):
@@ -34,16 +34,19 @@ class AuthService:
             self,
             client_name: str,
             client_roles: [str],
+            default_user_role: str,
             privileged_roles: [str],
             admin_role: str
         ):
+        if not default_user_role:
+            raise KeycloakOIDCNoDefaultUserRole("No default user role given.")
+        if not admin_role:
+            raise KeycloakOIDCNoAdminRole("No admin role given.")
         self.client_name = client_name
         self.client_roles = client_roles
+        self.default_user_role = default_user_role
         self.privileged_roles = privileged_roles
-        if not admin_role:
-            raise KeycloakOIDCNoAdminRole()
-        else:
-            self.admin_role = admin_role
+        self.admin_role = admin_role
 
     @classmethod
     def get_auth_client(cls):
@@ -64,6 +67,7 @@ class AuthService:
         installed = False
         while not installed:
             try:
+                auth_client.refresh_token()
                 try:
                     client = auth_client.get_client(self.get_client_name())
                 except KeycloakGetError as e:
@@ -77,6 +81,19 @@ class AuthService:
                     except KeycloakGetError as e:
                         # Thrown if role already exists
                         log.debug(e.error_message)
+
+                # add the default user role to the default realm role
+                realm = get_auth_realm()
+                admin_client = auth_client.get_admin_client()
+                admin_client.refresh_token()
+                default_user_role = admin_client.get_client_role(
+                    self.get_client_name(),
+                    self.default_user_role.value
+                )
+                admin_client.add_composite_realm_roles_to_role(
+                    f'default-roles-{realm}',
+                    [default_user_role,]
+                )
 
                 installed = True
             except Exception as e:

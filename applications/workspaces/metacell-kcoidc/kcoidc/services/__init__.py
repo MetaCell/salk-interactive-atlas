@@ -21,11 +21,12 @@ def get_user_service():
 def init_services(
         client_name: str,
         client_roles: [str],
+        default_user_role: str,
         privileged_roles: [str],
         admin_role: str):
     from kcoidc.services.auth import AuthService
     from kcoidc.services.user import UserService
     global _auth_service, _user_service
-    _auth_service = AuthService(client_name, client_roles, privileged_roles, admin_role)
+    _auth_service = AuthService(client_name, client_roles, default_user_role, privileged_roles, admin_role)
     _user_service = UserService(_auth_service)
     return _auth_service
