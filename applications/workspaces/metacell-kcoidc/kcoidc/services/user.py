@@ -1,7 +1,5 @@
 from django.contrib.auth.models import User, Group
 
-from cloudharness import log
-
 from kcoidc.models import Team, Member
 from kcoidc.services.auth import AuthorizationLevel
 
@@ -89,7 +87,6 @@ class UserService:
             user_groups += [Group.objects.get(name=kc_group["name"])]
         user.groups.set(user_groups)
         user.save()
-        log.error(f"user: {repr(user)}")
 
         try:
             if user.member.kc_id != kc_user["id"]:

@@ -35,7 +35,6 @@ class KeycloakMessageService:
                     user_service.sync_kc_group(kc_group)
                 if resource == "USER":
                     kc_user = auth_client.get_user(resource_path[1])
-                    log.error(repr(kc_user))
                     user_service.sync_kc_user(kc_user, delete=operation == "DELETE")
                 if resource == "GROUP_MEMBERSHIP":
                     # adding / deleting users from groups, update the user
