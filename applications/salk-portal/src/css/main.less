@@ -28,7 +28,6 @@
   .scrollbar {
     overflow-y: auto;
     overflow-x: hidden;
-    padding-right: @gutter / 2;
     .scrollbarStyle;
 
     * {
@@ -59,9 +58,8 @@
 
 
 .scrollbarStyle {
-
   &::-webkit-scrollbar {
-    width: @gutter / 4;
+    width: 0.25rem;
   }
 
   &::-webkit-scrollbar-button {
@@ -69,13 +67,13 @@
   }
 
   &::-webkit-scrollbar-thumb {
-    background: white;
-    border-radius: @radius;
+    background: rgba(255, 255, 255, 0.25);
+    border-radius: 0.25rem;
   }
 
   &::-webkit-scrollbar-track {
-    background-color: @bgRegular;
-    border-radius: @radius;
+    background-color: transparent;
+    border-radius: 0;
   }
 }
 

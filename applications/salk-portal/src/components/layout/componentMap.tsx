@@ -1,7 +1,9 @@
 import ExperimentViewer from "../ExperimentViewer";
+import ElectrophysiologyViewer from "../ElectrophysiologyViewer";
 
 const componentMap = {
-    'canvas': ExperimentViewer,
+    'experimentViewer': ExperimentViewer,
+    'electrophysiologyViewer': ElectrophysiologyViewer
 };
 
 export default componentMap;
