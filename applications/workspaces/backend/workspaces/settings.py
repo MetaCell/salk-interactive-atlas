@@ -24,7 +24,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-)5@5h(+e1@_h2$%1957726%e%6wt_+pwdtk2p@^71=e$*m^ew*'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False if os.environ.get("PRODUCTION", None) else True
 
 ALLOWED_HOSTS = ['*',]
 
@@ -38,11 +38,6 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-
-    'rest_framework',
-
-    "workspaces",
-    "experiment",
 ]
 
 MIDDLEWARE = [
@@ -53,8 +48,6 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-
-    'cloudharness.middleware.django.CloudharnessMiddleware',
 ]
 
 ROOT_URLCONF = 'workspaces.urls'
@@ -76,17 +69,6 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'workspaces.wsgi.application'
-
-
-# Database
-# https://docs.djangoproject.com/en/4.0/ref/settings/#databases
-
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
-}
 
 
 # Password validation
@@ -132,11 +114,46 @@ STATIC_ROOT= os.path.join(BASE_DIR,'static/')
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-REST_FRAMEWORK = {
-    'DEFAULT_PERMISSION_CLASSES': [
-        'rest_framework.permissions.IsAuthenticated',
-    ],
-    'DEFAULT_AUTHENTICATION_CLASSES': [
-        'workspaces.auth.BearerAuthentication',
-    ]
+
+# ***********************************************************************
+# * import base KCOIDC settings
+# ***********************************************************************
+from kcoidc.kcoidc_settings import *
+
+
+# ***********************************************************************
+# * Salk settings
+# ***********************************************************************
+from cloudharness.applications import get_configuration
+from cloudharness.utils.config import CloudharnessConfig, ALLVALUES_PATH
+
+PROJECT_NAME = "SALK"
+
+# add the local apps
+INSTALLED_APPS += [
+    "workspaces",
+    "api",
+    "k8s",
+]
+
+# override django admin base template with a local template
+# to add some custom styling
+TEMPLATES[0]['DIRS'] = [BASE_DIR / 'templates']
+
+# Persistent storage
+PERSISTENT_ROOT = os.path.join(BASE_DIR, 'persistent')
+
+# Database
+# https://docs.djangoproject.com/en/3.2/ref/settings/#databases
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': os.path.join(PERSISTENT_ROOT, 'workspaces.sqlite3')
+    },
 }
+
+# Static files (CSS, JavaScript, Images)
+MEDIA_ROOT = PERSISTENT_ROOT
+STATIC_ROOT= os.path.join(BASE_DIR,'static')
+MEDIA_URL = '/media/'
+STATIC_URL = '/static/'

@@ -1,27 +1,21 @@
-import contextvars
-from django.contrib.auth.models import User
-from django.urls import reverse
+from enum import Enum
 
-from rest_framework import authentication
-from rest_framework import exceptions
+# init the auth service
+KC_CLIENT_NAME = "workspaces"
+class ClientRoles(Enum):
+    KC_WORKSPACES_ADMIN_ROLE = f"{KC_CLIENT_NAME}-administrator"  # admin user
+    KC_WORKSPACES_MANAGER_ROLE = f"{KC_CLIENT_NAME}-manager"  # manager user
+    KC_WORKSPACES_USER_ROLE = f"{KC_CLIENT_NAME}-user"  # normal user
 
-from cloudharness.auth.keycloak import AuthClient
+PRIVILEGED_ROLES = [
+    ClientRoles.KC_WORKSPACES_MANAGER_ROLE,
+]
+ADMIN_ROLE = ClientRoles.KC_WORKSPACES_ADMIN_ROLE
 
-ac = AuthClient()
-
-class BearerAuthentication(authentication.BaseAuthentication):
-    def authenticate(self, request):
-        if request.get_full_path() == reverse('openapi-schema'):
-            return (User(), None)
-
-        kcuser = ac.get_current_user()
-        if not kcuser:
-         return None
-
-        user = User()
-        user.id = kcuser["id"]
-        user.username = kcuser["username"]
-        user.first_name = kcuser["firstName"]
-        user.last_name = kcuser["lastName"]
-        user.email = kcuser["email"]
-        return (user, None)
+from kcoidc.services import init_services
+init_services(
+    KC_CLIENT_NAME,
+    ClientRoles,
+    PRIVILEGED_ROLES,
+    ADMIN_ROLE
+)
