@@ -123,7 +123,7 @@ export const Header = (props: any) => {
                 size="large"
                 className={classes.button}
                 variant="contained"
-                disableElevation
+                disableElevation="true"
               >
                 Create a new experiment
               </Button>
@@ -148,7 +148,7 @@ export const Header = (props: any) => {
                 size="large"
                 className={classes.button}
                 variant="contained"
-                disableElevation
+                disableElevation="true"
               >
                 Save in My Experiments
               </Button>
@@ -184,14 +184,14 @@ export const Header = (props: any) => {
             />
           </a>
         </Box>
-        { onExperimentsPage && ( <Box>
+        { onExperimentsPage && (<Box>
           <Breadcrumbs aria-label="breadcrumb">
             <Link color="inherit" href="/">
               My experiments
             </Link>
             <Typography color="textPrimary">Exploration of the spinal cord</Typography>
           </Breadcrumbs>
-        </Box> ) }
+        </Box>) }
         <Box>
           {headerText}
         </Box>

@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin, GroupAdmin
 from django.contrib.auth.models import User, Group
@@ -14,13 +15,13 @@ admin.site.unregister(Group)
 class KCOIDCUserAdmin(ExtraButtonsMixin, UserAdmin):
 
     def has_add_permission(self, request):
-        return False
+        return settings.DEBUG
 
     def has_change_permission(self, request, obj=None):
-        return False
+        return settings.DEBUG
 
     def has_delete_permission(self, request, obj=None):
-        return False
+        return settings.DEBUG
 
     @button()
     def sync_keycloak(self, request):
@@ -31,13 +32,13 @@ class KCOIDCUserAdmin(ExtraButtonsMixin, UserAdmin):
 class KCOIDCGroupAdmin(ExtraButtonsMixin, GroupAdmin):
 
     def has_add_permission(self, request):
-        return False
+        return settings.DEBUG
 
     def has_change_permission(self, request, obj=None):
-        return False
+        return settings.DEBUG
 
     def has_delete_permission(self, request, obj=None):
-        return False
+        return settings.DEBUG
 
     @button()
     def sync_keycloak(self, request):
