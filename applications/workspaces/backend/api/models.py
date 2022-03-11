@@ -6,17 +6,13 @@ from django.contrib.auth.models import Group, User
 
 # Create your models here.
 
-class AtlasesChoice(Enum):
-    SLK10 = "salk_cord_10um"
-    ALN20 = "allen_cord_20um"
+class AtlasesChoice(models.TextChoices):
+    @classmethod
+    def to_str(cls, value):
+        return next(v for v in list(AtlasesChoice) if v.value == value).label
 
-
-class Atlas(models.Model):
-    language = models.CharField(
-        max_length=100,
-        choices=[(tag, tag.value) for tag in AtlasesChoice],
-        default=(AtlasesChoice.SLK10, AtlasesChoice.SLK10.value)
-    )
+    SLK10 = "sl10", "Salk cord 10um"
+    ALN20 = "al20", "Allen cord 20um"
 
 
 class Experiment(models.Model):
@@ -28,7 +24,6 @@ class Experiment(models.Model):
     owner = models.ForeignKey(User, on_delete=models.DO_NOTHING)
     teams = models.ManyToManyField(Group, blank=True)
     collaborators = models.ManyToManyField(User, related_name="collaborators", through="Collaborator")
-    atlases = models.ManyToManyField(Atlas, through='Population')
 
     def __str__(self):
         return self.name
@@ -54,13 +49,13 @@ class Collaborator(models.Model):
 
 class Population(models.Model):
     experiment = models.ForeignKey(Experiment, on_delete=models.DO_NOTHING)
-    atlas = models.ForeignKey(Atlas, on_delete=models.DO_NOTHING)
+    atlas = models.CharField(max_length=5, choices=AtlasesChoice.choices, default=AtlasesChoice.SLK10)
     name = models.CharField(max_length=100)
     color = models.CharField(max_length=7)  # hex color
 
 
 class Cell(models.Model):
-    x = models.DecimalField()
-    y = models.DecimalField()
-    z = models.DecimalField()
+    x = models.DecimalField(decimal_places=2, max_digits=6)
+    y = models.DecimalField(decimal_places=2, max_digits=6)
+    z = models.DecimalField(decimal_places=2, max_digits=6)
     population = models.ForeignKey(Population, on_delete=models.CASCADE)
