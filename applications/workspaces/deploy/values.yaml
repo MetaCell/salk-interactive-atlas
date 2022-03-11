@@ -25,19 +25,10 @@ harness:
     - name: common
   uri_role_mapping:
     - uri: /api/*
-      methods:
-        - GET
       roles:
         - workspaces:workspaces-user
         - workspaces:workspaces-administrator
       require-any-role: true
-    - uri: /api/*
-      methods:
-        - DELETE
-        - POST
-        - PUT
-      roles:
-        - workspaces:workspaces-administrator
     - uri: /admin/*
       roles:
         - workspaces:workspaces-administrator

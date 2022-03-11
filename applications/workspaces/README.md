@@ -45,3 +45,16 @@ kubectl port-forward --namespace salk $(kubectl get po -n salk | grep accounts |
 kubectl port-forward --namespace salk $(kubectl get po -n salk | grep kafka | \awk '{print $1;}') 9092:9092 &
 kubectl port-forward --namespace salk $(kubectl get po -n salk | grep argo-server | \awk '{print $1;}') 2746:2746 &
 ```
+
+
+### Installation errors
+
+error:
+
+`Error: INSTALLATION FAILED: failed post-install: warning: Hook post-install mnp/templates/workspaces/djangomigrate.yml failed: jobs.batch "workspaces-migrate" already exists`
+
+solution:
+
+```
+kubectl -n mnp delete job workspaces-migrate
+```

@@ -7,7 +7,7 @@ from cloudharness import log
 from cloudharness.events.client import EventClient
 
 from kcoidc.exceptions import KeycloakOIDCNoProjectError
-from kcoidc.services import get_user_service, get_auth_service
+from kcoidc.services import init_services, get_user_service, get_auth_service
 
 
 class KeycloakMessageService:
@@ -25,10 +25,11 @@ class KeycloakMessageService:
         log.debug(f"{event_client} {message}")
         if resource in ["CLIENT_ROLE_MAPPING","GROUP","USER","GROUP_MEMBERSHIP"]:
             try:
+                init_services()
                 user_service = get_user_service()
                 auth_client = get_auth_service().get_auth_client()
 
-                time.sleep(0.01) # give keycloak a little bit of time to persist the changes
+                time.sleep(0.05) # give keycloak a little bit of time to persist the changes
 
                 if resource == "GROUP":
                     kc_group = auth_client.get_group(resource_path[1])
@@ -40,7 +41,7 @@ class KeycloakMessageService:
                     # adding/deleting user client roles
                     # set/user user is_superuser
                     kc_user = auth_client.get_user(resource_path[1])
-                    user_service.sync_kc_user(kc_user, delete=operation == "DELETE")
+                    user_service.sync_kc_user(kc_user)
                 if resource == "GROUP_MEMBERSHIP":
                     # adding / deleting users from groups, update the user
                     # updating the user will also update the user groups

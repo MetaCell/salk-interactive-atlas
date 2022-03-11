@@ -1,5 +1,7 @@
 from django.contrib.auth.models import User, Group
 
+from cloudharness import log
+
 from kcoidc.models import Team, Member
 from kcoidc.services.auth import AuthorizationLevel
 
@@ -106,7 +108,7 @@ class UserService:
         # cache all admin users to minimize KC rest api calls
         all_admin_users = self.auth_client.get_client_role_members(
             self.auth_service.get_client_name(),
-            self.auth_service.get_admin_role().value
+            self.auth_service.get_admin_role()
         )
 
         for kc_user in self.auth_client.get_users():
