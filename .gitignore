@@ -10,3 +10,4 @@ skaffold.yaml
 /build
 applications/workspaces/backend/static
 .overrides
+**/*.sqlite3

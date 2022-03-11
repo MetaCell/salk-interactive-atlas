@@ -18,6 +18,7 @@ ARG CLOUDHARNESS_BASE
 FROM $CLOUDHARNESS_BASE
 
 ENV APP_DIR=/usr/src/app
+
 ENV PRODUCTION=true
 
 WORKDIR ${APP_DIR}/..
@@ -32,7 +33,7 @@ RUN  python3 -m pip install -r requirements.txt --no-cache-dir --upgrade
 
 COPY backend ${APP_DIR}
 RUN python3 -m pip install -e . && \
-    python manage.py collectstatic --noinput
+    python3 manage.py collectstatic --noinput
 
 RUN mkdir -p ${APP_DIR}/static/www
 # COPY --from=frontend app/dist/ ${APP_DIR}/static/www

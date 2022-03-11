@@ -44,10 +44,12 @@ MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',
+    # 'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+
+    'cloudharness.middleware.django.CloudharnessMiddleware',
 ]
 
 ROOT_URLCONF = 'workspaces.urls'
@@ -127,7 +129,7 @@ from kcoidc.kcoidc_settings import *
 from cloudharness.applications import get_configuration
 from cloudharness.utils.config import CloudharnessConfig, ALLVALUES_PATH
 
-PROJECT_NAME = "SALK"
+PROJECT_NAME = "WORKSPACES"
 
 # add the local apps
 INSTALLED_APPS += [
@@ -157,3 +159,23 @@ MEDIA_ROOT = PERSISTENT_ROOT
 STATIC_ROOT= os.path.join(BASE_DIR,'static')
 MEDIA_URL = '/media/'
 STATIC_URL = '/static/'
+
+# KC Client & roles
+KC_CLIENT_NAME = PROJECT_NAME.lower()
+
+# Default KCOIDC roles
+KC_ADMIN_ROLE = f"{KC_CLIENT_NAME}-administrator"  # admin user
+KC_MANAGER_ROLE = f"{KC_CLIENT_NAME}-manager"  # manager user
+KC_USER_ROLE = f"{KC_CLIENT_NAME}-user"  # normal user
+
+KC_ALL_ROLES = [
+    KC_ADMIN_ROLE,
+    KC_MANAGER_ROLE,
+    KC_USER_ROLE,
+]
+
+KC_PRIVILEGED_ROLES = [
+    KC_MANAGER_ROLE,
+]
+
+KC_DEFAULT_USER_ROLE = KC_USER_ROLE # don't add the user role to the realm default role

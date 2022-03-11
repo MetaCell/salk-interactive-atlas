@@ -1,21 +1,11 @@
-from enum import Enum
-
 # init the auth service
-KC_CLIENT_NAME = "workspaces"
-class ClientRoles(Enum):
-    KC_WORKSPACES_ADMIN_ROLE = f"{KC_CLIENT_NAME}-administrator"  # admin user
-    KC_WORKSPACES_MANAGER_ROLE = f"{KC_CLIENT_NAME}-manager"  # manager user
-    KC_WORKSPACES_USER_ROLE = f"{KC_CLIENT_NAME}-user"  # normal user
-
-PRIVILEGED_ROLES = [
-    ClientRoles.KC_WORKSPACES_MANAGER_ROLE,
-]
-ADMIN_ROLE = ClientRoles.KC_WORKSPACES_ADMIN_ROLE
+from django.conf import settings
 
 from kcoidc.services import init_services
 init_services(
-    KC_CLIENT_NAME,
-    ClientRoles,
-    PRIVILEGED_ROLES,
-    ADMIN_ROLE
+    client_name=settings.KC_CLIENT_NAME,
+    client_roles=settings.KC_ALL_ROLES,
+    default_user_role=settings.KC_USER_ROLE,
+    privileged_roles=settings.KC_PRIVILEGED_ROLES,
+    admin_role=settings.KC_ADMIN_ROLE,
 )

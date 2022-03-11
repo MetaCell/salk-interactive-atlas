@@ -23,7 +23,7 @@ from django.views.generic.base import RedirectView
 from rest_framework.schemas import get_schema_view
 from rest_framework.schemas.openapi import SchemaGenerator
 from rest_framework import permissions
-import mozilla_django_oidc
+# import mozilla_django_oidc
 
 from workspaces.views import index
 
@@ -48,8 +48,8 @@ class SecuredOpenApiGenerator(SchemaGenerator):
 
 from django.views.static import serve
 urlpatterns = [
-    path('openid/', include('mozilla_django_oidc.urls')),
-    re_path(r'^admin/login/?$', RedirectView.as_view(pattern_name='oidc_authentication_init', permanent=True, query_string=True)),
+    # path('openid/', include('mozilla_django_oidc.urls')),
+    # re_path(r'^admin/login/?$', RedirectView.as_view(pattern_name='oidc_authentication_init', permanent=True, query_string=True)),
     path('admin/', admin.site.urls),
 
     path('api/schema', get_schema_view(

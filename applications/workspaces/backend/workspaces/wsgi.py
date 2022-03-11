@@ -16,7 +16,8 @@ os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'workspaces.settings')
 application = get_wsgi_application()
 
 # init the auth service
-import workspaces.auth
+from kcoidc.services import init_services
+init_services()
 
 # start the kafka event listener
 import kcoidc.services.events
