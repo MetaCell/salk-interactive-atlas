@@ -230,7 +230,7 @@ const Sidebar = (props) => {
         component="nav"
         disablePadding
       >
-        <ListItemLink href="#simple-list">
+        <ListItemLink href="#community" onClick={() => props.executeScroll('community')}>
           <ListItemIcon>
             <img src={COMMUNITY} alt="Community" />
           </ListItemIcon>
