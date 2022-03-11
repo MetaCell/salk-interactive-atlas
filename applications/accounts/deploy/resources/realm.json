@@ -8,7 +8,7 @@
         "adminTheme": "keycloak",
         "emailTheme": "keycloak",
         "registrationAllowed": true,
-        "registrationEmailAsUsername": false,
+        "registrationEmailAsUsername": true,
         "rememberMe": true,
         "verifyEmail": false,
         "loginWithEmailAllowed": true,
