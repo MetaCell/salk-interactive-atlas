@@ -163,7 +163,7 @@ function ListItemLink(props) {
   return <ListItem button component="a" {...props} />;
 }
 
-const Sidebar = () => {
+const Sidebar = (props) => {
   const classes = useStyles();
   const [open, setOpen] = React.useState(true);
 
@@ -188,7 +188,7 @@ const Sidebar = () => {
         component="nav"
         disablePadding
       >
-        <ListItemLink href="#simple-list">
+        <ListItemLink href="#experiments" onClick={() => props.executeScroll('experiments')}>
           <ListItemIcon>
             <img src={EXP} alt="experiments" />
           </ListItemIcon>
@@ -196,7 +196,7 @@ const Sidebar = () => {
           <Badge badgeContent={4} />
         </ListItemLink>
 
-        <ListItemLink href="#simple-list" selected={true}>
+        <ListItemLink href="#shared" onClick={() => props.executeScroll('shared')} selected={true}>
           <ListItemIcon>
             <img src={SHARED} alt="Shared" />
           </ListItemIcon>
@@ -213,12 +213,12 @@ const Sidebar = () => {
         </ListItem>
         <Collapse in={open} timeout="auto" unmountOnExit>
           <List component="div" disablePadding>
-            <ListItemLink href="#simple-list">
+            <ListItemLink href="#salkteam" onClick={() => props.executeScroll('salkteam')}>
               <ListItemText primary="Salk Institute Team" />
               <Badge badgeContent={4} />
             </ListItemLink>
 
-            <ListItemLink href="#simple-list">
+            <ListItemLink href="#acmeteam" onClick={() => props.executeScroll('acmeteam')}>
               <ListItemText primary="Acme Team" />
               <Badge badgeContent={4} />
             </ListItemLink>
