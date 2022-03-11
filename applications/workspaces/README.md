@@ -31,6 +31,9 @@ kubectl -n salk get secrets accounts -o yaml|grep api_user_password|cut -d " " -
 
 # Make the cloudharness application configuration available on your local machine
 cp the deployment/helm/values.yaml to /opt/cloudharness/resources/alvalues.yaml
+
+# create (if not exists) you local persistent folder
+mkdir applications/workspaces/backend/persistent
 ```
 
 you can use the default python django debug configuration or a custom one.
