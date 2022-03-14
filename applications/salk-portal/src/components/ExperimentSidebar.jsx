@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import {makeStyles} from '@material-ui/core/styles';
+import { makeStyles } from '@material-ui/core/styles';
 import { Box, Typography, IconButton, Accordion, AccordionSummary, AccordionDetails, Switch, FormControlLabel, FormControl, RadioGroup, Radio, Button } from '@material-ui/core';
 import { canvasIconColor, headerBg, headerBorderColor } from "../theme";
 import TOGGLE from "../assets/images/icons/toggle.svg";
@@ -18,6 +18,7 @@ const useStyles = makeStyles({
     borderRight: `0.0625rem solid ${headerBorderColor}`,
     background: headerBg,
     overflow: 'auto',
+    transition: "all ease-out .2s",
 
     '& .sidebar-title': {
       flexGrow: 1,
@@ -155,7 +156,7 @@ const ExperimentSidebar = () => {
               </Button>
               <FormControl component="fieldset">
                 <RadioGroup aria-label="atlas" name="atlas1" value={value} onChange={handleChange}>
-                  { atlasses.map(atlas => <FormControlLabel key={atlas} value={atlas} control={<Radio />} label={atlas} labelPlacement='start' />)
+                  {atlasses.map(atlas => <FormControlLabel key={atlas} value={atlas} control={<Radio />} label={atlas} labelPlacement='start' />)
                   }
                 </RadioGroup>
               </FormControl>
@@ -180,7 +181,7 @@ const ExperimentSidebar = () => {
                 label="All subdivisions"
                 labelPlacement="start"
               />
-                { subdivisions.map(atlas => <FormControlLabel key={atlas} control={<Switch />} label={atlas} labelPlacement="start"/>) }
+              {subdivisions.map(atlas => <FormControlLabel key={atlas} control={<Switch />} label={atlas} labelPlacement="start" />)}
             </AccordionDetails>
           </Accordion>
 
@@ -202,7 +203,7 @@ const ExperimentSidebar = () => {
                 label="Show all"
                 labelPlacement="start"
               />
-              { populations.map(atlas => <FormControlLabel key={atlas} control={<Switch />} label={atlas} labelPlacement="start"/>) }
+              {populations.map(atlas => <FormControlLabel key={atlas} control={<Switch />} label={atlas} labelPlacement="start" />)}
             </AccordionDetails>
           </Accordion>
 
@@ -216,7 +217,7 @@ const ExperimentSidebar = () => {
               </Typography>
             </AccordionSummary>
             <AccordionDetails>
-              { overlays.map(atlas => <FormControlLabel key={atlas} control={<Switch />} label={atlas} labelPlacement="start"/>) }
+              {overlays.map(atlas => <FormControlLabel key={atlas} control={<Switch />} label={atlas} labelPlacement="start" />)}
             </AccordionDetails>
           </Accordion>
         </>
