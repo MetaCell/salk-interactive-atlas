@@ -43,7 +43,7 @@ class PopulationSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Population
-        fields = ("name", "color", "atlas")
+        fields = ("id", "name", "color", "atlas")
 
 
 class ExperimentSerializer(serializers.ModelSerializer):
@@ -55,5 +55,5 @@ class ExperimentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Experiment
         fields = (
-            "name", "is_private", "description", "date_created", "last_modified", "owner", "teams", "collaborators",
+            "id", "name", "is_private", "description", "date_created", "last_modified", "owner", "teams", "collaborators",
             "populations")
