@@ -27,6 +27,10 @@ class ExperimentFileUploadSerializer(serializers.Serializer):
     file = serializers.FileField()
 
 
+class MemberSerializer(serializers.Serializer):
+    user_id = serializers.IntegerField()
+
+
 class TeamSerializer(serializers.ModelSerializer):
     class Meta:
         model = Group
