@@ -1,7 +1,7 @@
 from django.contrib.auth.models import User, Group
 from rest_framework import serializers
 
-from api.models import Experiment, Collaborator, CollaboratorRole, Population, AtlasesChoice
+from api.models import Experiment, Collaborator, CollaboratorRole, Population, AtlasesChoice, Tag
 from kcoidc.serializers import UserSerializer, GroupSerializer
 
 
@@ -46,14 +46,22 @@ class PopulationSerializer(serializers.ModelSerializer):
         fields = ("id", "name", "color", "atlas")
 
 
+class TagSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Tag
+        fields = ("name",)
+
+
 class ExperimentSerializer(serializers.ModelSerializer):
     teams = GroupSerializer(many=True, read_only=True)
     collaborators = CollaboratorSerializer(source='collaborator_set', many=True, read_only=True)
     owner = UserTeamSerializer(many=False, read_only=True)
     populations = PopulationSerializer(source='population_set', many=True, read_only=True)
+    tags = TagSerializer(many=True, read_only=True)
 
     class Meta:
         model = Experiment
         fields = (
-            "id", "name", "is_private", "description", "date_created", "last_modified", "owner", "teams", "collaborators",
-            "populations")
+            "id", "name", "is_private", "description", "date_created", "last_modified", "owner", "teams",
+            "collaborators",
+            "populations", 'tags')

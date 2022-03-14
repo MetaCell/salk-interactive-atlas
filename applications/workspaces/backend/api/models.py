@@ -15,6 +15,10 @@ class AtlasesChoice(models.TextChoices):
     ALN20 = "al20", "Allen cord 20um"
 
 
+class Tag(models.Model):
+    name = models.CharField(max_length=40, unique=True)
+
+
 class Experiment(models.Model):
     name = models.CharField(max_length=100)
     is_private = models.BooleanField(default=True)
@@ -24,6 +28,7 @@ class Experiment(models.Model):
     owner = models.ForeignKey(User, on_delete=models.DO_NOTHING)
     teams = models.ManyToManyField(Group, blank=True)
     collaborators = models.ManyToManyField(User, related_name="collaborators", through="Collaborator")
+    tags = models.ManyToManyField(Tag)
 
     def __str__(self):
         return self.name
@@ -50,7 +55,7 @@ class Collaborator(models.Model):
 class Population(models.Model):
     experiment = models.ForeignKey(Experiment, on_delete=models.DO_NOTHING)
     atlas = models.CharField(max_length=5, choices=AtlasesChoice.choices, default=AtlasesChoice.SLK10)
-    name = models.CharField(max_length=100)
+    name = models.CharField(max_length=100, unique=True)
     color = models.CharField(max_length=7)  # hex color
 
 
