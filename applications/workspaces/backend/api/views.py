@@ -28,32 +28,29 @@ class ExperimentViewSet(viewsets.ModelViewSet):
 
     def has_write_access(self, experiment, user):
         # user is owner or user is member of team of the experiment
-        return  experiment.owner == user or \
-                (experiment.teams and \
-                    len(experiment.teams.filter(team__group__user=user))>0 \
-                ) or \
-                (experiment.collaborators and \
-                    len(experiment.collaborator_set.filter(user=user.id, role=CollaboratorRole.EDITOR))>0
-                )
+        return experiment.owner == user or \
+               (experiment.teams and len(experiment.teams.filter(team__group__user=user)) > 0) or \
+               (experiment.collaborators and len(
+                   experiment.collaborator_set.filter(user=user.id, role=CollaboratorRole.EDITOR)) > 0)
 
     def public_experiments(self):
         return self.get_queryset().filter(
-            is_private=False # all public experiments
+            is_private=False  # all public experiments
         )
 
     def my_experiments(self):
         return self.get_queryset().filter(
-            owner=self.request.user # my experiments
+            owner=self.request.user  # my experiments
         )
 
     def team_experiments(self):
         return self.get_queryset().filter(
-            teams__user=self.request.user # my teams experiments
+            teams__user=self.request.user  # my teams experiments
         )
 
     def collaborate_experiments(self):
         return self.get_queryset().filter(
-            collaborators__collaborator__user=self.request.user # my teams experiments
+            collaborators__collaborator__user=self.request.user  # my teams experiments
         )
 
     def list(self, request):
@@ -105,7 +102,7 @@ class ExperimentViewSet(viewsets.ModelViewSet):
             return Response(serializer.data)
         else:
             # no rights to retrieve
-            raise PermissionDenied()            
+            raise PermissionDenied()
 
     def perform_create(self, serializer):
         experiment = serializer.save(
@@ -129,6 +126,7 @@ class ExperimentViewSet(viewsets.ModelViewSet):
             # not the owner so not rights to delete
             raise PermissionDenied()
 
+
 class UserViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     """
     This viewset automatically provides `list` actions.
@@ -148,8 +146,8 @@ class UserViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
         return Response(serializer.data)
 
 
-class GroupViewSet(mixins.CreateModelMixin, 
-                   mixins.RetrieveModelMixin, 
+class GroupViewSet(mixins.CreateModelMixin,
+                   mixins.RetrieveModelMixin,
                    mixins.UpdateModelMixin,
                    mixins.ListModelMixin,
                    viewsets.GenericViewSet):
@@ -165,7 +163,7 @@ class GroupViewSet(mixins.CreateModelMixin,
     queryset = Group.objects.all()
 
     def is_team_manager(self, group, user):
-        return len(group.user_set.filter(id=user.id))>0
+        return len(group.user_set.filter(id=user.id)) > 0
 
     def list(self, request):
         queryset = self.filter_queryset(self.get_queryset()).filter(team__owner=request.user)
@@ -191,11 +189,11 @@ class GroupViewSet(mixins.CreateModelMixin,
             # raise 404 not found if the team doesn't exists
             raise PermissionDenied
 
-    @action(detail=True, methods=['post'],url_path="members/(?P<user_id>[^/.]+)",url_name="members_add")
+    @action(detail=True, methods=['post'], url_path="members/(?P<user_id>[^/.]+)", url_name="members_add")
     def add_member(self, request, user_id, pk=None):
         instance = self.get_object()
         if self.is_team_manager(instance, request.user):
-            already_member = len(instance.user_set.filter(id=user_id))>0
+            already_member = len(instance.user_set.filter(id=user_id)) > 0
             if not already_member:
                 new_member = User.objects.get(id=user_id)
                 get_user_service().add_user_to_team(new_member, instance.name)
@@ -207,11 +205,12 @@ class GroupViewSet(mixins.CreateModelMixin,
             # user is not a team manager of team
             raise PermissionDenied()
 
-    @action(detail=False, methods=['delete'],url_path="(?P<id>[^/.]+)/members/(?P<user_id>[^/.]+)",url_name="members_del")
+    @action(detail=False, methods=['delete'], url_path="(?P<id>[^/.]+)/members/(?P<user_id>[^/.]+)",
+            url_name="members_del")
     def del_member(self, request, id, user_id):
         instance = Group.objects.get(id=id)
         if self.is_team_manager(instance, request.user):
-            is_member = len(instance.user_set.filter(id=user_id))>0
+            is_member = len(instance.user_set.filter(id=user_id)) > 0
             if is_member:
                 new_member = User.objects.get(id=user_id)
                 user_service.rm_user_from_team(new_member, instance.name)
@@ -229,7 +228,7 @@ class GroupViewSet(mixins.CreateModelMixin,
         group = serializer.save()
         kc_group = get_user_service().create_team(group.name)
         team = Team.objects.create(
-            owner=self.request.user, # set the owner of the team
+            owner=self.request.user,  # set the owner of the team
             kc_id=kc_group["id"],
             group=group)
         team.save()
