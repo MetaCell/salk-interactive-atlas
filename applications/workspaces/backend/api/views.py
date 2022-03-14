@@ -115,7 +115,8 @@ class ExperimentViewSet(viewsets.ModelViewSet):
         instance = self.get_object()
         if self.has_access(instance, request.user):
             tag_name = request.data['name']
-            experiment_has_tag = len(instance.tags.filter(name=tag_name)) > 0
+            filtered_tags = instance.tags.filter(name=tag_name)
+            experiment_has_tag = len(filtered_tags) > 0
             if not experiment_has_tag:
                 try:
                     tag = Tag.objects.get(name=tag_name)
@@ -124,7 +125,10 @@ class ExperimentViewSet(viewsets.ModelViewSet):
                     tag.save()
                 instance.tags.add(tag)
                 instance.save()
-            return Response(status=status.HTTP_200_OK)
+            else:
+                tag = filtered_tags[0]
+            serializer = self.get_serializer(tag)
+            return Response(serializer.data)
         else:
             # user doesn't have access to experiment
             raise PermissionDenied()

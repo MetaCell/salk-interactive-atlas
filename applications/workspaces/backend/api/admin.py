@@ -6,8 +6,9 @@ from api.models import Experiment, Collaborator, Population, Tag, SalkUser
 # Register your models here.
 
 class SalkUserAdmin(admin.ModelAdmin):
-    list_display = ('user', )
+    list_display = ('user',)
     search_fields = ('user__name',)
+
 
 class ExperimentAdmin(admin.ModelAdmin):
     list_display = ('name', 'is_private', 'last_modified')
