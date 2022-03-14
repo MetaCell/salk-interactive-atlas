@@ -5,10 +5,11 @@ from rest_framework.response import Response
 
 from django.contrib.auth.models import User, Group
 
-from api.models import Experiment, CollaboratorRole
-from api.serializers import ExperimentSerializer, UserTeamSerializer, TeamSerializer
+from api.models import Experiment, CollaboratorRole, Tag
+from api.serializers import ExperimentSerializer, UserTeamSerializer, TeamSerializer, TagSerializer
 
 from kcoidc.models import Team, Member
+from kcoidc.serializers import UserSerializer
 from kcoidc.services import get_user_service
 
 
@@ -53,11 +54,11 @@ class ExperimentViewSet(viewsets.ModelViewSet):
             collaborators__collaborator__user=self.request.user  # my teams experiments
         )
 
-    def list(self, request):
+    def list(self, request, **kwargs):
         queryset = self.filter_queryset(
-            self.my_experiments() \
-                .union(self.team_experiments()) \
-                .union(self.public_experiments()) \
+            self.my_experiments()
+                .union(self.team_experiments())
+                .union(self.public_experiments())
                 .union(self.collaborate_experiments())
         )
         serializer = self.get_serializer(queryset, many=True)
@@ -94,6 +95,34 @@ class ExperimentViewSet(viewsets.ModelViewSet):
         )
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
+
+    @action(detail=True, methods=['post'], url_path="tag", url_name="tag_add")
+    def add_tag(self, request, pk=None):
+        instance = self.get_object()
+        if self.has_access(instance, request.user):
+            experiment_has_tag = len(instance.tag_set.filter(id=request.tag.id)) > 0
+            if not experiment_has_tag:
+                new_tag = Tag.objects.get(id=request.tag.id)
+                instance.tag_set.add(new_tag)
+                instance.save()
+            serializer = self.get_serializer(instance)
+            return Response(serializer.data)
+        else:
+            # user doesn't have access to experiment
+            raise PermissionDenied()    \
+
+
+    @action(detail=True, methods=['delete'], url_path="tag", url_name="tag_delete")
+    def delete_tag(self, request, pk=None):
+        instance = self.get_object()
+        if self.has_access(instance, request.user):
+            instance.tag_set.filter(id=request.tag.id).delete()
+            instance.save()
+            serializer = self.get_serializer(instance)
+            return Response(serializer.data)
+        else:
+            # user doesn't have access to experiment
+            raise PermissionDenied()
 
     def retrieve(self, request, *args, **kwargs):
         instance = self.get_object()
@@ -135,7 +164,7 @@ class UserViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     serializer_class = UserTeamSerializer
     queryset = User.objects.all()
 
-    def list(self, request):
+    def list(self, request, **kwargs):
         if not request.user.is_superuser:
             # no super user so return only the current user
             queryset = self.filter_queryset(self.get_queryset()).filter(id=request.user.id)
@@ -165,7 +194,7 @@ class GroupViewSet(mixins.CreateModelMixin,
     def is_team_manager(self, group, user):
         return len(group.user_set.filter(id=user.id)) > 0
 
-    def list(self, request):
+    def list(self, request, **kwargs):
         queryset = self.filter_queryset(self.get_queryset()).filter(team__owner=request.user)
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
@@ -213,11 +242,11 @@ class GroupViewSet(mixins.CreateModelMixin,
             is_member = len(instance.user_set.filter(id=user_id)) > 0
             if is_member:
                 new_member = User.objects.get(id=user_id)
-                user_service.rm_user_from_team(new_member, instance.name)
+                get_user_service().rm_user_from_team(new_member, instance.name)
                 instance.user_set.remove(new_member)
                 instance.save()
             else:
-                # user is not a member of the team, rais a 404 error
+                # user is not a member of the team, raise a 404 error
                 raise PermissionDenied()
             return Response(status=status.HTTP_204_NO_CONTENT)
         else:
@@ -242,3 +271,13 @@ class GroupViewSet(mixins.CreateModelMixin,
         else:
             # user is not a team manager of team
             raise PermissionDenied()
+
+
+class TagViewSet(mixins.ListModelMixin,
+                 viewsets.GenericViewSet):
+    """
+    This viewset automatically provides `list`
+    """
+    permission_classes = [permissions.IsAuthenticated]
+    serializer_class = TagSerializer
+    queryset = Tag.objects.all()

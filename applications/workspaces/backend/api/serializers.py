@@ -49,7 +49,7 @@ class PopulationSerializer(serializers.ModelSerializer):
 class TagSerializer(serializers.ModelSerializer):
     class Meta:
         model = Tag
-        fields = ("name",)
+        fields = ("id", "name",)
 
 
 class ExperimentSerializer(serializers.ModelSerializer):
