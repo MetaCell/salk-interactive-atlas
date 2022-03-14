@@ -4,7 +4,7 @@ from rest_framework.decorators import action, authentication_classes, permission
 from rest_framework.exceptions import PermissionDenied
 from rest_framework.parsers import MultiPartParser
 from rest_framework.response import Response
-
+from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.auth.models import User, Group
 
 from api.models import Experiment, CollaboratorRole, Tag
@@ -24,13 +24,16 @@ class ExperimentViewSet(viewsets.ModelViewSet):
     `update` and `destroy` actions.
     """
     permission_classes = [permissions.IsAuthenticated]
-    # serializer_class = ExperimentSerializer
     queryset = Experiment.objects.all()
     parser_classes = (MultiPartParser,)
+    custom_serializer_map = {
+        'upload_file': ExperimentFileUploadSerializer,
+        'add_tag': TagSerializer
+    }
 
     def get_serializer_class(self):
-        if self.action == 'upload_file':
-            return ExperimentFileUploadSerializer
+        if self.action in self.custom_serializer_map.keys():
+            return self.custom_serializer_map[self.action]
         return ExperimentSerializer
 
     def has_access(self, experiment, user):
@@ -108,25 +111,29 @@ class ExperimentViewSet(viewsets.ModelViewSet):
         return Response(serializer.data)
 
     @action(detail=True, methods=['post'], url_path="tag", url_name="tag_add")
-    def add_tag(self, request, pk=None):
+    def add_tag(self, request, pk):
         instance = self.get_object()
         if self.has_access(instance, request.user):
-            experiment_has_tag = len(instance.tag_set.filter(id=request.tag.id)) > 0
+            tag_name = request.data['name']
+            experiment_has_tag = len(instance.tags.filter(name=tag_name)) > 0
             if not experiment_has_tag:
-                new_tag = Tag.objects.get(id=request.tag.id)
-                instance.tag_set.add(new_tag)
+                try:
+                    tag = Tag.objects.get(name=tag_name)
+                except ObjectDoesNotExist:
+                    tag = Tag(name=tag_name)
+                    tag.save()
+                instance.tags.add(tag)
                 instance.save()
-            serializer = self.get_serializer(instance)
-            return Response(serializer.data)
+            return Response(status=status.HTTP_200_OK)
         else:
             # user doesn't have access to experiment
-            raise PermissionDenied() \
- \
+            raise PermissionDenied()
+
     @action(detail=True, methods=['delete'], url_path="tag", url_name="tag_delete")
-    def delete_tag(self, request, pk=None):
+    def delete_tag(self, request, pk):
         instance = self.get_object()
         if self.has_access(instance, request.user):
-            instance.tag_set.filter(id=request.tag.id).delete()
+            instance.tag_set.filter(id=request.id).delete()
             instance.save()
             serializer = self.get_serializer(instance)
             return Response(serializer.data)

@@ -29,9 +29,9 @@ class Experiment(models.Model):
     description = models.TextField()
     date_created = models.DateField(auto_created=True)
     last_modified = models.DateField(auto_now=True)
-    owner = models.ForeignKey(SalkUser, on_delete=models.DO_NOTHING)
+    owner = models.ForeignKey(User, on_delete=models.DO_NOTHING)
     teams = models.ManyToManyField(Group, blank=True)
-    collaborators = models.ManyToManyField(SalkUser, related_name="collaborators", through="Collaborator")
+    collaborators = models.ManyToManyField(User, related_name="collaborators", through="Collaborator")
     tags = models.ManyToManyField(Tag, blank=True)
 
     def __str__(self):
@@ -48,7 +48,7 @@ class CollaboratorRole(models.TextChoices):
 
 
 class Collaborator(models.Model):
-    user = models.ForeignKey(SalkUser, on_delete=models.DO_NOTHING)
+    user = models.ForeignKey(User, on_delete=models.DO_NOTHING)
     experiment = models.ForeignKey(Experiment, on_delete=models.DO_NOTHING)
     role = models.CharField(max_length=1, choices=CollaboratorRole.choices, default=CollaboratorRole.VIEWER)
 
