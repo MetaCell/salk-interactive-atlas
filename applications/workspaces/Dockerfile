@@ -17,9 +17,11 @@ ARG CLOUDHARNESS_BASE
 
 FROM $CLOUDHARNESS_BASE
 
-ENV APP_DIR=/usr/src/app
-
+ENV MODULE_NAME=workspaces
+ENV PORT=8080
+ENV WORKERS=2
 ENV PRODUCTION=true
+ENV APP_DIR=/usr/src/app
 
 WORKDIR ${APP_DIR}/..
 COPY metacell-kcoidc ./metacell-kcoidc
@@ -39,4 +41,4 @@ RUN mkdir -p ${APP_DIR}/static/www
 # COPY --from=frontend app/dist/ ${APP_DIR}/static/www
 
 
-ENTRYPOINT python workspaces/__main__.py
+ENTRYPOINT gunicorn --workers=$WORKERS --bind=0.0.0.0:${PORT} $MODULE_NAME.wsgi:application
