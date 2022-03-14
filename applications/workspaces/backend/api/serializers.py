@@ -23,6 +23,10 @@ class ExperimentSerializer(serializers.ModelSerializer):
         fields = ("name","date_created","description","is_private","teams","collaborators")
 
 
+class ExperimentFileUploadSerializer(serializers.Serializer):
+    file = serializers.FileField()
+
+
 class TeamSerializer(serializers.ModelSerializer):
     class Meta:
         model = Group

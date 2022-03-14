@@ -1,16 +1,20 @@
+import logging
 from rest_framework import viewsets, mixins, permissions, status
-from rest_framework.decorators import action
+from rest_framework.decorators import action, authentication_classes, permission_classes
 from rest_framework.exceptions import PermissionDenied
+from rest_framework.parsers import MultiPartParser
 from rest_framework.response import Response
 
 from django.contrib.auth.models import User, Group
 
 from api.models import Experiment, CollaboratorRole
-from api.serializers import ExperimentSerializer, UserTeamSerializer, TeamSerializer
+from api.serializers import ExperimentSerializer, ExperimentFileUploadSerializer, UserTeamSerializer, TeamSerializer
 
 from kcoidc.models import Team, Member
 from kcoidc.services import get_user_service
 
+
+log = logging.getLogger('__name__')
 
 class ExperimentViewSet(viewsets.ModelViewSet):
     """
@@ -18,8 +22,14 @@ class ExperimentViewSet(viewsets.ModelViewSet):
     `update` and `destroy` actions.
     """
     permission_classes = [permissions.IsAuthenticated]
-    serializer_class = ExperimentSerializer
+    # serializer_class = ExperimentSerializer
     queryset = Experiment.objects.all()
+    parser_classes = (MultiPartParser,)
+
+    def get_serializer_class(self):
+        if self.action == 'upload_file':
+            return ExperimentFileUploadSerializer
+        return ExperimentSerializer
 
     def has_access(self, experiment, user):
         # public experiments, user is owner or user is member of team of the experiment
@@ -97,6 +107,16 @@ class ExperimentViewSet(viewsets.ModelViewSet):
         )
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
+
+    @action(
+        detail=True,
+        methods=['post'],
+        parser_classes=(MultiPartParser, ),
+        name='experiment-upload-file',
+        url_path='upload-file',)
+    def upload_file(self, request, **kwargs):
+        # Code to handle file
+        pass
 
     def retrieve(self, request, *args, **kwargs):
         instance = self.get_object()

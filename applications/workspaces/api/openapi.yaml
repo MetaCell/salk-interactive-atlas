@@ -29,12 +29,6 @@ paths:
       parameters: []
       requestBody:
         content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/Experiment'
-          application/x-www-form-urlencoded:
-            schema:
-              $ref: '#/components/schemas/Experiment'
           multipart/form-data:
             schema:
               $ref: '#/components/schemas/Experiment'
@@ -147,12 +141,6 @@ paths:
           type: string
       requestBody:
         content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/Experiment'
-          application/x-www-form-urlencoded:
-            schema:
-              $ref: '#/components/schemas/Experiment'
           multipart/form-data:
             schema:
               $ref: '#/components/schemas/Experiment'
@@ -179,12 +167,6 @@ paths:
           type: string
       requestBody:
         content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/Experiment'
-          application/x-www-form-urlencoded:
-            schema:
-              $ref: '#/components/schemas/Experiment'
           multipart/form-data:
             schema:
               $ref: '#/components/schemas/Experiment'
@@ -412,6 +394,33 @@ paths:
           description: ''
       tags:
       - api
+  /api/experiments/{id}/upload-file/:
+    post:
+      operationId: uploadFileExperiment
+      description: 'This viewset automatically provides `list`, `create`, `retrieve`,
+
+        `update` and `destroy` actions.'
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: A unique integer value identifying this experiment.
+        schema:
+          type: string
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ExperimentFileUpload'
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExperimentFileUpload'
+          description: ''
+      tags:
+      - api
   /api/teams/{id}/members/{user_id}/:
     post:
       operationId: addMemberGroup
@@ -592,6 +601,14 @@ components:
           maxLength: 150
       required:
       - name
+    ExperimentFileUpload:
+      type: object
+      properties:
+        file:
+          type: string
+          format: binary
+      required:
+      - file
   securitySchemes:
     bearerAuth:
       type: http
