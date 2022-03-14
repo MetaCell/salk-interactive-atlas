@@ -4,12 +4,15 @@ import Keycloak from 'keycloak-js';
 import { UserInfo } from '../types/user';
 import { getBaseDomain } from '../utils';
 
+import experimentService from './ExperimentService';
+
 const keycloak = Keycloak('/keycloak.json');
 
 declare const window: any;
 
 export const initApis = (token: string) => {
     document.cookie = `accessToken=${token};path=/;domain=${getBaseDomain()}`;
+    experimentService.initApis(token);
 }
 
 function mapKeycloakUser(userInfo: any): UserInfo {

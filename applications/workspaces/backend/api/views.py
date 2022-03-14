@@ -1,16 +1,21 @@
+import logging
 from rest_framework import viewsets, mixins, permissions, status
-from rest_framework.decorators import action
+from rest_framework.decorators import action, authentication_classes, permission_classes
 from rest_framework.exceptions import PermissionDenied
+from rest_framework.parsers import MultiPartParser
 from rest_framework.response import Response
 
 from django.contrib.auth.models import User, Group
 
 from api.models import Experiment, CollaboratorRole, Tag
-from api.serializers import ExperimentSerializer, UserTeamSerializer, TeamSerializer, TagSerializer
+from api.serializers import ExperimentSerializer, ExperimentFileUploadSerializer, UserTeamSerializer, TeamSerializer, \
+    MemberSerializer, TagSerializer
 
 from kcoidc.models import Team, Member
 from kcoidc.serializers import UserSerializer
 from kcoidc.services import get_user_service
+
+log = logging.getLogger('__name__')
 
 
 class ExperimentViewSet(viewsets.ModelViewSet):
@@ -19,8 +24,14 @@ class ExperimentViewSet(viewsets.ModelViewSet):
     `update` and `destroy` actions.
     """
     permission_classes = [permissions.IsAuthenticated]
-    serializer_class = ExperimentSerializer
+    # serializer_class = ExperimentSerializer
     queryset = Experiment.objects.all()
+    parser_classes = (MultiPartParser,)
+
+    def get_serializer_class(self):
+        if self.action == 'upload_file':
+            return ExperimentFileUploadSerializer
+        return ExperimentSerializer
 
     def has_access(self, experiment, user):
         # public experiments, user is owner or user is member of team of the experiment
@@ -109,9 +120,8 @@ class ExperimentViewSet(viewsets.ModelViewSet):
             return Response(serializer.data)
         else:
             # user doesn't have access to experiment
-            raise PermissionDenied()    \
-
-
+            raise PermissionDenied() \
+ \
     @action(detail=True, methods=['delete'], url_path="tag", url_name="tag_delete")
     def delete_tag(self, request, pk=None):
         instance = self.get_object()
@@ -123,6 +133,19 @@ class ExperimentViewSet(viewsets.ModelViewSet):
         else:
             # user doesn't have access to experiment
             raise PermissionDenied()
+
+    @action(
+        detail=True,
+        methods=['post'],
+        parser_classes=(MultiPartParser,),
+        name='experiment-upload-file',
+        url_path='upload-file', )
+    def upload_file(self, request, **kwargs):
+        # Code to handle file
+        # has permission_classes
+        # save file
+        # process file
+        pass
 
     def retrieve(self, request, *args, **kwargs):
         instance = self.get_object()
@@ -188,8 +211,13 @@ class GroupViewSet(mixins.CreateModelMixin,
     `members add` and `members delete`.
     """
     permission_classes = [permissions.IsAuthenticated]
-    serializer_class = TeamSerializer
+    # serializer_class = TeamSerializer
     queryset = Group.objects.all()
+
+    def get_serializer_class(self):
+        if self.action == 'add_member' or self.action == 'del_member':
+            return MemberSerializer
+        return TeamSerializer
 
     def is_team_manager(self, group, user):
         return len(group.user_set.filter(id=user.id)) > 0
@@ -218,8 +246,8 @@ class GroupViewSet(mixins.CreateModelMixin,
             # raise 404 not found if the team doesn't exists
             raise PermissionDenied
 
-    @action(detail=True, methods=['post'], url_path="members/(?P<user_id>[^/.]+)", url_name="members_add")
-    def add_member(self, request, user_id, pk=None):
+    @action(detail=True, methods=['post'], url_path="members", url_name="add_member")
+    def add_member(self, request, **kwargs):
         instance = self.get_object()
         if self.is_team_manager(instance, request.user):
             already_member = len(instance.user_set.filter(id=user_id)) > 0
@@ -234,10 +262,9 @@ class GroupViewSet(mixins.CreateModelMixin,
             # user is not a team manager of team
             raise PermissionDenied()
 
-    @action(detail=False, methods=['delete'], url_path="(?P<id>[^/.]+)/members/(?P<user_id>[^/.]+)",
-            url_name="members_del")
-    def del_member(self, request, id, user_id):
-        instance = Group.objects.get(id=id)
+    @action(detail=True, methods=['delete'], url_path="members/(?P<user_id>[^/.]+)", url_name="del_member")
+    def del_member(self, request, **kwargs):
+        instance = self.get_object()
         if self.is_team_manager(instance, request.user):
             is_member = len(instance.user_set.filter(id=user_id)) > 0
             if is_member:

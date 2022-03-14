@@ -42,9 +42,10 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
-    # 'django.middleware.csrf.CsrfViewMiddleware',
+    'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
@@ -154,6 +155,31 @@ DATABASES = {
     },
 }
 
+# Django Logging Information
+LOGGING = {
+    # Define the logging version
+    'version': 1,
+    # Enable the existing loggers
+    'disable_existing_loggers': False,
+
+    # Define the handlers
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+            # 'formatter': 'console',
+        },
+    },
+
+   # Define the loggers
+    'loggers': {
+        'django': {
+            'handlers': ['console',],
+            'level': 'INFO' if DEBUG else 'INFO',
+            'propagate': True,
+        },
+    },
+}
+
 # Static files (CSS, JavaScript, Images)
 MEDIA_ROOT = PERSISTENT_ROOT
 STATIC_ROOT= os.path.join(BASE_DIR,'static')
@@ -179,3 +205,5 @@ KC_PRIVILEGED_ROLES = [
 ]
 
 KC_DEFAULT_USER_ROLE = KC_USER_ROLE # don't add the user role to the realm default role
+
+STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"

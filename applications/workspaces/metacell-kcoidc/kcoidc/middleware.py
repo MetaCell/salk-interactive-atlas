@@ -1,5 +1,7 @@
-from django.contrib.auth import login
+from django.contrib.auth import login, authenticate
 from django.contrib.auth.models import User
+
+from rest_framework import authentication
 
 from keycloak.exceptions import KeycloakGetError
 
@@ -32,3 +34,24 @@ class AutomaticLoginUserMiddleware:
         # the view is called.
 
         return response
+
+class AutomaticLoginUserMiddlewareOIDC(authentication.BaseAuthentication):
+    def authenticate(self, request):
+
+        user = getattr(request._request, 'user', None)
+        if user:
+            return user, None
+        if get_authentication_token():
+            try:
+                kc_user = self.ac.get_current_user()
+                user = User.objects.get(member__kc_id=kc_user["id"])
+                if user:
+                    # auto login
+                    request.user = user
+                    login(request, request.user)
+                    return user
+            except KeycloakGetError:
+                # KC user not found
+                pass
+
+        return None

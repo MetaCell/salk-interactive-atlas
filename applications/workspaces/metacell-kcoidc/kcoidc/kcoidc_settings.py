@@ -32,10 +32,13 @@ REST_FRAMEWORK = {
         'rest_framework.permissions.IsAuthenticated',
     ],
     'DEFAULT_AUTHENTICATION_CLASSES': [
+        'kcoidc.middleware.AutomaticLoginUserMiddlewareOIDC',
         'rest_framework.authentication.BasicAuthentication',
         'rest_framework.authentication.SessionAuthentication',
     ]
 }
+
+# from rest_framework.authentication import SessionAuthentication
 
 # test if the kubernetes CH all values exists, if so then set up specific k8s stuff
 # IMPROTANT NOTE:
