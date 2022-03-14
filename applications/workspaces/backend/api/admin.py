@@ -6,6 +6,7 @@ from api.models import Experiment, Collaborator, Population, Tag, SalkUser
 # Register your models here.
 
 class SalkUserAdmin(admin.ModelAdmin):
+    list_display = ('user', )
     search_fields = ('user__name',)
 
 class ExperimentAdmin(admin.ModelAdmin):
@@ -22,7 +23,7 @@ class CollaboratorAdmin(admin.ModelAdmin):
 
 
 class PopulationAdmin(admin.ModelAdmin):
-    pass
+    list_display = ('experiment', 'atlas', 'name', 'color')
 
 
 class TagAdmin(admin.ModelAdmin):
