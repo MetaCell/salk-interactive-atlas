@@ -1,9 +1,12 @@
 from django.contrib import admin
 
-from api.models import Experiment, Collaborator, Population, Tag
+from api.models import Experiment, Collaborator, Population, Tag, SalkUser
 
 
 # Register your models here.
+
+class SalkUserAdmin(admin.ModelAdmin):
+    search_fields = ('user__name',)
 
 class ExperimentAdmin(admin.ModelAdmin):
     list_display = ('name', 'is_private', 'last_modified')
@@ -26,6 +29,7 @@ class TagAdmin(admin.ModelAdmin):
     pass
 
 
+admin.site.register(SalkUser, SalkUserAdmin)
 admin.site.register(Experiment, ExperimentAdmin)
 admin.site.register(Collaborator, CollaboratorAdmin)
 admin.site.register(Population, PopulationAdmin)

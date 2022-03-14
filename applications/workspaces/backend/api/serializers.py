@@ -1,8 +1,16 @@
 from django.contrib.auth.models import User, Group
 from rest_framework import serializers
 
-from api.models import Experiment, Collaborator, CollaboratorRole, Population, AtlasesChoice, Tag
+from api.models import Experiment, Collaborator, CollaboratorRole, Population, AtlasesChoice, Tag, SalkUser
 from kcoidc.serializers import UserSerializer, GroupSerializer
+
+
+class SalkUserSerializer(serializers.ModelSerializer):
+    user = UserSerializer(read_only=True)
+
+    class Meta:
+        model = SalkUser
+        fields = ("user", )
 
 
 class CollaboratorRoleField(serializers.RelatedField):
