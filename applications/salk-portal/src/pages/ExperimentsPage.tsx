@@ -34,6 +34,9 @@ const useStyles = makeStyles({
     }
 });
 
+const MOCKED_ID = 1
+const MOCKED_ATLAS = 'sl10'
+
 export const CanvasWidget = {
     id: 'canvasWidget',
     name: "Spinal Cord Atlas",
@@ -41,6 +44,10 @@ export const CanvasWidget = {
     panelName: "leftPanel",
     enableClose: false,
     status: WidgetStatus.ACTIVE,
+    config: {
+        id: MOCKED_ID,
+        atlas: MOCKED_ATLAS
+    }
 };
 
 export const ElectrophysiologyWidget = {

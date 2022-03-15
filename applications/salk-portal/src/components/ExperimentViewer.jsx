@@ -7,10 +7,6 @@ import CaptureControls from "@metacell/geppetto-meta-ui/capture-controls/Capture
 import SimpleInstance from "@metacell/geppetto-meta-core/model/SimpleInstance";
 import {augmentInstancesArray} from '@metacell/geppetto-meta-core/Instances';
 import Resources from '@metacell/geppetto-meta-core/Resources';
-// import ocord from '../assets/atlas_meshes/simplified/open_cord_simp.obj'
-import icord from '../assets/atlas_meshes/simplified/inside_cord_simp.obj'
-import ccord from '../assets/atlas_meshes/simplified/closed_cord_simp.obj'
-import cells from '../assets/atlas_meshes/transformed_cells.json'
 import { canvasBg } from "../theme";
 
 const COLOR_MAP = {
@@ -30,27 +26,8 @@ function mapToCanvasData(data) {
     ))
 }
 
-const instance1spec = {
-    "eClass": "SimpleInstance",
-    "id": "ClosedCordOBJ",
-    "name": "Closed Cord OBJ",
-    "type": {"eClass": "SimpleType"},
-    "visualValue": {
-        "eClass": Resources.OBJ,
-        'obj': ccord
-    }
-}
 
-// const instance2spec = {
-//     "eClass": "SimpleInstance",
-//     "id": "OpenCordOBJ",
-//     "name": "Open Cord OBJ",
-//     "type": {"eClass": "SimpleType"},
-//     "visualValue": {
-//         "eClass": Resources.OBJ,
-//         'obj': ocord
-//     }
-// }
+
 
 const instance3spec = {
     "eClass": "SimpleInstance",
@@ -129,43 +106,56 @@ const styles = () => ({
 class ExperimentViewer extends Component {
     constructor(props) {
         super(props);
-        loadInstances()
-        this.state = {
-            data: getProxyInstances(),
-        };
-        this.onMount = this.onMount.bind(this);
-        this.updateEnded = this.updateEnded.bind(this);
-    }
-    updateEnded(){
-        this.scene.children[4].children[0].material.side = THREE.DoubleSide;
-        this.scene.children[4].children[0].material.needsUpdate = true;
-        this.scene.children[4].children[0].renderOrder = 1;
-        this.scene.children[5].children[0].material.side = THREE.DoubleSide;
-        this.scene.children[5].children[0].material.needsUpdate = true;
     }
 
-    onMount(scene) {
-        this.scene = scene;
-        const geometry = new THREE.SphereGeometry(1, 32, 16);
-        const dummy = new THREE.Object3D();
-        const position = new THREE.Vector3();
-        const material = new THREE.MeshBasicMaterial({color: YELLOW, transparent: true, opacity: 0.5});
-        const mesh = new THREE.InstancedMesh(geometry, material, cells.length);
-        mesh.frustumCulled = false
-        for (let i = 0; i < cells.length; i++) {
-            const cell = cells[i]
-            position.set(
-                cell.x,
-                cell.y,
-                cell.z
-            )
+    MOCKED_GET_EXPERIMENT = (id) => {
+        return new Promise(resolve => {
+            const mocked_experiment = {
+                "id": 1,
+                "name": "Exploration of the Spinal Cord",
+                "is_private": true,
+                "description": "Description Experiment",
+                "date_created": "2022-03-14",
+                "last_modified": "2022-03-15",
+                "owner": {
+                    "id": 1,
+                    "username": "afonso",
+                    "first_name": "",
+                    "last_name": "",
+                    "email": "afonso@metacell.us",
+                    "groups": []
+                },
+                "teams": [],
+                "collaborators": [],
+                "populations": [
+                    {
+                        "id": 1,
+                        "name": "Test Population",
+                        "color": "#FFFF00",
+                        "atlas": {
+                            "role": "sl10",
+                            "description": "Salk cord 10um"
+                        }
+                    }
+                ],
+                "tags": [
+                    {
+                        "id": 1,
+                        "name": "Test Tag"
+                    },
+                ]
+            }
+            setTimeout(() => {
+                resolve(mocked_experiment);
+            }, 10);
+        });
+    };
 
-            dummy.position.copy(position)
-            dummy.updateMatrix()
-
-            mesh.setMatrixAt(i, dummy.matrix);
-        }
-        scene.add(mesh);
+    async componentDidMount() {
+        const {id, atlas} = this.props
+        const experimentData = await this.MOCKED_GET_EXPERIMENT(id)
+        // get meshes and segments from public folder given atlas -> use service
+        // create simpleInstances for each segment
     }
 
     render() {
