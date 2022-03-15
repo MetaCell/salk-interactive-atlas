@@ -10,7 +10,7 @@ from django.urls import reverse
 
 
 def view_404(request, exception=None):
-      return HttpResponseRedirect(reverse("index"))
+    return HttpResponseRedirect(reverse("index"))
 
 
 def index(request, path=""):
@@ -23,5 +23,5 @@ def index(request, path=""):
     try:
         fullpath.open("rb")
     except FileNotFoundError:
-        return index(request, "") # index.html
+        return index(request, "")  # index.html
     return FileResponse(fullpath.open("rb"), content_type=content_type)
