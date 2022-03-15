@@ -26,15 +26,15 @@ export default (props: any) => {
   const communityRef = useRef(null);
   const [selectedRef, setSelectedRef] =  useState(myRef);
   const executeScroll = (selRef: string) => {
-    if(selRef === 'experiments') {
+    if (selRef === 'experiments') {
       setSelectedRef(myRef);
-    } else if(selRef === 'shared') {
+    } else if (selRef === 'shared') {
       setSelectedRef(shared);
-    } else if(selRef === 'salkteam') {
+    } else if (selRef === 'salkteam') {
       setSelectedRef(salkteam);
-    } else if(selRef === 'acmeteam') {
+    } else if (selRef === 'acmeteam') {
       setSelectedRef(acmeteam);
-    } else if(selRef === 'community') {
+    } else if (selRef === 'community') {
       setSelectedRef(communityRef);
     }
     selectedRef.current.scrollIntoView();
@@ -56,7 +56,6 @@ export default (props: any) => {
         <div ref={acmeteam} id="acmeteam">
           <ExperimentList heading={"Acme Team"} description={"19 experiments"} />
         </div>
-        
         <Box p={5}>
           <div ref={communityRef} id="community">
             <Community />
