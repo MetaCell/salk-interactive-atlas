@@ -15,7 +15,7 @@ class ExperimentAdmin(admin.ModelAdmin):
     list_display = ("name", "is_private", "last_modified")
     search_fields = ("name", "owner__email")
     autocomplete_fields = ("owner",)
-    filter_horizontal = ("teams",)
+    filter_horizontal = ("teams", "tags")
 
 
 

@@ -34,6 +34,9 @@ class Tag(models.Model):
     def has_write_permission(request):
         return True
 
+    def __str__(self):
+        return f"{self.name}"
+
 
 class CollaboratorRole(models.TextChoices):
     @classmethod

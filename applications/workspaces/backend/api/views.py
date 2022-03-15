@@ -34,8 +34,8 @@ class ExperimentViewSet(viewsets.ModelViewSet):
     queryset = Experiment.objects.all()
     parser_classes = (MultiPartParser,)
     custom_serializer_map = {
-        'upload_file': ExperimentFileUploadSerializer,
-        'add_tag': TagSerializer
+        "upload_file": ExperimentFileUploadSerializer,
+        "add_tag": TagSerializer
     }
 
     def get_serializer_class(self):
@@ -72,13 +72,13 @@ class ExperimentViewSet(viewsets.ModelViewSet):
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
 
-    @action(detail=True, methods=['post'], url_path="tag", url_name="tag_add")
+    @action(detail=True, methods=["post"], url_path="tag", url_name="tag_add")
     def add_tag(self, request, pk):
         instance = self.get_object()
-        tag_name = request.data['name']
+        tag_name = request.data.get("name")
         try:
             tag = instance.tags.get(name=tag_name)
-        except Tag.DoesNotExist as e:
+        except Tag.DoesNotExist:
             tag, created = Tag.objects.get_or_create(name=tag_name)
             instance.tags.add(tag)
             instance.save()
@@ -86,17 +86,16 @@ class ExperimentViewSet(viewsets.ModelViewSet):
         serializer = self.get_serializer(tag)
         return Response(serializer.data)
 
-    @action(detail=True, methods=['delete'], url_path="tag", url_name="tag_delete")
-    def delete_tag(self, request, pk):
+    @action(detail=True, methods=["delete"], url_path="tag/(?P<tag_name>[^/.]+)", url_name="tag_delete")
+    def delete_tag(self, request, tag_name, **kwargs):
         instance = self.get_object()
-        if self.has_access(instance, request.user):
-            instance.tag_set.filter(id=request.id).delete()
+        try:
+            tag = instance.tags.get(name=tag_name)
+            instance.tags.remove(tag)
             instance.save()
-            serializer = self.get_serializer(instance)
-            return Response(serializer.data)
-        else:
-            # user doesn't have access to experiment
-            raise PermissionDenied()
+        except Tag.DoesNotExist:
+            pass
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
     @action(
         detail=True,
@@ -178,7 +177,7 @@ class GroupViewSet(
             serializer = self.get_serializer(instance)
             return Response(serializer.data)
         else:
-            # raise 404 not found if the team doesn't exists
+            # raise 404 not found if the team doesn"t exists
             raise PermissionDenied
 
     @action(detail=True, methods=["get"])
