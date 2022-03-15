@@ -1,11 +1,11 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import * as THREE from 'three';
-import {withStyles} from '@material-ui/core';
+import { withStyles } from '@material-ui/core';
 import Canvas from "@metacell/geppetto-meta-ui/3d-canvas/Canvas";
 import CameraControls from "@metacell/geppetto-meta-ui/camera-controls/CameraControls";
 import CaptureControls from "@metacell/geppetto-meta-ui/capture-controls/CaptureControls";
 import SimpleInstance from "@metacell/geppetto-meta-core/model/SimpleInstance";
-import {augmentInstancesArray} from '@metacell/geppetto-meta-core/Instances';
+import { augmentInstancesArray } from '@metacell/geppetto-meta-core/Instances';
 import Resources from '@metacell/geppetto-meta-core/Resources';
 // import ocord from '../assets/atlas_meshes/simplified/open_cord_simp.obj'
 import icord from '../assets/atlas_meshes/simplified/inside_cord_simp.obj'
@@ -14,9 +14,9 @@ import cells from '../assets/atlas_meshes/transformed_cells.json'
 import { canvasBg } from "../theme";
 
 const COLOR_MAP = {
-    'ClosedCordOBJ': {r: 0.30, g: 0.54, b: 0.59, a: 0.5},
-    'OpenCordOBJ': {r: 0.30, g: 0.54, b: 0.59, a: 0.5},
-    'InsideCordOBJ': {r: 0.4525, g: 0.2624, b: 0.2852, a: 0.7},
+    'ClosedCordOBJ': { r: 0.30, g: 0.54, b: 0.59, a: 0.5 },
+    'OpenCordOBJ': { r: 0.30, g: 0.54, b: 0.59, a: 0.5 },
+    'InsideCordOBJ': { r: 0.4525, g: 0.2624, b: 0.2852, a: 0.7 },
 }
 
 const YELLOW = 0xffff00
@@ -34,7 +34,7 @@ const instance1spec = {
     "eClass": "SimpleInstance",
     "id": "ClosedCordOBJ",
     "name": "Closed Cord OBJ",
-    "type": {"eClass": "SimpleType"},
+    "type": { "eClass": "SimpleType" },
     "visualValue": {
         "eClass": Resources.OBJ,
         'obj': ccord
@@ -56,7 +56,7 @@ const instance3spec = {
     "eClass": "SimpleInstance",
     "id": "InsideCordOBJ",
     "name": "Inside Cord OBJ",
-    "type": {"eClass": "SimpleType"},
+    "type": { "eClass": "SimpleType" },
     "visualValue": {
         "eClass": Resources.OBJ,
         'obj': icord,
@@ -73,7 +73,7 @@ function loadInstances() {
 
 function getProxyInstances() {
     return window.Instances.map(i => (
-        {instancePath: i.getId(), }))
+        { instancePath: i.getId(), }))
 }
 
 function getDefaultOptions() {
@@ -85,7 +85,7 @@ function getDefaultOptions() {
             baseZoom: 1,
             cameraControls: {
                 instance: CameraControls,
-                props: {wireframeButtonEnabled: false},
+                props: { wireframeButtonEnabled: false },
             },
             reset: false,
             autorotate: false,
@@ -121,7 +121,8 @@ const styles = () => ({
     canvasContainer: {
         width: '100%',
         height: '100%',
-        overflow: 'hidden'
+        overflow: 'hidden',
+        backgroundColor: canvasBg
     },
 });
 
@@ -136,7 +137,7 @@ class ExperimentViewer extends Component {
         this.onMount = this.onMount.bind(this);
         this.updateEnded = this.updateEnded.bind(this);
     }
-    updateEnded(){
+    updateEnded() {
         this.scene.children[4].children[0].material.side = THREE.DoubleSide;
         this.scene.children[4].children[0].material.needsUpdate = true;
         this.scene.children[4].children[0].renderOrder = 1;
@@ -149,7 +150,7 @@ class ExperimentViewer extends Component {
         const geometry = new THREE.SphereGeometry(1, 32, 16);
         const dummy = new THREE.Object3D();
         const position = new THREE.Vector3();
-        const material = new THREE.MeshBasicMaterial({color: YELLOW, transparent: true, opacity: 0.5});
+        const material = new THREE.MeshBasicMaterial({ color: YELLOW, transparent: true, opacity: 0.5 });
         const mesh = new THREE.InstancedMesh(geometry, material, cells.length);
         mesh.frustumCulled = false
         for (let i = 0; i < cells.length; i++) {
@@ -169,9 +170,9 @@ class ExperimentViewer extends Component {
     }
 
     render() {
-        const {classes} = this.props
-        const {data} = this.state
-        const {cameraOptions, captureOptions} = getDefaultOptions()
+        const { classes } = this.props
+        const { data } = this.state
+        const { cameraOptions, captureOptions } = getDefaultOptions()
         const canvasData = mapToCanvasData(data)
         return (<div className={classes.canvasContainer}>
             <Canvas
