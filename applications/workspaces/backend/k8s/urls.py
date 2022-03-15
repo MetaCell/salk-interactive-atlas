@@ -18,6 +18,6 @@ from django.urls import path
 import k8s.views as views
 
 urlpatterns = [
-    path('live', views.live),
-    path('ready', views.ready),
+    path("live", views.live),
+    path("ready", views.ready),
 ]

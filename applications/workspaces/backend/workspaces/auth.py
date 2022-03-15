@@ -2,6 +2,7 @@
 from django.conf import settings
 
 from kcoidc.services import init_services
+
 init_services(
     client_name=settings.KC_CLIENT_NAME,
     client_roles=settings.KC_ALL_ROLES,

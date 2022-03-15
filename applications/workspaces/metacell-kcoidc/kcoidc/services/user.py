@@ -36,12 +36,12 @@ class UserService:
         return user
 
     def create_team(self, group_name):
-        self.auth_client.create_group({"name":group_name})
+        self.auth_client.create_group(name=group_name)
         kc_group = list(filter(lambda kc_group: kc_group["name"] == group_name, self.auth_client.get_groups()))[0]
         return kc_group
 
     def update_team(self, group):
-        self.auth_client.update_group(group.team.kc_id, {"name": group.name})
+        self.auth_client.update_group(group.team.kc_id, group.name)
         return group
 
     def add_user_to_team(self, user, team_name):

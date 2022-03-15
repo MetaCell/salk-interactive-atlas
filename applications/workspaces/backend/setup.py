@@ -13,10 +13,9 @@ setup(
     url="",
     keywords=["OpenAPI", "Workspace Manager API"],
     packages=find_packages(),
-    package_data={'': ['openapi/openapi.yaml']},
+    package_data={"": ["openapi/openapi.yaml"]},
     include_package_data=True,
     long_description="""\
     Workspace Manager API
-    """
+    """,
 )
-

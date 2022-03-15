@@ -23,50 +23,56 @@ from django.views.generic.base import RedirectView
 from rest_framework.schemas import get_schema_view
 from rest_framework.schemas.openapi import SchemaGenerator
 from rest_framework import permissions
+
 # import mozilla_django_oidc
 
 from workspaces.views import index
 
+
 class SecuredOpenApiGenerator(SchemaGenerator):
     def get_schema(self, *args, **kwargs):
         schema = super().get_schema(*args, **kwargs)
-        schema["components"].update({
-            "securitySchemes": {
-                "bearerAuth": {
-                    "type": "http",
-                    "scheme": "bearer",
-                    "bearerFormat": "JWT"
+        schema["components"].update(
+            {
+                "securitySchemes": {
+                    "bearerAuth": {
+                        "type": "http",
+                        "scheme": "bearer",
+                        "bearerFormat": "JWT",
+                    }
                 }
             }
-        })
-        schema["security"] = [
-          {
-              "bearerAuth": []
-          }
-        ]
+        )
+        schema["security"] = [{"bearerAuth": []}]
         return schema
 
+
 from django.views.static import serve
+
 urlpatterns = [
     # path('openid/', include('mozilla_django_oidc.urls')),
     # re_path(r'^admin/login/?$', RedirectView.as_view(pattern_name='oidc_authentication_init', permanent=True, query_string=True)),
-    path('admin/', admin.site.urls),
-
-    path('api/schema', get_schema_view(
-        title="Workspaces",
-        description="API for all workspaces...",
-        version="0.0.1",
-        generator_class=SecuredOpenApiGenerator,
-    ), name='openapi-schema'),
-
-    path('api/ui', TemplateView.as_view(
-        template_name='workspaces/swagger-ui.html',
-        extra_context={'schema_url':'openapi-schema'}
-    ), name='swagger-ui'),
-
-    path('api/', include("api.urls")),
-    path('k8s/', include("k8s.urls")),
-
+    path("admin/", admin.site.urls),
+    path(
+        "api/schema",
+        get_schema_view(
+            title="Workspaces",
+            description="API for all workspaces...",
+            version="0.0.1",
+            generator_class=SecuredOpenApiGenerator,
+        ),
+        name="openapi-schema",
+    ),
+    path(
+        "api/ui",
+        TemplateView.as_view(
+            template_name="workspaces/swagger-ui.html",
+            extra_context={"schema_url": "openapi-schema"},
+        ),
+        name="swagger-ui",
+    ),
+    path("api/", include("api.urls")),
+    path("k8s/", include("k8s.urls")),
 ]
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
@@ -75,6 +81,6 @@ urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 
 # handler404 = 'workspaces.views.view_404'
 
-admin.site.site_header = 'Workspaces Admin'
-admin.site.site_title = 'Workspaces Admin'
-admin.site.index_title = 'Index'
+admin.site.site_header = "Workspaces Admin"
+admin.site.site_title = "Workspaces Admin"
+admin.site.index_title = "Index"

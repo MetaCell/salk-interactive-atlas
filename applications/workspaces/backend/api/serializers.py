@@ -5,6 +5,7 @@ from api.models import Experiment, Collaborator, CollaboratorRole, Population, A
 from kcoidc.serializers import UserSerializer, GroupSerializer
 
 
+
 class SalkUserSerializer(serializers.ModelSerializer):
     user = UserSerializer(read_only=True)
 
@@ -24,11 +25,19 @@ class CollaboratorSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Collaborator
-        fields = ("user", "role",)
+        fields = (
+            "user",
+            "role",
+        )
+
 
 
 class ExperimentFileUploadSerializer(serializers.Serializer):
     file = serializers.FileField()
+
+    class Meta:
+        model = Experiment
+        fields = ()
 
 
 class MemberSerializer(serializers.Serializer):
@@ -38,7 +47,7 @@ class MemberSerializer(serializers.Serializer):
 class TeamSerializer(serializers.ModelSerializer):
     class Meta:
         model = Group
-        fields = ("id", "name")
+        fields = ("id","name")
 
 
 class UserTeamSerializer(serializers.ModelSerializer):
@@ -46,7 +55,7 @@ class UserTeamSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ("id", "username", "first_name", "last_name", "email", "groups")
+        fields = ("id","username","first_name","last_name","email","groups")
 
 
 class AtlasChoiceField(serializers.RelatedField):
