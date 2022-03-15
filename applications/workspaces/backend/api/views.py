@@ -8,7 +8,9 @@ from rest_framework.response import Response
 from django.contrib.auth.models import User, Group
 
 from api.models import Experiment, CollaboratorRole
-from api.serializers import ExperimentSerializer, ExperimentFileUploadSerializer, UserTeamSerializer, TeamSerializer, MemberSerializer
+from api.serializers import \
+    ExperimentSerializer, ExperimentFileUploadSerializer, UserTeamSerializer, \
+    TeamSerializer, MemberSerializer, UserSerializer
 
 from kcoidc.models import Team, Member
 from kcoidc.services import get_user_service
@@ -21,8 +23,6 @@ class ExperimentViewSet(viewsets.ModelViewSet):
     This viewset automatically provides `list`, `create`, `retrieve`,
     `update` and `destroy` actions.
     """
-    permission_classes = [permissions.IsAuthenticated]
-    # serializer_class = ExperimentSerializer
     queryset = Experiment.objects.all()
     parser_classes = (MultiPartParser,)
 
@@ -59,7 +59,7 @@ class ExperimentViewSet(viewsets.ModelViewSet):
     def team_experiments(self):
         return self.get_queryset().filter(
             teams__user=self.request.user # my teams experiments
-        )
+        ).distinct()
 
     def collaborate_experiments(self):
         return self.get_queryset().filter(
@@ -156,7 +156,6 @@ class UserViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     """
     This viewset automatically provides `list` actions.
     """
-    permission_classes = [permissions.IsAuthenticated]
     serializer_class = UserTeamSerializer
     queryset = User.objects.all()
 
@@ -183,12 +182,10 @@ class GroupViewSet(mixins.CreateModelMixin,
     Additionally we also provide extra `magic` actions `members`,
     `members add` and `members delete`.
     """
-    permission_classes = [permissions.IsAuthenticated]
-    # serializer_class = TeamSerializer
     queryset = Group.objects.all()
 
     def get_serializer_class(self):
-        if self.action == 'add_member' or self.action == 'del_member':
+        if self.action == 'add_members':
             return MemberSerializer
         return TeamSerializer
 
@@ -211,39 +208,38 @@ class GroupViewSet(mixins.CreateModelMixin,
             raise PermissionDenied
 
     @action(detail=True, methods=['get'])
-    def members(self, request, *args, **kwargs):
+    def members(self, request, pk, **kwargs):
         instance = self.get_object()
-        if self.is_team_manager(instance, request.user):
-            serializer = UserSerializer(instance.user_set.all(), many=True)
-            return Response(serializer.data)
-        else:
-            # raise 404 not found if the team doesn't exists
+        if not self.is_team_manager(instance, request.user):
             raise PermissionDenied
 
-    @action(detail=True, methods=['post'],url_path="members",url_name="add_member")
-    def add_member(self, request, **kwargs):
+        serializer = UserSerializer(instance.user_set.all(), many=True)
+        return Response(serializer.data)
+
+    @action(detail=True, methods=['post'], name='add_members')
+    def add_members(self, request, pk, **kwargs):
         instance = self.get_object()
-        if self.is_team_manager(instance, request.user):
-            already_member = len(instance.user_set.filter(id=user_id))>0
-            if not already_member:
-                new_member = User.objects.get(id=user_id)
-                get_user_service().add_user_to_team(new_member, instance.name)
-                instance.user_set.add(new_member)
-                instance.save()
-            serializer = self.get_serializer(instance)
-            return Response(serializer.data)
-        else:
-            # user is not a team manager of team
-            raise PermissionDenied()
+        if not self.is_team_manager(instance, request.user):
+            raise PermissionDenied
+
+        # POST action --> add member
+        user_id = request.data.get("user_id")
+        already_member = len(instance.user_set.filter(id=user_id))>0
+        if not already_member:
+            new_member = User.objects.get(id=user_id)
+            get_user_service().add_user_to_team(new_member, instance.name)
+            instance.user_set.add(new_member)
+            instance.save()
+        return Response(status=status.HTTP_201_CREATED)
 
     @action(detail=True, methods=['delete'],url_path="members/(?P<user_id>[^/.]+)",url_name="del_member")
-    def del_member(self, request, **kwargs):
+    def del_member(self, request, user_id, **kwargs):
         instance = self.get_object()
         if self.is_team_manager(instance, request.user):
             is_member = len(instance.user_set.filter(id=user_id))>0
             if is_member:
                 new_member = User.objects.get(id=user_id)
-                user_service.rm_user_from_team(new_member, instance.name)
+                get_user_service().rm_user_from_team(new_member, instance.name)
                 instance.user_set.remove(new_member)
                 instance.save()
             else:
@@ -263,7 +259,10 @@ class GroupViewSet(mixins.CreateModelMixin,
             group=group)
         team.save()
         # add the user to the team
-        get_user_service().add_user_to_team(self.request.user, group.name)
+        try:
+            get_user_service().add_user_to_team(self.request.user, group.name)
+        except Member.DoesNotExist:
+            pass
 
     def perform_update(self, serializer):
         if self.is_team_manager(serializer.instance, self.request.user):
