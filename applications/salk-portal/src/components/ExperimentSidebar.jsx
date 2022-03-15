@@ -30,14 +30,29 @@ const useStyles = makeStyles({
     },
 
     '& .sidebar-dot': {
-      display: "flex",
-      borderRadius: "50%",
-      borderStyle: "solid",
-      // borderWidth: "2px",
-      background: '#456BD9',
-      border: '0.1875em solid #0F1C3F',
-      height: '.5em',
-      width: '.5em'
+      borderRadius: '50%',
+      width: '0.5rem',
+      height:'0.5rem',
+    },
+
+    '& .sidebar-dot-green': {
+      background: '#9FEE9A'
+    },
+
+    '& .sidebar-dot-sky': {
+      background: '#44C9C9'
+    },
+
+    '& .sidebar-dot-purple': {
+      background: '#9B3E8' 
+    },
+
+    '& .sidebar-dot-brown': {
+      background: '#C99444',
+    },
+
+    '& .sidebar-dot-blue': {
+      background: '#6F44C9',
     },
 
     '& .sidebar-header': {
@@ -122,6 +137,7 @@ const overlays = ['Density Map', 'Populations Map', 'Neuronal Locations'];
 const populations = ['Population XYZ', 'Population ABC', 'Population TYU'];
 const subdivisions = ['C1', 'C2', 'C3', 'C4', 'C5', 'C6'];
 
+
 const ExperimentSidebar = () => {
   const classes = useStyles();
   const [shrink, setShrink] = useState(false);
@@ -136,6 +152,7 @@ const ExperimentSidebar = () => {
   };
 
   const sidebarClass = `${classes.sidebar} scrollbar ${shrink ? `${classes.shrink}` : ``}`;
+  const populationColours = ['green', 'sky', 'purple', 'brown', 'blue']
 
   return (
     <Box className={sidebarClass}>
@@ -213,7 +230,7 @@ const ExperimentSidebar = () => {
                 label="Show all"
                 labelPlacement="start"
               />
-              {populations.map(atlas => <><Box className='sidebar-dot' /><FormControlLabel key={atlas} control={<Switch />} label={atlas} labelPlacement="start" /></>)}
+              {populations.map(atlas => <><Box className={['sidebar-dot', `sidebar-dot-${populationColours[Math.floor(Math.random() * populationColours.length)]}`]} /><FormControlLabel key={atlas} control={<Switch />} label={atlas} labelPlacement="start" /></>)}
             </AccordionDetails>
           </Accordion>
 
