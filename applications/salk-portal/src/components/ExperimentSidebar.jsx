@@ -176,6 +176,15 @@ const ExperimentSidebar = () => {
   const sidebarClass = `${classes.sidebar} scrollbar ${shrink ? `${classes.shrink}` : ``}`;
   const populationColours = ['green', 'sky', 'purple', 'brown', 'blue'];
 
+  const PopulationLabel = ({labelText}) => {
+    return (
+      <div className='sidebar-label'>
+        <div className={`sidebar-dot-${populationColours[Math.floor(Math.random() * populationColours.length)]}`}></div>
+        <div className='sidebar-label-text'>{labelText}</div>
+      </div>
+    )
+  }
+
   return (
     <Box className={sidebarClass}>
       <Box className="sidebar-header">
@@ -252,7 +261,7 @@ const ExperimentSidebar = () => {
                 label="Show all"
                 labelPlacement="start"
               />
-              { populations.map(atlas =><FormControlLabel key={atlas} control={<Switch />} label={<div className='sidebar-label'><div className={`sidebar-dot-${populationColours[Math.floor(Math.random() * populationColours.length)]}`}></div><div className='sidebar-label-text'>{atlas}</div></div>} labelPlacement="start"/>) }
+              { populations.map(atlas =><FormControlLabel key={atlas} control={<Switch />} label={<PopulationLabel labelText={atlas} />} labelPlacement="start"/>) }
             </AccordionDetails>
           </Accordion>
 
