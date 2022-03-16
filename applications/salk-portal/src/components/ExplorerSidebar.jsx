@@ -1,4 +1,5 @@
 import React from 'react';
+import { useLocation } from 'react-router-dom';
 import {makeStyles} from '@material-ui/core/styles';
 import {
   Box,
@@ -13,8 +14,6 @@ import {
   Link
 } from '@material-ui/core';
 import Collapse from '@material-ui/core/Collapse';
-import ExpandLess from '@material-ui/icons/ExpandLess';
-import ExpandMore from '@material-ui/icons/ExpandMore';
 import { headerBg, headerBorderColor, switchActiveColor, secondaryColor, headerButtonBorderColor, sidebarBadgeBg, sidebarTextColor } from "../theme";
 import SEARCH from "../assets/images/icons/search.svg";
 import EXP from "../assets/images/icons/experiments.svg";
@@ -23,7 +22,7 @@ import TEAMS from "../assets/images/icons/teams.svg";
 import COMMUNITY from "../assets/images/icons/community.svg";
 import HELP from "../assets/images/icons/help.svg";
 import UP_ICON from "../assets/images/icons/up.svg";
-
+import { EXPERIMENTS_HASH, SALK_TEAM, ACME_TEAM, COMMUNITY_HASH, SHARED_HASH } from "../constants";
 
 const useStyles = makeStyles({
   sidebar: {
@@ -171,6 +170,8 @@ const Sidebar = (props) => {
     setOpen(!open);
   };
 
+  const hash = useLocation()?.hash;
+
   return (
     <Box className={classes.sidebar}>
       <Box className="sidebar-header">
@@ -188,7 +189,7 @@ const Sidebar = (props) => {
         component="nav"
         disablePadding
       >
-        <ListItemLink href="#experiments" onClick={() => props.executeScroll('experiments')}>
+        <ListItemLink href="#experiments" onClick={() => props.executeScroll(EXPERIMENTS_HASH)} selected={hash === `#${EXPERIMENTS_HASH}` || hash === ''}>
           <ListItemIcon>
             <img src={EXP} alt="experiments" />
           </ListItemIcon>
@@ -196,7 +197,7 @@ const Sidebar = (props) => {
           <Badge badgeContent={4} />
         </ListItemLink>
 
-        <ListItemLink href="#shared" onClick={() => props.executeScroll('shared')} selected={true}>
+        <ListItemLink href="#shared" onClick={() => props.executeScroll(SHARED_HASH)} selected={hash === `#${SHARED_HASH}`}>
           <ListItemIcon>
             <img src={SHARED} alt="Shared" />
           </ListItemIcon>
@@ -213,12 +214,12 @@ const Sidebar = (props) => {
         </ListItem>
         <Collapse in={open} timeout="auto" unmountOnExit>
           <List component="div" disablePadding>
-            <ListItemLink href="#salkteam" onClick={() => props.executeScroll('salkteam')}>
+            <ListItemLink href="#salkteam" onClick={() => props.executeScroll(SALK_TEAM)} selected={hash === `#${SALK_TEAM}`}>
               <ListItemText primary="Salk Institute Team" />
               <Badge badgeContent={4} />
             </ListItemLink>
 
-            <ListItemLink href="#acmeteam" onClick={() => props.executeScroll('acmeteam')}>
+            <ListItemLink href="#acmeteam" onClick={() => props.executeScroll(ACME_TEAM)} selected={hash === `#${ACME_TEAM}`}>
               <ListItemText primary="Acme Team" />
               <Badge badgeContent={4} />
             </ListItemLink>
@@ -230,7 +231,7 @@ const Sidebar = (props) => {
         component="nav"
         disablePadding
       >
-        <ListItemLink href="#community" onClick={() => props.executeScroll('community')}>
+        <ListItemLink href="#community" onClick={() => props.executeScroll(COMMUNITY_HASH)} selected={hash ===  `#${COMMUNITY_HASH}`}>
           <ListItemIcon>
             <img src={COMMUNITY} alt="Community" />
           </ListItemIcon>
