@@ -16,6 +16,9 @@ import {bodyBgColor, font} from "../theme";
 import Sidebar from "../components/ExperimentSidebar";
 // @ts-ignore
 import {AtlasChoice} from "../utilities/constants"
+import {getAtlas} from "../service/AtlasService";
+import {Experiment, ExperimentPopulations} from "../apiclient/workspaces";
+import {areAllSelected} from "../utilities/functions";
 
 
 const useStyles = makeStyles({
@@ -107,6 +110,21 @@ const MOCKED_GET_EXPERIMENT = async (id: number) => {
     });
 };
 
+const getDefaultAtlas = () => AtlasChoice.slk10
+const getSubdivisions = (sa: AtlasChoice) => {
+    const subdivisions: any = {}
+    const segments = getAtlas(sa).segments
+    segments.forEach(sd => subdivisions[sd.id] = {...sd, selected: false})
+    return subdivisions
+}
+const getPopulations = (e: Experiment, sa: AtlasChoice) => {
+    const populations: any = {}
+    const filteredPopulations = e.populations.filter((p: ExperimentPopulations) => p.atlas === sa)
+    filteredPopulations.forEach(p => populations[p.id] = {...p, selected: false})
+    return populations
+}
+
+
 /**
  * The component that renders the FlexLayout component of the LayoutManager.
  */
@@ -115,8 +133,47 @@ const ExperimentsPage = () => {
     const classes = useStyles();
     const store = useStore();
     const [experiment, setExperiment] = useState(null)
+    const [selectedAtlas, setSelectedAtlas] = useState(getDefaultAtlas());
+    const [subdivisions, setSubdivisions] = useState(getSubdivisions(selectedAtlas));
+    const [populations, setPopulations] = useState({});
+
     const dispatch = useDispatch();
     const [LayoutComponent, setLayoutManager] = useState(undefined);
+
+    const handleAtlasChange = (atlasId: AtlasChoice) => {
+        setSelectedAtlas(atlasId)
+    };
+
+    const handleSubdivisionSwitch = (subdivisionId: string) => {
+        const nextSubdivisions: any = {...subdivisions}
+        nextSubdivisions[subdivisionId].selected = !nextSubdivisions[subdivisionId].selected
+        setSubdivisions(nextSubdivisions)
+    };
+
+    const handleShowAllSubdivisions = () => {
+        const areAllSubdivisionsActive = areAllSelected(subdivisions)
+        const nextSubdivisions: any = {}
+        Object.keys(subdivisions)
+            .forEach(sId => nextSubdivisions[sId] = {...subdivisions[sId], selected: !areAllSubdivisionsActive})
+        setSubdivisions(nextSubdivisions)
+    }
+
+    const handleShowAllPopulations = () => {
+        const areAllPopulationsActive = areAllSelected(populations)
+        const nextPopulations: any = {}
+        Object.keys(populations)
+            // @ts-ignore
+            .forEach(pId => nextPopulations[pId] = {...populations[pId], selected: !areAllPopulationsActive})
+        setPopulations(nextPopulations)
+    }
+
+
+    const handlePopulationSwitch = (populationId: string) => {
+        const nextPopulations: any = {...populations}
+        nextPopulations[populationId].selected = !nextPopulations[populationId].selected
+        setPopulations(nextPopulations)
+    };
+
 
     useEffect(() => {
         MOCKED_GET_EXPERIMENT(MOCKED_ID).then(e => setExperiment(e))
@@ -124,6 +181,7 @@ const ExperimentsPage = () => {
 
     useEffect(() => {
         if (experiment != null) {
+            setPopulations(getPopulations(experiment, selectedAtlas))
             dispatch(addWidget(CanvasWidget(experiment)));
             dispatch(addWidget(ElectrophysiologyWidget));
         }
@@ -140,7 +198,12 @@ const ExperimentsPage = () => {
 
     return experiment != null ? (
         <Box display="flex">
-            <Sidebar experiment={experiment}/>
+            <Sidebar selectedAtlas={selectedAtlas} subdivisions={subdivisions} populations={populations}
+                     handleAtlasChange={handleAtlasChange} handleSubdivisionSwitch={handleSubdivisionSwitch}
+                     handlePopulationSwitch={handlePopulationSwitch}
+                     handleShowAllSubdivisions={handleShowAllSubdivisions}
+                     handleShowAllPopulations={handleShowAllPopulations}
+            />
             <Box className={classes.layoutContainer}>
                 {LayoutComponent === undefined ? <CircularProgress/> : <LayoutComponent/>}
             </Box>
