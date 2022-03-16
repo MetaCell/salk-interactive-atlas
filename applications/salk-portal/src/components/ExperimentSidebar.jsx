@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import {makeStyles} from '@material-ui/core/styles';
 import { Box, Typography, IconButton, Accordion, AccordionSummary, AccordionDetails, Switch, FormControlLabel, FormControl, RadioGroup, Radio, Button } from '@material-ui/core';
-import { canvasIconColor, headerBg, headerBorderColor } from "../theme";
+import { canvasIconColor, headerBg, headerBorderColor, teal, blue, brown, skyBlue, purple } from "../theme";
 import TOGGLE from "../assets/images/icons/toggle.svg";
 import ATLAS from "../assets/images/icons/atlas.svg";
 import SUBDIVISIONS from "../assets/images/icons/subdivisions.svg";
@@ -45,53 +45,25 @@ const useStyles = makeStyles({
       },
     },
 
-    '& .sidebar-label': {
+    '& .population-label-container': {
       display:'flex',
       flexDirection:'row',
       alignContent:'center',
       gap:'.5rem'
     }, 
 
-    '& .sidebar-label-text': {
+    '& .population-label-text': {
       lineHeight: '0.4rem',
     },
 
 
-    '& .sidebar-dot-green': {
+    '& .population-label-dot': {
       borderRadius: '50%',
       width: '0.5rem',
       height:'0.5rem',
       background: '#9FEE9A'
-
     },
 
-    '& .sidebar-dot-sky': {
-      borderRadius: '50%',
-      width: '0.5rem',
-      height:'0.5rem',
-      background: '#44C9C9'
-    },
-
-    '& .sidebar-dot-purple': {
-      borderRadius: '50%',
-      width: '0.5rem',
-      height:'0.5rem',
-      background: '#9B3E8B' 
-    },
-
-    '& .sidebar-dot-brown': {
-      borderRadius: '50%',
-      width: '0.5rem',
-      height:'0.5rem',
-      background: '#C99444',
-    },
-
-    '& .sidebar-dot-blue': {
-      borderRadius: '50%',
-      width: '0.5rem',
-      height:'0.5rem',
-      background: '#6F44C9',
-    },
 
 
     '& .MuiCollapse-wrapperInner': {
@@ -175,14 +147,14 @@ const ExperimentSidebar = () => {
   };
 
   const sidebarClass = `${classes.sidebar} scrollbar ${shrink ? `${classes.shrink}` : ``}`;
-  const populationColours = ['green', 'sky', 'purple', 'brown', 'blue'];
+  const populationColours = [teal, brown, skyBlue, purple];
 
-  const PopulationLabel = ({labelText}) => {
+  const PopulationLabel = ({labelText, dotColor}) => {
     return (
-      <div className='sidebar-label'>
-        <div className={`sidebar-dot-${populationColours[Math.floor(Math.random() * populationColours.length)]}`}></div>
-        <div className='sidebar-label-text'>{labelText}</div>
-      </div>
+      <Typography variant='span' className='population-label-container' >
+       <Box className='population-label-dot' variant='span' style={{backgroundColor:dotColor}}/>
+       <Typography className='population-label-text' variant='p'>{labelText}</Typography>
+      </Typography>
     )
   }
 
@@ -262,7 +234,7 @@ const ExperimentSidebar = () => {
                 label="Show all"
                 labelPlacement="start"
               />
-              { populations.map(atlas =><FormControlLabel key={atlas} control={<Switch />} label={<PopulationLabel labelText={atlas} />} labelPlacement="start"/>) }
+              { populations.map((atlas, i) =><FormControlLabel key={atlas} control={<Switch />} label={<PopulationLabel labelText={atlas} dotColor={populationColours[i]} />} labelPlacement="start"/>) }
             </AccordionDetails>
           </Accordion>
 
