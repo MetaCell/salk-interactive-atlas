@@ -18,6 +18,7 @@ const useStyles = makeStyles({
     borderRight: `0.0625rem solid ${headerBorderColor}`,
     background: headerBg,
     overflow: 'auto',
+    transition: "all linear .1s",
 
     '& .sidebar-title': {
       flexGrow: 1,
