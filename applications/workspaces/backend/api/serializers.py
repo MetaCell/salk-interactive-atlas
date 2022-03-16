@@ -5,7 +5,6 @@ from api.models import Experiment, Collaborator, CollaboratorRole, Population, A
 from kcoidc.serializers import UserSerializer, GroupSerializer
 
 
-
 class UserDetailSerializer(serializers.ModelSerializer):
     user = UserSerializer(read_only=True)
 
@@ -20,16 +19,17 @@ class CollaboratorRoleField(serializers.RelatedField):
 
 
 class CollaboratorSerializer(serializers.ModelSerializer):
-    user = UserSerializer(read_only=True)
-    role = CollaboratorRoleField(read_only=True)
+    class Meta:
+        model = Collaborator
+        fields = "__all__"
+
+
+class CollaboratorInfoSerializer(serializers.ModelSerializer):
+    user = UserSerializer()
 
     class Meta:
         model = Collaborator
-        fields = (
-            "user",
-            "role",
-        )
-
+        fields = ("id", "user", "shared_on", "role")
 
 
 class ExperimentFileUploadSerializer(serializers.Serializer):
@@ -80,10 +80,11 @@ class TagSerializer(serializers.ModelSerializer):
 
 class ExperimentSerializer(serializers.ModelSerializer):
     teams = GroupSerializer(many=True, read_only=True)
-    collaborators = CollaboratorSerializer(source='collaborator_set', many=True, read_only=True)
+    collaborators = CollaboratorInfoSerializer(source='collaborator_set', many=True, read_only=True)
     owner = UserTeamSerializer(many=False, read_only=True)
     populations = PopulationSerializer(source='population_set', many=True, read_only=True)
     tags = TagSerializer(many=True, read_only=True)
+    date_created = serializers.CharField(read_only=True)
 
     class Meta:
         model = Experiment

@@ -10,17 +10,16 @@ class UserDetailAdmin(admin.ModelAdmin):
     search_fields = ('user__name',)
 
 
-
 class ExperimentAdmin(admin.ModelAdmin):
     list_display = ("name", "is_private", "last_modified")
     search_fields = ("name", "owner__email")
     autocomplete_fields = ("owner",)
-    filter_horizontal = ("teams", "tags")
-
+    filter_horizontal = ("teams", "tags", )
 
 
 class CollaboratorAdmin(admin.ModelAdmin):
     list_display = ("user", "experiment", "role")
+    search_fields = ("experiment__name", "user__email")
     autocomplete_fields = ("user",)
     raw_id_fields = ("experiment",)
 

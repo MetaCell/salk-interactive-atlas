@@ -7,8 +7,9 @@ from rest_framework.response import Response
 from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.auth.models import User, Group
 from dry_rest_permissions.generics import DRYPermissions
-from api.models import Experiment, CollaboratorRole, Tag, UserDetail
+from api.models import Collaborator, Experiment, CollaboratorRole, Tag, UserDetail
 from api.serializers import (
+    CollaboratorSerializer,
     ExperimentSerializer,
     ExperimentFileUploadSerializer,
     UserTeamSerializer,
@@ -36,7 +37,7 @@ class ExperimentViewSet(viewsets.ModelViewSet):
     parser_classes = (MultiPartParser,)
     custom_serializer_map = {
         "upload_file": ExperimentFileUploadSerializer,
-        "add_tag": TagSerializer
+        "add_tag": TagSerializer,
     }
 
     def get_serializer_class(self):
@@ -118,6 +119,20 @@ class ExperimentViewSet(viewsets.ModelViewSet):
         )
 
 
+class CollaboratorViewSet(viewsets.ModelViewSet):
+    """
+    This viewset automatically provides `list` actions.
+    """
+    permission_classes = (DRYPermissions,)
+    serializer_class = CollaboratorSerializer
+    queryset = Collaborator.objects.all()
+
+    def list(self, request, **kwargs):
+        experiments = Experiment.objects.list_ids(request.user)
+        queryset = Collaborator.objects.filter(experiment__in=experiments).union(Collaborator.objects.filter(user=request.user))
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
+
 class UserViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     """
     This viewset automatically provides `list` actions.
@@ -137,7 +152,6 @@ class UserViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
             queryset = self.get_queryset()
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
-
 class UserDetailViewSet(viewsets.ModelViewSet):
     """
     This viewset automatically provides `list`, `create`, `retrieve`,
