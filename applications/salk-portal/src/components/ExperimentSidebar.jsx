@@ -9,6 +9,8 @@ import OVERLAYS from "../assets/images/icons/overlays.svg";
 import ADD from "../assets/images/icons/add.svg";
 import UP_ICON from "../assets/images/icons/up.svg";
 import POPULATION from "../assets/images/icons/population.svg";
+import {AtlasChoice, atlasMap} from "../utilities/constants";
+import {getAtlas} from "../service/AtlasService";
 
 const useStyles = makeStyles({
   sidebar: {
@@ -106,18 +108,19 @@ const useStyles = makeStyles({
   },
 });
 
-const atlasses = ['Allen Atlas', 'Salk Atlas', 'Columbia Atlas'];
 const overlays = ['Density Map', 'Populations Map', 'Neuronal Locations'];
-const populations = ['Population XYZ', 'Population ABC', 'Population TYU'];
-const subdivisions = ['C1', 'C2', 'C3', 'C4', 'C5', 'C6'];
+
+const getDefaultAtlas = (experiment) => AtlasChoice.slk10
 
 const ExperimentSidebar = ({experiment}) => {
   const classes = useStyles();
   const [shrink, setShrink] = useState(false);
-  const [value, setValue] = useState('');
+  const [selectedAtlas, setSelectedAtlas] = useState(getDefaultAtlas(experiment));
+  const populations = experiment.populations.filter(p => p.atlas === selectedAtlas)
+  const subdivisions = getAtlas(selectedAtlas).segments
 
   const handleChange = (event) => {
-    setValue(event.target.value);
+      setSelectedAtlas(event.target.value);
   };
 
   const toggleSidebar = () => {
@@ -154,8 +157,8 @@ const ExperimentSidebar = ({experiment}) => {
                 <img src={ADD} alt="add" />
               </Button>
               <FormControl component="fieldset">
-                <RadioGroup aria-label="atlas" name="atlas1" value={value} onChange={handleChange}>
-                  { atlasses.map(atlas => <FormControlLabel key={atlas} value={atlas} control={<Radio />} label={atlas} labelPlacement='start' />)
+                <RadioGroup aria-label="atlas" name="atlas1" value={selectedAtlas} onChange={handleChange}>
+                  { Array.from( atlasMap.keys() ).map(atlasId => <FormControlLabel key={atlasId} value={atlasId} control={<Radio />} label={atlasMap.get(atlasId).name} labelPlacement='start' />)
                   }
                 </RadioGroup>
               </FormControl>
@@ -180,7 +183,7 @@ const ExperimentSidebar = ({experiment}) => {
                 label="All subdivisions"
                 labelPlacement="start"
               />
-                { subdivisions.map(atlas => <FormControlLabel key={atlas} control={<Switch />} label={atlas} labelPlacement="start"/>) }
+                { subdivisions.sort((a,b) => a.id < b.id ? -1 : 1).map(segment => <FormControlLabel key={segment.id} control={<Switch />} label={segment.id} labelPlacement="start"/>) }
             </AccordionDetails>
           </Accordion>
 
@@ -202,7 +205,7 @@ const ExperimentSidebar = ({experiment}) => {
                 label="Show all"
                 labelPlacement="start"
               />
-              { populations.map(atlas => <FormControlLabel key={atlas} control={<Switch />} label={atlas} labelPlacement="start"/>) }
+              { populations.map(p => <FormControlLabel key={p.id} control={<Switch />} label={p.name} labelPlacement="start"/>) }
             </AccordionDetails>
           </Accordion>
 

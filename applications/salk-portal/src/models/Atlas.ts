@@ -1,18 +1,18 @@
 import AtlasMesh from "./AtlasMesh"
 import AtlasSegment from "./AtlasSegment"
+import {AtlasChoice} from "../utilities/constants";
 
-export enum AtlasChoice {
-    slk10 = "slk10",
-    aln20 = "aln20",
-}
+
 
 export default class Atlas {
     meshes: AtlasMesh[];
     segments: AtlasSegment[]
+    name: string
 
-    constructor(atlasId: AtlasChoice) {
+    constructor(atlasId: AtlasChoice, name: string) {
         this.constructMeshes(atlasId)
         this.constructSegments(atlasId)
+        this.name = name
     }
 
     constructMeshes(atlasId: AtlasChoice){

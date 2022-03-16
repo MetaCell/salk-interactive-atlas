@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import {useStore, useDispatch} from 'react-redux';
+import {useDispatch, useStore} from 'react-redux';
 import {makeStyles} from '@material-ui/core/styles';
 import CircularProgress from '@material-ui/core/CircularProgress';
 // @ts-ignore
@@ -12,10 +12,10 @@ import {addWidget} from '@metacell/geppetto-meta-client/common/layout/actions';
 import Loader from '@metacell/geppetto-meta-ui/loader/Loader'
 
 import {Box} from "@material-ui/core";
-import {font, bodyBgColor} from "../theme";
+import {bodyBgColor, font} from "../theme";
 import Sidebar from "../components/ExperimentSidebar";
 // @ts-ignore
-import {AtlasChoice} from "../models/Atlas"
+import {AtlasChoice} from "../utilities/constants"
 
 
 const useStyles = makeStyles({
@@ -91,10 +91,7 @@ const MOCKED_GET_EXPERIMENT = async (id: number) => {
                     "id": 1,
                     "name": "Test Population",
                     "color": "#FFFF00",
-                    "atlas": {
-                        "role": "sl10",
-                        "description": "Salk cord 10um"
-                    }
+                    "atlas": "slk10"
                 }
             ],
             "tags": [
@@ -117,7 +114,7 @@ const ExperimentsPage = () => {
 
     const classes = useStyles();
     const store = useStore();
-    const [experiment, setExperiment] = useState()
+    const [experiment, setExperiment] = useState(null)
     const dispatch = useDispatch();
     const [LayoutComponent, setLayoutManager] = useState(undefined);
 
@@ -141,8 +138,7 @@ const ExperimentsPage = () => {
         }
     }, [store])
 
-    // @ts-ignore
-    return {experiment != null ? (
+    return experiment != null ? (
         <Box display="flex">
             <Sidebar experiment={experiment}/>
             <Box className={classes.layoutContainer}>
