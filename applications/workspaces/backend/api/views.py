@@ -7,11 +7,13 @@ from rest_framework.response import Response
 from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.auth.models import User, Group
 from dry_rest_permissions.generics import DRYPermissions
-from api.models import Experiment, CollaboratorRole, Tag
+from api.models import Collaborator, Experiment, CollaboratorRole, Tag, UserDetail
 from api.serializers import (
+    CollaboratorSerializer,
     ExperimentSerializer,
     ExperimentFileUploadSerializer,
     UserTeamSerializer,
+    UserDetailSerializer,
     TeamSerializer,
     MemberSerializer,
     TagSerializer
@@ -34,8 +36,8 @@ class ExperimentViewSet(viewsets.ModelViewSet):
     queryset = Experiment.objects.all()
     parser_classes = (MultiPartParser,)
     custom_serializer_map = {
-        'upload_file': ExperimentFileUploadSerializer,
-        'add_tag': TagSerializer
+        "upload_file": ExperimentFileUploadSerializer,
+        "add_tag": TagSerializer,
     }
 
     def get_serializer_class(self):
@@ -72,13 +74,13 @@ class ExperimentViewSet(viewsets.ModelViewSet):
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
 
-    @action(detail=True, methods=['post'], url_path="tag", url_name="tag_add")
+    @action(detail=True, methods=["post"], url_path="tag", url_name="tag_add")
     def add_tag(self, request, pk):
         instance = self.get_object()
-        tag_name = request.data['name']
+        tag_name = request.data.get("name")
         try:
             tag = instance.tags.get(name=tag_name)
-        except Tag.DoesNotExist as e:
+        except Tag.DoesNotExist:
             tag, created = Tag.objects.get_or_create(name=tag_name)
             instance.tags.add(tag)
             instance.save()
@@ -86,17 +88,16 @@ class ExperimentViewSet(viewsets.ModelViewSet):
         serializer = self.get_serializer(tag)
         return Response(serializer.data)
 
-    @action(detail=True, methods=['delete'], url_path="tag", url_name="tag_delete")
-    def delete_tag(self, request, pk):
+    @action(detail=True, methods=["delete"], url_path="tag/(?P<tag_name>[^/.]+)", url_name="tag_delete")
+    def delete_tag(self, request, tag_name, **kwargs):
         instance = self.get_object()
-        if self.has_access(instance, request.user):
-            instance.tag_set.filter(id=request.id).delete()
+        try:
+            tag = instance.tags.get(name=tag_name)
+            instance.tags.remove(tag)
             instance.save()
-            serializer = self.get_serializer(instance)
-            return Response(serializer.data)
-        else:
-            # user doesn't have access to experiment
-            raise PermissionDenied()
+        except Tag.DoesNotExist:
+            pass
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
     @action(
         detail=True,
@@ -118,6 +119,19 @@ class ExperimentViewSet(viewsets.ModelViewSet):
         )
 
 
+class CollaboratorViewSet(viewsets.ModelViewSet):
+    """
+    This viewset automatically provides `list` actions.
+    """
+    permission_classes = (DRYPermissions,)
+    serializer_class = CollaboratorSerializer
+    queryset = Collaborator.objects.all()
+
+    def list(self, request, **kwargs):
+        experiments = Experiment.objects.list_ids(request.user)
+        queryset = Collaborator.objects.filter(experiment__in=experiments).union(Collaborator.objects.filter(user=request.user))
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
 
 class UserViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     """
@@ -138,7 +152,43 @@ class UserViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
             queryset = self.get_queryset()
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
+class UserDetailViewSet(viewsets.ModelViewSet):
+    """
+    This viewset automatically provides `list`, `create`, `retrieve`,
+    `update` actions.
 
+    The list action will always return the current user's userdetail as a list
+    or an empty list if the current user has no userdetail
+    """
+    permission_classes = (DRYPermissions,)
+    serializer_class = UserDetailSerializer
+    queryset = UserDetail.objects.all()
+
+    custom_serializer_map = {
+        "list": UserDetailSerializer,
+    }
+
+    def list(self, *args, **kwargs):
+        try:
+            userdetail = list(self.request.user.userdetail)
+        except UserDetail.DoesNotExist:
+            userdetail = [None]
+        serializer = self.get_serializer(userdetail, many=False)
+        return Response(serializer.data)
+
+    def create(self, request, *args, **kwargs):
+        try:
+            userdetail = self.request.user.userdetail
+            # return forbidden if the user has already a userdetail
+            return Response(status=status.HTTP_403_FORBIDDEN)
+        except:
+            pass
+        return super().create(request, *args, **kwargs)
+
+    def perform_create(self, serializer):
+        serializer.save(
+            user=self.request.user,
+        )
 
 class GroupViewSet(
     mixins.CreateModelMixin,
@@ -178,7 +228,7 @@ class GroupViewSet(
             serializer = self.get_serializer(instance)
             return Response(serializer.data)
         else:
-            # raise 404 not found if the team doesn't exists
+            # raise 404 not found if the team doesn"t exists
             raise PermissionDenied
 
     @action(detail=True, methods=["get"])

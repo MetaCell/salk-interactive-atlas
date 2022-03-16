@@ -6,9 +6,35 @@ from django.contrib.auth.models import Group, User
 
 # Create your models here.
 
-class SalkUser(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
+class NotificationMethodsChoice(models.TextChoices):
+    @classmethod
+    def to_str(cls, value):
+        return next(v for v in list(AtlasesChoice) if v.value == value).label
 
+    EMAIL = "email", "Email"
+
+class UserDetail(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    notification_method = models.CharField(max_length=5, choices=NotificationMethodsChoice.choices, default=NotificationMethodsChoice.EMAIL)
+    notify_on_new_share = models.BooleanField(default=False)
+    notify_on_new_team_invite = models.BooleanField(default=False)
+    notify_on_clone_my_experiment = models.BooleanField(default=False)
+    notify_on_news = models.BooleanField(default=False)
+    avatar = models.ImageField(upload_to='avatars')
+
+    @staticmethod
+    def has_read_permission(request):
+        return True
+
+    @staticmethod
+    def has_write_permission(request):
+        return True
+
+    def has_object_read_permission(self, request):
+        return self.user == request.user
+
+    def has_object_write_permission(self, request):
+        return self.user == request.user
 
 class AtlasesChoice(models.TextChoices):
     @classmethod
@@ -33,6 +59,9 @@ class Tag(models.Model):
     @staticmethod
     def has_write_permission(request):
         return True
+
+    def __str__(self):
+        return f"{self.name}"
 
 
 class CollaboratorRole(models.TextChoices):
@@ -64,18 +93,20 @@ class ExperimentsObjectsManager(models.Manager):
         return self.get_queryset().filter(is_private=False)  # all public experiments
 
     def list(self, user):
-        return self.my_experiments(user) \
-            .union(self.team_experiments(user)) \
-            .union(self.collaborate_experiments(user)) \
-            .union(self.public_experiments())
+        return self.get_queryset().filter(id__in=self.list_ids(user))
 
+    def list_ids(self, user):
+        return self.my_experiments(user).only("id") \
+            .union(self.team_experiments(user).only("id")) \
+            .union(self.collaborate_experiments(user).only("id")) \
+            .union(self.public_experiments().only("id"))
 
 class Experiment(models.Model):
     name = models.CharField(max_length=100)
     description = models.TextField()
     is_private = models.BooleanField(default=True)
-    date_created = models.DateField(auto_created=True)
-    last_modified = models.DateField(auto_now=True)
+    date_created = models.DateTimeField(auto_created=True)
+    last_modified = models.DateTimeField(auto_now=True)
     owner = models.ForeignKey(User, on_delete=models.DO_NOTHING)
     teams = models.ManyToManyField(Group, blank=True)
     tags = models.ManyToManyField(Tag, blank=True)
@@ -129,10 +160,36 @@ class Collaborator(models.Model):
     role = models.CharField(
         max_length=1, choices=CollaboratorRole.choices, default=CollaboratorRole.VIEWER
     )
+    shared_on = models.DateTimeField(auto_now=True)
+
+    @staticmethod
+    def has_read_permission(request):
+        return True
+
+    @staticmethod
+    def has_list_permission(request):
+        return True
+
+    @staticmethod
+    def has_write_permission(request):
+        experiment_id = request.data.get("experiment")
+        try:
+            experiment = Experiment.objects.get(id=experiment_id)
+            return experiment.has_object_write_permission(request)
+        except Experiment.DoesNotExist:
+            return True
+
+    def has_object_read_permission(self, request):
+        return self.experiment.has_object_read_permission(request) or self.user == request.user
+
+    def has_object_write_permission(self, request):
+        return self.experiment.has_object_write_permission(request) or self.user==request.user
 
     def __str__(self):
         return f"{self.user.first_name} {self.user.last_name}, {self.experiment} ({CollaboratorRole.to_str(self.role)})"
 
+    class Meta:
+        unique_together = [['user', 'experiment']]
 
 class Population(models.Model):
     experiment = models.ForeignKey(Experiment, on_delete=models.DO_NOTHING)
