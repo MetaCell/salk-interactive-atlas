@@ -21,6 +21,7 @@ import FormControl from '@material-ui/core/FormControl';
 import FormLabel from '@material-ui/core/FormLabel';
 import Checkbox from '@material-ui/core/Checkbox';
 
+
 const useStyles = makeStyles(() => ({
   subHeader: {
     minHeight: '3rem',
@@ -177,8 +178,9 @@ const ExperimentList = (props) => {
     setFilterAnchorEL(null);
   };
 
+ 
   const tags = ["Project A", "Tag X", "Label 1"];
-  const { heading, description } = props;
+  const { heading, description, type } = props;
   const sortOptions = ["Alphabetical", "Date created", "Last viewed"];
   const orderOptions = ["Oldest first", "Newest first"];
 
@@ -263,7 +265,7 @@ const ExperimentList = (props) => {
       <Box p={5}>
         <Grid container item spacing={3}>
           {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((item, i) => (
-            <ExperimentCard i={`${heading}experiment_${i}`} tags={tags} heading={"Exploration of the spinal cord"} description={"Shared on Sept 2nd, 2021"} user={"name"} />
+            <ExperimentCard i={`${heading}experiment_${i}`} type={type} tags={tags} heading={"Exploration of the spinal cord"} description={type == "personal" ? "Sept 2nd, 2021": "Shared on Sept 2nd, 2021"} user={"name"} />
             ))
           }
         </Grid>

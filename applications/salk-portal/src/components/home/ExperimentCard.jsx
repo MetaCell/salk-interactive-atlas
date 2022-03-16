@@ -15,6 +15,7 @@ import POPULAR from "../../assets/images/icons/popular.svg";
 import CLONE from "../../assets/images/icons/clone.svg";
 import PLACEHOLDER from "../../assets/images/placeholder.png";
 
+
 const useStyles = makeStyles(() => ({
   card: {
     background: headerBg,
@@ -114,7 +115,8 @@ const useStyles = makeStyles(() => ({
 
 const ExperimentCard = (props) => {
   const classes = useStyles();
-  const { tags, heading, description, user, i, community } = props;
+  const { tags, heading, description, user, i, community, type} = props;
+  
   return (
     <Grid item xs={12} md={3} key={i}>
       <Card className={classes.card} elevation={0}>

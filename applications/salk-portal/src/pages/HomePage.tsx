@@ -46,16 +46,16 @@ export default (props: any) => {
       <Sidebar executeScroll={(r: string) => executeScroll(r)} />
       <Box className={classes.layoutContainer}>
         <div ref={myRef} id={EXPERIMENTS_HASH}>
-          <ExperimentList heading={"My experiments"} description={"7 experiments"} />
+          <ExperimentList heading={"My experiments"} description={"7 experiments"} type={"personal"}/>
         </div>
         <div ref={shared} id={SHARED_HASH}>
-          <ExperimentList heading={"Shared with me"} description={"28 experiments"} />
+          <ExperimentList heading={"Shared with me"} description={"28 experiments"} type={"shared"} />
         </div>
         <div ref={salkteam} id={SALK_TEAM}>
-          <ExperimentList heading={"Salk Institute Team"} description={"19 experiments"} />
+          <ExperimentList heading={"Salk Institute Team"} description={"19 experiments"} type={"team"}/>
         </div>
         <div ref={acmeteam} id={ACME_TEAM}>
-          <ExperimentList heading={"Acme Team"} description={"19 experiments"} />
+          <ExperimentList heading={"Acme Team"} description={"19 experiments"} type={"team"}/>
         </div>
         <Box p={5}>
           <div ref={communityRef} id={COMMUNITY_HASH}>
