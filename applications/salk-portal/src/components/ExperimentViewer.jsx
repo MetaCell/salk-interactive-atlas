@@ -6,8 +6,8 @@ import CameraControls from "@metacell/geppetto-meta-ui/camera-controls/CameraCon
 import CaptureControls from "@metacell/geppetto-meta-ui/capture-controls/CaptureControls";
 import SimpleInstance from "@metacell/geppetto-meta-core/model/SimpleInstance";
 import {augmentInstancesArray} from '@metacell/geppetto-meta-core/Instances';
-import Resources from '@metacell/geppetto-meta-core/Resources';
 import { canvasBg } from "../theme";
+import { getAtlas } from "../service/AtlasService"
 
 const COLOR_MAP = {
     'ClosedCordOBJ': {r: 0.30, g: 0.54, b: 0.59, a: 0.5},
@@ -26,19 +26,6 @@ function mapToCanvasData(data) {
     ))
 }
 
-
-
-
-const instance3spec = {
-    "eClass": "SimpleInstance",
-    "id": "InsideCordOBJ",
-    "name": "Inside Cord OBJ",
-    "type": {"eClass": "SimpleType"},
-    "visualValue": {
-        "eClass": Resources.OBJ,
-        'obj': icord,
-    }
-}
 
 function loadInstances() {
     const instance1 = new SimpleInstance(instance1spec)
@@ -106,6 +93,9 @@ const styles = () => ({
 class ExperimentViewer extends Component {
     constructor(props) {
         super(props);
+        this.state = {
+            data: [],
+        };
     }
 
     MOCKED_GET_EXPERIMENT = (id) => {
@@ -152,8 +142,9 @@ class ExperimentViewer extends Component {
     };
 
     async componentDidMount() {
-        const {id, atlas} = this.props
+        const {id, selectedAtlas} = this.props
         const experimentData = await this.MOCKED_GET_EXPERIMENT(id)
+        const atlas = getAtlas(selectedAtlas)
         // get meshes and segments from public folder given atlas -> use service
         // create simpleInstances for each segment
     }

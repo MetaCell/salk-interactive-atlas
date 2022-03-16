@@ -11,6 +11,8 @@ import {addWidget} from '@metacell/geppetto-meta-client/common/layout/actions';
 import { Box} from "@material-ui/core";
 import { font, bodyBgColor } from "../theme";
 import Sidebar from "../components/ExperimentSidebar";
+// @ts-ignore
+import {AtlasChoice} from "../models/Atlas"
 
 
 const useStyles = makeStyles({
@@ -35,7 +37,7 @@ const useStyles = makeStyles({
 });
 
 const MOCKED_ID = 1
-const MOCKED_ATLAS = 'sl10'
+const MOCKED_ATLAS = AtlasChoice.slk10
 
 export const CanvasWidget = {
     id: 'canvasWidget',
