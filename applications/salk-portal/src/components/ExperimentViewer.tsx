@@ -1,27 +1,22 @@
 import React, {Component} from 'react';
-import * as THREE from 'three';
 import {withStyles} from '@material-ui/core';
+// @ts-ignore
 import Canvas from "@metacell/geppetto-meta-ui/3d-canvas/Canvas";
+// @ts-ignore
 import CameraControls from "@metacell/geppetto-meta-ui/camera-controls/CameraControls";
+// @ts-ignore
 import CaptureControls from "@metacell/geppetto-meta-ui/capture-controls/CaptureControls";
-import SimpleInstance from "@metacell/geppetto-meta-core/model/SimpleInstance";
-import {augmentInstancesArray} from '@metacell/geppetto-meta-core/Instances';
-import { canvasBg } from "../theme";
-import { getAtlas } from "../service/AtlasService"
+import {canvasBg} from "../theme";
+import {getAtlas} from "../service/AtlasService"
+import {getInstancesIds} from "../utilities/instancesHelper";
+import {eqSet} from "../utilities/functions";
 
-const COLOR_MAP = {
-    'ClosedCordOBJ': {r: 0.30, g: 0.54, b: 0.59, a: 0.5},
-    'OpenCordOBJ': {r: 0.30, g: 0.54, b: 0.59, a: 0.5},
-    'InsideCordOBJ': {r: 0.4525, g: 0.2624, b: 0.2852, a: 0.7},
-}
+const MOCKED_GREY_MATTER = 'GM'
+const MOCKED_WHITE_MATTER = 'WM'
 
-function mapToCanvasData(data) {
-    return data.map(item => (
-        {
-            instancePath: item.instancePath,
-            color: item.instancePath in COLOR_MAP ? COLOR_MAP[item.instancePath] : null
-        }
-    ))
+const MOCKED_GET_COLOR = (id: string) => {
+    return id.includes(MOCKED_WHITE_MATTER) ? {r: 0.30, g: 0.54, b: 0.59, a: 0.5} :
+        id.includes(MOCKED_GREY_MATTER) ? {r: 0.4525, g: 0.2624, b: 0.2852, a: 0.7} : null
 }
 
 function getDefaultOptions() {
@@ -73,35 +68,57 @@ const styles = () => ({
     },
 });
 
+function mapToCanvasData(data : Set<string>[]) {
+    return [...data].map(id => (
+        {
+            instancePath: id,
+            // @ts-ignore
+            color: MOCKED_GET_COLOR(id)
+        }
+    ))
+}
 
 class ExperimentViewer extends Component {
+    // @ts-ignore
     constructor(props) {
         super(props);
+        const instancesIds = this.getInstancesToShow()
         this.state = {
-            data: [],
+            data: instancesIds,
         };
     }
 
-    async componentDidMount() {
-        const {experiment, selectedAtlas} = this.props
-        const atlas = getAtlas(selectedAtlas)
-        // get meshes and segments from public folder given atlas -> use service
-        // create simpleInstances for each segment
+    shouldComponentUpdate(nextProps: Readonly<{}>, nextState: Readonly<{}>, nextContext: any): boolean {
+        // @ts-ignore
+        return this.props !== nextProps || !eqSet(this.state.data, nextState.data)
     }
 
+    getInstancesToShow(){
+        // @ts-ignore
+        const {selectedAtlas, activeSubdivisions} = this.props
+        const atlas = getAtlas(selectedAtlas)
+        return getInstancesIds(atlas, activeSubdivisions)
+    }
+
+    componentDidUpdate(prevProps: Readonly<{}>, prevState: Readonly<{}>, snapshot?: any) {
+        const instancesIds = this.getInstancesToShow()
+        this.setState({data: instancesIds})
+    }
+
+
     render() {
+        // @ts-ignore
         const {classes} = this.props
+        // @ts-ignore
         const {data} = this.state
         const {cameraOptions, captureOptions} = getDefaultOptions()
-        const canvasData = mapToCanvasData(data)
+        const canvasData: any = mapToCanvasData(data)
         return (<div className={classes.canvasContainer}>
             <Canvas
                 data={canvasData}
                 cameraOptions={cameraOptions}
                 captureOptions={captureOptions}
                 backgroundColor={canvasBg}
-                onMount={this.onMount}
-                updateEnded={this.updateEnded}
             />
         </div>)
     }

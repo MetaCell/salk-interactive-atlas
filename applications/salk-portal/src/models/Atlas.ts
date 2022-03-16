@@ -1,27 +1,27 @@
-import AtlasMesh from "./AtlasMesh"
+import AtlasInstance from "./AtlasInstance"
 import AtlasSegment from "./AtlasSegment"
 import {AtlasChoice} from "../utilities/constants";
 
 
 
 export default class Atlas {
-    meshes: AtlasMesh[];
+    instances: AtlasInstance[];
     segments: AtlasSegment[]
     name: string
 
     constructor(atlasId: AtlasChoice, name: string) {
-        this.constructMeshes(atlasId)
+        this.constructInstances(atlasId)
         this.constructSegments(atlasId)
         this.name = name
     }
 
-    constructMeshes(atlasId: AtlasChoice){
-        this.meshes = []
+    constructInstances(atlasId: AtlasChoice){
+        this.instances = []
         const objsContext = require.context("../assets/atlas", true, /^.*\.obj$/)
         for (const filepath of objsContext.keys()){
             if (filepath.includes(atlasId)){
                 const filename = filepath.replace(/^.*[\\\/]/, '')
-                this.meshes.push(new AtlasMesh(filename, atlasId))
+                this.instances.push(new AtlasInstance(filename, atlasId))
             }
         }
     }

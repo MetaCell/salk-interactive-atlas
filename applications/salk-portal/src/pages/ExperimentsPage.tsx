@@ -7,7 +7,7 @@ import {getLayoutManagerInstance} from "@metacell/geppetto-meta-client/common/la
 // @ts-ignore
 import {WidgetStatus} from "@metacell/geppetto-meta-client/common/layout/model";
 // @ts-ignore
-import {addWidget} from '@metacell/geppetto-meta-client/common/layout/actions';
+import {addWidget, updateWidget} from '@metacell/geppetto-meta-client/common/layout/actions';
 // @ts-ignore
 import Loader from '@metacell/geppetto-meta-ui/loader/Loader'
 
@@ -19,6 +19,7 @@ import {AtlasChoice} from "../utilities/constants"
 import {getAtlas} from "../service/AtlasService";
 import {Experiment, ExperimentPopulations} from "../apiclient/workspaces";
 import {areAllSelected} from "../utilities/functions";
+import AtlasSegment from "../models/AtlasSegment";
 
 
 const useStyles = makeStyles({
@@ -43,9 +44,8 @@ const useStyles = makeStyles({
 });
 
 const MOCKED_ID = 1
-const MOCKED_SELECTED_ATLAS = AtlasChoice.slk10
 
-export const CanvasWidget = (e: any) => {
+export const CanvasWidget = (selectedAtlas: AtlasChoice, activeSubdivisions: Set<string>, activePopulations: Set<string>) => {
     return {
         id: 'canvasWidget',
         name: "Spinal Cord Atlas",
@@ -54,8 +54,9 @@ export const CanvasWidget = (e: any) => {
         enableClose: false,
         status: WidgetStatus.ACTIVE,
         config: {
-            experiment: e,
-            atlas: MOCKED_SELECTED_ATLAS
+            selectedAtlas,
+            activeSubdivisions,
+            activePopulations,
         }
     }
 };
@@ -114,13 +115,13 @@ const getDefaultAtlas = () => AtlasChoice.slk10
 const getSubdivisions = (sa: AtlasChoice) => {
     const subdivisions: any = {}
     const segments = getAtlas(sa).segments
-    segments.forEach(sd => subdivisions[sd.id] = {...sd, selected: false})
+    segments.forEach(sd => subdivisions[sd.id] = {selected: false})
     return subdivisions
 }
 const getPopulations = (e: Experiment, sa: AtlasChoice) => {
     const populations: any = {}
     const filteredPopulations = e.populations.filter((p: ExperimentPopulations) => p.atlas === sa)
-    filteredPopulations.forEach(p => populations[p.id] = {...p, selected: false})
+    filteredPopulations.forEach(p => populations[p.id] = {selected: false})
     return populations
 }
 
@@ -182,10 +183,18 @@ const ExperimentsPage = () => {
     useEffect(() => {
         if (experiment != null) {
             setPopulations(getPopulations(experiment, selectedAtlas))
-            dispatch(addWidget(CanvasWidget(experiment)));
+            dispatch(addWidget(CanvasWidget(selectedAtlas, new Set(), new Set())));
             dispatch(addWidget(ElectrophysiologyWidget));
         }
     }, [experiment])
+
+    useEffect(() => {
+        const subdivisionsSet = new Set(Object.keys(subdivisions).filter(sId => subdivisions[sId].selected))
+        dispatch(updateWidget(
+                CanvasWidget(selectedAtlas, subdivisionsSet, new Set())
+            )
+        )
+    }, [subdivisions, populations, selectedAtlas])
 
     useEffect(() => {
         if (LayoutComponent === undefined) {
