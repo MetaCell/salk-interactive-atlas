@@ -48,12 +48,18 @@ const useStyles = makeStyles({
     '& .population-label-container': {
       display:'flex',
       flexDirection:'row',
-      alignContent:'center',
-      gap:'.5rem'
+      gap:'.5rem',
+      alignItems:'flex-end'
     }, 
 
     '& .population-label-text': {
-      lineHeight: '0.4rem',
+      lineHeight: '0.908rem',
+      width: '7.5rem',
+      height:'0.938rem',
+      left:'4rem',
+      top:'0.531rem',
+      fontWeight:400,
+      fontSize:'0.813rem'
     },
 
 
@@ -61,7 +67,9 @@ const useStyles = makeStyles({
       borderRadius: '50%',
       width: '0.5rem',
       height:'0.5rem',
-      background: '#9FEE9A'
+      left:'3rem',
+      top:'0.75rem',
+      border:'0.063rem',
     },
 
 
@@ -151,8 +159,8 @@ const ExperimentSidebar = () => {
 
   const PopulationLabel = ({labelText, dotColor}) => {
     return (
-      <Typography variant='span' className='population-label-container' >
-       <Box className='population-label-dot' variant='span' style={{backgroundColor:dotColor}}/>
+      <Typography className='population-label-container' >
+       <Box className='population-label-dot' style={{backgroundColor:dotColor}}/>
        <Typography className='population-label-text' variant='p'>{labelText}</Typography>
       </Typography>
     )
