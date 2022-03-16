@@ -111,7 +111,7 @@ const overlays = ['Density Map', 'Populations Map', 'Neuronal Locations'];
 const populations = ['Population XYZ', 'Population ABC', 'Population TYU'];
 const subdivisions = ['C1', 'C2', 'C3', 'C4', 'C5', 'C6'];
 
-const ExperimentSidebar = () => {
+const ExperimentSidebar = ({experiment}) => {
   const classes = useStyles();
   const [shrink, setShrink] = useState(false);
   const [value, setValue] = useState('');

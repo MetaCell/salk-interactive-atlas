@@ -15,8 +15,6 @@ const COLOR_MAP = {
     'InsideCordOBJ': {r: 0.4525, g: 0.2624, b: 0.2852, a: 0.7},
 }
 
-const YELLOW = 0xffff00
-
 function mapToCanvasData(data) {
     return data.map(item => (
         {
@@ -24,20 +22,6 @@ function mapToCanvasData(data) {
             color: item.instancePath in COLOR_MAP ? COLOR_MAP[item.instancePath] : null
         }
     ))
-}
-
-
-function loadInstances() {
-    const instance1 = new SimpleInstance(instance1spec)
-    // const instance2 = new SimpleInstance(instance2spec)
-    const instance3 = new SimpleInstance(instance3spec)
-    window.Instances = [instance1, instance3]
-    augmentInstancesArray(window.Instances);
-}
-
-function getProxyInstances() {
-    return window.Instances.map(i => (
-        {instancePath: i.getId(), }))
 }
 
 function getDefaultOptions() {
@@ -98,52 +82,8 @@ class ExperimentViewer extends Component {
         };
     }
 
-    MOCKED_GET_EXPERIMENT = (id) => {
-        return new Promise(resolve => {
-            const mocked_experiment = {
-                "id": 1,
-                "name": "Exploration of the Spinal Cord",
-                "is_private": true,
-                "description": "Description Experiment",
-                "date_created": "2022-03-14",
-                "last_modified": "2022-03-15",
-                "owner": {
-                    "id": 1,
-                    "username": "afonso",
-                    "first_name": "",
-                    "last_name": "",
-                    "email": "afonso@metacell.us",
-                    "groups": []
-                },
-                "teams": [],
-                "collaborators": [],
-                "populations": [
-                    {
-                        "id": 1,
-                        "name": "Test Population",
-                        "color": "#FFFF00",
-                        "atlas": {
-                            "role": "sl10",
-                            "description": "Salk cord 10um"
-                        }
-                    }
-                ],
-                "tags": [
-                    {
-                        "id": 1,
-                        "name": "Test Tag"
-                    },
-                ]
-            }
-            setTimeout(() => {
-                resolve(mocked_experiment);
-            }, 10);
-        });
-    };
-
     async componentDidMount() {
-        const {id, selectedAtlas} = this.props
-        const experimentData = await this.MOCKED_GET_EXPERIMENT(id)
+        const {experiment, selectedAtlas} = this.props
         const atlas = getAtlas(selectedAtlas)
         // get meshes and segments from public folder given atlas -> use service
         // create simpleInstances for each segment
