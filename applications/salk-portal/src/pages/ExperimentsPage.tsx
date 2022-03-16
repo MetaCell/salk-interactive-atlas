@@ -19,7 +19,7 @@ import {AtlasChoice} from "../utilities/constants"
 import {getAtlas} from "../service/AtlasService";
 import {Experiment, ExperimentPopulations} from "../apiclient/workspaces";
 import {areAllSelected} from "../utilities/functions";
-import AtlasSegment from "../models/AtlasSegment";
+import MOCKED_CELLS from '../assets/mocked/transformed_cord.json';
 
 
 const useStyles = makeStyles({
@@ -45,7 +45,7 @@ const useStyles = makeStyles({
 
 const MOCKED_ID = 1
 
-export const CanvasWidget = (selectedAtlas: AtlasChoice, activeSubdivisions: Set<string>, activePopulations: Set<string>) => {
+export const CanvasWidget = (selectedAtlas: AtlasChoice, activeSubdivisions: Set<string>, activePopulations: any) => {
     return {
         id: 'canvasWidget',
         name: "Spinal Cord Atlas",
@@ -95,7 +95,8 @@ const MOCKED_GET_EXPERIMENT = async (id: number) => {
                     "id": 1,
                     "name": "Test Population",
                     "color": "#FFFF00",
-                    "atlas": "slk10"
+                    "atlas": "slk10",
+                    "cells": MOCKED_CELLS
                 }
             ],
             "tags": [
@@ -121,7 +122,7 @@ const getSubdivisions = (sa: AtlasChoice) => {
 const getPopulations = (e: Experiment, sa: AtlasChoice) => {
     const populations: any = {}
     const filteredPopulations = e.populations.filter((p: ExperimentPopulations) => p.atlas === sa)
-    filteredPopulations.forEach(p => populations[p.id] = {selected: false})
+    filteredPopulations.forEach(p => populations[p.id] = {...p, selected: false})
     return populations
 }
 
@@ -183,17 +184,23 @@ const ExperimentsPage = () => {
     useEffect(() => {
         if (experiment != null) {
             setPopulations(getPopulations(experiment, selectedAtlas))
-            dispatch(addWidget(CanvasWidget(selectedAtlas, new Set(), new Set())));
+            dispatch(addWidget(CanvasWidget(selectedAtlas, new Set(), {})));
             dispatch(addWidget(ElectrophysiologyWidget));
         }
     }, [experiment])
 
     useEffect(() => {
         const subdivisionsSet = new Set(Object.keys(subdivisions).filter(sId => subdivisions[sId].selected))
-        dispatch(updateWidget(
-                CanvasWidget(selectedAtlas, subdivisionsSet, new Set())
-            )
-        )
+        // @ts-ignore
+        const activePopulations = Object.keys(populations)
+            // @ts-ignore
+            .filter(pId => populations[pId].selected)
+            .reduce((obj, key) => {
+                // @ts-ignore
+                obj[key] = populations[key];
+                return obj;
+            }, {});
+        dispatch(updateWidget(CanvasWidget(selectedAtlas, subdivisionsSet, activePopulations)))
     }, [subdivisions, populations, selectedAtlas])
 
     useEffect(() => {
