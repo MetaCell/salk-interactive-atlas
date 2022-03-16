@@ -7,11 +7,12 @@ from rest_framework.response import Response
 from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.auth.models import User, Group
 from dry_rest_permissions.generics import DRYPermissions
-from api.models import Experiment, CollaboratorRole, Tag
+from api.models import Experiment, CollaboratorRole, Tag, UserDetail
 from api.serializers import (
     ExperimentSerializer,
     ExperimentFileUploadSerializer,
     UserTeamSerializer,
+    UserDetailSerializer,
     TeamSerializer,
     MemberSerializer,
     TagSerializer
@@ -117,7 +118,6 @@ class ExperimentViewSet(viewsets.ModelViewSet):
         )
 
 
-
 class UserViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     """
     This viewset automatically provides `list` actions.
@@ -138,6 +138,43 @@ class UserViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
 
+class UserDetailViewSet(viewsets.ModelViewSet):
+    """
+    This viewset automatically provides `list`, `create`, `retrieve`,
+    `update` actions.
+
+    The list action will always return the current user's userdetail as a list
+    or an empty list if the current user has no userdetail
+    """
+    permission_classes = (DRYPermissions,)
+    serializer_class = UserDetailSerializer
+    queryset = UserDetail.objects.all()
+
+    custom_serializer_map = {
+        "list": UserDetailSerializer,
+    }
+
+    def list(self, *args, **kwargs):
+        try:
+            userdetail = list(self.request.user.userdetail)
+        except UserDetail.DoesNotExist:
+            userdetail = [None]
+        serializer = self.get_serializer(userdetail, many=False)
+        return Response(serializer.data)
+
+    def create(self, request, *args, **kwargs):
+        try:
+            userdetail = self.request.user.userdetail
+            # return forbidden if the user has already a userdetail
+            return Response(status=status.HTTP_403_FORBIDDEN)
+        except:
+            pass
+        return super().create(request, *args, **kwargs)
+
+    def perform_create(self, serializer):
+        serializer.save(
+            user=self.request.user,
+        )
 
 class GroupViewSet(
     mixins.CreateModelMixin,
