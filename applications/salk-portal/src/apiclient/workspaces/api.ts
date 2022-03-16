@@ -24,9 +24,60 @@ import { BASE_PATH, COLLECTION_FORMATS, RequestArgs, BaseAPI, RequiredError } fr
 /**
  * 
  * @export
+ * @interface Collaborator
+ */
+export interface Collaborator {
+    /**
+     * 
+     * @type {number}
+     * @memberof Collaborator
+     */
+    'id'?: number;
+    /**
+     * 
+     * @type {string}
+     * @memberof Collaborator
+     */
+    'role'?: CollaboratorRoleEnum;
+    /**
+     * 
+     * @type {string}
+     * @memberof Collaborator
+     */
+    'shared_on'?: string;
+    /**
+     * 
+     * @type {number}
+     * @memberof Collaborator
+     */
+    'user': number;
+    /**
+     * 
+     * @type {number}
+     * @memberof Collaborator
+     */
+    'experiment': number;
+}
+
+export const CollaboratorRoleEnum = {
+    V: 'v',
+    E: 'e'
+} as const;
+
+export type CollaboratorRoleEnum = typeof CollaboratorRoleEnum[keyof typeof CollaboratorRoleEnum];
+
+/**
+ * 
+ * @export
  * @interface Experiment
  */
 export interface Experiment {
+    /**
+     * 
+     * @type {number}
+     * @memberof Experiment
+     */
+    'id'?: number;
     /**
      * 
      * @type {string}
@@ -35,10 +86,10 @@ export interface Experiment {
     'name': string;
     /**
      * 
-     * @type {string}
+     * @type {boolean}
      * @memberof Experiment
      */
-    'date_created': string;
+    'is_private'?: boolean;
     /**
      * 
      * @type {string}
@@ -47,22 +98,46 @@ export interface Experiment {
     'description': string;
     /**
      * 
-     * @type {boolean}
+     * @type {string}
      * @memberof Experiment
      */
-    'is_private'?: boolean;
+    'date_created'?: string;
     /**
      * 
-     * @type {Array<ExperimentTeams>}
+     * @type {string}
      * @memberof Experiment
      */
-    'teams'?: Array<ExperimentTeams>;
+    'last_modified'?: string;
+    /**
+     * 
+     * @type {ExperimentOwner}
+     * @memberof Experiment
+     */
+    'owner'?: ExperimentOwner;
+    /**
+     * 
+     * @type {Array<ExperimentOwnerGroups>}
+     * @memberof Experiment
+     */
+    'teams'?: Array<ExperimentOwnerGroups>;
     /**
      * 
      * @type {Array<ExperimentCollaborators>}
      * @memberof Experiment
      */
     'collaborators'?: Array<ExperimentCollaborators>;
+    /**
+     * 
+     * @type {Array<ExperimentPopulations>}
+     * @memberof Experiment
+     */
+    'populations'?: Array<ExperimentPopulations>;
+    /**
+     * 
+     * @type {Array<ExperimentTags>}
+     * @memberof Experiment
+     */
+    'tags'?: Array<ExperimentTags>;
 }
 /**
  * 
@@ -72,17 +147,37 @@ export interface Experiment {
 export interface ExperimentCollaborators {
     /**
      * 
+     * @type {number}
+     * @memberof ExperimentCollaborators
+     */
+    'id'?: number;
+    /**
+     * 
      * @type {ExperimentUser}
      * @memberof ExperimentCollaborators
      */
-    'user'?: ExperimentUser;
+    'user': ExperimentUser;
     /**
      * 
      * @type {string}
      * @memberof ExperimentCollaborators
      */
-    'role'?: string;
+    'shared_on'?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof ExperimentCollaborators
+     */
+    'role'?: ExperimentCollaboratorsRoleEnum;
 }
+
+export const ExperimentCollaboratorsRoleEnum = {
+    V: 'v',
+    E: 'e'
+} as const;
+
+export type ExperimentCollaboratorsRoleEnum = typeof ExperimentCollaboratorsRoleEnum[keyof typeof ExperimentCollaboratorsRoleEnum];
+
 /**
  * 
  * @export
@@ -99,19 +194,118 @@ export interface ExperimentFileUpload {
 /**
  * 
  * @export
- * @interface ExperimentTeams
+ * @interface ExperimentOwner
  */
-export interface ExperimentTeams {
+export interface ExperimentOwner {
     /**
      * 
      * @type {number}
-     * @memberof ExperimentTeams
+     * @memberof ExperimentOwner
+     */
+    'id'?: number;
+    /**
+     * Required. 150 characters or fewer. Letters, digits and @/./+/-/_ only.
+     * @type {string}
+     * @memberof ExperimentOwner
+     */
+    'username': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof ExperimentOwner
+     */
+    'first_name'?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof ExperimentOwner
+     */
+    'last_name'?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof ExperimentOwner
+     */
+    'email'?: string;
+    /**
+     * 
+     * @type {Array<ExperimentOwnerGroups>}
+     * @memberof ExperimentOwner
+     */
+    'groups'?: Array<ExperimentOwnerGroups>;
+    /**
+     * 
+     * @type {string}
+     * @memberof ExperimentOwner
+     */
+    'avatar': string;
+}
+/**
+ * 
+ * @export
+ * @interface ExperimentOwnerGroups
+ */
+export interface ExperimentOwnerGroups {
+    /**
+     * 
+     * @type {number}
+     * @memberof ExperimentOwnerGroups
      */
     'id'?: number;
     /**
      * 
      * @type {string}
-     * @memberof ExperimentTeams
+     * @memberof ExperimentOwnerGroups
+     */
+    'name': string;
+}
+/**
+ * 
+ * @export
+ * @interface ExperimentPopulations
+ */
+export interface ExperimentPopulations {
+    /**
+     * 
+     * @type {number}
+     * @memberof ExperimentPopulations
+     */
+    'id'?: number;
+    /**
+     * 
+     * @type {string}
+     * @memberof ExperimentPopulations
+     */
+    'name': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof ExperimentPopulations
+     */
+    'color': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof ExperimentPopulations
+     */
+    'atlas'?: string;
+}
+/**
+ * 
+ * @export
+ * @interface ExperimentTags
+ */
+export interface ExperimentTags {
+    /**
+     * 
+     * @type {number}
+     * @memberof ExperimentTags
+     */
+    'id'?: number;
+    /**
+     * 
+     * @type {string}
+     * @memberof ExperimentTags
      */
     'name': string;
 }
@@ -149,6 +343,38 @@ export interface ExperimentUser {
 /**
  * 
  * @export
+ * @interface Member
+ */
+export interface Member {
+    /**
+     * 
+     * @type {number}
+     * @memberof Member
+     */
+    'user_id': number;
+}
+/**
+ * 
+ * @export
+ * @interface Tag
+ */
+export interface Tag {
+    /**
+     * 
+     * @type {number}
+     * @memberof Tag
+     */
+    'id'?: number;
+    /**
+     * 
+     * @type {string}
+     * @memberof Tag
+     */
+    'name': string;
+}
+/**
+ * 
+ * @export
  * @interface Team
  */
 export interface Team {
@@ -164,6 +390,99 @@ export interface Team {
      * @memberof Team
      */
     'name': string;
+}
+/**
+ * 
+ * @export
+ * @interface UserDetail
+ */
+export interface UserDetail {
+    /**
+     * 
+     * @type {number}
+     * @memberof UserDetail
+     */
+    'id'?: number;
+    /**
+     * 
+     * @type {UserDetailUser}
+     * @memberof UserDetail
+     */
+    'user'?: UserDetailUser;
+    /**
+     * 
+     * @type {string}
+     * @memberof UserDetail
+     */
+    'notification_method'?: UserDetailNotificationMethodEnum;
+    /**
+     * 
+     * @type {boolean}
+     * @memberof UserDetail
+     */
+    'notify_on_new_share'?: boolean;
+    /**
+     * 
+     * @type {boolean}
+     * @memberof UserDetail
+     */
+    'notify_on_new_team_invite'?: boolean;
+    /**
+     * 
+     * @type {boolean}
+     * @memberof UserDetail
+     */
+    'notify_on_clone_my_experiment'?: boolean;
+    /**
+     * 
+     * @type {boolean}
+     * @memberof UserDetail
+     */
+    'notify_on_news'?: boolean;
+    /**
+     * 
+     * @type {any}
+     * @memberof UserDetail
+     */
+    'avatar': any;
+}
+
+export const UserDetailNotificationMethodEnum = {
+    Email: 'email'
+} as const;
+
+export type UserDetailNotificationMethodEnum = typeof UserDetailNotificationMethodEnum[keyof typeof UserDetailNotificationMethodEnum];
+
+/**
+ * 
+ * @export
+ * @interface UserDetailUser
+ */
+export interface UserDetailUser {
+    /**
+     * 
+     * @type {number}
+     * @memberof UserDetailUser
+     */
+    'id'?: number;
+    /**
+     * 
+     * @type {string}
+     * @memberof UserDetailUser
+     */
+    'first_name'?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof UserDetailUser
+     */
+    'last_name'?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof UserDetailUser
+     */
+    'email'?: string;
 }
 /**
  * 
@@ -203,10 +522,16 @@ export interface UserTeam {
     'email'?: string;
     /**
      * 
-     * @type {Array<ExperimentTeams>}
+     * @type {Array<ExperimentOwnerGroups>}
      * @memberof UserTeam
      */
-    'groups'?: Array<ExperimentTeams>;
+    'groups'?: Array<ExperimentOwnerGroups>;
+    /**
+     * 
+     * @type {string}
+     * @memberof UserTeam
+     */
+    'avatar': string;
 }
 
 /**
@@ -218,19 +543,15 @@ export const ApiApiAxiosParamCreator = function (configuration?: Configuration) 
         /**
          * This viewset automatically provides `list`, `create`, `retrieve`, `update` actions.  Additionally we also provide extra `magic` actions `members`, `members add` and `members delete`.
          * @param {string} id A unique integer value identifying this group.
-         * @param {string} userId 
-         * @param {Team} [team] 
+         * @param {Member} [member] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        addMemberGroup: async (id: string, userId: string, team?: Team, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+        addMembersGroup: async (id: string, member?: Member, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'id' is not null or undefined
-            assertParamExists('addMemberGroup', 'id', id)
-            // verify required parameter 'userId' is not null or undefined
-            assertParamExists('addMemberGroup', 'userId', userId)
-            const localVarPath = `/api/teams/{id}/members/{user_id}/`
-                .replace(`{${"id"}}`, encodeURIComponent(String(id)))
-                .replace(`{${"user_id"}}`, encodeURIComponent(String(userId)));
+            assertParamExists('addMembersGroup', 'id', id)
+            const localVarPath = `/api/teams/{id}/add_members/`
+                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -253,7 +574,97 @@ export const ApiApiAxiosParamCreator = function (configuration?: Configuration) 
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
-            localVarRequestOptions.data = serializeDataIfNeeded(team, localVarRequestOptions, configuration)
+            localVarRequestOptions.data = serializeDataIfNeeded(member, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * This viewset automatically provides `list`, `create`, `retrieve`, `update` and `destroy` actions.
+         * @param {string} id A unique integer value identifying this experiment.
+         * @param {string} name 
+         * @param {number} [id2] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        addTagExperiment: async (id: string, name: string, id2?: number, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'id' is not null or undefined
+            assertParamExists('addTagExperiment', 'id', id)
+            // verify required parameter 'name' is not null or undefined
+            assertParamExists('addTagExperiment', 'name', name)
+            const localVarPath = `/api/experiments/{id}/tag/`
+                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+            const localVarFormParams = new ((configuration && configuration.formDataCtor) || FormData)();
+
+            // authentication bearerAuth required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+
+            if (id2 !== undefined) { 
+                localVarFormParams.append('id', id2 as any);
+            }
+    
+            if (name !== undefined) { 
+                localVarFormParams.append('name', name as any);
+            }
+    
+    
+            localVarHeaderParameter['Content-Type'] = 'multipart/form-data';
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = localVarFormParams;
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * This viewset automatically provides `list` actions.
+         * @param {Collaborator} [collaborator] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        createCollaborator: async (collaborator?: Collaborator, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/api/collaborator/`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication bearerAuth required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(collaborator, localVarRequestOptions, configuration)
 
             return {
                 url: toPathString(localVarUrlObj),
@@ -263,19 +674,22 @@ export const ApiApiAxiosParamCreator = function (configuration?: Configuration) 
         /**
          * This viewset automatically provides `list`, `create`, `retrieve`, `update` and `destroy` actions.
          * @param {string} name 
-         * @param {string} dateCreated 
          * @param {string} description 
+         * @param {number} [id] 
          * @param {boolean} [isPrivate] 
-         * @param {Array<ExperimentTeams>} [teams] 
+         * @param {string} [dateCreated] 
+         * @param {string} [lastModified] 
+         * @param {ExperimentOwner} [owner] 
+         * @param {Array<ExperimentOwnerGroups>} [teams] 
          * @param {Array<ExperimentCollaborators>} [collaborators] 
+         * @param {Array<ExperimentPopulations>} [populations] 
+         * @param {Array<ExperimentTags>} [tags] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        createExperiment: async (name: string, dateCreated: string, description: string, isPrivate?: boolean, teams?: Array<ExperimentTeams>, collaborators?: Array<ExperimentCollaborators>, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+        createExperiment: async (name: string, description: string, id?: number, isPrivate?: boolean, dateCreated?: string, lastModified?: string, owner?: ExperimentOwner, teams?: Array<ExperimentOwnerGroups>, collaborators?: Array<ExperimentCollaborators>, populations?: Array<ExperimentPopulations>, tags?: Array<ExperimentTags>, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'name' is not null or undefined
             assertParamExists('createExperiment', 'name', name)
-            // verify required parameter 'dateCreated' is not null or undefined
-            assertParamExists('createExperiment', 'dateCreated', dateCreated)
             // verify required parameter 'description' is not null or undefined
             assertParamExists('createExperiment', 'description', description)
             const localVarPath = `/api/experiments/`;
@@ -296,20 +710,32 @@ export const ApiApiAxiosParamCreator = function (configuration?: Configuration) 
             await setBearerAuthToObject(localVarHeaderParameter, configuration)
 
 
+            if (id !== undefined) { 
+                localVarFormParams.append('id', id as any);
+            }
+    
             if (name !== undefined) { 
                 localVarFormParams.append('name', name as any);
             }
     
-            if (dateCreated !== undefined) { 
-                localVarFormParams.append('date_created', dateCreated as any);
+            if (isPrivate !== undefined) { 
+                localVarFormParams.append('is_private', isPrivate as any);
             }
     
             if (description !== undefined) { 
                 localVarFormParams.append('description', description as any);
             }
     
-            if (isPrivate !== undefined) { 
-                localVarFormParams.append('is_private', isPrivate as any);
+            if (dateCreated !== undefined) { 
+                localVarFormParams.append('date_created', dateCreated as any);
+            }
+    
+            if (lastModified !== undefined) { 
+                localVarFormParams.append('last_modified', lastModified as any);
+            }
+    
+            if (owner !== undefined) { 
+                localVarFormParams.append('owner', new Blob([JSON.stringify(owner)], { type: "application/json", }));
             }
                 if (teams) {
                 localVarFormParams.append('teams', teams.join(COLLECTION_FORMATS.csv));
@@ -317,6 +743,14 @@ export const ApiApiAxiosParamCreator = function (configuration?: Configuration) 
 
                 if (collaborators) {
                 localVarFormParams.append('collaborators', collaborators.join(COLLECTION_FORMATS.csv));
+            }
+
+                if (populations) {
+                localVarFormParams.append('populations', populations.join(COLLECTION_FORMATS.csv));
+            }
+
+                if (tags) {
+                localVarFormParams.append('tags', tags.join(COLLECTION_FORMATS.csv));
             }
 
     
@@ -371,6 +805,43 @@ export const ApiApiAxiosParamCreator = function (configuration?: Configuration) 
             };
         },
         /**
+         * This viewset automatically provides `list`, `create`, `retrieve`, `update` actions.  The list action will always return the current user\'s userdetail as a list or an empty list if the current user has no userdetail
+         * @param {UserDetail} [userDetail] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        createUserDetail: async (userDetail?: UserDetail, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/api/userdetails/`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication bearerAuth required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(userDetail, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
          * This viewset automatically provides `list`, `create`, `retrieve`, `update` actions.  Additionally we also provide extra `magic` actions `members`, `members add` and `members delete`.
          * @param {string} id A unique integer value identifying this group.
          * @param {string} userId 
@@ -385,6 +856,84 @@ export const ApiApiAxiosParamCreator = function (configuration?: Configuration) 
             const localVarPath = `/api/teams/{id}/members/{user_id}/`
                 .replace(`{${"id"}}`, encodeURIComponent(String(id)))
                 .replace(`{${"user_id"}}`, encodeURIComponent(String(userId)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'DELETE', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication bearerAuth required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * This viewset automatically provides `list`, `create`, `retrieve`, `update` and `destroy` actions.
+         * @param {string} id A unique integer value identifying this experiment.
+         * @param {string} tagName 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        deleteTagExperiment: async (id: string, tagName: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'id' is not null or undefined
+            assertParamExists('deleteTagExperiment', 'id', id)
+            // verify required parameter 'tagName' is not null or undefined
+            assertParamExists('deleteTagExperiment', 'tagName', tagName)
+            const localVarPath = `/api/experiments/{id}/tag/{tag_name}/`
+                .replace(`{${"id"}}`, encodeURIComponent(String(id)))
+                .replace(`{${"tag_name"}}`, encodeURIComponent(String(tagName)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'DELETE', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication bearerAuth required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * This viewset automatically provides `list` actions.
+         * @param {string} id A unique integer value identifying this collaborator.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        destroyCollaborator: async (id: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'id' is not null or undefined
+            assertParamExists('destroyCollaborator', 'id', id)
+            const localVarPath = `/api/collaborator/{id}/`
+                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -449,6 +998,76 @@ export const ApiApiAxiosParamCreator = function (configuration?: Configuration) 
             };
         },
         /**
+         * This viewset automatically provides `list`, `create`, `retrieve`, `update` actions.  The list action will always return the current user\'s userdetail as a list or an empty list if the current user has no userdetail
+         * @param {string} id A unique integer value identifying this user detail.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        destroyUserDetail: async (id: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'id' is not null or undefined
+            assertParamExists('destroyUserDetail', 'id', id)
+            const localVarPath = `/api/userdetails/{id}/`
+                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'DELETE', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication bearerAuth required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * This viewset automatically provides `list` actions.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        listCollaborators: async (options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/api/collaborator/`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication bearerAuth required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
          * This viewset automatically provides `list`, `create`, `retrieve`, `update` and `destroy` actions.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -488,6 +1107,72 @@ export const ApiApiAxiosParamCreator = function (configuration?: Configuration) 
          */
         listGroups: async (options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             const localVarPath = `/api/teams/`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication bearerAuth required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * This viewset automatically provides `list`
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        listTags: async (options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/api/tags/`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication bearerAuth required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * This viewset automatically provides `list`, `create`, `retrieve`, `update` actions.  The list action will always return the current user\'s userdetail as a list or an empty list if the current user has no userdetail
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        listUserDetails: async (options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/api/userdetails/`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -651,24 +1336,68 @@ export const ApiApiAxiosParamCreator = function (configuration?: Configuration) 
             };
         },
         /**
-         * This viewset automatically provides `list`, `create`, `retrieve`, `update` and `destroy` actions.
-         * @param {string} id A unique integer value identifying this experiment.
-         * @param {string} name 
-         * @param {string} dateCreated 
-         * @param {string} description 
-         * @param {boolean} [isPrivate] 
-         * @param {Array<ExperimentTeams>} [teams] 
-         * @param {Array<ExperimentCollaborators>} [collaborators] 
+         * This viewset automatically provides `list` actions.
+         * @param {string} id A unique integer value identifying this collaborator.
+         * @param {Collaborator} [collaborator] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        partialUpdateExperiment: async (id: string, name: string, dateCreated: string, description: string, isPrivate?: boolean, teams?: Array<ExperimentTeams>, collaborators?: Array<ExperimentCollaborators>, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+        partialUpdateCollaborator: async (id: string, collaborator?: Collaborator, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'id' is not null or undefined
+            assertParamExists('partialUpdateCollaborator', 'id', id)
+            const localVarPath = `/api/collaborator/{id}/`
+                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'PATCH', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication bearerAuth required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(collaborator, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * This viewset automatically provides `list`, `create`, `retrieve`, `update` and `destroy` actions.
+         * @param {string} id A unique integer value identifying this experiment.
+         * @param {string} name 
+         * @param {string} description 
+         * @param {number} [id2] 
+         * @param {boolean} [isPrivate] 
+         * @param {string} [dateCreated] 
+         * @param {string} [lastModified] 
+         * @param {ExperimentOwner} [owner] 
+         * @param {Array<ExperimentOwnerGroups>} [teams] 
+         * @param {Array<ExperimentCollaborators>} [collaborators] 
+         * @param {Array<ExperimentPopulations>} [populations] 
+         * @param {Array<ExperimentTags>} [tags] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        partialUpdateExperiment: async (id: string, name: string, description: string, id2?: number, isPrivate?: boolean, dateCreated?: string, lastModified?: string, owner?: ExperimentOwner, teams?: Array<ExperimentOwnerGroups>, collaborators?: Array<ExperimentCollaborators>, populations?: Array<ExperimentPopulations>, tags?: Array<ExperimentTags>, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'id' is not null or undefined
             assertParamExists('partialUpdateExperiment', 'id', id)
             // verify required parameter 'name' is not null or undefined
             assertParamExists('partialUpdateExperiment', 'name', name)
-            // verify required parameter 'dateCreated' is not null or undefined
-            assertParamExists('partialUpdateExperiment', 'dateCreated', dateCreated)
             // verify required parameter 'description' is not null or undefined
             assertParamExists('partialUpdateExperiment', 'description', description)
             const localVarPath = `/api/experiments/{id}/`
@@ -690,20 +1419,32 @@ export const ApiApiAxiosParamCreator = function (configuration?: Configuration) 
             await setBearerAuthToObject(localVarHeaderParameter, configuration)
 
 
+            if (id2 !== undefined) { 
+                localVarFormParams.append('id', id2 as any);
+            }
+    
             if (name !== undefined) { 
                 localVarFormParams.append('name', name as any);
             }
     
-            if (dateCreated !== undefined) { 
-                localVarFormParams.append('date_created', dateCreated as any);
+            if (isPrivate !== undefined) { 
+                localVarFormParams.append('is_private', isPrivate as any);
             }
     
             if (description !== undefined) { 
                 localVarFormParams.append('description', description as any);
             }
     
-            if (isPrivate !== undefined) { 
-                localVarFormParams.append('is_private', isPrivate as any);
+            if (dateCreated !== undefined) { 
+                localVarFormParams.append('date_created', dateCreated as any);
+            }
+    
+            if (lastModified !== undefined) { 
+                localVarFormParams.append('last_modified', lastModified as any);
+            }
+    
+            if (owner !== undefined) { 
+                localVarFormParams.append('owner', new Blob([JSON.stringify(owner)], { type: "application/json", }));
             }
                 if (teams) {
                 localVarFormParams.append('teams', teams.join(COLLECTION_FORMATS.csv));
@@ -711,6 +1452,14 @@ export const ApiApiAxiosParamCreator = function (configuration?: Configuration) 
 
                 if (collaborators) {
                 localVarFormParams.append('collaborators', collaborators.join(COLLECTION_FORMATS.csv));
+            }
+
+                if (populations) {
+                localVarFormParams.append('populations', populations.join(COLLECTION_FORMATS.csv));
+            }
+
+                if (tags) {
+                localVarFormParams.append('tags', tags.join(COLLECTION_FORMATS.csv));
             }
 
     
@@ -769,12 +1518,90 @@ export const ApiApiAxiosParamCreator = function (configuration?: Configuration) 
             };
         },
         /**
+         * This viewset automatically provides `list`, `create`, `retrieve`, `update` actions.  The list action will always return the current user\'s userdetail as a list or an empty list if the current user has no userdetail
+         * @param {string} id A unique integer value identifying this user detail.
+         * @param {UserDetail} [userDetail] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        partialUpdateUserDetail: async (id: string, userDetail?: UserDetail, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'id' is not null or undefined
+            assertParamExists('partialUpdateUserDetail', 'id', id)
+            const localVarPath = `/api/userdetails/{id}/`
+                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'PATCH', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication bearerAuth required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(userDetail, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
          * This viewset automatically provides `list`, `create`, `retrieve`, `update` and `destroy` actions.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
         publicExperiment: async (options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             const localVarPath = `/api/experiments/public/`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication bearerAuth required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * This viewset automatically provides `list` actions.
+         * @param {string} id A unique integer value identifying this collaborator.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        retrieveCollaborator: async (id: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'id' is not null or undefined
+            assertParamExists('retrieveCollaborator', 'id', id)
+            const localVarPath = `/api/collaborator/{id}/`
+                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -876,6 +1703,43 @@ export const ApiApiAxiosParamCreator = function (configuration?: Configuration) 
             };
         },
         /**
+         * This viewset automatically provides `list`, `create`, `retrieve`, `update` actions.  The list action will always return the current user\'s userdetail as a list or an empty list if the current user has no userdetail
+         * @param {string} id A unique integer value identifying this user detail.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        retrieveUserDetail: async (id: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'id' is not null or undefined
+            assertParamExists('retrieveUserDetail', 'id', id)
+            const localVarPath = `/api/userdetails/{id}/`
+                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication bearerAuth required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
          * This viewset automatically provides `list`, `create`, `retrieve`, `update` and `destroy` actions.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -909,24 +1773,68 @@ export const ApiApiAxiosParamCreator = function (configuration?: Configuration) 
             };
         },
         /**
-         * This viewset automatically provides `list`, `create`, `retrieve`, `update` and `destroy` actions.
-         * @param {string} id A unique integer value identifying this experiment.
-         * @param {string} name 
-         * @param {string} dateCreated 
-         * @param {string} description 
-         * @param {boolean} [isPrivate] 
-         * @param {Array<ExperimentTeams>} [teams] 
-         * @param {Array<ExperimentCollaborators>} [collaborators] 
+         * This viewset automatically provides `list` actions.
+         * @param {string} id A unique integer value identifying this collaborator.
+         * @param {Collaborator} [collaborator] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        updateExperiment: async (id: string, name: string, dateCreated: string, description: string, isPrivate?: boolean, teams?: Array<ExperimentTeams>, collaborators?: Array<ExperimentCollaborators>, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+        updateCollaborator: async (id: string, collaborator?: Collaborator, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'id' is not null or undefined
+            assertParamExists('updateCollaborator', 'id', id)
+            const localVarPath = `/api/collaborator/{id}/`
+                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'PUT', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication bearerAuth required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(collaborator, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * This viewset automatically provides `list`, `create`, `retrieve`, `update` and `destroy` actions.
+         * @param {string} id A unique integer value identifying this experiment.
+         * @param {string} name 
+         * @param {string} description 
+         * @param {number} [id2] 
+         * @param {boolean} [isPrivate] 
+         * @param {string} [dateCreated] 
+         * @param {string} [lastModified] 
+         * @param {ExperimentOwner} [owner] 
+         * @param {Array<ExperimentOwnerGroups>} [teams] 
+         * @param {Array<ExperimentCollaborators>} [collaborators] 
+         * @param {Array<ExperimentPopulations>} [populations] 
+         * @param {Array<ExperimentTags>} [tags] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        updateExperiment: async (id: string, name: string, description: string, id2?: number, isPrivate?: boolean, dateCreated?: string, lastModified?: string, owner?: ExperimentOwner, teams?: Array<ExperimentOwnerGroups>, collaborators?: Array<ExperimentCollaborators>, populations?: Array<ExperimentPopulations>, tags?: Array<ExperimentTags>, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'id' is not null or undefined
             assertParamExists('updateExperiment', 'id', id)
             // verify required parameter 'name' is not null or undefined
             assertParamExists('updateExperiment', 'name', name)
-            // verify required parameter 'dateCreated' is not null or undefined
-            assertParamExists('updateExperiment', 'dateCreated', dateCreated)
             // verify required parameter 'description' is not null or undefined
             assertParamExists('updateExperiment', 'description', description)
             const localVarPath = `/api/experiments/{id}/`
@@ -948,20 +1856,32 @@ export const ApiApiAxiosParamCreator = function (configuration?: Configuration) 
             await setBearerAuthToObject(localVarHeaderParameter, configuration)
 
 
+            if (id2 !== undefined) { 
+                localVarFormParams.append('id', id2 as any);
+            }
+    
             if (name !== undefined) { 
                 localVarFormParams.append('name', name as any);
             }
     
-            if (dateCreated !== undefined) { 
-                localVarFormParams.append('date_created', dateCreated as any);
+            if (isPrivate !== undefined) { 
+                localVarFormParams.append('is_private', isPrivate as any);
             }
     
             if (description !== undefined) { 
                 localVarFormParams.append('description', description as any);
             }
     
-            if (isPrivate !== undefined) { 
-                localVarFormParams.append('is_private', isPrivate as any);
+            if (dateCreated !== undefined) { 
+                localVarFormParams.append('date_created', dateCreated as any);
+            }
+    
+            if (lastModified !== undefined) { 
+                localVarFormParams.append('last_modified', lastModified as any);
+            }
+    
+            if (owner !== undefined) { 
+                localVarFormParams.append('owner', new Blob([JSON.stringify(owner)], { type: "application/json", }));
             }
                 if (teams) {
                 localVarFormParams.append('teams', teams.join(COLLECTION_FORMATS.csv));
@@ -969,6 +1889,14 @@ export const ApiApiAxiosParamCreator = function (configuration?: Configuration) 
 
                 if (collaborators) {
                 localVarFormParams.append('collaborators', collaborators.join(COLLECTION_FORMATS.csv));
+            }
+
+                if (populations) {
+                localVarFormParams.append('populations', populations.join(COLLECTION_FORMATS.csv));
+            }
+
+                if (tags) {
+                localVarFormParams.append('tags', tags.join(COLLECTION_FORMATS.csv));
             }
 
     
@@ -1020,6 +1948,47 @@ export const ApiApiAxiosParamCreator = function (configuration?: Configuration) 
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
             localVarRequestOptions.data = serializeDataIfNeeded(team, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * This viewset automatically provides `list`, `create`, `retrieve`, `update` actions.  The list action will always return the current user\'s userdetail as a list or an empty list if the current user has no userdetail
+         * @param {string} id A unique integer value identifying this user detail.
+         * @param {UserDetail} [userDetail] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        updateUserDetail: async (id: string, userDetail?: UserDetail, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'id' is not null or undefined
+            assertParamExists('updateUserDetail', 'id', id)
+            const localVarPath = `/api/userdetails/{id}/`
+                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'PUT', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication bearerAuth required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(userDetail, localVarRequestOptions, configuration)
 
             return {
                 url: toPathString(localVarUrlObj),
@@ -1087,28 +2056,54 @@ export const ApiApiFp = function(configuration?: Configuration) {
         /**
          * This viewset automatically provides `list`, `create`, `retrieve`, `update` actions.  Additionally we also provide extra `magic` actions `members`, `members add` and `members delete`.
          * @param {string} id A unique integer value identifying this group.
-         * @param {string} userId 
-         * @param {Team} [team] 
+         * @param {Member} [member] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async addMemberGroup(id: string, userId: string, team?: Team, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Team>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.addMemberGroup(id, userId, team, options);
+        async addMembersGroup(id: string, member?: Member, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Member>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.addMembersGroup(id, member, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * This viewset automatically provides `list`, `create`, `retrieve`, `update` and `destroy` actions.
+         * @param {string} id A unique integer value identifying this experiment.
+         * @param {string} name 
+         * @param {number} [id2] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async addTagExperiment(id: string, name: string, id2?: number, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Tag>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.addTagExperiment(id, name, id2, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * This viewset automatically provides `list` actions.
+         * @param {Collaborator} [collaborator] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async createCollaborator(collaborator?: Collaborator, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Collaborator>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.createCollaborator(collaborator, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
          * This viewset automatically provides `list`, `create`, `retrieve`, `update` and `destroy` actions.
          * @param {string} name 
-         * @param {string} dateCreated 
          * @param {string} description 
+         * @param {number} [id] 
          * @param {boolean} [isPrivate] 
-         * @param {Array<ExperimentTeams>} [teams] 
+         * @param {string} [dateCreated] 
+         * @param {string} [lastModified] 
+         * @param {ExperimentOwner} [owner] 
+         * @param {Array<ExperimentOwnerGroups>} [teams] 
          * @param {Array<ExperimentCollaborators>} [collaborators] 
+         * @param {Array<ExperimentPopulations>} [populations] 
+         * @param {Array<ExperimentTags>} [tags] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async createExperiment(name: string, dateCreated: string, description: string, isPrivate?: boolean, teams?: Array<ExperimentTeams>, collaborators?: Array<ExperimentCollaborators>, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Experiment>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.createExperiment(name, dateCreated, description, isPrivate, teams, collaborators, options);
+        async createExperiment(name: string, description: string, id?: number, isPrivate?: boolean, dateCreated?: string, lastModified?: string, owner?: ExperimentOwner, teams?: Array<ExperimentOwnerGroups>, collaborators?: Array<ExperimentCollaborators>, populations?: Array<ExperimentPopulations>, tags?: Array<ExperimentTags>, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Experiment>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.createExperiment(name, description, id, isPrivate, dateCreated, lastModified, owner, teams, collaborators, populations, tags, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
@@ -1119,6 +2114,16 @@ export const ApiApiFp = function(configuration?: Configuration) {
          */
         async createGroup(team?: Team, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Team>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.createGroup(team, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * This viewset automatically provides `list`, `create`, `retrieve`, `update` actions.  The list action will always return the current user\'s userdetail as a list or an empty list if the current user has no userdetail
+         * @param {UserDetail} [userDetail] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async createUserDetail(userDetail?: UserDetail, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<UserDetail>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.createUserDetail(userDetail, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
@@ -1135,11 +2140,51 @@ export const ApiApiFp = function(configuration?: Configuration) {
         /**
          * This viewset automatically provides `list`, `create`, `retrieve`, `update` and `destroy` actions.
          * @param {string} id A unique integer value identifying this experiment.
+         * @param {string} tagName 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async deleteTagExperiment(id: string, tagName: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.deleteTagExperiment(id, tagName, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * This viewset automatically provides `list` actions.
+         * @param {string} id A unique integer value identifying this collaborator.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async destroyCollaborator(id: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.destroyCollaborator(id, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * This viewset automatically provides `list`, `create`, `retrieve`, `update` and `destroy` actions.
+         * @param {string} id A unique integer value identifying this experiment.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
         async destroyExperiment(id: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.destroyExperiment(id, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * This viewset automatically provides `list`, `create`, `retrieve`, `update` actions.  The list action will always return the current user\'s userdetail as a list or an empty list if the current user has no userdetail
+         * @param {string} id A unique integer value identifying this user detail.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async destroyUserDetail(id: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.destroyUserDetail(id, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * This viewset automatically provides `list` actions.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async listCollaborators(options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<Collaborator>>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.listCollaborators(options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
@@ -1158,6 +2203,24 @@ export const ApiApiFp = function(configuration?: Configuration) {
          */
         async listGroups(options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<Team>>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.listGroups(options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * This viewset automatically provides `list`
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async listTags(options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<Tag>>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.listTags(options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * This viewset automatically provides `list`, `create`, `retrieve`, `update` actions.  The list action will always return the current user\'s userdetail as a list or an empty list if the current user has no userdetail
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async listUserDetails(options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<UserDetail>>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.listUserDetails(options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
@@ -1198,19 +2261,35 @@ export const ApiApiFp = function(configuration?: Configuration) {
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
-         * This viewset automatically provides `list`, `create`, `retrieve`, `update` and `destroy` actions.
-         * @param {string} id A unique integer value identifying this experiment.
-         * @param {string} name 
-         * @param {string} dateCreated 
-         * @param {string} description 
-         * @param {boolean} [isPrivate] 
-         * @param {Array<ExperimentTeams>} [teams] 
-         * @param {Array<ExperimentCollaborators>} [collaborators] 
+         * This viewset automatically provides `list` actions.
+         * @param {string} id A unique integer value identifying this collaborator.
+         * @param {Collaborator} [collaborator] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async partialUpdateExperiment(id: string, name: string, dateCreated: string, description: string, isPrivate?: boolean, teams?: Array<ExperimentTeams>, collaborators?: Array<ExperimentCollaborators>, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Experiment>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.partialUpdateExperiment(id, name, dateCreated, description, isPrivate, teams, collaborators, options);
+        async partialUpdateCollaborator(id: string, collaborator?: Collaborator, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Collaborator>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.partialUpdateCollaborator(id, collaborator, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * This viewset automatically provides `list`, `create`, `retrieve`, `update` and `destroy` actions.
+         * @param {string} id A unique integer value identifying this experiment.
+         * @param {string} name 
+         * @param {string} description 
+         * @param {number} [id2] 
+         * @param {boolean} [isPrivate] 
+         * @param {string} [dateCreated] 
+         * @param {string} [lastModified] 
+         * @param {ExperimentOwner} [owner] 
+         * @param {Array<ExperimentOwnerGroups>} [teams] 
+         * @param {Array<ExperimentCollaborators>} [collaborators] 
+         * @param {Array<ExperimentPopulations>} [populations] 
+         * @param {Array<ExperimentTags>} [tags] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async partialUpdateExperiment(id: string, name: string, description: string, id2?: number, isPrivate?: boolean, dateCreated?: string, lastModified?: string, owner?: ExperimentOwner, teams?: Array<ExperimentOwnerGroups>, collaborators?: Array<ExperimentCollaborators>, populations?: Array<ExperimentPopulations>, tags?: Array<ExperimentTags>, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Experiment>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.partialUpdateExperiment(id, name, description, id2, isPrivate, dateCreated, lastModified, owner, teams, collaborators, populations, tags, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
@@ -1225,12 +2304,33 @@ export const ApiApiFp = function(configuration?: Configuration) {
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
+         * This viewset automatically provides `list`, `create`, `retrieve`, `update` actions.  The list action will always return the current user\'s userdetail as a list or an empty list if the current user has no userdetail
+         * @param {string} id A unique integer value identifying this user detail.
+         * @param {UserDetail} [userDetail] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async partialUpdateUserDetail(id: string, userDetail?: UserDetail, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<UserDetail>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.partialUpdateUserDetail(id, userDetail, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
          * This viewset automatically provides `list`, `create`, `retrieve`, `update` and `destroy` actions.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
         async publicExperiment(options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Experiment>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.publicExperiment(options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * This viewset automatically provides `list` actions.
+         * @param {string} id A unique integer value identifying this collaborator.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async retrieveCollaborator(id: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Collaborator>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.retrieveCollaborator(id, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
@@ -1254,6 +2354,16 @@ export const ApiApiFp = function(configuration?: Configuration) {
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
+         * This viewset automatically provides `list`, `create`, `retrieve`, `update` actions.  The list action will always return the current user\'s userdetail as a list or an empty list if the current user has no userdetail
+         * @param {string} id A unique integer value identifying this user detail.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async retrieveUserDetail(id: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<UserDetail>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.retrieveUserDetail(id, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
          * This viewset automatically provides `list`, `create`, `retrieve`, `update` and `destroy` actions.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -1263,19 +2373,35 @@ export const ApiApiFp = function(configuration?: Configuration) {
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
-         * This viewset automatically provides `list`, `create`, `retrieve`, `update` and `destroy` actions.
-         * @param {string} id A unique integer value identifying this experiment.
-         * @param {string} name 
-         * @param {string} dateCreated 
-         * @param {string} description 
-         * @param {boolean} [isPrivate] 
-         * @param {Array<ExperimentTeams>} [teams] 
-         * @param {Array<ExperimentCollaborators>} [collaborators] 
+         * This viewset automatically provides `list` actions.
+         * @param {string} id A unique integer value identifying this collaborator.
+         * @param {Collaborator} [collaborator] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async updateExperiment(id: string, name: string, dateCreated: string, description: string, isPrivate?: boolean, teams?: Array<ExperimentTeams>, collaborators?: Array<ExperimentCollaborators>, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Experiment>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.updateExperiment(id, name, dateCreated, description, isPrivate, teams, collaborators, options);
+        async updateCollaborator(id: string, collaborator?: Collaborator, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Collaborator>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.updateCollaborator(id, collaborator, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * This viewset automatically provides `list`, `create`, `retrieve`, `update` and `destroy` actions.
+         * @param {string} id A unique integer value identifying this experiment.
+         * @param {string} name 
+         * @param {string} description 
+         * @param {number} [id2] 
+         * @param {boolean} [isPrivate] 
+         * @param {string} [dateCreated] 
+         * @param {string} [lastModified] 
+         * @param {ExperimentOwner} [owner] 
+         * @param {Array<ExperimentOwnerGroups>} [teams] 
+         * @param {Array<ExperimentCollaborators>} [collaborators] 
+         * @param {Array<ExperimentPopulations>} [populations] 
+         * @param {Array<ExperimentTags>} [tags] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async updateExperiment(id: string, name: string, description: string, id2?: number, isPrivate?: boolean, dateCreated?: string, lastModified?: string, owner?: ExperimentOwner, teams?: Array<ExperimentOwnerGroups>, collaborators?: Array<ExperimentCollaborators>, populations?: Array<ExperimentPopulations>, tags?: Array<ExperimentTags>, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Experiment>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.updateExperiment(id, name, description, id2, isPrivate, dateCreated, lastModified, owner, teams, collaborators, populations, tags, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
@@ -1287,6 +2413,17 @@ export const ApiApiFp = function(configuration?: Configuration) {
          */
         async updateGroup(id: string, team?: Team, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Team>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.updateGroup(id, team, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * This viewset automatically provides `list`, `create`, `retrieve`, `update` actions.  The list action will always return the current user\'s userdetail as a list or an empty list if the current user has no userdetail
+         * @param {string} id A unique integer value identifying this user detail.
+         * @param {UserDetail} [userDetail] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async updateUserDetail(id: string, userDetail?: UserDetail, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<UserDetail>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.updateUserDetail(id, userDetail, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
@@ -1313,27 +2450,51 @@ export const ApiApiFactory = function (configuration?: Configuration, basePath?:
         /**
          * This viewset automatically provides `list`, `create`, `retrieve`, `update` actions.  Additionally we also provide extra `magic` actions `members`, `members add` and `members delete`.
          * @param {string} id A unique integer value identifying this group.
-         * @param {string} userId 
-         * @param {Team} [team] 
+         * @param {Member} [member] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        addMemberGroup(id: string, userId: string, team?: Team, options?: any): AxiosPromise<Team> {
-            return localVarFp.addMemberGroup(id, userId, team, options).then((request) => request(axios, basePath));
+        addMembersGroup(id: string, member?: Member, options?: any): AxiosPromise<Member> {
+            return localVarFp.addMembersGroup(id, member, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * This viewset automatically provides `list`, `create`, `retrieve`, `update` and `destroy` actions.
+         * @param {string} id A unique integer value identifying this experiment.
+         * @param {string} name 
+         * @param {number} [id2] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        addTagExperiment(id: string, name: string, id2?: number, options?: any): AxiosPromise<Tag> {
+            return localVarFp.addTagExperiment(id, name, id2, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * This viewset automatically provides `list` actions.
+         * @param {Collaborator} [collaborator] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        createCollaborator(collaborator?: Collaborator, options?: any): AxiosPromise<Collaborator> {
+            return localVarFp.createCollaborator(collaborator, options).then((request) => request(axios, basePath));
         },
         /**
          * This viewset automatically provides `list`, `create`, `retrieve`, `update` and `destroy` actions.
          * @param {string} name 
-         * @param {string} dateCreated 
          * @param {string} description 
+         * @param {number} [id] 
          * @param {boolean} [isPrivate] 
-         * @param {Array<ExperimentTeams>} [teams] 
+         * @param {string} [dateCreated] 
+         * @param {string} [lastModified] 
+         * @param {ExperimentOwner} [owner] 
+         * @param {Array<ExperimentOwnerGroups>} [teams] 
          * @param {Array<ExperimentCollaborators>} [collaborators] 
+         * @param {Array<ExperimentPopulations>} [populations] 
+         * @param {Array<ExperimentTags>} [tags] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        createExperiment(name: string, dateCreated: string, description: string, isPrivate?: boolean, teams?: Array<ExperimentTeams>, collaborators?: Array<ExperimentCollaborators>, options?: any): AxiosPromise<Experiment> {
-            return localVarFp.createExperiment(name, dateCreated, description, isPrivate, teams, collaborators, options).then((request) => request(axios, basePath));
+        createExperiment(name: string, description: string, id?: number, isPrivate?: boolean, dateCreated?: string, lastModified?: string, owner?: ExperimentOwner, teams?: Array<ExperimentOwnerGroups>, collaborators?: Array<ExperimentCollaborators>, populations?: Array<ExperimentPopulations>, tags?: Array<ExperimentTags>, options?: any): AxiosPromise<Experiment> {
+            return localVarFp.createExperiment(name, description, id, isPrivate, dateCreated, lastModified, owner, teams, collaborators, populations, tags, options).then((request) => request(axios, basePath));
         },
         /**
          * This viewset automatically provides `list`, `create`, `retrieve`, `update` actions.  Additionally we also provide extra `magic` actions `members`, `members add` and `members delete`.
@@ -1343,6 +2504,15 @@ export const ApiApiFactory = function (configuration?: Configuration, basePath?:
          */
         createGroup(team?: Team, options?: any): AxiosPromise<Team> {
             return localVarFp.createGroup(team, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * This viewset automatically provides `list`, `create`, `retrieve`, `update` actions.  The list action will always return the current user\'s userdetail as a list or an empty list if the current user has no userdetail
+         * @param {UserDetail} [userDetail] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        createUserDetail(userDetail?: UserDetail, options?: any): AxiosPromise<UserDetail> {
+            return localVarFp.createUserDetail(userDetail, options).then((request) => request(axios, basePath));
         },
         /**
          * This viewset automatically provides `list`, `create`, `retrieve`, `update` actions.  Additionally we also provide extra `magic` actions `members`, `members add` and `members delete`.
@@ -1357,11 +2527,47 @@ export const ApiApiFactory = function (configuration?: Configuration, basePath?:
         /**
          * This viewset automatically provides `list`, `create`, `retrieve`, `update` and `destroy` actions.
          * @param {string} id A unique integer value identifying this experiment.
+         * @param {string} tagName 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        deleteTagExperiment(id: string, tagName: string, options?: any): AxiosPromise<void> {
+            return localVarFp.deleteTagExperiment(id, tagName, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * This viewset automatically provides `list` actions.
+         * @param {string} id A unique integer value identifying this collaborator.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        destroyCollaborator(id: string, options?: any): AxiosPromise<void> {
+            return localVarFp.destroyCollaborator(id, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * This viewset automatically provides `list`, `create`, `retrieve`, `update` and `destroy` actions.
+         * @param {string} id A unique integer value identifying this experiment.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
         destroyExperiment(id: string, options?: any): AxiosPromise<void> {
             return localVarFp.destroyExperiment(id, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * This viewset automatically provides `list`, `create`, `retrieve`, `update` actions.  The list action will always return the current user\'s userdetail as a list or an empty list if the current user has no userdetail
+         * @param {string} id A unique integer value identifying this user detail.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        destroyUserDetail(id: string, options?: any): AxiosPromise<void> {
+            return localVarFp.destroyUserDetail(id, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * This viewset automatically provides `list` actions.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        listCollaborators(options?: any): AxiosPromise<Array<Collaborator>> {
+            return localVarFp.listCollaborators(options).then((request) => request(axios, basePath));
         },
         /**
          * This viewset automatically provides `list`, `create`, `retrieve`, `update` and `destroy` actions.
@@ -1378,6 +2584,22 @@ export const ApiApiFactory = function (configuration?: Configuration, basePath?:
          */
         listGroups(options?: any): AxiosPromise<Array<Team>> {
             return localVarFp.listGroups(options).then((request) => request(axios, basePath));
+        },
+        /**
+         * This viewset automatically provides `list`
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        listTags(options?: any): AxiosPromise<Array<Tag>> {
+            return localVarFp.listTags(options).then((request) => request(axios, basePath));
+        },
+        /**
+         * This viewset automatically provides `list`, `create`, `retrieve`, `update` actions.  The list action will always return the current user\'s userdetail as a list or an empty list if the current user has no userdetail
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        listUserDetails(options?: any): AxiosPromise<Array<UserDetail>> {
+            return localVarFp.listUserDetails(options).then((request) => request(axios, basePath));
         },
         /**
          * This viewset automatically provides `list` actions.
@@ -1413,19 +2635,34 @@ export const ApiApiFactory = function (configuration?: Configuration, basePath?:
             return localVarFp.myteamsExperiment(options).then((request) => request(axios, basePath));
         },
         /**
-         * This viewset automatically provides `list`, `create`, `retrieve`, `update` and `destroy` actions.
-         * @param {string} id A unique integer value identifying this experiment.
-         * @param {string} name 
-         * @param {string} dateCreated 
-         * @param {string} description 
-         * @param {boolean} [isPrivate] 
-         * @param {Array<ExperimentTeams>} [teams] 
-         * @param {Array<ExperimentCollaborators>} [collaborators] 
+         * This viewset automatically provides `list` actions.
+         * @param {string} id A unique integer value identifying this collaborator.
+         * @param {Collaborator} [collaborator] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        partialUpdateExperiment(id: string, name: string, dateCreated: string, description: string, isPrivate?: boolean, teams?: Array<ExperimentTeams>, collaborators?: Array<ExperimentCollaborators>, options?: any): AxiosPromise<Experiment> {
-            return localVarFp.partialUpdateExperiment(id, name, dateCreated, description, isPrivate, teams, collaborators, options).then((request) => request(axios, basePath));
+        partialUpdateCollaborator(id: string, collaborator?: Collaborator, options?: any): AxiosPromise<Collaborator> {
+            return localVarFp.partialUpdateCollaborator(id, collaborator, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * This viewset automatically provides `list`, `create`, `retrieve`, `update` and `destroy` actions.
+         * @param {string} id A unique integer value identifying this experiment.
+         * @param {string} name 
+         * @param {string} description 
+         * @param {number} [id2] 
+         * @param {boolean} [isPrivate] 
+         * @param {string} [dateCreated] 
+         * @param {string} [lastModified] 
+         * @param {ExperimentOwner} [owner] 
+         * @param {Array<ExperimentOwnerGroups>} [teams] 
+         * @param {Array<ExperimentCollaborators>} [collaborators] 
+         * @param {Array<ExperimentPopulations>} [populations] 
+         * @param {Array<ExperimentTags>} [tags] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        partialUpdateExperiment(id: string, name: string, description: string, id2?: number, isPrivate?: boolean, dateCreated?: string, lastModified?: string, owner?: ExperimentOwner, teams?: Array<ExperimentOwnerGroups>, collaborators?: Array<ExperimentCollaborators>, populations?: Array<ExperimentPopulations>, tags?: Array<ExperimentTags>, options?: any): AxiosPromise<Experiment> {
+            return localVarFp.partialUpdateExperiment(id, name, description, id2, isPrivate, dateCreated, lastModified, owner, teams, collaborators, populations, tags, options).then((request) => request(axios, basePath));
         },
         /**
          * This viewset automatically provides `list`, `create`, `retrieve`, `update` actions.  Additionally we also provide extra `magic` actions `members`, `members add` and `members delete`.
@@ -1438,12 +2675,31 @@ export const ApiApiFactory = function (configuration?: Configuration, basePath?:
             return localVarFp.partialUpdateGroup(id, team, options).then((request) => request(axios, basePath));
         },
         /**
+         * This viewset automatically provides `list`, `create`, `retrieve`, `update` actions.  The list action will always return the current user\'s userdetail as a list or an empty list if the current user has no userdetail
+         * @param {string} id A unique integer value identifying this user detail.
+         * @param {UserDetail} [userDetail] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        partialUpdateUserDetail(id: string, userDetail?: UserDetail, options?: any): AxiosPromise<UserDetail> {
+            return localVarFp.partialUpdateUserDetail(id, userDetail, options).then((request) => request(axios, basePath));
+        },
+        /**
          * This viewset automatically provides `list`, `create`, `retrieve`, `update` and `destroy` actions.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
         publicExperiment(options?: any): AxiosPromise<Experiment> {
             return localVarFp.publicExperiment(options).then((request) => request(axios, basePath));
+        },
+        /**
+         * This viewset automatically provides `list` actions.
+         * @param {string} id A unique integer value identifying this collaborator.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        retrieveCollaborator(id: string, options?: any): AxiosPromise<Collaborator> {
+            return localVarFp.retrieveCollaborator(id, options).then((request) => request(axios, basePath));
         },
         /**
          * This viewset automatically provides `list`, `create`, `retrieve`, `update` and `destroy` actions.
@@ -1464,6 +2720,15 @@ export const ApiApiFactory = function (configuration?: Configuration, basePath?:
             return localVarFp.retrieveGroup(id, options).then((request) => request(axios, basePath));
         },
         /**
+         * This viewset automatically provides `list`, `create`, `retrieve`, `update` actions.  The list action will always return the current user\'s userdetail as a list or an empty list if the current user has no userdetail
+         * @param {string} id A unique integer value identifying this user detail.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        retrieveUserDetail(id: string, options?: any): AxiosPromise<UserDetail> {
+            return localVarFp.retrieveUserDetail(id, options).then((request) => request(axios, basePath));
+        },
+        /**
          * This viewset automatically provides `list`, `create`, `retrieve`, `update` and `destroy` actions.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -1472,19 +2737,34 @@ export const ApiApiFactory = function (configuration?: Configuration, basePath?:
             return localVarFp.sharedwithmeExperiment(options).then((request) => request(axios, basePath));
         },
         /**
-         * This viewset automatically provides `list`, `create`, `retrieve`, `update` and `destroy` actions.
-         * @param {string} id A unique integer value identifying this experiment.
-         * @param {string} name 
-         * @param {string} dateCreated 
-         * @param {string} description 
-         * @param {boolean} [isPrivate] 
-         * @param {Array<ExperimentTeams>} [teams] 
-         * @param {Array<ExperimentCollaborators>} [collaborators] 
+         * This viewset automatically provides `list` actions.
+         * @param {string} id A unique integer value identifying this collaborator.
+         * @param {Collaborator} [collaborator] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        updateExperiment(id: string, name: string, dateCreated: string, description: string, isPrivate?: boolean, teams?: Array<ExperimentTeams>, collaborators?: Array<ExperimentCollaborators>, options?: any): AxiosPromise<Experiment> {
-            return localVarFp.updateExperiment(id, name, dateCreated, description, isPrivate, teams, collaborators, options).then((request) => request(axios, basePath));
+        updateCollaborator(id: string, collaborator?: Collaborator, options?: any): AxiosPromise<Collaborator> {
+            return localVarFp.updateCollaborator(id, collaborator, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * This viewset automatically provides `list`, `create`, `retrieve`, `update` and `destroy` actions.
+         * @param {string} id A unique integer value identifying this experiment.
+         * @param {string} name 
+         * @param {string} description 
+         * @param {number} [id2] 
+         * @param {boolean} [isPrivate] 
+         * @param {string} [dateCreated] 
+         * @param {string} [lastModified] 
+         * @param {ExperimentOwner} [owner] 
+         * @param {Array<ExperimentOwnerGroups>} [teams] 
+         * @param {Array<ExperimentCollaborators>} [collaborators] 
+         * @param {Array<ExperimentPopulations>} [populations] 
+         * @param {Array<ExperimentTags>} [tags] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        updateExperiment(id: string, name: string, description: string, id2?: number, isPrivate?: boolean, dateCreated?: string, lastModified?: string, owner?: ExperimentOwner, teams?: Array<ExperimentOwnerGroups>, collaborators?: Array<ExperimentCollaborators>, populations?: Array<ExperimentPopulations>, tags?: Array<ExperimentTags>, options?: any): AxiosPromise<Experiment> {
+            return localVarFp.updateExperiment(id, name, description, id2, isPrivate, dateCreated, lastModified, owner, teams, collaborators, populations, tags, options).then((request) => request(axios, basePath));
         },
         /**
          * This viewset automatically provides `list`, `create`, `retrieve`, `update` actions.  Additionally we also provide extra `magic` actions `members`, `members add` and `members delete`.
@@ -1495,6 +2775,16 @@ export const ApiApiFactory = function (configuration?: Configuration, basePath?:
          */
         updateGroup(id: string, team?: Team, options?: any): AxiosPromise<Team> {
             return localVarFp.updateGroup(id, team, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * This viewset automatically provides `list`, `create`, `retrieve`, `update` actions.  The list action will always return the current user\'s userdetail as a list or an empty list if the current user has no userdetail
+         * @param {string} id A unique integer value identifying this user detail.
+         * @param {UserDetail} [userDetail] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        updateUserDetail(id: string, userDetail?: UserDetail, options?: any): AxiosPromise<UserDetail> {
+            return localVarFp.updateUserDetail(id, userDetail, options).then((request) => request(axios, basePath));
         },
         /**
          * This viewset automatically provides `list`, `create`, `retrieve`, `update` and `destroy` actions.
@@ -1519,30 +2809,58 @@ export class ApiApi extends BaseAPI {
     /**
      * This viewset automatically provides `list`, `create`, `retrieve`, `update` actions.  Additionally we also provide extra `magic` actions `members`, `members add` and `members delete`.
      * @param {string} id A unique integer value identifying this group.
-     * @param {string} userId 
-     * @param {Team} [team] 
+     * @param {Member} [member] 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof ApiApi
      */
-    public addMemberGroup(id: string, userId: string, team?: Team, options?: AxiosRequestConfig) {
-        return ApiApiFp(this.configuration).addMemberGroup(id, userId, team, options).then((request) => request(this.axios, this.basePath));
+    public addMembersGroup(id: string, member?: Member, options?: AxiosRequestConfig) {
+        return ApiApiFp(this.configuration).addMembersGroup(id, member, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * This viewset automatically provides `list`, `create`, `retrieve`, `update` and `destroy` actions.
+     * @param {string} id A unique integer value identifying this experiment.
+     * @param {string} name 
+     * @param {number} [id2] 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof ApiApi
+     */
+    public addTagExperiment(id: string, name: string, id2?: number, options?: AxiosRequestConfig) {
+        return ApiApiFp(this.configuration).addTagExperiment(id, name, id2, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * This viewset automatically provides `list` actions.
+     * @param {Collaborator} [collaborator] 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof ApiApi
+     */
+    public createCollaborator(collaborator?: Collaborator, options?: AxiosRequestConfig) {
+        return ApiApiFp(this.configuration).createCollaborator(collaborator, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
      * This viewset automatically provides `list`, `create`, `retrieve`, `update` and `destroy` actions.
      * @param {string} name 
-     * @param {string} dateCreated 
      * @param {string} description 
+     * @param {number} [id] 
      * @param {boolean} [isPrivate] 
-     * @param {Array<ExperimentTeams>} [teams] 
+     * @param {string} [dateCreated] 
+     * @param {string} [lastModified] 
+     * @param {ExperimentOwner} [owner] 
+     * @param {Array<ExperimentOwnerGroups>} [teams] 
      * @param {Array<ExperimentCollaborators>} [collaborators] 
+     * @param {Array<ExperimentPopulations>} [populations] 
+     * @param {Array<ExperimentTags>} [tags] 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof ApiApi
      */
-    public createExperiment(name: string, dateCreated: string, description: string, isPrivate?: boolean, teams?: Array<ExperimentTeams>, collaborators?: Array<ExperimentCollaborators>, options?: AxiosRequestConfig) {
-        return ApiApiFp(this.configuration).createExperiment(name, dateCreated, description, isPrivate, teams, collaborators, options).then((request) => request(this.axios, this.basePath));
+    public createExperiment(name: string, description: string, id?: number, isPrivate?: boolean, dateCreated?: string, lastModified?: string, owner?: ExperimentOwner, teams?: Array<ExperimentOwnerGroups>, collaborators?: Array<ExperimentCollaborators>, populations?: Array<ExperimentPopulations>, tags?: Array<ExperimentTags>, options?: AxiosRequestConfig) {
+        return ApiApiFp(this.configuration).createExperiment(name, description, id, isPrivate, dateCreated, lastModified, owner, teams, collaborators, populations, tags, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
@@ -1554,6 +2872,17 @@ export class ApiApi extends BaseAPI {
      */
     public createGroup(team?: Team, options?: AxiosRequestConfig) {
         return ApiApiFp(this.configuration).createGroup(team, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * This viewset automatically provides `list`, `create`, `retrieve`, `update` actions.  The list action will always return the current user\'s userdetail as a list or an empty list if the current user has no userdetail
+     * @param {UserDetail} [userDetail] 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof ApiApi
+     */
+    public createUserDetail(userDetail?: UserDetail, options?: AxiosRequestConfig) {
+        return ApiApiFp(this.configuration).createUserDetail(userDetail, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
@@ -1571,12 +2900,56 @@ export class ApiApi extends BaseAPI {
     /**
      * This viewset automatically provides `list`, `create`, `retrieve`, `update` and `destroy` actions.
      * @param {string} id A unique integer value identifying this experiment.
+     * @param {string} tagName 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof ApiApi
+     */
+    public deleteTagExperiment(id: string, tagName: string, options?: AxiosRequestConfig) {
+        return ApiApiFp(this.configuration).deleteTagExperiment(id, tagName, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * This viewset automatically provides `list` actions.
+     * @param {string} id A unique integer value identifying this collaborator.
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof ApiApi
+     */
+    public destroyCollaborator(id: string, options?: AxiosRequestConfig) {
+        return ApiApiFp(this.configuration).destroyCollaborator(id, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * This viewset automatically provides `list`, `create`, `retrieve`, `update` and `destroy` actions.
+     * @param {string} id A unique integer value identifying this experiment.
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof ApiApi
      */
     public destroyExperiment(id: string, options?: AxiosRequestConfig) {
         return ApiApiFp(this.configuration).destroyExperiment(id, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * This viewset automatically provides `list`, `create`, `retrieve`, `update` actions.  The list action will always return the current user\'s userdetail as a list or an empty list if the current user has no userdetail
+     * @param {string} id A unique integer value identifying this user detail.
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof ApiApi
+     */
+    public destroyUserDetail(id: string, options?: AxiosRequestConfig) {
+        return ApiApiFp(this.configuration).destroyUserDetail(id, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * This viewset automatically provides `list` actions.
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof ApiApi
+     */
+    public listCollaborators(options?: AxiosRequestConfig) {
+        return ApiApiFp(this.configuration).listCollaborators(options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
@@ -1597,6 +2970,26 @@ export class ApiApi extends BaseAPI {
      */
     public listGroups(options?: AxiosRequestConfig) {
         return ApiApiFp(this.configuration).listGroups(options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * This viewset automatically provides `list`
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof ApiApi
+     */
+    public listTags(options?: AxiosRequestConfig) {
+        return ApiApiFp(this.configuration).listTags(options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * This viewset automatically provides `list`, `create`, `retrieve`, `update` actions.  The list action will always return the current user\'s userdetail as a list or an empty list if the current user has no userdetail
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof ApiApi
+     */
+    public listUserDetails(options?: AxiosRequestConfig) {
+        return ApiApiFp(this.configuration).listUserDetails(options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
@@ -1641,20 +3034,37 @@ export class ApiApi extends BaseAPI {
     }
 
     /**
-     * This viewset automatically provides `list`, `create`, `retrieve`, `update` and `destroy` actions.
-     * @param {string} id A unique integer value identifying this experiment.
-     * @param {string} name 
-     * @param {string} dateCreated 
-     * @param {string} description 
-     * @param {boolean} [isPrivate] 
-     * @param {Array<ExperimentTeams>} [teams] 
-     * @param {Array<ExperimentCollaborators>} [collaborators] 
+     * This viewset automatically provides `list` actions.
+     * @param {string} id A unique integer value identifying this collaborator.
+     * @param {Collaborator} [collaborator] 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof ApiApi
      */
-    public partialUpdateExperiment(id: string, name: string, dateCreated: string, description: string, isPrivate?: boolean, teams?: Array<ExperimentTeams>, collaborators?: Array<ExperimentCollaborators>, options?: AxiosRequestConfig) {
-        return ApiApiFp(this.configuration).partialUpdateExperiment(id, name, dateCreated, description, isPrivate, teams, collaborators, options).then((request) => request(this.axios, this.basePath));
+    public partialUpdateCollaborator(id: string, collaborator?: Collaborator, options?: AxiosRequestConfig) {
+        return ApiApiFp(this.configuration).partialUpdateCollaborator(id, collaborator, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * This viewset automatically provides `list`, `create`, `retrieve`, `update` and `destroy` actions.
+     * @param {string} id A unique integer value identifying this experiment.
+     * @param {string} name 
+     * @param {string} description 
+     * @param {number} [id2] 
+     * @param {boolean} [isPrivate] 
+     * @param {string} [dateCreated] 
+     * @param {string} [lastModified] 
+     * @param {ExperimentOwner} [owner] 
+     * @param {Array<ExperimentOwnerGroups>} [teams] 
+     * @param {Array<ExperimentCollaborators>} [collaborators] 
+     * @param {Array<ExperimentPopulations>} [populations] 
+     * @param {Array<ExperimentTags>} [tags] 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof ApiApi
+     */
+    public partialUpdateExperiment(id: string, name: string, description: string, id2?: number, isPrivate?: boolean, dateCreated?: string, lastModified?: string, owner?: ExperimentOwner, teams?: Array<ExperimentOwnerGroups>, collaborators?: Array<ExperimentCollaborators>, populations?: Array<ExperimentPopulations>, tags?: Array<ExperimentTags>, options?: AxiosRequestConfig) {
+        return ApiApiFp(this.configuration).partialUpdateExperiment(id, name, description, id2, isPrivate, dateCreated, lastModified, owner, teams, collaborators, populations, tags, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
@@ -1670,6 +3080,18 @@ export class ApiApi extends BaseAPI {
     }
 
     /**
+     * This viewset automatically provides `list`, `create`, `retrieve`, `update` actions.  The list action will always return the current user\'s userdetail as a list or an empty list if the current user has no userdetail
+     * @param {string} id A unique integer value identifying this user detail.
+     * @param {UserDetail} [userDetail] 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof ApiApi
+     */
+    public partialUpdateUserDetail(id: string, userDetail?: UserDetail, options?: AxiosRequestConfig) {
+        return ApiApiFp(this.configuration).partialUpdateUserDetail(id, userDetail, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
      * This viewset automatically provides `list`, `create`, `retrieve`, `update` and `destroy` actions.
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
@@ -1677,6 +3099,17 @@ export class ApiApi extends BaseAPI {
      */
     public publicExperiment(options?: AxiosRequestConfig) {
         return ApiApiFp(this.configuration).publicExperiment(options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * This viewset automatically provides `list` actions.
+     * @param {string} id A unique integer value identifying this collaborator.
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof ApiApi
+     */
+    public retrieveCollaborator(id: string, options?: AxiosRequestConfig) {
+        return ApiApiFp(this.configuration).retrieveCollaborator(id, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
@@ -1702,6 +3135,17 @@ export class ApiApi extends BaseAPI {
     }
 
     /**
+     * This viewset automatically provides `list`, `create`, `retrieve`, `update` actions.  The list action will always return the current user\'s userdetail as a list or an empty list if the current user has no userdetail
+     * @param {string} id A unique integer value identifying this user detail.
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof ApiApi
+     */
+    public retrieveUserDetail(id: string, options?: AxiosRequestConfig) {
+        return ApiApiFp(this.configuration).retrieveUserDetail(id, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
      * This viewset automatically provides `list`, `create`, `retrieve`, `update` and `destroy` actions.
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
@@ -1712,20 +3156,37 @@ export class ApiApi extends BaseAPI {
     }
 
     /**
-     * This viewset automatically provides `list`, `create`, `retrieve`, `update` and `destroy` actions.
-     * @param {string} id A unique integer value identifying this experiment.
-     * @param {string} name 
-     * @param {string} dateCreated 
-     * @param {string} description 
-     * @param {boolean} [isPrivate] 
-     * @param {Array<ExperimentTeams>} [teams] 
-     * @param {Array<ExperimentCollaborators>} [collaborators] 
+     * This viewset automatically provides `list` actions.
+     * @param {string} id A unique integer value identifying this collaborator.
+     * @param {Collaborator} [collaborator] 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof ApiApi
      */
-    public updateExperiment(id: string, name: string, dateCreated: string, description: string, isPrivate?: boolean, teams?: Array<ExperimentTeams>, collaborators?: Array<ExperimentCollaborators>, options?: AxiosRequestConfig) {
-        return ApiApiFp(this.configuration).updateExperiment(id, name, dateCreated, description, isPrivate, teams, collaborators, options).then((request) => request(this.axios, this.basePath));
+    public updateCollaborator(id: string, collaborator?: Collaborator, options?: AxiosRequestConfig) {
+        return ApiApiFp(this.configuration).updateCollaborator(id, collaborator, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * This viewset automatically provides `list`, `create`, `retrieve`, `update` and `destroy` actions.
+     * @param {string} id A unique integer value identifying this experiment.
+     * @param {string} name 
+     * @param {string} description 
+     * @param {number} [id2] 
+     * @param {boolean} [isPrivate] 
+     * @param {string} [dateCreated] 
+     * @param {string} [lastModified] 
+     * @param {ExperimentOwner} [owner] 
+     * @param {Array<ExperimentOwnerGroups>} [teams] 
+     * @param {Array<ExperimentCollaborators>} [collaborators] 
+     * @param {Array<ExperimentPopulations>} [populations] 
+     * @param {Array<ExperimentTags>} [tags] 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof ApiApi
+     */
+    public updateExperiment(id: string, name: string, description: string, id2?: number, isPrivate?: boolean, dateCreated?: string, lastModified?: string, owner?: ExperimentOwner, teams?: Array<ExperimentOwnerGroups>, collaborators?: Array<ExperimentCollaborators>, populations?: Array<ExperimentPopulations>, tags?: Array<ExperimentTags>, options?: AxiosRequestConfig) {
+        return ApiApiFp(this.configuration).updateExperiment(id, name, description, id2, isPrivate, dateCreated, lastModified, owner, teams, collaborators, populations, tags, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
@@ -1738,6 +3199,18 @@ export class ApiApi extends BaseAPI {
      */
     public updateGroup(id: string, team?: Team, options?: AxiosRequestConfig) {
         return ApiApiFp(this.configuration).updateGroup(id, team, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * This viewset automatically provides `list`, `create`, `retrieve`, `update` actions.  The list action will always return the current user\'s userdetail as a list or an empty list if the current user has no userdetail
+     * @param {string} id A unique integer value identifying this user detail.
+     * @param {UserDetail} [userDetail] 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof ApiApi
+     */
+    public updateUserDetail(id: string, userDetail?: UserDetail, options?: AxiosRequestConfig) {
+        return ApiApiFp(this.configuration).updateUserDetail(id, userDetail, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
