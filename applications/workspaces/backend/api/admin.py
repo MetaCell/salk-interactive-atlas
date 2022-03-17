@@ -39,11 +39,7 @@ class TagAdmin(admin.ModelAdmin):
     pass
 
 
-class CellAdmin(admin.ModelAdmin):
-    pass
 
-
-admin.site.register(Cell, CellAdmin)
 admin.site.register(UserDetail, UserDetailAdmin)
 admin.site.register(Experiment, ExperimentAdmin)
 admin.site.register(Collaborator, CollaboratorAdmin)
