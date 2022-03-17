@@ -214,14 +214,14 @@ const ExperimentCard = (props) => {
     history.push(`/experiments/${id}`)
   }
 
-  const [filterAnchorEL, setFilterAnchorEL] = React.useState(null);
+  const [experimentMenuEl, setExperimentMenuEl] = React.useState(null);
 
   const handleCardActions = (event) => {
-    setFilterAnchorEL(event.currentTarget);
+    setExperimentMenuEl(event.currentTarget);
   };
 
   const closeFilter = () => {
-    setFilterAnchorEL(null);
+    setExperimentMenuEl(null);
   };
 
   return (
@@ -239,9 +239,9 @@ const ExperimentCard = (props) => {
         <Menu
           className={classes.cardMenu}
           id={i}
-          anchorEl={filterAnchorEL}
+          anchorEl={experimentMenuEl}
           keepMounted
-          open={Boolean(filterAnchorEL)}
+          open={Boolean(experimentMenuEl)}
           onClose={closeFilter}
         >
           <ListItem button>
@@ -289,7 +289,7 @@ const ExperimentCard = (props) => {
             <Tooltip arrow title={
               <Typography>
                 <Typography component={'span'}>Owner</Typography>
-                Quinn Silverman
+                {user}
               </Typography>
             } placement="top">
               <Avatar src={USER} alt={user} />
