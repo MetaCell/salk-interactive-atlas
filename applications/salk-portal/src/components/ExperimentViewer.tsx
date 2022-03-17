@@ -91,6 +91,7 @@ class ExperimentViewer extends Component {
         this.scene = null
         this.populationsMap = {}
         this.onMount = this.onMount.bind(this)
+        this.updateEnded = this.updateEnded.bind(this)
     }
 
     getInstancesToShow() {
@@ -184,6 +185,22 @@ class ExperimentViewer extends Component {
         this.scene = scene;
     }
 
+    updateEnded() {
+        if (this.scene.children.length > 3) {
+            for (let i = 3; i < this.scene.children.length; i++) {
+                const object = this.scene.children[i]
+                // @ts-ignore
+                if (object.instancePath !== undefined) {
+                    // @ts-ignore
+                    object.children[0].material.side = THREE.DoubleSide;
+                    object.renderOrder = 1
+                    // @ts-ignore
+                    object.children[0].material.needsUpdate = true;
+                }
+            }
+        }
+    }
+
 
     render() {
         // @ts-ignore
@@ -198,6 +215,7 @@ class ExperimentViewer extends Component {
                 captureOptions={captureOptions}
                 backgroundColor={canvasBg}
                 onMount={this.onMount}
+                updateEnded={this.updateEnded}
             />
         </div>)
     }
