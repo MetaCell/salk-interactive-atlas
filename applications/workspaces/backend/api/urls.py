@@ -6,7 +6,10 @@ from api import views
 router = DefaultRouter()
 router.register("experiments", views.ExperimentViewSet)
 router.register("users", views.UserViewSet)
+router.register("userdetails", views.UserDetailViewSet)
 router.register("teams", views.GroupViewSet)
+router.register("tags", views.TagViewSet)
+router.register("collaborator", views.CollaboratorViewSet)
 
 urlpatterns = [
     path("", include(router.urls)),
