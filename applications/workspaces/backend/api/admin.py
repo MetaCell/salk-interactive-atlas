@@ -5,16 +5,20 @@ from api.models import Experiment, Collaborator, Population, Tag, UserDetail, Ce
 
 # Register your models here.
 
+
 class UserDetailAdmin(admin.ModelAdmin):
-    list_display = ('user',)
-    search_fields = ('user__name',)
+    list_display = ("user",)
+    search_fields = ("user__name",)
 
 
 class ExperimentAdmin(admin.ModelAdmin):
     list_display = ("name", "is_private", "last_modified")
     search_fields = ("name", "owner__email")
     autocomplete_fields = ("owner",)
-    filter_horizontal = ("teams", "tags", )
+    filter_horizontal = (
+        "teams",
+        "tags",
+    )
 
 
 class CollaboratorAdmin(admin.ModelAdmin):
@@ -24,16 +28,17 @@ class CollaboratorAdmin(admin.ModelAdmin):
     raw_id_fields = ("experiment",)
 
 
-
 class PopulationAdmin(admin.ModelAdmin):
-    list_display = ('experiment', 'atlas', 'name', 'color')
+    list_display = ("experiment", "atlas", "name", "color")
 
 
 class TagAdmin(admin.ModelAdmin):
     pass
 
+
 class CellAdmin(admin.ModelAdmin):
     pass
+
 
 admin.site.register(Cell, CellAdmin)
 admin.site.register(UserDetail, UserDetailAdmin)
