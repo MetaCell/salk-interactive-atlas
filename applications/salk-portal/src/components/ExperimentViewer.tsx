@@ -91,15 +91,7 @@ class ExperimentViewer extends Component {
         const instancesIds = this.getInstancesToShow()
         this.scene = null
         this.populationsMap = {}
-        this.state = {
-            data: instancesIds,
-        };
         this.onMount = this.onMount.bind(this)
-    }
-
-    shouldComponentUpdate(nextProps: Readonly<{}>, nextState: Readonly<{}>, nextContext: any): boolean {
-        // @ts-ignore
-        return this.props !== nextProps || !eqSet(this.state.data, nextState.data)
     }
 
     getInstancesToShow() {
@@ -112,9 +104,6 @@ class ExperimentViewer extends Component {
     componentDidUpdate(prevProps: Readonly<{}>, prevState: Readonly<{}>, snapshot?: any) {
         // @ts-ignore
         this.updatePopulations(!eqSet(prevProps.activeSubdivisions, this.props.activeSubdivisions))
-
-        const instancesIds = this.getInstancesToShow()
-        this.setState({data: instancesIds})
     }
 
     updatePopulations(performCleanUpdate = false) {
@@ -200,10 +189,9 @@ class ExperimentViewer extends Component {
     render() {
         // @ts-ignore
         const {classes} = this.props
-        // @ts-ignore
-        const {data} = this.state
         const {cameraOptions, captureOptions} = getDefaultOptions()
-        const canvasData: any = mapToCanvasData(data)
+        // @ts-ignore
+        const canvasData: any = mapToCanvasData(this.getInstancesToShow())
         return (<div className={classes.canvasContainer}>
             <Canvas
                 data={canvasData}
