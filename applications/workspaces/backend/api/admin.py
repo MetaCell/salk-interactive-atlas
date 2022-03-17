@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from api.models import Experiment, Collaborator, Population, Tag, UserDetail
+from api.models import Experiment, Collaborator, Population, Tag, UserDetail, Cell
 
 
 # Register your models here.
@@ -32,7 +32,10 @@ class PopulationAdmin(admin.ModelAdmin):
 class TagAdmin(admin.ModelAdmin):
     pass
 
+class CellAdmin(admin.ModelAdmin):
+    pass
 
+admin.site.register(Cell, CellAdmin)
 admin.site.register(UserDetail, UserDetailAdmin)
 admin.site.register(Experiment, ExperimentAdmin)
 admin.site.register(Collaborator, CollaboratorAdmin)
