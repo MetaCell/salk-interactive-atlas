@@ -2,16 +2,7 @@ from django.db import models
 from django.contrib.auth.models import User
 
 from .experiment import Experiment
-
-
-class CollaboratorRole(models.TextChoices):
-    @classmethod
-    def to_str(cls, value):
-        return next(v for v in list(CollaboratorRole) if v.value == value).label
-
-    VIEWER = "v", "Viewer"
-    EDITOR = "e", "Editor"
-
+from .collaborator_role import CollaboratorRole
 
 class Collaborator(models.Model):
     user = models.ForeignKey(User, on_delete=models.DO_NOTHING)
