@@ -35,6 +35,7 @@ function getDefaultOptions() {
             reset: false,
             autorotate: false,
             wireframe: false,
+            initialFlip: ['y']
         },
         'captureOptions': {
             captureControls: {
