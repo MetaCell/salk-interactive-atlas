@@ -1,7 +1,6 @@
 from django.contrib import admin
 
-from api.models import Experiment, Collaborator, Population, Tag, UserDetail, Cell
-
+from api.models import Cell, Collaborator, Experiment, Population, Tag, UserDetail
 
 # Register your models here.
 

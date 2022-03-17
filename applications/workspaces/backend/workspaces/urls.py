@@ -16,17 +16,16 @@ Including another URLconf
 from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib import admin
-from django.urls import path, re_path, include, reverse
+from django.urls import include, path, re_path, reverse
 from django.views.generic import TemplateView
 from django.views.generic.base import RedirectView
-
+from rest_framework import permissions
 from rest_framework.schemas import get_schema_view
 from rest_framework.schemas.openapi import SchemaGenerator
-from rest_framework import permissions
-
-# import mozilla_django_oidc
 
 from workspaces.views import index
+
+# import mozilla_django_oidc
 
 
 class SecuredOpenApiGenerator(SchemaGenerator):

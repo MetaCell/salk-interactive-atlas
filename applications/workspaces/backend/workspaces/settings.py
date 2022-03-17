@@ -120,16 +120,15 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 
 # ***********************************************************************
-# * import base KCOIDC settings
-# ***********************************************************************
-from kcoidc.kcoidc_settings import *
-
-
-# ***********************************************************************
 # * Salk settings
 # ***********************************************************************
 from cloudharness.applications import get_configuration
-from cloudharness.utils.config import CloudharnessConfig, ALLVALUES_PATH
+from cloudharness.utils.config import ALLVALUES_PATH, CloudharnessConfig
+
+# ***********************************************************************
+# * import base KCOIDC settings
+# ***********************************************************************
+from kcoidc.kcoidc_settings import *
 
 PROJECT_NAME = "WORKSPACES"
 

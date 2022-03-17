@@ -1,7 +1,7 @@
+from kcoidc.serializers import GroupSerializer
 from rest_framework import serializers
 
 from api.models import Experiment
-from kcoidc.serializers import GroupSerializer
 
 from .collaborator import CollaboratorInfoSerializer
 from .population import PopulationSerializer

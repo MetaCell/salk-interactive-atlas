@@ -1,11 +1,12 @@
 import logging
-from rest_framework import viewsets, mixins, status
-from rest_framework.response import Response
+
 from django.contrib.auth.models import User
 from dry_rest_permissions.generics import DRYPermissions
-from api.models import UserDetail
-from api.serializers import UserTeamSerializer, UserDetailSerializer
+from rest_framework import mixins, status, viewsets
+from rest_framework.response import Response
 
+from api.models import UserDetail
+from api.serializers import UserDetailSerializer, UserTeamSerializer
 
 log = logging.getLogger("__name__")
 

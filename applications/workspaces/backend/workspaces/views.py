@@ -3,10 +3,10 @@ import os
 from pathlib import Path
 
 from django.conf import settings
-from django.http import HttpResponseRedirect, FileResponse
-from django.utils._os import safe_join
+from django.http import FileResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
+from django.utils._os import safe_join
 
 
 def view_404(request, exception=None):

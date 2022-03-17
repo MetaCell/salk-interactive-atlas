@@ -1,15 +1,15 @@
 import logging
-from rest_framework import viewsets, mixins, status
+
+from django.contrib.auth.models import Group, User
+from kcoidc.models import Member, Team
+from kcoidc.serializers import UserSerializer
+from kcoidc.services import get_user_service
+from rest_framework import mixins, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.exceptions import PermissionDenied
 from rest_framework.response import Response
-from django.contrib.auth.models import User, Group
-from api.serializers import TeamSerializer, MemberSerializer
 
-from kcoidc.models import Team, Member
-from kcoidc.serializers import UserSerializer
-from kcoidc.services import get_user_service
-
+from api.serializers import MemberSerializer, TeamSerializer
 
 log = logging.getLogger("__name__")
 

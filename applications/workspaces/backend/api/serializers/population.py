@@ -1,6 +1,7 @@
 from rest_framework import serializers
 
-from api.models import Population, AtlasesChoice, Cell
+from api.models import AtlasesChoice, Cell, Population
+
 from .atlas import AtlasChoiceField
 
 

@@ -1,8 +1,9 @@
-from django.db import models
 from django.contrib.auth.models import Group, User
+from django.db import models
 
-from .tag import Tag
 from .collaborator_role import CollaboratorRole
+from .tag import Tag
+
 
 # Create your models here.
 class ExperimentsObjectsManager(models.Manager):

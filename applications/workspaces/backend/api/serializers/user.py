@@ -1,17 +1,8 @@
-from django.contrib.auth.models import User, Group
+from django.contrib.auth.models import Group, User
+from kcoidc.serializers import UserSerializer
 from rest_framework import serializers
 
-from api.models import (
-    Experiment,
-    Collaborator,
-    CollaboratorRole,
-    Population,
-    AtlasesChoice,
-    Tag,
-    UserDetail,
-    Cell,
-)
-from kcoidc.serializers import UserSerializer, GroupSerializer
+from api.models import UserDetail
 
 
 class UserDetailSerializer(serializers.ModelSerializer):

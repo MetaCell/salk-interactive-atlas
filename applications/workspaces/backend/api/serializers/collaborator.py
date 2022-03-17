@@ -1,7 +1,7 @@
+from kcoidc.serializers import UserSerializer
 from rest_framework import serializers
 
 from api.models import Collaborator, CollaboratorRole
-from kcoidc.serializers import UserSerializer
 
 
 class CollaboratorRoleField(serializers.RelatedField):

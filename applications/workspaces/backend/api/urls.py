@@ -1,5 +1,6 @@
-from django.urls import path, include
+from django.urls import include, path
 from rest_framework.routers import DefaultRouter
+
 import api.views.rest as rest_views
 
 # Create a router and register our viewsets with it.

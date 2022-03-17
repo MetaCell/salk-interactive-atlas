@@ -1,10 +1,11 @@
 import logging
+
+from dry_rest_permissions.generics import DRYPermissions
 from rest_framework import viewsets
 from rest_framework.response import Response
-from dry_rest_permissions.generics import DRYPermissions
+
 from api.models import Collaborator, Experiment
 from api.serializers import CollaboratorSerializer
-
 
 log = logging.getLogger("__name__")
 

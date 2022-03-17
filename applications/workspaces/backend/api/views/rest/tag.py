@@ -1,8 +1,9 @@
 import logging
-from rest_framework import viewsets, mixins, permissions
+
+from rest_framework import mixins, permissions, viewsets
+
 from api.models import Tag
 from api.serializers import TagSerializer
-
 
 log = logging.getLogger("__name__")
 
