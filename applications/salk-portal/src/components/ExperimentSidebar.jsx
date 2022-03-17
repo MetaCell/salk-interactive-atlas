@@ -27,99 +27,100 @@ import {getAtlas} from "../service/AtlasService";
 import {areAllSelected} from "../utilities/functions";
 
 const useStyles = makeStyles({
-    sidebar: {
-        height: 'calc(100vh - 3rem)',
-        width: '15rem',
-        flexShrink: 0,
-        borderRight: `0.0625rem solid ${headerBorderColor}`,
-        background: headerBg,
-        overflow: 'auto',
+  sidebar: {
+    height: 'calc(100vh - 3rem)',
+    width: '15rem',
+    flexShrink: 0,
+    borderRight: `0.0625rem solid ${headerBorderColor}`,
+    background: headerBg,
+    overflow: 'auto',
+    transition: "all linear .1s",
 
-        '& .sidebar-title': {
-            flexGrow: 1,
-            fontWeight: 600,
-            fontSize: '0.75rem',
-            lineHeight: '1rem',
-            letterSpacing: '0.005em',
-            color: canvasIconColor,
-            transition: "all ease-in-out .3s"
-        },
-
-        '& .sidebar-header': {
-            padding: '0 .5rem 0 1rem',
-            height: '3rem',
-            background: headerBorderColor,
-            display: 'flex',
-            alignItems: 'center',
-            position: 'sticky',
-            top: 0,
-            zIndex: 9,
-
-            '& button': {
-                transform: 'rotate(0deg)',
-            },
-        },
-
-        '& .MuiCollapse-wrapperInner': {
-            maxHeight: '15.625rem',
-            overflow: 'auto',
-        },
-
-        '& .MuiFormControlLabel-root': {
-            height: '2rem',
-
-            '&.bold': {
-                backgroundColor: headerBg,
-                zIndex: 1,
-                position: 'sticky',
-                top: 0,
-                '& .MuiFormControlLabel-label': {
-                    fontWeight: 600,
-                },
-            }
-        },
-
-        '& .MuiButton-text': {
-            padding: 0,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            fontWeight: '600',
-            fontSize: '0.75rem',
-            height: '2rem',
-            textTransform: 'none',
-            lineHeight: '0.9375rem',
-            color: canvasIconColor,
-            backgroundColor: headerBg,
-            zIndex: 1,
-            position: 'sticky',
-            borderRadius: 0,
-            top: 0,
-            '&:hover': {
-                backgroundColor: headerBg,
-            },
-        },
+    '& .sidebar-title': {
+      flexGrow: 1,
+      fontWeight: 600,
+      fontSize: '0.75rem',
+      lineHeight: '1rem',
+      letterSpacing: '0.005em',
+      color: canvasIconColor,
+      transition: "all ease-in-out .3s"
     },
 
-    shrink: {
-        width: '3rem',
-        '& .sidebar-header': {
-            padding: '0',
-            justifyContent: 'center',
+    '& .sidebar-header': {
+      padding: '0 .5rem 0 1rem',
+      height: '3rem',
+      background: headerBorderColor,
+      display: 'flex',
+      alignItems: 'center',
+      position: 'sticky',
+      top: 0,
+      zIndex: 9,
 
-            '& button': {
-                transform: 'rotate(180deg)',
-            },
-        },
-
-        '& .sidebar-title': {
-            transform: 'rotate(-180deg)',
-            textOrientation: 'revert-layer',
-            writingMode: 'vertical-lr',
-            padding: '1rem 0.9375rem',
-            cursor: 'default',
-        },
+      '& button': {
+        transform: 'rotate(0deg)',
+      },
     },
+
+    '& .MuiCollapse-wrapperInner': {
+      maxHeight: '15.625rem',
+      overflow: 'auto',
+    },
+
+    '& .MuiFormControlLabel-root': {
+      height: '2rem',
+
+      '&.bold': {
+        backgroundColor: headerBg,
+        zIndex: 1,
+        position: 'sticky',
+        top: 0,
+        '& .MuiFormControlLabel-label': {
+          fontWeight: 600,
+        },
+      }
+    },
+
+    '& .MuiButton-text': {
+      padding: 0,
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      fontWeight: '600',
+      fontSize: '0.75rem',
+      height: '2rem',
+      textTransform: 'none',
+      lineHeight: '0.9375rem',
+      color: canvasIconColor,
+      backgroundColor: headerBg,
+      zIndex: 1,
+      position: 'sticky',
+      borderRadius: 0,
+      top: 0,
+      '&:hover': {
+        backgroundColor: headerBg,
+      },
+    },
+  },
+
+  shrink: {
+    width: '3rem',
+    '& .sidebar-header': {
+      padding: '0',
+      justifyContent: 'center',
+
+      '& button': {
+        transform: 'rotate(180deg)',
+      },
+    },
+
+    '& .sidebar-title': {
+      transform: 'rotate(-180deg)',
+      textOrientation: 'revert-layer',
+      writingMode: 'vertical-lr',
+      padding: '1rem 0.9375rem',
+      cursor: 'default',
+    },
+  },
 });
 
 const overlays = ['Density Map', 'Populations Map', 'Neuronal Locations'];

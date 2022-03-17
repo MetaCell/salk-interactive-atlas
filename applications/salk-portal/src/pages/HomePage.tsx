@@ -5,6 +5,7 @@ import Sidebar from "../components/ExplorerSidebar";
 import { bodyBgColor } from "../theme";
 import ExperimentList from "../components/home/ExperimentList";
 import Community from "../components/home/Community";
+import { EXPERIMENTS_HASH, SALK_TEAM, ACME_TEAM, COMMUNITY_HASH, SHARED_HASH } from "../constants";
 
 const useStyles = makeStyles(() => ({
   layoutContainer: {
@@ -26,15 +27,15 @@ export default (props: any) => {
   const communityRef = useRef(null);
   const [selectedRef, setSelectedRef] =  useState(myRef);
   const executeScroll = (selRef: string) => {
-    if (selRef === 'experiments') {
+    if (selRef === EXPERIMENTS_HASH) {
       setSelectedRef(myRef);
-    } else if (selRef === 'shared') {
+    } else if (selRef === SHARED_HASH) {
       setSelectedRef(shared);
-    } else if (selRef === 'salkteam') {
+    } else if (selRef === SALK_TEAM) {
       setSelectedRef(salkteam);
-    } else if (selRef === 'acmeteam') {
+    } else if (selRef === ACME_TEAM) {
       setSelectedRef(acmeteam);
-    } else if (selRef === 'community') {
+    } else if (selRef === COMMUNITY_HASH) {
       setSelectedRef(communityRef);
     }
     selectedRef.current.scrollIntoView();
@@ -44,20 +45,20 @@ export default (props: any) => {
     <Box display="flex">
       <Sidebar executeScroll={(r: string) => executeScroll(r)} />
       <Box className={classes.layoutContainer}>
-        <div ref={myRef} id="experiments">
+        <div ref={myRef} id={EXPERIMENTS_HASH}>
           <ExperimentList heading={"My experiments"} description={"7 experiments"} />
         </div>
-        <div ref={shared} id="shared">
+        <div ref={shared} id={SHARED_HASH}>
           <ExperimentList heading={"Shared with me"} description={"28 experiments"} />
         </div>
-        <div ref={salkteam} id="salkteam">
+        <div ref={salkteam} id={SALK_TEAM}>
           <ExperimentList heading={"Salk Institute Team"} description={"19 experiments"} />
         </div>
-        <div ref={acmeteam} id="acmeteam">
+        <div ref={acmeteam} id={ACME_TEAM}>
           <ExperimentList heading={"Acme Team"} description={"19 experiments"} />
         </div>
         <Box p={5}>
-          <div ref={communityRef} id="community">
+          <div ref={communityRef} id={COMMUNITY_HASH}>
             <Community />
           </div>
         </Box>

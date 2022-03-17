@@ -82,7 +82,7 @@ function mapToCanvasData(data: Set<string>[]) {
 }
 
 class ExperimentViewer extends Component {
-    private scene: Scene;
+    private scene: THREE.Scene;
     private readonly populationsMap: {};
 
     // @ts-ignore
