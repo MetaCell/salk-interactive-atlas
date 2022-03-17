@@ -105,7 +105,7 @@ class Experiment(models.Model):
     name = models.CharField(max_length=100)
     description = models.TextField()
     is_private = models.BooleanField(default=True)
-    date_created = models.DateTimeField(auto_created=True)
+    date_created = models.DateTimeField(auto_now_add=True)
     last_modified = models.DateTimeField(auto_now=True)
     owner = models.ForeignKey(User, on_delete=models.DO_NOTHING)
     teams = models.ManyToManyField(Group, blank=True)
@@ -160,7 +160,7 @@ class Collaborator(models.Model):
     role = models.CharField(
         max_length=1, choices=CollaboratorRole.choices, default=CollaboratorRole.VIEWER
     )
-    shared_on = models.DateTimeField(auto_now=True)
+    shared_on = models.DateTimeField(auto_now_add=True)
 
     @staticmethod
     def has_read_permission(request):

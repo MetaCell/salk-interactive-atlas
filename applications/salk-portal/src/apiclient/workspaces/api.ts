@@ -259,20 +259,12 @@ export interface ExperimentOwnerGroups {
      */
     'name': string;
 }
-
-interface Cell {
-    x: number,
-    y: number,
-    z: number
-}
-
 /**
  * 
  * @export
  * @interface ExperimentPopulations
  */
 export interface ExperimentPopulations {
-    cells: Cell[];
     /**
      * 
      * @type {number}
