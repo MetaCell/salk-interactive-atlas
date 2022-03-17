@@ -998,6 +998,31 @@ components:
               atlas:
                 type: string
                 readOnly: true
+              cells:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    x:
+                      type: number
+                      multipleOf: 0.01
+                      maximum: 10000
+                      minimum: -10000
+                    y:
+                      type: number
+                      multipleOf: 0.01
+                      maximum: 10000
+                      minimum: -10000
+                    z:
+                      type: number
+                      multipleOf: 0.01
+                      maximum: 10000
+                      minimum: -10000
+                  required:
+                  - x
+                  - y
+                  - z
+                readOnly: true
             required:
             - name
             - color

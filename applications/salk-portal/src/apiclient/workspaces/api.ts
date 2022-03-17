@@ -142,6 +142,31 @@ export interface Experiment {
 /**
  * 
  * @export
+ * @interface ExperimentCells
+ */
+export interface ExperimentCells {
+    /**
+     * 
+     * @type {number}
+     * @memberof ExperimentCells
+     */
+    'x': number;
+    /**
+     * 
+     * @type {number}
+     * @memberof ExperimentCells
+     */
+    'y': number;
+    /**
+     * 
+     * @type {number}
+     * @memberof ExperimentCells
+     */
+    'z': number;
+}
+/**
+ * 
+ * @export
  * @interface ExperimentCollaborators
  */
 export interface ExperimentCollaborators {
@@ -289,6 +314,12 @@ export interface ExperimentPopulations {
      * @memberof ExperimentPopulations
      */
     'atlas'?: string;
+    /**
+     * 
+     * @type {Array<ExperimentCells>}
+     * @memberof ExperimentPopulations
+     */
+    'cells'?: Array<ExperimentCells>;
 }
 /**
  * 
