@@ -4,6 +4,9 @@ from api.models import Cell, Collaborator, Experiment, Population, Tag, UserDeta
 
 # Register your models here.
 
+class CellInline(admin.TabularInline):
+    model = Cell
+
 
 class UserDetailAdmin(admin.ModelAdmin):
     list_display = ("user",)
@@ -29,6 +32,7 @@ class CollaboratorAdmin(admin.ModelAdmin):
 
 class PopulationAdmin(admin.ModelAdmin):
     list_display = ("experiment", "atlas", "name", "color")
+    inlines = [CellInline,]
 
 
 class TagAdmin(admin.ModelAdmin):
