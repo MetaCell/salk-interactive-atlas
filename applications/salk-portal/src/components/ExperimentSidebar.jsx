@@ -27,13 +27,24 @@ import {getAtlas} from "../service/AtlasService";
 import {areAllSelected} from "../utilities/functions";
 
 const useStyles = makeStyles({
-    sidebar: {
-        height: 'calc(100vh - 3rem)',
-        width: '15rem',
-        flexShrink: 0,
-        borderRight: `0.0625rem solid ${headerBorderColor}`,
-        background: headerBg,
-        overflow: 'auto',
+  sidebar: {
+    height: 'calc(100vh - 3rem)',
+    width: '15rem',
+    flexShrink: 0,
+    borderRight: `0.0625rem solid ${headerBorderColor}`,
+    background: headerBg,
+    overflow: 'auto',
+    transition: "all linear .1s",
+
+    '& .sidebar-title': {
+      flexGrow: 1,
+      fontWeight: 600,
+      fontSize: '0.75rem',
+      lineHeight: '1rem',
+      letterSpacing: '0.005em',
+      color: canvasIconColor,
+      transition: "all ease-in-out .3s"
+    },
 
         '& .sidebar-title': {
             flexGrow: 1,

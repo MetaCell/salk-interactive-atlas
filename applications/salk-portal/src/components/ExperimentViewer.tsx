@@ -12,7 +12,6 @@ import {getAtlas} from "../service/AtlasService"
 import {getInstancesIds} from "../utilities/instancesHelper";
 import {eqSet, getAllowedRanges} from "../utilities/functions";
 import {ExperimentPopulations} from "../apiclient/workspaces";
-import {Scene} from "three";
 
 const MOCKED_GREY_MATTER = 'GM'
 const MOCKED_WHITE_MATTER = 'WM'
@@ -82,7 +81,7 @@ function mapToCanvasData(data: Set<string>[]) {
 }
 
 class ExperimentViewer extends Component {
-    private scene: Scene;
+    private scene: THREE.Scene;
     private readonly populationsMap: {};
 
     // @ts-ignore
