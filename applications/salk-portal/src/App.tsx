@@ -53,7 +53,7 @@ export const App = (props: any) => {
                 <ProtectedRoute exact={true} path="/">
                   <HomePage />
                 </ProtectedRoute>
-                <ProtectedRoute exact={true} path="/experiments">
+                <ProtectedRoute exact={true} path="/experiments/:id">
                   <ExperimentsPage />
                 </ProtectedRoute>
               </Switch>

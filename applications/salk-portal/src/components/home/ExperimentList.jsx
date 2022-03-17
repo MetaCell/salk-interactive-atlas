@@ -263,7 +263,7 @@ const ExperimentList = (props) => {
       <Box p={5}>
         <Grid container item spacing={3}>
           {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((item, i) => (
-            <ExperimentCard i={`${heading}experiment_${i}`} tags={tags} heading={"Exploration of the spinal cord"} description={"Shared on Sept 2nd, 2021"} user={"name"} />
+            <ExperimentCard id={i} i={`${heading}experiment_${i}`} tags={tags} heading={"Exploration of the spinal cord"} description={"Shared on Sept 2nd, 2021"} user={"name"} />
             ))
           }
         </Grid>
