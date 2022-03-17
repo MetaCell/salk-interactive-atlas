@@ -225,7 +225,7 @@ const ExperimentCard = (props) => {
   };
 
   return (
-    <Grid item xs={12} md={3} key={i} onClick={handleClick}>
+    <Grid item xs={12} md={3} key={i}>
       <Card className={classes.card} elevation={0}>
         <CardActionArea aria-controls={i} aria-haspopup="true" onClick={handleCardActions}>
           {community && <img src={POPULAR} alt="POPULAR" />}
@@ -278,7 +278,7 @@ const ExperimentCard = (props) => {
                   tags?.map((tag, i) => <Chip key={`${heading}_${i}_${tag}`} label={tag} color={i== 1 ? 'primary' : i === 2 ? 'secondary': 'default'}/>)
                 }
               </Box>
-              <Typography component="h3">
+              <Typography component="h3" onClick={handleClick}>
                 {heading}
               </Typography>
               <Typography component="p">
