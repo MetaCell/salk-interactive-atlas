@@ -49,7 +49,7 @@ const useStyles = makeStyles({
       display:'flex',
       flexDirection:'row',
       gap:'.5rem',
-      alignItems:'flex-end'
+      alignItems:'center'
     }, 
 
     '& .population-label-text': {
