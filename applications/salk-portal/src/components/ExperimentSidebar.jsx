@@ -158,7 +158,7 @@ const ExperimentSidebar = ({
 
             {!shrink && (
                 <>
-                    <Accordion elevation={0} square>
+                    <Accordion elevation={0} square defaultExpanded={true}>
                         <AccordionSummary
                             expandIcon={<img src={UP_ICON} alt=""/>}
                         >
@@ -187,7 +187,7 @@ const ExperimentSidebar = ({
                         </AccordionDetails>
                     </Accordion>
 
-                    <Accordion elevation={0} square>
+                    <Accordion elevation={0} square defaultExpanded={true}>
                         <AccordionSummary
                             expandIcon={<img src={UP_ICON} alt=""/>}
                         >
@@ -218,7 +218,7 @@ const ExperimentSidebar = ({
                         </AccordionDetails>
                     </Accordion>
 
-                    <Accordion elevation={0} square>
+                    <Accordion elevation={0} square defaultExpanded={true}>
                         <AccordionSummary
                             expandIcon={<img src={UP_ICON} alt=""/>}
                         >

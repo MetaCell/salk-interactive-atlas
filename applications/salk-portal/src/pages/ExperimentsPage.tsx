@@ -116,7 +116,7 @@ const getDefaultAtlas = () => AtlasChoice.slk10
 const getSubdivisions = (sa: AtlasChoice) => {
     const subdivisions: any = {}
     const segments = getAtlas(sa).segments
-    segments.forEach(sd => subdivisions[sd.id] = {selected: false})
+    segments.forEach(sd => subdivisions[sd.id] = {selected: true})
     return subdivisions
 }
 const getPopulations = (e: Experiment, sa: AtlasChoice) => {
