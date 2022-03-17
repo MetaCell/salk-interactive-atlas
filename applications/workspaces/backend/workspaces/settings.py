@@ -153,6 +153,10 @@ DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.sqlite3",
         "NAME": os.path.join(PERSISTENT_ROOT, "workspaces.sqlite3"),
+        "TEST": {
+            "ENGINE": "django.db.backends.sqlite3",
+            "NAME": os.path.join(PERSISTENT_ROOT, "test_workspaces.sqlite3"),
+        },
     },
 }
 
