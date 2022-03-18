@@ -24,7 +24,7 @@ import Checkbox from '@material-ui/core/Checkbox';
 const useStyles = makeStyles(() => ({
   subHeader: {
     minHeight: '3rem',
-    boxShadow: `inset 0 -0.0625rem 0 ${headerBorderColor}`,
+    boxShadow: `inset 0 0.0625rem 0 ${headerBorderColor}, inset 0 -0.0625rem 0 ${headerBorderColor}`,
     padding: '0 1.875rem',
     backgroundColor: bodyBgColor,
     position: 'sticky',

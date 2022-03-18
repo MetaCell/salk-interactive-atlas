@@ -85,6 +85,7 @@ const useStyles = makeStyles(() => ({
         position: 'absolute',
         left: '0.25rem',
         top: '0.25rem',
+        zIndex: 1,
       },
     },
 
@@ -153,6 +154,7 @@ const useStyles = makeStyles(() => ({
   cardMenu: {
     '& .MuiMenu-paper': {
       overflow: 'visible',
+      transform: 'translateX(50%) !important',
       ...commonStyle,
 
       '& li': {
@@ -227,7 +229,7 @@ const ExperimentCard = (props) => {
   return (
     <Grid item xs={12} md={3} key={i}>
       <Card className={classes.card} elevation={0}>
-        <CardActionArea aria-controls={i} aria-haspopup="true" onClick={handleCardActions}>
+        <CardActionArea disableRipple aria-controls={i} aria-haspopup="true" onClick={handleCardActions}>
           {community && <img src={POPULAR} alt="POPULAR" />}
           <CardMedia
             component="img"
