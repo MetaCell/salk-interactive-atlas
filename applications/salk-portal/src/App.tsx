@@ -7,8 +7,6 @@ import HomePage from "./pages/HomePage";
 import theme from "./theme";
 import { Header, ErrorDialog, ProtectedRoute, } from "./components";
 import ExperimentsPage from "./pages/ExperimentsPage";
-// tslint:disable-next-line:no-var-requires
-const Manager = require('@metacell/geppetto-meta-client/common/Manager').default;
 
 const GEPPETTO = {};
 // @ts-ignore
@@ -18,7 +16,8 @@ window.GEPPETTO = GEPPETTO;
 GEPPETTO.Resources = require('@metacell/geppetto-meta-core/Resources').default;
 
 // @ts-ignore
-GEPPETTO.Manager = new Manager();
+// tslint:disable-next-line:no-var-requires
+GEPPETTO.Manager = require('@metacell/geppetto-meta-client/common/GeppettoManager').default;
 // @ts-ignore
 window.Instances = [];
 
@@ -53,7 +52,7 @@ export const App = (props: any) => {
                 <ProtectedRoute exact={true} path="/">
                   <HomePage />
                 </ProtectedRoute>
-                <ProtectedRoute exact={true} path="/experiments">
+                <ProtectedRoute exact={true} path="/experiments/:id">
                   <ExperimentsPage />
                 </ProtectedRoute>
               </Switch>

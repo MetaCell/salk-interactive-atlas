@@ -1,4 +1,5 @@
 import * as React from "react";
+import {useHistory} from "react-router-dom"
 import { makeStyles } from "@material-ui/core/styles";
 import Card from '@material-ui/core/Card';
 import CardActionArea from '@material-ui/core/CardActionArea';
@@ -115,10 +116,14 @@ const useStyles = makeStyles(() => ({
 
 const ExperimentCard = (props) => {
   const classes = useStyles();
-  const { tags, heading, description, user, i, community, type} = props;
-  
+  const { tags, heading, description, user, i, community, id } = props;
+  const history = useHistory()
+  const handleClick = () => {
+    history.push(`/experiments/${id}`)
+  }
+
   return (
-    <Grid item xs={12} md={3} key={i}>
+    <Grid item xs={12} md={3} key={i} onClick={handleClick}>
       <Card className={classes.card} elevation={0}>
         <CardActionArea>
           {community && <img src={POPULAR} alt="POPULAR" />}
