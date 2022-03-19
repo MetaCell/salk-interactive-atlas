@@ -123,7 +123,7 @@ export const Header = (props: any) => {
                 size="large"
                 className={classes.button}
                 variant="contained"
-                disableElevation="true"
+                disableElevation={true}
               >
                 Create a new experiment
               </Button>
@@ -148,7 +148,7 @@ export const Header = (props: any) => {
                 size="large"
                 className={classes.button}
                 variant="contained"
-                disableElevation="true"
+                disableElevation={true}
               >
                 Save in My Experiments
               </Button>

@@ -10,6 +10,7 @@ import Avatar from '@material-ui/core/Avatar';
 import { headerBg, headerBorderColor, headerButtonBorderColor, defaultChipBg, secondaryChipBg, primaryChipBg, chipTextColor, cardTextColor } from "../../theme";
 import USER from "../../assets/images/icons/user.svg";
 import ExperimentCard from "./ExperimentCard";
+import ExperimentInstance from "../../models/ExperimentInstance";
 
 const useStyles = makeStyles(() => ({
   card: {
@@ -149,8 +150,12 @@ const useStyles = makeStyles(() => ({
 
 }));
 
+
 const Community = () => {
   const classes = useStyles();
+  const experiment = new ExperimentInstance('Exploration of the spinal cord', '223 clones', ["Project A", "Tag X", "Label 1"])
+  experiment.date_created =  'Sept 2nd 2020'
+
   return (
     <>
       <Box className={classes.banner}>
@@ -164,7 +169,7 @@ const Community = () => {
         <Typography component="h2">Popular experiments</Typography>
         <Grid container item spacing={3}>
           {[1, 2, 3, 4].map((item, i) => (
-            <ExperimentCard i={`communityexperiment_${i}`} heading={"Exploration of the spinal cord"} description={"223 clones"} user={"name"} community={true} />
+            <ExperimentCard experiment={experiment} type="community" />
           ))}
         </Grid>
       </Box>
@@ -193,8 +198,8 @@ const Community = () => {
       <Box className={classes.wrapper}>
         <Typography component="h2">Last Published</Typography>
         <Grid container item spacing={3}>
-          {[1, 2, 3, 4].map((item, i) => (
-            <ExperimentCard i={`lastpublished_${i}`} heading={"Exploration of the spinal cord"} description={"223 clones"} user={"name"} community={true} />
+          {[1, 2, 3, 4].map(i => (
+            <ExperimentCard experiment={experiment} type="community"/>
           ))}
         </Grid>
       </Box>

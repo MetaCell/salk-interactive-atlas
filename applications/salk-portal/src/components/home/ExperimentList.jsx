@@ -21,6 +21,8 @@ import FormControl from '@material-ui/core/FormControl';
 import FormLabel from '@material-ui/core/FormLabel';
 import Checkbox from '@material-ui/core/Checkbox';
 
+import ExperimentInstance from "../../models/ExperimentInstance";
+
 
 const useStyles = makeStyles(() => ({
   subHeader: {
@@ -154,6 +156,8 @@ const useStyles = makeStyles(() => ({
   },
 }));
 
+
+
 const ExperimentList = (props) => {
   const classes = useStyles();
   const [anchorEl, setAnchorEl] = React.useState(null);
@@ -178,11 +182,14 @@ const ExperimentList = (props) => {
     setFilterAnchorEL(null);
   };
 
- 
+  
   const tags = ["Project A", "Tag X", "Label 1"];
   const { heading, description, type } = props;
   const sortOptions = ["Alphabetical", "Date created", "Last viewed"];
   const orderOptions = ["Oldest first", "Newest first"];
+  const experiment = new ExperimentInstance('Exploration of the spinal cord', 'sssss', ["Project A", "Tag X", "Label 1"])
+  experiment.date_created =  'Sept 2nd 2021'
+ 
 
   return (
     <>
@@ -264,8 +271,8 @@ const ExperimentList = (props) => {
       </Box>
       <Box p={5}>
         <Grid container item spacing={3}>
-          {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((item, i) => (
-            <ExperimentCard id={i} i={`${heading}experiment_${i}`} tags={tags} heading={"Exploration of the spinal cord"} description={"Shared on Sept 2nd, 2021"} user={"name"} />
+          {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map( i => (
+            <ExperimentCard experiment={experiment} type={type}/>
             ))
           }
         </Grid>
@@ -273,5 +280,5 @@ const ExperimentList = (props) => {
     </>
   );
 }
-
+// id={i} i={`${heading}experiment_${i}`} tags={tags} heading={"Exploration of the spinal cord"} description={"Shared on Sept 2nd, 2021"} user={"name"} 
 export default ExperimentList;

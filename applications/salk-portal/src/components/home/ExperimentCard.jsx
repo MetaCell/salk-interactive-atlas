@@ -114,41 +114,42 @@ const useStyles = makeStyles(() => ({
 
 }));
 
-const ExperimentCard = (props) => {
+const ExperimentCard = ({experiment, type}) => {
+  console.log(experiment.name, experiment.date_created)
   const classes = useStyles();
-  const { tags, heading, description, user, i, community, id } = props;
   const history = useHistory()
   const handleClick = () => {
-    history.push(`/experiments/${id}`)
+    history.push(`/experiments/${experiment.id}`)
   }
 
   return (
-    <Grid item xs={12} md={3} key={i} onClick={handleClick}>
+    <Grid item xs={12} md={3} key={`${experiment.name}experiment_${experiment.id}`} onClick={handleClick}>
       <Card className={classes.card} elevation={0}>
         <CardActionArea>
-          {community && <img src={POPULAR} alt="POPULAR" />}
+          {/* {type === 'community' && <img src={POPULAR} alt="POPULAR" />} */}
           <CardMedia
             component="img"
-            alt={heading}
+            alt={experiment.name}
             image={PLACEHOLDER}
-            title={heading}
+            title={experiment.name}
           />
           <CardContent>
             <Box>
-              <Box>
-                {
-                  tags?.map((tag, i) => <Chip key={`${heading}_${i}_${tag}`} label={tag} color={i== 1 ? 'primary' : i === 2 ? 'secondary': 'default'}/>)
-                }
-              </Box>
+               {type != 'community' && 
+                <Box>
+                  {
+                    experiment.tags?.map((tag, i) => <Chip key={`${experiment.name}_${i}_${tag}`} label={tag} color={i== 1 ? 'primary' : i === 2 ? 'secondary': 'default'}/>)
+                  }
+              </Box>}
               <Typography component="h3">
-                {heading}
+                {experiment.name || 'fff'}
               </Typography>
               <Typography component="p">
-                { community && <img src={CLONE} alt="clone" /> }
-                {description}
+                { type === 'community' && <img src={CLONE} alt="clone" /> }
+                {type === 'personal' ? experiment.date_created : `Shared on ${experiment.date_created}` }
               </Typography>
             </Box>
-            <Avatar src={USER} alt={user} />
+            <Avatar src={USER} alt={experiment.description} />
           </CardContent>
         </CardActionArea>
       </Card>
