@@ -11,7 +11,7 @@ import {
 } from "@material-ui/core";
 import { headerBorderColor, headerButtonBorderColor, headerBg, secondaryColor, switchActiveColor } from "../../theme";
 import USER from "../../assets/images/icons/user.svg";
-import Modal from "../BaseDialog";
+import Modal from "../common/BaseDialog";
 
 const useStyles = makeStyles(() => ({
   myAccount: {
