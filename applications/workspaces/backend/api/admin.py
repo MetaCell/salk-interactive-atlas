@@ -22,15 +22,11 @@ class ExperimentAdmin(admin.ModelAdmin):
     list_display = ("name", "is_private", "last_modified")
     search_fields = ("name", "owner__email")
     autocomplete_fields = ("owner",)
-<<<<<<< HEAD
     filter_horizontal = (
         "teams",
         "tags",
     )
     inlines = [PopulationInline,]
-=======
-    filter_horizontal = ("teams", "tags", )
->>>>>>> develop
 
 
 class CollaboratorAdmin(admin.ModelAdmin):
@@ -40,29 +36,15 @@ class CollaboratorAdmin(admin.ModelAdmin):
     raw_id_fields = ("experiment",)
 
 
-<<<<<<< HEAD
 class PopulationAdmin(admin.ModelAdmin):
     list_display = ("experiment", "atlas", "name", "color")
     inlines = [CellInline,]
-=======
-
-class PopulationAdmin(admin.ModelAdmin):
-    list_display = ('experiment', 'atlas', 'name', 'color')
->>>>>>> develop
 
 
 class TagAdmin(admin.ModelAdmin):
     pass
 
-<<<<<<< HEAD
 
-
-=======
-class CellAdmin(admin.ModelAdmin):
-    pass
-
-admin.site.register(Cell, CellAdmin)
->>>>>>> develop
 admin.site.register(UserDetail, UserDetailAdmin)
 admin.site.register(Experiment, ExperimentAdmin)
 admin.site.register(Collaborator, CollaboratorAdmin)
