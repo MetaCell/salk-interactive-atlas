@@ -166,9 +166,16 @@ const theme = {
     },
     MuiButton: {
       root: {
-
+        textTransform: 'none',
+        borderRadius: '6px',
+        fontWeight: '500',
+        fontSize: '12px',
+        lineHeight: '1rem',
+        letterSpacing: '0.01em',
+        padding: '0.5rem',
       },
       outlined: {
+        padding: '7px 0.5rem',
         marginRight: gutter / 2,
         border: `0.0625rem solid ${headerButtonBorderColor}`,
         '&:last-child': {
@@ -176,6 +183,7 @@ const theme = {
         }
       },
       contained: {
+        padding: '0.5rem',
         backgroundColor: switchActiveColor,
         color: secondaryColor,
         "&:hover": {
@@ -186,9 +194,20 @@ const theme = {
         padding: gutter / 2
       },
       containedPrimary: {
+        backgroundColor: '#7B61FF',
           '&:hover': {
-            backgroundColor: primaryColor,
+            backgroundColor: '#7B61FF',
           },
+      },
+
+      outlinedPrimary: {
+        borderColor: '#ffffff',
+        color: '#ffffff',
+        '&:hover': {
+          borderColor: '#ffffff',
+          color: '#ffffff',
+          backgroundColor: 'transparent',
+        },
       },
     },
     MuiMenuItem: {
@@ -202,8 +221,6 @@ const theme = {
       }
 
     },
-    MuiDialogTitle: { root: { fontWeight: 600, fontSize: '1rem' } },
-    MuiDialogContent: { root: { paddingBottom: gutter } },
     MuiCollapse: {
       root: { borderTop: `0.0625rem solid ${headerBorderColor}`},
       wrapper: { padding: "0 !important" }
@@ -456,6 +473,52 @@ const theme = {
         },
       },
     },
+
+    MuiDialog: {
+      paper: {
+        background: headerBg,
+        border: '0.0625rem solid #3C3E40',
+        boxShadow: '0 0.25rem 2.5rem rgba(0, 0, 0, 0.3), 0 0.5rem 0.5rem -0.25rem rgba(0, 0, 0, 0.1), 0 1.25rem 1.5rem -0.25rem rgba(0, 0, 0, 0.1)',
+        borderRadius: '0.375rem',
+      },
+    },
+
+    MuiDialogActions: {
+      root: {
+        padding: '0.5rem',
+        boxShadow: 'inset 0 1px 0 #3C3E40',
+
+        '& .MuiButton-root': {
+          flexGrow: 1,
+          marginRight: 0,
+        },
+      },
+    },
+
+    MuiDialogTitle: {
+      root: {
+        padding: '0.125rem 0.25rem 0.125rem 1rem',
+        fontWeight: 600,
+        fontSize: '1rem',
+        boxShadow: 'inset 0 -0.0625rem 0 #3C3E40',
+
+        '& .MuiTypography-root': {
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          fontWeight: 600,
+          fontSize: '0.75rem',
+          lineHeight: '1rem',
+          letterSpacing: '0.005em',
+          color: 'rgba(255, 255, 255, 0.8)',
+        },
+      }
+     },
+    MuiDialogContent: {
+      root: { padding: '1.5rem 1rem' }
+    },
+
+
   },
 }
 
