@@ -16,7 +16,7 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.CreateModel(
-            name="Collaborator",
+            name='Collaborator',
             fields=[
                 (
                     "id",
@@ -39,7 +39,7 @@ class Migration(migrations.Migration):
             ],
         ),
         migrations.CreateModel(
-            name="Experiment",
+            name='Experiment',
             fields=[
                 (
                     "id",
@@ -164,19 +164,28 @@ class Migration(migrations.Migration):
             field=models.ManyToManyField(blank=True, to="auth.Group"),
         ),
         migrations.AddField(
-            model_name="collaborator",
-            name="experiment",
-            field=models.ForeignKey(
-                on_delete=django.db.models.deletion.DO_NOTHING, to="api.experiment"
-            ),
+            model_name='collaborator',
+            name='experiment',
+            field=models.ForeignKey(on_delete=django.db.models.deletion.DO_NOTHING, to='api.experiment'),
         ),
         migrations.AddField(
-            model_name="collaborator",
-            name="user",
-            field=models.ForeignKey(
-                on_delete=django.db.models.deletion.DO_NOTHING,
-                to=settings.AUTH_USER_MODEL,
-            ),
+            model_name='collaborator',
+            name='user',
+            field=models.ForeignKey(on_delete=django.db.models.deletion.DO_NOTHING, to=settings.AUTH_USER_MODEL),
+        ),
+        migrations.CreateModel(
+            name='Cell',
+            fields=[
+                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('x', models.DecimalField(decimal_places=2, max_digits=6)),
+                ('y', models.DecimalField(decimal_places=2, max_digits=6)),
+                ('z', models.DecimalField(decimal_places=2, max_digits=6)),
+                ('population', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='api.population')),
+            ],
+        ),
+        migrations.AlterUniqueTogether(
+            name='collaborator',
+            unique_together={('user', 'experiment')},
         ),
         migrations.CreateModel(
             name="Cell",
