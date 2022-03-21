@@ -32,7 +32,7 @@ const theme = {
     primary: {
       main: primaryColor,
       dark: secondaryColor,
-      contrastText: '#ffffff'
+      contrastText: secondaryColor
     },
     secondary: {
       main: secondaryColor,
@@ -429,6 +429,31 @@ const theme = {
       colorDefault: {
         backgroundColor: secondaryColor,
         color: headerBg,
+      },
+    },
+
+    MuiTooltip: {
+      arrow: {
+        color: bodyBgColor,
+      },
+      tooltip: {
+        backgroundColor: bodyBgColor,
+        borderRadius: '0.375rem',
+        padding: '0.34375rem 0.515625rem',
+        '& .MuiTypography-root': {
+          fontWeight: '400',
+          fontSize: '0.75rem',
+          lineHeight: '1.125rem',
+        },
+        '& p': {
+          color: secondaryColor,
+          display: 'flex',
+          alignItems: 'center',
+          '& span': {
+            color: sidebarTextColor,
+            marginRight: '0.5rem',
+          },
+        },
       },
     },
   },
