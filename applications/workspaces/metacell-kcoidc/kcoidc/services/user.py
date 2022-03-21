@@ -66,7 +66,7 @@ class UserService:
             try:
                 # check if group has a team
                 team = group.team
-            except Team.DoesNotExist:
+            except:
                 # create the team
                 team = Team.objects.create(
                     owner=User.objects.filter(is_superuser=True)[0],
