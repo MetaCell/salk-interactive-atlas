@@ -93,11 +93,34 @@ const MOCKED_GET_EXPERIMENT = async (id: number) => {
             "populations": [
                 {
                     "id": 1,
-                    "name": "Test Population",
-                    "color": "#FFFF00",
+                    "name": "Population XYZ",
+                    "color": "#9FEE9A",
                     "atlas": "slk10",
                     "cells": MOCKED_CELLS
-                }
+                },
+
+                {
+                    "id": 2,
+                    "name": "Population ABC",
+                    "color": "#44C9C9",
+                    "atlas": "slk10",
+                    "cells": MOCKED_CELLS
+                },
+
+                {
+                    "id": 3,
+                    "name": "Population 123",
+                    "color": "#9B3E8B",
+                    "atlas": "slk10",
+                    "cells": MOCKED_CELLS
+                },
+                {
+                    "id": 4,
+                    "name": "Population 798",
+                    "color": "#C99444",
+                    "atlas": "slk10",
+                    "cells": MOCKED_CELLS
+                },
             ],
             "tags": [
                 {

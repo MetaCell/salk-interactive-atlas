@@ -1,20 +1,32 @@
 from django.contrib import admin
 
-from api.models import Experiment, Collaborator, Population, Tag, UserDetail, Cell
-
+from api.models import Cell, Collaborator, Experiment, Population, Tag, UserDetail
 
 # Register your models here.
 
+class CellInline(admin.TabularInline):
+    model = Cell
+    extra = 10
+
+class PopulationInline(admin.TabularInline):
+    model = Population
+    show_change_link = True
+    extra = 1
+
 class UserDetailAdmin(admin.ModelAdmin):
-    list_display = ('user',)
-    search_fields = ('user__name',)
+    list_display = ("user",)
+    search_fields = ("user__name",)
 
 
 class ExperimentAdmin(admin.ModelAdmin):
     list_display = ("name", "is_private", "last_modified")
     search_fields = ("name", "owner__email")
     autocomplete_fields = ("owner",)
-    filter_horizontal = ("teams", "tags", )
+    filter_horizontal = (
+        "teams",
+        "tags",
+    )
+    inlines = [PopulationInline,]
 
 
 class CollaboratorAdmin(admin.ModelAdmin):
@@ -24,18 +36,15 @@ class CollaboratorAdmin(admin.ModelAdmin):
     raw_id_fields = ("experiment",)
 
 
-
 class PopulationAdmin(admin.ModelAdmin):
-    list_display = ('experiment', 'atlas', 'name', 'color')
+    list_display = ("experiment", "atlas", "name", "color")
+    inlines = [CellInline,]
 
 
 class TagAdmin(admin.ModelAdmin):
     pass
 
-class CellAdmin(admin.ModelAdmin):
-    pass
 
-admin.site.register(Cell, CellAdmin)
 admin.site.register(UserDetail, UserDetailAdmin)
 admin.site.register(Experiment, ExperimentAdmin)
 admin.site.register(Collaborator, CollaboratorAdmin)

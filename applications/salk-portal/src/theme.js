@@ -13,7 +13,7 @@ export const vars = lessToJs(lessFile, { resolveVariables: true, stripPrefix: tr
 vars.gutter = vars.gutter.replace('px', '') * 1;
 
 export const {
-  primaryColor, secondaryColor, font, fontColor, linkColor, teal, purple, bgLightest, paragraph, bgLightestShade,
+  primaryColor, secondaryColor, font, fontColor, linkColor, teal, purple, brown, skyBlue, bgLightest, paragraph, bgLightestShade,
   bgLight, bgRegular, bgDark, bgDarker, bgDarkest, bgInputs, gutter, radius, checkBoxColor, bgLighter, textColor, canvasBg, headerBorderColor,headerButtonBorderColor, bodyBgColor, headerBg, switchActiveColor, canvasIconColor, breadcrumbTextColor, sidebarBadgeBg, sidebarTextColor, defaultChipBg, primaryChipBg, secondaryChipBg, chipTextColor, cardTextColor,
 } = vars;
 
@@ -32,7 +32,7 @@ const theme = {
     primary: {
       main: primaryColor,
       dark: secondaryColor,
-      contrastText: '#ffffff'
+      contrastText: secondaryColor
     },
     secondary: {
       main: secondaryColor,
@@ -429,6 +429,31 @@ const theme = {
       colorDefault: {
         backgroundColor: secondaryColor,
         color: headerBg,
+      },
+    },
+
+    MuiTooltip: {
+      arrow: {
+        color: bodyBgColor,
+      },
+      tooltip: {
+        backgroundColor: bodyBgColor,
+        borderRadius: '0.375rem',
+        padding: '0.34375rem 0.515625rem',
+        '& .MuiTypography-root': {
+          fontWeight: '400',
+          fontSize: '0.75rem',
+          lineHeight: '1.125rem',
+        },
+        '& p': {
+          color: secondaryColor,
+          display: 'flex',
+          alignItems: 'center',
+          '& span': {
+            color: sidebarTextColor,
+            marginRight: '0.5rem',
+          },
+        },
       },
     },
   },
