@@ -61,34 +61,22 @@ const useStyles = makeStyles({
       },
     },
 
-    '& .population-label-container': {
+    '& .population-label': {
       display:'flex',
-      flexDirection:'row',
       gap:'.5rem',
-      alignItems:'center'
-    }, 
-
-    '& .population-label-text': {
+      alignItems:'center',
       lineHeight: '0.908rem',
-      width: '7.5rem',
-      height:'0.938rem',
-      left:'4rem',
       top:'0.531rem',
       fontWeight:400,
-      fontSize:'0.813rem'
-    },
+      fontSize:'0.75rem',
 
-
-    '& .population-label-dot': {
-      borderRadius: '50%',
-      width: '0.5rem',
-      height:'0.5rem',
-      left:'3rem',
-      top:'0.75rem',
-      border:'0.063rem',
-    },
-
-
+      '& .dot': {
+        borderRadius: '50%',
+        width: '0.5rem',
+        height:'0.5rem',
+        border:'0.063rem solid rgba(0, 0, 0, 0.2)',
+      },
+    }, 
 
     '& .MuiCollapse-wrapperInner': {
       maxHeight: '15.625rem',
@@ -172,14 +160,13 @@ const ExperimentSidebar = ({
         setShrink((prevState) => !prevState)
     };
 
-    const sidebarClass = `${classes.sidebar} scrollbar ${shrink ? `${classes.shrink}` : ``}`;
-    const populationColours = [teal, brown, skyBlue, purple];
+    const sidebarClass = [`${classes.sidebar} scrollbar ${shrink ? `${classes.shrink}` : ``}`];
     const PopulationLabel = ({labelText, dotColor}) => {
       return (
-        <Typography className='population-label-container' >
-         <Box className='population-label-dot' style={{backgroundColor:dotColor}}/>
-         <Typography className='population-label-text' variant='p'>{labelText}</Typography>
-        </Typography>
+        <Typography className='population-label' variant='p'>
+         <Box style={{backgroundColor:dotColor}} className='dot'/>
+         {labelText}
+         </Typography>
       )
     }
 
@@ -278,10 +265,10 @@ const ExperimentSidebar = ({
                             />
                             {Object.keys(populations).map(pId =>
                                 <FormControlLabel key={pId} control={<Switch/>}
-                                                  label={  <PopulationLabel labelText={populations[pId].name} dotColor={populationColours[i]} />}
+                                                  label={  <PopulationLabel labelText={populations[pId].name} dotColor={populations[pId].color} />}
                                                   labelPlacement="start"
                                                   onChange={() => handlePopulationSwitch(pId)}
-                                                  checked={populations[pId].selected}
+                                                  checked={populations[pId].selected}             
                                 />
                             )}
                         </AccordionDetails>
