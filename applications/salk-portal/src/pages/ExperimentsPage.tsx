@@ -121,7 +121,6 @@ const MOCKED_GET_EXPERIMENT = async (id: number) => {
                     "atlas": "slk10",
                     "cells": MOCKED_CELLS
                 },
-                
             ],
             "tags": [
                 {
