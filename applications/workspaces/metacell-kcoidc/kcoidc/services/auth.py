@@ -1,7 +1,6 @@
 import os
 import time
 from enum import Enum
-from typing import List
 
 from django.urls import reverse
 
@@ -34,8 +33,8 @@ class AuthService:
     def __init__(
             self,
             client_name: str,
-            client_roles: List[str],
-            privileged_roles: List[str],
+            client_roles: [str],
+            privileged_roles: [str],
             admin_role: str,
             default_user_role: str=None,
         ):

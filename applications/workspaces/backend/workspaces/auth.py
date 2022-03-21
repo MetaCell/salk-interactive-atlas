@@ -1,5 +1,6 @@
 # init the auth service
 from django.conf import settings
+
 from kcoidc.services import init_services
 
 init_services(

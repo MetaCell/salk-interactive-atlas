@@ -14,7 +14,7 @@ import {
     Radio,
     Button
 } from '@material-ui/core';
-import {canvasIconColor, headerBg, headerBorderColor, teal, blue, brown, skyBlue, purple} from "../theme";
+import {canvasIconColor, headerBg, headerBorderColor} from "../theme";
 import TOGGLE from "../assets/images/icons/toggle.svg";
 import ATLAS from "../assets/images/icons/atlas.svg";
 import SUBDIVISIONS from "../assets/images/icons/subdivisions.svg";
@@ -60,22 +60,6 @@ const useStyles = makeStyles({
         transform: 'rotate(0deg)',
       },
     },
-
-    '& .population-label': {
-      display:'flex',
-      gap:'.5rem',
-      alignItems:'center',
-      lineHeight: '0.938rem',
-      fontWeight:400,
-      fontSize:'0.75rem',
-
-      '& .dot': {
-        borderRadius: '50%',
-        width: '0.5rem',
-        height:'0.5rem',
-        border:'0.063rem solid rgba(0, 0, 0, 0.2)',
-      },
-    }, 
 
     '& .MuiCollapse-wrapperInner': {
       maxHeight: '15.625rem',
@@ -160,14 +144,6 @@ const ExperimentSidebar = ({
     };
 
     const sidebarClass = `${classes.sidebar} scrollbar ${shrink ? `${classes.shrink}` : ``}`;
-    const PopulationLabel = ({labelText, dotColor}) => {
-      return (
-        <Typography className='population-label'>
-         <Box style={{backgroundColor:dotColor}} component="span" className='dot'/>
-         {labelText}
-         </Typography>
-      )
-    }
 
     return (
         <Box className={sidebarClass}>
@@ -264,10 +240,10 @@ const ExperimentSidebar = ({
                             />
                             {Object.keys(populations).map(pId =>
                                 <FormControlLabel key={pId} control={<Switch/>}
-                                                  label={  <PopulationLabel labelText={populations[pId].name} dotColor={populations[pId].color} />}
+                                                  label={populations[pId].name}
                                                   labelPlacement="start"
                                                   onChange={() => handlePopulationSwitch(pId)}
-                                                  checked={populations[pId].selected}             
+                                                  checked={populations[pId].selected}
                                 />
                             )}
                         </AccordionDetails>

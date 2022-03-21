@@ -25,7 +25,7 @@ import Checkbox from '@material-ui/core/Checkbox';
 const useStyles = makeStyles(() => ({
   subHeader: {
     minHeight: '3rem',
-    boxShadow: `inset 0 0.0625rem 0 ${headerBorderColor}, inset 0 -0.0625rem 0 ${headerBorderColor}`,
+    boxShadow: `inset 0 -0.0625rem 0 ${headerBorderColor}`,
     padding: '0 1.875rem',
     backgroundColor: bodyBgColor,
     position: 'sticky',
@@ -64,9 +64,6 @@ const useStyles = makeStyles(() => ({
   },
 
   filterMenu: {
-    '&.scrollable': {
-      '& .MuiPopover-paper': {maxHeight: '11.875rem'},
-    },
     '& .MuiPopover-paper': {
       top: '5.9375rem !important',
       boxShadow: '0 0.75rem 2.5rem -0.25rem rgba(0, 0, 0, 0.3), 0 0.25rem 0.375rem -0.125rem rgba(0, 0, 0, 0.2)',
@@ -246,7 +243,7 @@ const ExperimentList = (props) => {
         </Button>
         <Menu
           id="filter-menu"
-          className={`${classes.filterMenu} scrollable`}
+          className={classes.filterMenu}
           anchorEl={filterAnchorEL}
           keepMounted
           open={Boolean(filterAnchorEL)}

@@ -120,15 +120,16 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 
 # ***********************************************************************
-# * Salk settings
-# ***********************************************************************
-from cloudharness.applications import get_configuration
-from cloudharness.utils.config import ALLVALUES_PATH, CloudharnessConfig
-
-# ***********************************************************************
 # * import base KCOIDC settings
 # ***********************************************************************
 from kcoidc.kcoidc_settings import *
+
+
+# ***********************************************************************
+# * Salk settings
+# ***********************************************************************
+from cloudharness.applications import get_configuration
+from cloudharness.utils.config import CloudharnessConfig, ALLVALUES_PATH
 
 PROJECT_NAME = "WORKSPACES"
 
@@ -153,10 +154,6 @@ DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.sqlite3",
         "NAME": os.path.join(PERSISTENT_ROOT, "workspaces.sqlite3"),
-        "TEST": {
-            "ENGINE": "django.db.backends.sqlite3",
-            "NAME": os.path.join(PERSISTENT_ROOT, "test_workspaces.sqlite3"),
-        },
     },
 }
 

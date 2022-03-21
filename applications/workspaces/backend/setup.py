@@ -1,8 +1,7 @@
 # coding: utf-8
 
 import sys
-
-from setuptools import find_packages, setup
+from setuptools import setup, find_packages
 
 NAME = "workspaces"
 VERSION = "0.0.1"
