@@ -24,6 +24,7 @@ import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
 import ArrowRightIcon from '@material-ui/icons/ArrowRight';
+import { COMMUNITY_HASH, EXPERIMENTS_HASH } from "../../constants";
 
 
 const commonStyle = {
@@ -229,7 +230,7 @@ const ExperimentCard = ({experiment, type}) => {
     <Grid item xs={12} md={3} key={`${experiment.name}experiment_${experiment.id}`} onClick={handleClick}>
       <Card className={classes.card} elevation={0}>
         <CardActionArea>
-          {type === 'community' && <img src={POPULAR} alt="POPULAR" />}
+          {type === COMMUNITY_HASH && <img src={POPULAR} alt="POPULAR" />}
           <CardMedia
             component="img"
             alt={experiment.name}
@@ -239,7 +240,7 @@ const ExperimentCard = ({experiment, type}) => {
         </CardActionArea>
         <Menu
           className={classes.cardMenu}
-          id={i}
+          id={experiment.id}
           anchorEl={experimentMenuEl}
           keepMounted
           open={Boolean(experimentMenuEl)}
@@ -274,7 +275,7 @@ const ExperimentCard = ({experiment, type}) => {
         <CardActionArea>
           <CardContent>
             <Box>
-               {type != 'community' && 
+               {type != COMMUNITY_HASH && 
                 <Box>
                   {
                     experiment.tags?.map((tag, i) => <Chip key={`${experiment.name}_${i}_${tag.name}`} label={tag.name} color={i== 1 ? 'primary' : i === 2 ? 'secondary': 'default'}/>)
@@ -284,17 +285,17 @@ const ExperimentCard = ({experiment, type}) => {
                 {experiment.name || 'fff'}
               </Typography>
               <Typography component="p">
-                { type === 'community' && <img src={CLONE} alt="clone" /> }
-                {type === 'experiments' ? experiment.date_created : `Shared on ${experiment.date_created}` }
+                { type === COMMUNITY_HASH && <img src={CLONE} alt="clone" /> }
+                {type === EXPERIMENTS_HASH ? experiment.date_created : `Shared on ${experiment.date_created}` }
               </Typography>
             </Box>
             <Tooltip arrow title={
               <Typography>
                 <Typography component={'span'}>Owner</Typography>
-                {user}
+                {experiment.owner.username}
               </Typography>
             } placement="top">
-              <Avatar src={USER} alt={user} />
+              <Avatar src={USER} alt={experiment.owner.username} />
             </Tooltip>
 
           </CardContent>
