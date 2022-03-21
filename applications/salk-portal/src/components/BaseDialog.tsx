@@ -3,7 +3,7 @@ import { Button, Dialog, DialogActions, DialogContent, DialogTitle, IconButton }
 import CLOSE from "../assets/images/icons/close.svg";
 import { Modal as IModal } from "../types/modal";
 
-const Modal: IModal = ({
+const Modal: React.FC<IModal> = ({
   open,
   title,
   maxWidth,

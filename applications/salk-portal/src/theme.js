@@ -14,7 +14,7 @@ vars.gutter = vars.gutter.replace('px', '') * 1;
 
 export const {
   primaryColor, secondaryColor, font, fontColor, linkColor, teal, purple, brown, skyBlue, bgLightest, paragraph, bgLightestShade,
-  bgLight, bgRegular, bgDark, bgDarker, bgDarkest, bgInputs, gutter, radius, checkBoxColor, bgLighter, textColor, canvasBg, headerBorderColor,headerButtonBorderColor, bodyBgColor, headerBg, switchActiveColor, canvasIconColor, breadcrumbTextColor, sidebarBadgeBg, sidebarTextColor, defaultChipBg, primaryChipBg, secondaryChipBg, chipTextColor, cardTextColor,
+  bgLight, bgRegular, bgDark, bgDarker, bgDarkest, bgInputs, gutter, radius, checkBoxColor, bgLighter, textColor, canvasBg, headerBorderColor, headerButtonBorderColor, bodyBgColor, headerBg, switchActiveColor, canvasIconColor, breadcrumbTextColor, sidebarBadgeBg, sidebarTextColor, defaultChipBg, primaryChipBg, secondaryChipBg, chipTextColor, cardTextColor,
 } = vars;
 
 const verticalFill = {
@@ -167,15 +167,15 @@ const theme = {
     MuiButton: {
       root: {
         textTransform: 'none',
-        borderRadius: '6px',
+        borderRadius: '0.375rem',
         fontWeight: '500',
-        fontSize: '12px',
+        fontSize: '0.75rem',
         lineHeight: '1rem',
         letterSpacing: '0.01em',
         padding: '0.5rem',
       },
       outlined: {
-        padding: '7px 0.5rem',
+        padding: '0.4375rem 0.5rem',
         marginRight: gutter / 2,
         border: `0.0625rem solid ${headerButtonBorderColor}`,
         '&:last-child': {
@@ -194,18 +194,18 @@ const theme = {
         padding: gutter / 2
       },
       containedPrimary: {
-        backgroundColor: '#7B61FF',
+        backgroundColor: switchActiveColor,
           '&:hover': {
-            backgroundColor: '#7B61FF',
+            backgroundColor: switchActiveColor,
           },
       },
 
       outlinedPrimary: {
-        borderColor: '#ffffff',
-        color: '#ffffff',
+        borderColor: secondaryColor,
+        color: secondaryColor,
         '&:hover': {
-          borderColor: '#ffffff',
-          color: '#ffffff',
+          borderColor: secondaryColor,
+          color: secondaryColor,
           backgroundColor: 'transparent',
         },
       },
@@ -477,7 +477,7 @@ const theme = {
     MuiDialog: {
       paper: {
         background: headerBg,
-        border: '0.0625rem solid #3C3E40',
+        border: `0.0625rem solid ${headerBorderColor}`,
         boxShadow: '0 0.25rem 2.5rem rgba(0, 0, 0, 0.3), 0 0.5rem 0.5rem -0.25rem rgba(0, 0, 0, 0.1), 0 1.25rem 1.5rem -0.25rem rgba(0, 0, 0, 0.1)',
         borderRadius: '0.375rem',
       },
@@ -486,7 +486,7 @@ const theme = {
     MuiDialogActions: {
       root: {
         padding: '0.5rem',
-        boxShadow: 'inset 0 1px 0 #3C3E40',
+        boxShadow: `inset 0 0.0625rem 0 ${headerBorderColor}`,
 
         '& .MuiButton-root': {
           flexGrow: 1,
@@ -500,7 +500,7 @@ const theme = {
         padding: '0.125rem 0.25rem 0.125rem 1rem',
         fontWeight: 600,
         fontSize: '1rem',
-        boxShadow: 'inset 0 -0.0625rem 0 #3C3E40',
+        boxShadow: `inset 0 -0.0625rem 0 ${headerBorderColor}`,
 
         '& .MuiTypography-root': {
           display: 'flex',
@@ -510,7 +510,7 @@ const theme = {
           fontSize: '0.75rem',
           lineHeight: '1rem',
           letterSpacing: '0.005em',
-          color: 'rgba(255, 255, 255, 0.8)',
+          color: headerButtonBorderColor,
         },
       }
      },
