@@ -12,6 +12,8 @@ class Population(models.Model):
     name = models.CharField(max_length=100, unique=True)
     color = models.CharField(max_length=7)  # hex color
 
+    def __str__(self):
+        return f"{self.experiment} {self.name}"
 
 class Cell(models.Model):
     x = models.DecimalField(decimal_places=2, max_digits=6)

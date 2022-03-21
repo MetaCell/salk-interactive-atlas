@@ -12,6 +12,8 @@ from api.serializers import (
     ExperimentSerializer,
     TagSerializer,
 )
+from api.services import ExperimentService
+
 
 log = logging.getLogger("__name__")
 
@@ -68,12 +70,7 @@ class ExperimentViewSet(viewsets.ModelViewSet):
     def add_tag(self, request, pk):
         instance = self.get_object()
         tag_name = request.data.get("name")
-        try:
-            tag = instance.tags.get(name=tag_name)
-        except Tag.DoesNotExist:
-            tag, created = Tag.objects.get_or_create(name=tag_name)
-            instance.tags.add(tag)
-            instance.save()
+        tag = ExperimentService.add_tag(instance, tag_name)
 
         serializer = self.get_serializer(tag)
         return Response(serializer.data)
@@ -86,12 +83,8 @@ class ExperimentViewSet(viewsets.ModelViewSet):
     )
     def delete_tag(self, request, tag_name, **kwargs):
         instance = self.get_object()
-        try:
-            tag = instance.tags.get(name=tag_name)
-            instance.tags.remove(tag)
-            instance.save()
-        except Tag.DoesNotExist:
-            pass
+        tag_name = request.data.get("name")
+        ExperimentService.delete_tag(instance, tag_name)
         return Response(status=status.HTTP_204_NO_CONTENT)
 
     @action(
@@ -102,11 +95,8 @@ class ExperimentViewSet(viewsets.ModelViewSet):
         url_path="upload-file",
     )
     def upload_file(self, request, **kwargs):
-        # Code to handle file
-        # has permission_classes
-        # save file
-        # process file
-        pass
+        instance = self.get_object()
+        ExperimentService.upload_file(instance)
 
     def perform_create(self, serializer):
         experiment = serializer.save(

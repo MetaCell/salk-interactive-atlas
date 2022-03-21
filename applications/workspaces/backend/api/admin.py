@@ -6,7 +6,12 @@ from api.models import Cell, Collaborator, Experiment, Population, Tag, UserDeta
 
 class CellInline(admin.TabularInline):
     model = Cell
+    extra = 10
 
+class PopulationInline(admin.TabularInline):
+    model = Population
+    show_change_link = True
+    extra = 1
 
 class UserDetailAdmin(admin.ModelAdmin):
     list_display = ("user",)
@@ -21,6 +26,7 @@ class ExperimentAdmin(admin.ModelAdmin):
         "teams",
         "tags",
     )
+    inlines = [PopulationInline,]
 
 
 class CollaboratorAdmin(admin.ModelAdmin):
