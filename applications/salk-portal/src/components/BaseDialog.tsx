@@ -1,19 +1,9 @@
 import * as React from "react";
 import { Button, Dialog, DialogActions, DialogContent, DialogTitle, IconButton } from "@material-ui/core";
 import CLOSE from "../assets/images/icons/close.svg";
+import { Modal as IModal } from "../types/modal";
 
-interface IModal {
-  open: boolean;
-  title: string;
-  actionText?: string;
-  maxWidth?: "xs" | "sm" | "md" | "lg" | "xl"
-  handleClose: () => void;
-  handleAction?: () => void;
-  disableGutter?: boolean;
-  dialogActions?: boolean;
-}
-
-const Modal: React.FC<IModal> = ({
+const Modal: IModal = ({
   open,
   title,
   maxWidth,
