@@ -15,6 +15,7 @@ import USER from "../../assets/images/icons/user.svg";
 import POPULAR from "../../assets/images/icons/popular.svg";
 import CLONE from "../../assets/images/icons/clone.svg";
 import PLACEHOLDER from "../../assets/images/placeholder.png";
+import {COMMUNITY_HASH, EXPERIMENTS_HASH} from "../../constants"
 
 
 const useStyles = makeStyles(() => ({
