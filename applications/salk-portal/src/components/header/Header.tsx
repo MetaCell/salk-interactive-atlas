@@ -14,6 +14,7 @@ import { headerBorderColor, headerButtonBorderColor, headerBg } from "../../them
 import LOGO from "../../assets/images/logo.svg";
 import USER from "../../assets/images/icons/user.svg";
 import { UserAccountDialog } from "./UserAccountDialog";
+import { CreateExperimentDialog } from "./CreateExperimentDialog";
 
 const title = "Salk Mouse Cord Atlas";
 
@@ -78,11 +79,16 @@ export const Header = (props: any) => {
   const location = useLocation();
   const onExperimentsPage = location.pathname === '/experiments';
   const [dialogOpen, setDialogOpen] = React.useState(false);
+  const [dialogCreateExperimentOpen, setDialogCreateExperimentOpen] = React.useState(false);
   const menuAnchorRef = React.useRef(null);
 
 
   const handleDialogToggle = () => {
     setDialogOpen((prevOpen) => !prevOpen);
+  };
+
+  const handleCreateExperimentDialogToggle = () => {
+    setDialogCreateExperimentOpen((prevOpen) => !prevOpen);
   };
 
   const user = props.user;
@@ -108,6 +114,7 @@ export const Header = (props: any) => {
                 className={classes.button}
                 variant="contained"
                 disableElevation
+                onClick={handleCreateExperimentDialogToggle}
               >
                 Create a new experiment
               </Button>
@@ -182,6 +189,7 @@ export const Header = (props: any) => {
       </Toolbar>
 
       <UserAccountDialog open={dialogOpen} handleClose={handleDialogToggle} user={user} />
+      <CreateExperimentDialog open={dialogCreateExperimentOpen} handleClose={handleCreateExperimentDialogToggle} user={user} />
     </>
   );
 };

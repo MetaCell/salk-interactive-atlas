@@ -14,7 +14,7 @@ vars.gutter = vars.gutter.replace('px', '') * 1;
 
 export const {
   primaryColor, secondaryColor, font, fontColor, linkColor, teal, purple, brown, skyBlue, bgLightest, paragraph, bgLightestShade,
-  bgLight, bgRegular, bgDark, bgDarker, bgDarkest, bgInputs, gutter, radius, checkBoxColor, bgLighter, textColor, canvasBg, headerBorderColor, headerButtonBorderColor, bodyBgColor, headerBg, switchActiveColor, canvasIconColor, breadcrumbTextColor, sidebarBadgeBg, sidebarTextColor, defaultChipBg, primaryChipBg, secondaryChipBg, chipTextColor, cardTextColor,
+  bgLight, bgRegular, bgDark, bgDarker, bgDarkest, bgInputs, gutter, radius, checkBoxColor, bgLighter, textColor, canvasBg, headerBorderColor, headerButtonBorderColor, bodyBgColor, headerBg, switchActiveColor, canvasIconColor, breadcrumbTextColor, sidebarBadgeBg, sidebarTextColor, defaultChipBg, primaryChipBg, secondaryChipBg, chipTextColor, cardTextColor, inputFocusShadow
 } = vars;
 
 const verticalFill = {
@@ -516,6 +516,68 @@ const theme = {
      },
     MuiDialogContent: {
       root: { padding: '1.5rem 1rem' }
+    },
+    MuiDropzoneArea: {
+      root: {
+        minHeight: '6.25rem',
+        backgroundColor: 'transparent',
+        borderRadius: '0.375rem',
+        border: `0.0625rem dashed ${sidebarTextColor}`,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+      },
+
+      textContainer: {
+        display: 'flex',
+        alignItems: 'center',
+
+        '& img': {marginRight: '0.75rem',},
+      },
+
+      text: {
+        marginTop: 0,
+        marginBottom: 0,
+        fontWeight: 500,
+        fontSize: '0.75rem',
+        lineHeight: '1rem',
+        order: 2,
+        letterSpacing: '0.01em',
+        color: 'rgba(255, 255, 255, 0.4)',
+      },
+    },
+
+    MuiTextField: {
+      root: {
+        flexGrow: 1,
+      }
+    },
+
+    MuiOutlinedInput: {
+      root: {
+        borderRadius: '0.375rem',
+
+        '&.Mui-focused': {
+          '& .MuiOutlinedInput-notchedOutline': {
+            borderColor: switchActiveColor,
+            boxShadow: `0 0 0 0.125rem ${inputFocusShadow}`,
+          },
+        },
+      },
+
+      input: {
+        padding: '0 0.75rem',
+        height: '2rem',
+        fontWeight: '500',
+        fontSize: '0.75rem',
+        lineHeight: '1rem',
+        letterSpacing: '0.01em',
+        color: headerButtonBorderColor,
+      },
+
+      notchedOutline: {
+        borderColor: sidebarTextColor
+      },
     },
 
 
