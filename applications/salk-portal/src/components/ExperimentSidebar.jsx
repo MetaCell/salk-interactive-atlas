@@ -65,8 +65,7 @@ const useStyles = makeStyles({
       display:'flex',
       gap:'.5rem',
       alignItems:'center',
-      lineHeight: '0.908rem',
-      top:'0.531rem',
+      lineHeight: '0.938rem',
       fontWeight:400,
       fontSize:'0.75rem',
 
@@ -160,11 +159,11 @@ const ExperimentSidebar = ({
         setShrink((prevState) => !prevState)
     };
 
-    const sidebarClass = [`${classes.sidebar} scrollbar ${shrink ? `${classes.shrink}` : ``}`];
+    const sidebarClass = `${classes.sidebar} scrollbar ${shrink ? `${classes.shrink}` : ``}`;
     const PopulationLabel = ({labelText, dotColor}) => {
       return (
-        <Typography className='population-label' variant='p'>
-         <Box style={{backgroundColor:dotColor}} className='dot'/>
+        <Typography className='population-label'>
+         <Box style={{backgroundColor:dotColor}} component="span" className='dot'/>
          {labelText}
          </Typography>
       )
