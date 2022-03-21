@@ -115,18 +115,16 @@ const useStyles = makeStyles(() => ({
 }));
 
 const ExperimentCard = ({experiment, type}) => {
-  console.log(experiment.name, experiment.date_created)
   const classes = useStyles();
   const history = useHistory()
   const handleClick = () => {
     history.push(`/experiments/${experiment.id}`)
   }
-
   return (
     <Grid item xs={12} md={3} key={`${experiment.name}experiment_${experiment.id}`} onClick={handleClick}>
       <Card className={classes.card} elevation={0}>
         <CardActionArea>
-          {/* {type === 'community' && <img src={POPULAR} alt="POPULAR" />} */}
+          {type === 'community' && <img src={POPULAR} alt="POPULAR" />}
           <CardMedia
             component="img"
             alt={experiment.name}
@@ -138,7 +136,7 @@ const ExperimentCard = ({experiment, type}) => {
                {type != 'community' && 
                 <Box>
                   {
-                    experiment.tags?.map((tag, i) => <Chip key={`${experiment.name}_${i}_${tag}`} label={tag} color={i== 1 ? 'primary' : i === 2 ? 'secondary': 'default'}/>)
+                    experiment.tags?.map((tag, i) => <Chip key={`${experiment.name}_${i}_${tag.name}`} label={tag.name} color={i== 1 ? 'primary' : i === 2 ? 'secondary': 'default'}/>)
                   }
               </Box>}
               <Typography component="h3">
@@ -146,7 +144,7 @@ const ExperimentCard = ({experiment, type}) => {
               </Typography>
               <Typography component="p">
                 { type === 'community' && <img src={CLONE} alt="clone" /> }
-                {type === 'personal' ? experiment.date_created : `Shared on ${experiment.date_created}` }
+                {type === 'experiments' ? experiment.date_created : `Shared on ${experiment.date_created}` }
               </Typography>
             </Box>
             <Avatar src={USER} alt={experiment.description} />
