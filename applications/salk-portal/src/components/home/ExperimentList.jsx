@@ -156,7 +156,7 @@ const useStyles = makeStyles(() => ({
   },
 }));
 
-const ExperimentList = (props) => {
+const ExperimentList = ({heading, description, type}) => {
   const classes = useStyles();
   const [anchorEl, setAnchorEl] = React.useState(null);
   const [value, setValue] = React.useState('Alpahabetical');
@@ -181,10 +181,52 @@ const ExperimentList = (props) => {
   };
 
   const tags = ["Project A", "Tag X", "Label 1"];
-  const { heading, description } = props;
   const sortOptions = ["Alphabetical", "Date created", "Last viewed"];
   const orderOptions = ["Oldest first", "Newest first"];
+  const dummyExperiment  = {
+    id: "id",
+    name: "Exploration of the Spinal Cord",
+    is_private: true,
+    description: "Description Experiment",
+    date_created: " Sept 2nd, 2021",
+    last_modified: "2022-03-15",
+    owner: {
+        id: 1,
+        username: "afonso",
+        first_name: "",
+        last_name: "",
+        email: "afonso@metacell.us",
+        groups: []
+    },
+    teams: [],
+    collaborators: [],
+    populations: [
+        {
+            id: 1,
+            name: "Population XYZ",
+            color: "#9FEE9A",
+            atlas: "slk10",
+            cells: {
 
+            }
+        },
+    ],
+    tags: [
+      {
+        id: 1,
+        name: 'Project A'
+      }, 
+      {
+        id: 2,
+        name: "Tag X"
+      }, 
+      {
+        id: 3,
+        name: "Label1"
+      }
+    ]
+}
+ 
   return (
     <>
       <Box className={classes.subHeader} display="flex" alignItems="center">
@@ -266,7 +308,7 @@ const ExperimentList = (props) => {
       <Box p={5}>
         <Grid container item spacing={3}>
           {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((item, i) => (
-            <ExperimentCard id={i} i={`${heading}experiment_${i}`} tags={tags} heading={"Exploration of the spinal cord"} description={"Shared on Sept 2nd, 2021"} user={"name"} />
+            <ExperimentCard experiment={dummyExperiment}  type={type}/>
             ))
           }
         </Grid>

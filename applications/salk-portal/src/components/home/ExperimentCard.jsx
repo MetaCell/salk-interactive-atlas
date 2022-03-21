@@ -25,6 +25,8 @@ import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
 import ArrowRightIcon from '@material-ui/icons/ArrowRight';
 
+//constants
+import { COMMUNITY_HASH, EXPERIMENTS_HASH } from "../../constants";
 
 const commonStyle = {
   background: headerBg,
@@ -208,9 +210,8 @@ const useStyles = makeStyles(() => ({
 
 }));
 
-const ExperimentCard = (props) => {
+const ExperimentCard = ({experiment, type}) => {
   const classes = useStyles();
-  const { tags, heading, description, user, i, community, id } = props;
   const history = useHistory()
   const handleClick = () => {
     history.push(`/experiments/${id}`)
@@ -226,21 +227,22 @@ const ExperimentCard = (props) => {
     setExperimentMenuEl(null);
   };
 
+
   return (
-    <Grid item xs={12} md={3} key={i}>
+    <Grid item xs={12} md={3} key={experiment.id}>
       <Card className={classes.card} elevation={0}>
-        <CardActionArea disableRipple aria-controls={i} aria-haspopup="true" onClick={handleCardActions}>
-          {community && <img src={POPULAR} alt="POPULAR" />}
+        <CardActionArea disableRipple aria-controls={experiment.id} aria-haspopup="true" onClick={handleCardActions}>
+          {type === COMMUNITY_HASH && <img src={POPULAR} alt="POPULAR" />}
           <CardMedia
             component="img"
-            alt={heading}
+            alt={experiment.name}
             image={PLACEHOLDER}
-            title={heading}
+            title={experiment.name}
           />
         </CardActionArea>
         <Menu
           className={classes.cardMenu}
-          id={i}
+          id={experiment.id}
           anchorEl={experimentMenuEl}
           keepMounted
           open={Boolean(experimentMenuEl)}
@@ -275,26 +277,26 @@ const ExperimentCard = (props) => {
         <CardActionArea>
           <CardContent>
             <Box>
-              <Box>
+              {type !== COMMUNITY_HASH && <Box>
                 {
-                  tags?.map((tag, i) => <Chip key={`${heading}_${i}_${tag}`} label={tag} color={i== 1 ? 'primary' : i === 2 ? 'secondary': 'default'}/>)
+                  experiment.tags?.map((tag, i) => <Chip key={`${experiment.name}_${i}_${tag}`} label={tag.name} color={i== 1 ? 'primary' : i === 2 ? 'secondary': 'default'}/>)
                 }
-              </Box>
+              </Box>}
               <Typography component="h3" onClick={handleClick}>
-                {heading}
+                {experiment.name}
               </Typography>
               <Typography component="p">
-                { community && <img src={CLONE} alt="clone" /> }
-                {description}
+                { type === COMMUNITY_HASH && <img src={CLONE} alt="clone" /> }
+                {type === EXPERIMENTS_HASH ? experiment.date_created : `Shared on ${experiment.date_created}` }
               </Typography>
             </Box>
             <Tooltip arrow title={
               <Typography>
                 <Typography component={'span'}>Owner</Typography>
-                {user}
+                {experiment.owner.name}
               </Typography>
             } placement="top">
-              <Avatar src={USER} alt={user} />
+              <Avatar src={USER} alt={experiment.owner.name} />
             </Tooltip>
 
           </CardContent>

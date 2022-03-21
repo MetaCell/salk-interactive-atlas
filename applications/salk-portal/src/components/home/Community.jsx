@@ -11,6 +11,8 @@ import { headerBg, headerBorderColor, headerButtonBorderColor, defaultChipBg, se
 import USER from "../../assets/images/icons/user.svg";
 import ExperimentCard from "./ExperimentCard";
 
+import { COMMUNITY_HASH } from "../../constants";
+
 const useStyles = makeStyles(() => ({
   card: {
     background: headerBg,
@@ -151,6 +153,49 @@ const useStyles = makeStyles(() => ({
 
 const Community = () => {
   const classes = useStyles();
+  const dummyExperiment  = {
+    id: "id",
+    name: "Exploration of the Spinal Cord",
+    is_private: true,
+    description: "Description Experiment",
+    date_created: " Sept 2nd, 2021",
+    last_modified: "2022-03-15",
+    owner: {
+        id: 1,
+        username: "afonso",
+        first_name: "",
+        last_name: "",
+        email: "afonso@metacell.us",
+        groups: []
+    },
+    teams: [],
+    collaborators: [],
+    populations: [
+        {
+            id: 1,
+            name: "Population XYZ",
+            color: "#9FEE9A",
+            atlas: "slk10",
+            cells: {
+
+            }
+        },
+    ],
+    tags: [
+      {
+        id: 1,
+        name: 'Project A'
+      }, 
+      {
+        id: 2,
+        name: "Tag X"
+      }, 
+      {
+        id: 3,
+        name: "Label1"
+      }
+    ]
+}
   return (
     <>
       <Box className={classes.banner}>
@@ -164,7 +209,7 @@ const Community = () => {
         <Typography component="h2">Popular experiments</Typography>
         <Grid container item spacing={3}>
           {[1, 2, 3, 4].map((item, i) => (
-            <ExperimentCard i={`communityexperiment_${i}`} heading={"Exploration of the spinal cord"} description={"223 clones"} user={"name"} community={true} />
+             <ExperimentCard experiment={dummyExperiment} type={COMMUNITY_HASH}/>
           ))}
         </Grid>
       </Box>
@@ -194,7 +239,7 @@ const Community = () => {
         <Typography component="h2">Last Published</Typography>
         <Grid container item spacing={3}>
           {[1, 2, 3, 4].map((item, i) => (
-            <ExperimentCard i={`lastpublished_${i}`} heading={"Exploration of the spinal cord"} description={"223 clones"} user={"name"} community={true} />
+            <ExperimentCard experiment={dummyExperiment} type={COMMUNITY_HASH}/>
           ))}
         </Grid>
       </Box>
