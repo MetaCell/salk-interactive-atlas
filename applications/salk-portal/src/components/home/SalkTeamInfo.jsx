@@ -1,5 +1,4 @@
-import * as React from "react";
-
+import React, { useState } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import { Typography, Box, Divider } from "@material-ui/core";
 import TextField from "@material-ui/core/TextField";
@@ -206,54 +205,63 @@ const useStyles = makeStyles(() => ({
 export const SalkTeamInfo = (props) => {
   const { infoDrawer, closeDrawer } = props;
   const classes = useStyles();
-
+  const [editMode, setEditMode] = useState(false);
+  const toggleEditMode = () => {
+    setEditMode((prevEdit) => !prevEdit);
+  }
+  const dummyTeamInfo = {
+    team: 'Salk Institute',
+    description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit ut aliquam, purus sit amet luctus venenatis.',
+    totalMembers: '154 members, 236 experiments'
+  };
   return (
     <Drawer anchor="right" className={classes.drawer} open={infoDrawer} onClose={closeDrawer}>
-      <Box className={classes.header}>
-        <Box className={classes.logo}>
-          <Avatar src={LOGO} />
-        </Box>
-
-        <Typography component="h3">Salk Institute</Typography>
-
-        <Typography component={"p"} variant="body2">Lorem ipsum dolor sit amet, consectetur adipiscing elit ut aliquam, purus sit amet luctus venenatis.</Typography>
-
-        <Typography component={"span"} variant="body2">154 members, 236 experiments</Typography>
-
-        <Button fullWidth variant="outlined">Edit team</Button>
-      </Box>
-
-      <Box className={classes.header}>
-        <Box className={classes.logo} position={"relative"}>
-          <Typography component={"label"}>
-            <input type={"file"} />
+      { !editMode ? (
+        <Box className={classes.header}>
+          <Box className={classes.logo}>
             <Avatar src={LOGO} />
-            <Box top={0} position={"absolute"}>
-              <img src={EDIT} alt="edit" />
-            </Box>
-          </Typography>
+          </Box>
 
+          <Typography component="h3">{dummyTeamInfo?.team}</Typography>
+
+          <Typography component={"p"} variant="body2">{dummyTeamInfo?.description}</Typography>
+
+          <Typography component={"span"} variant="body2">{dummyTeamInfo?.totalMembers}</Typography>
+
+          <Button fullWidth variant="outlined" onClick={toggleEditMode}>Edit team</Button>
         </Box>
+      ) : (
+        <Box className={classes.header}>
+          <Box className={classes.logo} position={"relative"}>
+            <Typography component={"label"}>
+              <input type={"file"} />
+              <Avatar src={LOGO} />
+              <Box top={0} position={"absolute"}>
+                <img src={EDIT} alt="edit" />
+              </Box>
+            </Typography>
 
-        <TextField
-          fullWidth
-          defaultValue="Salk Institute"
-          variant="outlined"
-        />
+          </Box>
 
-        <TextField
-          fullWidth
-          multiline
-          rows={4}
-          defaultValue="Lorem ipsum dolor sit amet, consectetur adipiscing elit ut aliquam, purus sit amet luctus venenatis."
-          variant="outlined"
-        />
+          <TextField
+            fullWidth
+            defaultValue={dummyTeamInfo?.team}
+            variant="outlined"
+          />
 
-        <Typography component={"span"} variant="body2">154 members, 236 experiments</Typography>
+          <TextField
+            fullWidth
+            multiline
+            rows={4}
+            defaultValue={dummyTeamInfo?.description}
+            variant="outlined"
+          />
 
-        <Button fullWidth variant="contained" disableElevation>Save changes</Button>
-      </Box>
+          <Typography component={"span"} variant="body2">{dummyTeamInfo?.totalMembers}</Typography>
 
+          <Button fullWidth variant="contained" disableElevation onClick={toggleEditMode}>Save changes</Button>
+        </Box>
+      )}
       <Divider />
       <Box className={classes.members}>
         <Typography component="h3">Members</Typography>
