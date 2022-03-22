@@ -1,9 +1,9 @@
 import logging
 
 from django.contrib.auth.models import Group, User
-from kcoidc.models import Member, Team
-from kcoidc.serializers import UserSerializer
-from kcoidc.services import get_user_service
+from cloudharness_django.models import Member, Team
+from cloudharness_django.serializers import UserSerializer
+from cloudharness_django.services import get_user_service
 from rest_framework import mixins, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.exceptions import PermissionDenied

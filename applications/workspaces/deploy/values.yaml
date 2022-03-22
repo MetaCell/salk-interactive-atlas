@@ -11,6 +11,9 @@ harness:
       name: salk-files
       mountpath: /usr/src/app/persistent
       size: 5Gi
+  database:
+    auto: true
+    type: postgres
   livenessProbe:
     path: /k8s/live
   readinessProbe:

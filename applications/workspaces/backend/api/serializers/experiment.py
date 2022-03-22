@@ -1,4 +1,4 @@
-from kcoidc.serializers import GroupSerializer
+from cloudharness_django.serializers import GroupSerializer
 from rest_framework import serializers
 
 from api.models import Experiment
@@ -10,6 +10,7 @@ from .user import UserTeamSerializer
 
 
 class ExperimentFileUploadSerializer(serializers.Serializer):
+    population_name = serializers.CharField()
     file = serializers.FileField()
 
     class Meta:

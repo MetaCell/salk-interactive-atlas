@@ -1,5 +1,5 @@
 from django.contrib.auth.models import Group, User
-from kcoidc.serializers import UserSerializer
+from cloudharness_django.serializers import UserSerializer
 from rest_framework import serializers
 
 from api.models import UserDetail

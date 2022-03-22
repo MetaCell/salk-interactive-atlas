@@ -13,20 +13,26 @@ class AutomaticLoginUserMiddleware:
     def __init__(self, get_response):
         # One-time configuration and initialization.
         self.get_response = get_response
-        self.ac = AuthClient()
+        try:
+            self.ac = AuthClient()
+        except:
+            self.ac = None
 
     def __call__(self, request):
-        if get_authentication_token():
+        if self.ac and get_authentication_token():
             try:
                 kc_user = self.ac.get_current_user()
                 user = User.objects.get(member__kc_id=kc_user["id"])
                 if user:
-                    # auto login
+                    # auto login, set the user
                     request.user = user
-                    login(request, user)
             except KeycloakGetError:
                 # KC user not found
                 pass
+
+        if hasattr(request, "user"):
+            # auto login
+            login(request, request.user)
 
         response = self.get_response(request)
 

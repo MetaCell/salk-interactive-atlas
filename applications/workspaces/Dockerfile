@@ -24,10 +24,10 @@ ENV PRODUCTION=true
 ENV APP_DIR=/usr/src/app
 
 WORKDIR ${APP_DIR}/..
-COPY metacell-kcoidc ./metacell-kcoidc
+COPY cloudharness-django ./cloudharness-django
 RUN  apk add jpeg-dev zlib-dev git && \
      python3 -m pip install --upgrade pip && \
-     python3 -m pip install -e metacell-kcoidc --no-cache-dir --upgrade
+     python3 -m pip install -e cloudharness-django --no-cache-dir --upgrade
 
 WORKDIR ${APP_DIR}
 COPY backend/requirements.txt .

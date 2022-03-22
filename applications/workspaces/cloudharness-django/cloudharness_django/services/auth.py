@@ -3,15 +3,13 @@ import time
 from enum import Enum
 from typing import List
 
-from django.urls import reverse
-
 from keycloak.exceptions import KeycloakGetError
 
 from cloudharness import log
 from cloudharness.auth import AuthClient, get_auth_realm
 from cloudharness.utils.config import ALLVALUES_PATH
 
-from kcoidc.exceptions import KeycloakOIDCNoAdminRole, KeycloakOIDCAuthServiceNotInitError, KeycloakOIDCNoDefaultUserRole
+from cloudharness_django.exceptions import KeycloakOIDCNoAdminRole
 
 
 class AuthorizationLevel(Enum):

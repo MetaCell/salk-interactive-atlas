@@ -1,4 +1,8 @@
-from api.models import Experiment, Tag
+import csv
+
+from cloudharness import log
+
+from api.models import Experiment, Tag, Population
 
 class ExperimentService:
     @staticmethod
@@ -23,9 +27,13 @@ class ExperimentService:
         return True
 
     @staticmethod
-    def upload_file(experiment: Experiment):
-        # Code to handle file
-        # has permission_classes
-        # save file
-        # process file
+    def upload_file(experiment: Experiment, population_name: str, file):
+        population, created = Population.objects.get_or_create(experiment_id=experiment.id, name=population_name)
+        population.save()
+        # delete all cells
+        #
+        with open(file.file.name) as csvfile:
+            reader = csv.reader(csvfile)
+            batch_size = 50000
+            cells = []
         pass

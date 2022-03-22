@@ -2,8 +2,8 @@ from django.contrib.auth.models import User, Group
 
 from cloudharness import log
 
-from kcoidc.models import Team, Member
-from kcoidc.services.auth import AuthorizationLevel
+from cloudharness_django.models import Team, Member
+from cloudharness_django.services.auth import AuthorizationLevel
 
 class UserService:
     def __init__(self, auth_service):
@@ -66,7 +66,7 @@ class UserService:
             try:
                 # check if group has a team
                 team = group.team
-            except:
+            except Exception as e:
                 # create the team
                 team = Team.objects.create(
                     owner=User.objects.filter(is_superuser=True)[0],

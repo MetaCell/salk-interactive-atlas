@@ -125,12 +125,15 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 from cloudharness.applications import get_configuration
 from cloudharness.utils.config import ALLVALUES_PATH, CloudharnessConfig
 
-# ***********************************************************************
-# * import base KCOIDC settings
-# ***********************************************************************
-from kcoidc.kcoidc_settings import *
-
 PROJECT_NAME = "WORKSPACES"
+
+# Persistent storage
+PERSISTENT_ROOT = os.path.join(BASE_DIR, "persistent")
+
+# ***********************************************************************
+# * import base CloudHarness Django settings
+# ***********************************************************************
+from cloudharness_django.settings import *
 
 # add the local apps
 INSTALLED_APPS += [
@@ -143,22 +146,6 @@ INSTALLED_APPS += [
 # override django admin base template with a local template
 # to add some custom styling
 TEMPLATES[0]["DIRS"] = [BASE_DIR / "templates"]
-
-# Persistent storage
-PERSISTENT_ROOT = os.path.join(BASE_DIR, "persistent")
-
-# Database
-# https://docs.djangoproject.com/en/3.2/ref/settings/#databases
-DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": os.path.join(PERSISTENT_ROOT, "workspaces.sqlite3"),
-        "TEST": {
-            "ENGINE": "django.db.backends.sqlite3",
-            "NAME": os.path.join(PERSISTENT_ROOT, "test_workspaces.sqlite3"),
-        },
-    },
-}
 
 # Django Logging Information
 LOGGING = {
@@ -194,7 +181,7 @@ STATIC_URL = "/static/"
 # KC Client & roles
 KC_CLIENT_NAME = PROJECT_NAME.lower()
 
-# Default KCOIDC roles
+# Default OIDC roles
 KC_ADMIN_ROLE = f"{KC_CLIENT_NAME}-administrator"  # admin user
 KC_MANAGER_ROLE = f"{KC_CLIENT_NAME}-manager"  # manager user
 KC_USER_ROLE = f"{KC_CLIENT_NAME}-user"  # normal user

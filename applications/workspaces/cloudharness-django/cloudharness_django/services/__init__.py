@@ -1,6 +1,8 @@
+from typing import List
+
 from django.conf import settings
 
-from kcoidc.exceptions import \
+from cloudharness_django.exceptions import \
     KeycloakOIDCAuthServiceNotInitError, \
     KeycloakOIDUserServiceNotInitError, \
     KeycloakOIDUserServiceNotInitError
@@ -22,13 +24,13 @@ def get_user_service():
 
 def init_services(
         client_name: str = settings.KC_CLIENT_NAME,
-        client_roles: [str] = settings.KC_ALL_ROLES,
-        privileged_roles: [str] = settings.KC_PRIVILEGED_ROLES,
+        client_roles: List[str] = settings.KC_ALL_ROLES,
+        privileged_roles: List[str] = settings.KC_PRIVILEGED_ROLES,
         admin_role: str = settings.KC_ADMIN_ROLE,
         default_user_role: str = settings.KC_DEFAULT_USER_ROLE
         ):
-    from kcoidc.services.auth import AuthService
-    from kcoidc.services.user import UserService
+    from cloudharness_django.services.auth import AuthService
+    from cloudharness_django.services.user import UserService
     global _auth_service, _user_service
     _auth_service = AuthService(
         client_name=client_name,

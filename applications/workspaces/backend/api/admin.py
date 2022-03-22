@@ -1,12 +1,8 @@
 from django.contrib import admin
 
-from api.models import Cell, Collaborator, Experiment, Population, Tag, UserDetail
+from api.models import Collaborator, Experiment, Population, Tag, UserDetail
 
 # Register your models here.
-
-class CellInline(admin.TabularInline):
-    model = Cell
-    extra = 10
 
 class PopulationInline(admin.TabularInline):
     model = Population
@@ -36,11 +32,6 @@ class CollaboratorAdmin(admin.ModelAdmin):
     raw_id_fields = ("experiment",)
 
 
-class PopulationAdmin(admin.ModelAdmin):
-    list_display = ("experiment", "atlas", "name", "color")
-    inlines = [CellInline,]
-
-
 class TagAdmin(admin.ModelAdmin):
     pass
 
@@ -48,5 +39,4 @@ class TagAdmin(admin.ModelAdmin):
 admin.site.register(UserDetail, UserDetailAdmin)
 admin.site.register(Experiment, ExperimentAdmin)
 admin.site.register(Collaborator, CollaboratorAdmin)
-admin.site.register(Population, PopulationAdmin)
 admin.site.register(Tag, TagAdmin)

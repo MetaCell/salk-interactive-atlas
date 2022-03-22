@@ -96,7 +96,9 @@ class ExperimentViewSet(viewsets.ModelViewSet):
     )
     def upload_file(self, request, **kwargs):
         instance = self.get_object()
-        ExperimentService.upload_file(instance)
+        file = request.FILES.get('file')
+        population_name = request.data.get("population_name")
+        ExperimentService.upload_file(instance, population_name, file)
 
     def perform_create(self, serializer):
         experiment = serializer.save(

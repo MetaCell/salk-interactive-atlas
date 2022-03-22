@@ -1,4 +1,5 @@
 import time
+from cloudharness.applications import ConfigurationCallException
 
 from django.conf import settings
 from kafka.errors import TopicAlreadyExistsError
@@ -6,8 +7,8 @@ from kafka.errors import TopicAlreadyExistsError
 from cloudharness import log
 from cloudharness.events.client import EventClient
 
-from kcoidc.exceptions import KeycloakOIDCNoProjectError
-from kcoidc.services import init_services, get_user_service, get_auth_service
+from cloudharness_django.exceptions import KeycloakOIDCNoProjectError
+from cloudharness_django.services import init_services, get_user_service, get_auth_service
 
 
 class KeycloakMessageService:
@@ -22,7 +23,7 @@ class KeycloakMessageService:
         operation = message["operation-type"]
         resource_path = message["resource-path"].split("/")
 
-        log.debug(f"{event_client} {message}")
+        log.error(f"{event_client} {message}")
         if resource in ["CLIENT_ROLE_MAPPING","GROUP","USER","GROUP_MEMBERSHIP"]:
             try:
                 init_services()
@@ -73,14 +74,21 @@ class KeycloakMessageService:
         return True
 
     def setup_event_service(self):
-        nap_time = 30
-        kafka_running = False
-        while not kafka_running:
-            kafka_running = self.test_kafka_running()
-            if not kafka_running:
-                log.info(f"Kafka not running? Going for a {nap_time} seconds power nap and will try again later")
-                time.sleep(nap_time)
-        self.init_topics()
+        try:
+            from cloudharness.applications import get_current_configuration
+            current_app = get_current_configuration()
+            nap_time = 30
+            kafka_running = False
+            while not kafka_running:
+                kafka_running = self.test_kafka_running()
+                if not kafka_running:
+                    log.info(f"Kafka not running? Going for a {nap_time} seconds power nap and will try again later")
+                    time.sleep(nap_time)
+            # init the topics
+            self.init_topics()
+        except ConfigurationCallException as e:
+            # configuration not found, continue without Kafka listener(s)
+            pass
 
 
 # start services

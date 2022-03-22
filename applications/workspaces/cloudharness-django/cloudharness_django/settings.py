@@ -1,0 +1,96 @@
+import os
+from django.conf import settings
+
+
+# ***********************************************************************
+# * CloudHarness Django settings
+# ***********************************************************************
+from cloudharness.applications import get_current_configuration
+
+# add the 3rd party apps
+INSTALLED_APPS = getattr(
+    settings,
+    'INSTALLED_APPS',
+    []) + [ 'rest_framework',
+            'admin_extra_buttons',]
+
+# add the local apps
+INSTALLED_APPS += ['cloudharness_django',]
+
+# add the CloudHarness Django auto login middleware
+MIDDLEWARE = getattr(
+            settings,
+            'MIDDLEWARE',
+            []
+    ) + [
+        'cloudharness_django.middleware.AutomaticLoginUserMiddleware',
+    ]
+
+REST_FRAMEWORK = {
+    'COERCE_DECIMAL_TO_STRING': False,
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.IsAuthenticated',
+    ],
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'cloudharness_django.middleware.AutomaticLoginUserMiddlewareOIDC',
+        'rest_framework.authentication.BasicAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
+    ]
+}
+
+# from rest_framework.authentication import SessionAuthentication
+
+# test if the kubernetes CH all values exists, if so then set up specific k8s stuff
+# IMPROTANT NOTE:
+#   when testing/debugging with KAfka then copy the deployment/helm/values.yaml to the ALLVALUES_PATH
+#   see also the README.md
+
+# get the application CH config
+try:
+    current_app = get_current_configuration()
+
+    # if secured then set USE_X_FORWARDED_HOST because we are behind the GK proxy
+    USE_X_FORWARDED_HOST = current_app.harness.secured
+except:
+    # no current app found, fall back to the default settings, there is a god change that
+    # we are running on a developers local machine
+    from cloudharness.applications import ApplicationConfiguration
+    app_name = settings.PROJECT_NAME.lower()
+    current_app = ApplicationConfiguration({
+        "name": app_name,
+        "harness": {
+            "database": {
+                "name": os.path.join(getattr(settings,"PERSISTENT_ROOT","."), f"{app_name}.sqlite3"),
+                "type": "sqlite3",
+                "host": None,
+            }
+        }
+    })
+
+if current_app.harness.database.type == "sqlite3":
+    DATABASE_ENGINE = "django.db.backends.sqlite3"
+    DATABASE_NAME = current_app.harness.database.name
+    DATABSE_HOST = None
+    DATABASE_PORT = None
+elif current_app.harness.database.type == "postgres":
+        DATABASE_ENGINE = "django.db.backends.postgresql"
+        DATABASE_NAME = current_app.harness.database.conf["postgres"]["initialdb"]
+        DATABSE_HOST = current_app.harness.database.name
+        DATABASE_PORT = current_app.harness.database.conf["postgres"]["ports"][0]["port"]
+
+# Database
+# https://docs.djangoproject.com/en/3.2/ref/settings/#databases
+DATABASES = {
+    "default": {
+        "ENGINE": DATABASE_ENGINE,
+        "NAME": DATABASE_NAME,
+        "USER": getattr(current_app.harness.database, "user", None),
+        "PASSWORD": getattr(current_app.harness.database, "pass", None),
+        "HOST": DATABSE_HOST,
+        "PORT": DATABASE_PORT,
+        "TEST": {
+            "ENGINE": "django.db.backends.sqlite3",
+            "NAME": os.path.join(getattr(settings,"PERSISTENT_ROOT","."), "testdb.sqlite3"),
+        },
+    },
+}

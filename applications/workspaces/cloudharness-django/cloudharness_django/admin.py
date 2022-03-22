@@ -5,14 +5,14 @@ from django.contrib.auth.models import User, Group
 
 from admin_extra_buttons.api import ExtraButtonsMixin, button
 
-from kcoidc.services import get_user_service
+from cloudharness_django.services import get_user_service
 
 # Register your models here.
 
 admin.site.unregister(User)
 admin.site.unregister(Group)
 
-class KCOIDCUserAdmin(ExtraButtonsMixin, UserAdmin):
+class CHUserAdmin(ExtraButtonsMixin, UserAdmin):
 
     def has_add_permission(self, request):
         return settings.DEBUG
@@ -29,7 +29,7 @@ class KCOIDCUserAdmin(ExtraButtonsMixin, UserAdmin):
         self.message_user(request, 'Keycloak users & groups synced.')
 
 
-class KCOIDCGroupAdmin(ExtraButtonsMixin, GroupAdmin):
+class CHGroupAdmin(ExtraButtonsMixin, GroupAdmin):
 
     def has_add_permission(self, request):
         return settings.DEBUG
@@ -45,5 +45,5 @@ class KCOIDCGroupAdmin(ExtraButtonsMixin, GroupAdmin):
         get_user_service().sync_kc_users_groups()
         self.message_user(request, 'Keycloak users & groups synced.')
 
-admin.site.register(User, KCOIDCUserAdmin)
-admin.site.register(Group, KCOIDCGroupAdmin)
+admin.site.register(User, CHUserAdmin)
+admin.site.register(Group, CHGroupAdmin)
