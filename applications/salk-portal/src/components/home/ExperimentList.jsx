@@ -21,6 +21,7 @@ import FormControl from '@material-ui/core/FormControl';
 import FormLabel from '@material-ui/core/FormLabel';
 import Checkbox from '@material-ui/core/Checkbox';
 
+
 const useStyles = makeStyles(() => ({
   subHeader: {
     minHeight: '3rem',
@@ -156,6 +157,9 @@ const useStyles = makeStyles(() => ({
   },
 }));
 
+
+
+
 const ExperimentList = (props) => {
   const classes = useStyles();
   const [anchorEl, setAnchorEl] = React.useState(null);
@@ -180,10 +184,57 @@ const ExperimentList = (props) => {
     setFilterAnchorEL(null);
   };
 
+  
   const tags = ["Project A", "Tag X", "Label 1"];
-  const { heading, description } = props;
+  const { heading, description, type } = props;
   const sortOptions = ["Alphabetical", "Date created", "Last viewed"];
   const orderOptions = ["Oldest first", "Newest first"];
+  const dummyExperiment = {
+    id: "id",
+    name: "Exploration of the Spinal Cord",
+    is_private: true,
+    description: "Description Experiment",
+    date_created: "Sept 2nd, 2021",
+    last_modified: "2022-03-15",
+    owner: {
+        id: 1,
+        username: "afonso",
+        first_name: "",
+        last_name: "",
+        email: "afonso@metacell.us",
+        groups: []
+    },
+    teams: [],
+    collaborators: [],
+    populations: [
+        {
+            id: 1,
+            name: "Test Population",
+            color: "#FFFF00",
+            atlas: "slk10",
+            cells: {
+  
+            }
+        }
+    ],
+    tags: [
+        {
+            id: 1,
+            name: "Project A"
+        },
+        {
+          id: 1,
+          name: "Tag X"
+      },
+      {
+        id: 1,
+        name: "Label1"
+    },
+    ]
+  }
+  
+
+ 
 
   return (
     <>
@@ -265,8 +316,8 @@ const ExperimentList = (props) => {
       </Box>
       <Box p={5}>
         <Grid container item spacing={3}>
-          {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((item, i) => (
-            <ExperimentCard id={i} i={`${heading}experiment_${i}`} tags={tags} heading={"Exploration of the spinal cord"} description={"Shared on Sept 2nd, 2021"} user={"name"} />
+          {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map( i => (
+            <ExperimentCard experiment={dummyExperiment} type={type}/>
             ))
           }
         </Grid>
@@ -274,5 +325,4 @@ const ExperimentList = (props) => {
     </>
   );
 }
-
 export default ExperimentList;
