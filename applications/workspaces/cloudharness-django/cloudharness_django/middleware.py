@@ -31,8 +31,9 @@ class AutomaticLoginUserMiddleware:
                 pass
 
         if hasattr(request, "user"):
-            # auto login
-            login(request, request.user)
+            if not request.user.is_anonymous():
+                # auto login for non anonymous users
+                login(request, request.user)
 
         response = self.get_response(request)
 
