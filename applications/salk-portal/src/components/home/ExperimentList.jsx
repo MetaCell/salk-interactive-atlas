@@ -1,18 +1,20 @@
 import * as React from "react";
+import { useLocation } from 'react-router-dom';
 import { makeStyles } from "@material-ui/core/styles";
 import Typography from '@material-ui/core/Typography';
 import Box from "@material-ui/core/Box";
 import Grid from "@material-ui/core/Grid";
 import Button from "@material-ui/core/Button";
-import { bodyBgColor, headerBorderColor, headerButtonBorderColor, cardTextColor, sidebarTextColor, headerBg, secondaryColor, defaultChipBg, primaryChipBg, secondaryChipBg } from "../../theme";
+import IconButton from "@material-ui/core/IconButton";
+import { bodyBgColor, headerBorderColor, headerButtonBorderColor, cardTextColor, sidebarTextColor, headerBg, secondaryColor, defaultChipBg, primaryChipBg, secondaryChipBg, inputFocusShadow, switchActiveColor } from "../../theme";
 import Breadcrumbs from '@material-ui/core/Breadcrumbs';
 import Link from '@material-ui/core/Link';
 import Menu from '@material-ui/core/Menu';
-import MenuItem from '@material-ui/core/MenuItem';
 import FILTER from "../../assets/images/icons/filters.svg";
 import FILTER_ACTIVE from "../../assets/images/icons/filters-active.svg";
 import UP_ICON from "../../assets/images/icons/up.svg";
 import CHECK from "../../assets/images/icons/check.svg";
+import INFO from "../../assets/images/icons/info.svg";
 import ExperimentCard from "./ExperimentCard";
 import Radio from '@material-ui/core/Radio';
 import RadioGroup from '@material-ui/core/RadioGroup';
@@ -20,12 +22,13 @@ import FormControlLabel from '@material-ui/core/FormControlLabel';
 import FormControl from '@material-ui/core/FormControl';
 import FormLabel from '@material-ui/core/FormLabel';
 import Checkbox from '@material-ui/core/Checkbox';
-
+import { SalkTeamInfo } from "./SalkTeamInfo";
+import { SALK_TEAM } from "../../constants";
 
 const useStyles = makeStyles(() => ({
   subHeader: {
     minHeight: '3rem',
-    boxShadow: `inset 0 0.0625rem 0 ${headerBorderColor}, inset 0 -0.0625rem 0 ${headerBorderColor}`,
+    boxShadow: `inset 0 -0.0625rem 0 ${headerBorderColor}`,
     padding: '0 1.875rem',
     backgroundColor: bodyBgColor,
     position: 'sticky',
@@ -47,7 +50,6 @@ const useStyles = makeStyles(() => ({
     },
 
     '& .MuiBreadcrumbs-root': {
-      flexGrow: 1,
       '& .MuiBreadcrumbs-ol': {
         justifyContent: 'center',
       },
@@ -155,16 +157,22 @@ const useStyles = makeStyles(() => ({
       },
     },
   },
+
+  infoIcon: {
+    padding: 0,
+    marginRight: '0.25rem',
+    '&:hover': {
+      backgroundColor: 'transparent',
+    }
+  },
 }));
-
-
-
 
 const ExperimentList = (props) => {
   const classes = useStyles();
   const [anchorEl, setAnchorEl] = React.useState(null);
   const [value, setValue] = React.useState('Alpahabetical');
   const [filterAnchorEL, setFilterAnchorEL] = React.useState(null);
+  const [infoDrawer, setInfoDrawer] = React.useState(false);
   const handleChange = (event) => {
     setValue(event.target.value);
   };
@@ -184,9 +192,12 @@ const ExperimentList = (props) => {
     setFilterAnchorEL(null);
   };
 
-  
+  const toggleTeamInfoView = () => {
+    setInfoDrawer((prevOpen) => !prevOpen )
+  }
+
   const tags = ["Project A", "Tag X", "Label 1"];
-  const { heading, description, type } = props;
+  const { heading, description, type, infoIcon } = props;
   const sortOptions = ["Alphabetical", "Date created", "Last viewed"];
   const orderOptions = ["Oldest first", "Newest first"];
   const dummyExperiment = {
@@ -213,7 +224,6 @@ const ExperimentList = (props) => {
             color: "#FFFF00",
             atlas: "slk10",
             cells: {
-  
             }
         }
     ],
@@ -232,9 +242,8 @@ const ExperimentList = (props) => {
     },
     ]
   }
-  
 
- 
+  const hash = useLocation()?.hash;
 
   return (
     <>
@@ -276,12 +285,20 @@ const ExperimentList = (props) => {
           }
         </Menu>
 
-        <Breadcrumbs separator="·" aria-label="breadcrumb">
-          <Link color="inherit" href="/">
-           {heading}
-          </Link>
-          <Typography color="textPrimary">{description}</Typography>
-        </Breadcrumbs>
+        <Box display="flex" justifyContent={"center"} alignItems="center" flexGrow={1}>
+          { (hash === `#${SALK_TEAM}`&& infoIcon) && (
+            <IconButton className={classes.infoIcon} disableRipple onClick={toggleTeamInfoView}>
+              <img src={INFO} alt="info" />
+            </IconButton>
+          )}
+          <Breadcrumbs separator="·" aria-label="breadcrumb">
+            <Link color="inherit" href="/">
+            {heading}
+            </Link>
+            <Typography color="textPrimary">{description}</Typography>
+          </Breadcrumbs>
+        </Box>
+
 
         <Button aria-controls="sort-menu" aria-haspopup="true" onClick={openSortingMenu}>
           Sort
@@ -322,7 +339,9 @@ const ExperimentList = (props) => {
           }
         </Grid>
       </Box>
+      <SalkTeamInfo infoDrawer={infoDrawer} closeDrawer={toggleTeamInfoView}/>
     </>
   );
 }
+
 export default ExperimentList;

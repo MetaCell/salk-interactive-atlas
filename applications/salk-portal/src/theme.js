@@ -14,7 +14,7 @@ vars.gutter = vars.gutter.replace('px', '') * 1;
 
 export const {
   primaryColor, secondaryColor, font, fontColor, linkColor, teal, purple, brown, skyBlue, bgLightest, paragraph, bgLightestShade,
-  bgLight, bgRegular, bgDark, bgDarker, bgDarkest, bgInputs, gutter, radius, checkBoxColor, bgLighter, textColor, canvasBg, headerBorderColor, headerButtonBorderColor, bodyBgColor, headerBg, switchActiveColor, canvasIconColor, breadcrumbTextColor, sidebarBadgeBg, sidebarTextColor, defaultChipBg, primaryChipBg, secondaryChipBg, chipTextColor, cardTextColor,
+  bgLight, bgRegular, bgDark, bgDarker, bgDarkest, bgInputs, gutter, radius, checkBoxColor, bgLighter, textColor, canvasBg, headerBorderColor,headerButtonBorderColor, bodyBgColor, headerBg, switchActiveColor, canvasIconColor, breadcrumbTextColor, sidebarBadgeBg, sidebarTextColor, defaultChipBg, primaryChipBg, secondaryChipBg, chipTextColor, cardTextColor, inputFocusShadow, backdropBg,
 } = vars;
 
 const verticalFill = {
@@ -518,7 +518,29 @@ const theme = {
       root: { padding: '1.5rem 1rem' }
     },
 
+    MuiBackdrop: {
+      root: {
+        backgroundColor: backdropBg,
+      },
+    },
 
+
+    MuiDrawer: {
+      root: {
+        ...verticalFill
+
+      },
+      paper: {
+        width: '21.5rem',
+        boxShadow: `-0.0625rem 0 0 ${headerBorderColor}`,
+        backgroundColor: headerBg,
+        padding: '1.25rem',
+        ...verticalFill,
+        'div:only-child': {
+          ...verticalFill,
+        }
+      }
+    },
   },
 }
 
