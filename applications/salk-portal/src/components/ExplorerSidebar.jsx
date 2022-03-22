@@ -11,7 +11,7 @@ import {
   ListItemText,
   Badge,
   Typography,
-  Link
+  Button
 } from '@material-ui/core';
 import Collapse from '@material-ui/core/Collapse';
 import { headerBg, headerBorderColor, switchActiveColor, secondaryColor, headerButtonBorderColor, sidebarBadgeBg, sidebarTextColor } from "../theme";
@@ -149,11 +149,16 @@ const useStyles = makeStyles({
       lineHeight: '0.9375rem',
       color: sidebarTextColor,
     },
-    '& a': {
+    '& button': {
       fontWeight: '500',
       fontSize: '0.75rem',
       lineHeight: '0.9375rem',
+      padding: 0,
       color: switchActiveColor,
+      textTransform: 'none',
+      '&:hover': {
+        backgroundColor: 'transparent',
+      },
     },
   },
 });
@@ -248,7 +253,7 @@ const Sidebar = (props) => {
 
       <Box className={classes.footer}>
         <Typography>Funded by NIH</Typography>
-        <Link>Learn More</Link>
+        <Button disableRipple variant="text">Learn More</Button>
       </Box>
 
     </Box>
