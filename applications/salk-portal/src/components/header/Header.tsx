@@ -4,11 +4,6 @@ import {
   Toolbar,
   Box,
   Button,
-  Paper,
-  Popper,
-  MenuItem,
-  MenuList,
-  ClickAwayListener,
   makeStyles,
   Typography,
   Breadcrumbs,
@@ -18,6 +13,7 @@ import {
 import { headerBorderColor, headerButtonBorderColor, headerBg } from "../../theme";
 import LOGO from "../../assets/images/logo.svg";
 import USER from "../../assets/images/icons/user.svg";
+import { UserAccountDialog } from "./UserAccountDialog";
 
 const title = "Salk Mouse Cord Atlas";
 
@@ -27,9 +23,9 @@ const useStyles = makeStyles((theme) => ({
     paddingRight: "0.5rem",
     paddingLeft: "0.875rem",
     justifyContent: "space-between",
+    borderBottom: `0.0625rem solid ${headerBorderColor}`,
     height: '3rem',
     flexShrink: 0,
-    boxShadow: `0 0.0625rem 0 ${headerBorderColor}`,
 
     '& .MuiAvatar-root': {
       width: '1.5rem',
@@ -74,21 +70,19 @@ const useStyles = makeStyles((theme) => ({
   logo: {
     minWidth: '10.9375rem',
   },
+
 }));
 
 export const Header = (props: any) => {
   const classes = useStyles();
   const location = useLocation();
   const onExperimentsPage = location.pathname === '/experiments';
-  const [menuOpen, setMenuOpen] = React.useState(false);
+  const [dialogOpen, setDialogOpen] = React.useState(false);
   const menuAnchorRef = React.useRef(null);
 
-  const handleMenuToggle = () => {
-    setMenuOpen((prevOpen) => !prevOpen);
-  };
 
-  const handleMenuClose = () => {
-    setMenuOpen(false);
+  const handleDialogToggle = () => {
+    setDialogOpen((prevOpen) => !prevOpen);
   };
 
   const user = props.user;
@@ -109,21 +103,11 @@ export const Header = (props: any) => {
         <Box alignItems="center" display="flex">
           {!onExperimentsPage ? (
             <>
-              <Popper open={Boolean(menuOpen)} anchorEl={menuAnchorRef.current}>
-                <Paper>
-                  <ClickAwayListener onClickAway={handleMenuClose}>
-                    <MenuList autoFocusItem={menuOpen} id="user-menu">
-                      <MenuItem onClick={handleUserLogout}>Logout</MenuItem>
-                    </MenuList>
-                  </ClickAwayListener>
-                </Paper>
-              </Popper>
-
               <Button
                 size="large"
                 className={classes.button}
                 variant="contained"
-                disableElevation={true}
+                disableElevation
               >
                 Create a new experiment
               </Button>
@@ -131,9 +115,9 @@ export const Header = (props: any) => {
               <Button
                 size="large"
                 ref={menuAnchorRef}
-                aria-controls={menuOpen && "user-menu"}
+                aria-controls={dialogOpen && "user-menu"}
                 aria-haspopup="true"
-                onClick={handleMenuToggle}
+                onClick={handleDialogToggle}
                 className={classes.button}
                 variant="outlined"
               >
@@ -148,7 +132,7 @@ export const Header = (props: any) => {
                 size="large"
                 className={classes.button}
                 variant="contained"
-                disableElevation={true}
+                disableElevation
               >
                 Save in My Experiments
               </Button>
@@ -196,6 +180,8 @@ export const Header = (props: any) => {
           {headerText}
         </Box>
       </Toolbar>
+
+      <UserAccountDialog open={dialogOpen} handleClose={handleDialogToggle} user={user} />
     </>
   );
 };
