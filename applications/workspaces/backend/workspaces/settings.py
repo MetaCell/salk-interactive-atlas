@@ -24,8 +24,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = "django-insecure-)5@5h(+e1@_h2$%1957726%e%6wt_+pwdtk2p@^71=e$*m^ew*"
 
 # SECURITY WARNING: don't run with debug turned on in production!
-# DEBUG = False if os.environ.get("PRODUCTION", None) else True
-DEBUG = True
+DEBUG = False if os.environ.get("PRODUCTION", None) else True
 
 ALLOWED_HOSTS = [
     "*",
@@ -176,7 +175,12 @@ LOGGING = {
 # Static files (CSS, JavaScript, Images)
 MEDIA_ROOT = PERSISTENT_ROOT
 STATIC_ROOT = os.path.join(BASE_DIR, "static")
-MEDIA_URL = "/media/"
+try:
+    from cloudharness.applications import get_configuration
+    salk_portal_app = get_configuration("salk-portal")
+    MEDIA_URL = f"{salk_portal_app.get_public_address()}/media/"
+except:
+    MEDIA_URL = "/media/"
 STATIC_URL = "/static/"
 
 # KC Client & roles

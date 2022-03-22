@@ -4,6 +4,11 @@ harness:
   deployment:
     auto: true
     port: 80
+    volume:
+      name: salk-files
+      mountpath: /usr/share/nginx/html/persistent
+      auto: false
+      size: 5Gi
   service:
     auto: true
     port: 80
