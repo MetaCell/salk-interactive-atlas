@@ -101,19 +101,19 @@ export const UserAccountDialog = (props: any) => {
           <Box className="detail-block">
             <Typography component="h4">Name</Typography>
             <Typography component={"p"}>{`${user?.firstName} ${user?.lastName}`}</Typography>
-            <Button disableRipple variant="text">Edit</Button>
+            <Button disableRipple="true" variant="text">Edit</Button>
           </Box>
 
           <Box className="detail-block">
             <Typography component="h4">Email</Typography>
             <Typography component={"p"}>{user?.email}</Typography>
-            <Button disableRipple variant="text">Edit</Button>
+            <Button disableRipple="true" variant="text">Edit</Button>
           </Box>
 
           <Box className="detail-block">
             <Typography component="h4">Password</Typography>
             <Typography component={"p"}>●●●●●●●●●●●●●</Typography>
-            <Button disableRipple variant="text">Change password</Button>
+            <Button disableRipple="true" variant="text">Change password</Button>
           </Box>
 
           <Divider />

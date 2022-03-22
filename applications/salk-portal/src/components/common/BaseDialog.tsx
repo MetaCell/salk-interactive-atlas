@@ -34,7 +34,7 @@ const Modal: React.FC<IModal> = ({
             Cancel
           </Button>
           <Button
-            disableElevation
+            disableElevation="true"
             onClick={handleAction}
             variant="contained" color="primary">
             {actionText}
