@@ -239,7 +239,6 @@ const ExperimentCard = ({experiment, type}) => {
         </CardActionArea>
         <Menu
           className={classes.cardMenu}
-          id={i}
           anchorEl={experimentMenuEl}
           keepMounted
           open={Boolean(experimentMenuEl)}
@@ -288,14 +287,13 @@ const ExperimentCard = ({experiment, type}) => {
                 {type === EXPERIMENTS_HASH ? experiment.date_created : `Shared on ${experiment.date_created}` }
               </Typography>
             </Box>
-            <Avatar src={USER} alt={experiment.description} />
             <Tooltip arrow title={
               <Typography>
                 <Typography component={'span'}>Owner</Typography>
-                {user}
+                {experiment?.owner?.username}
               </Typography>
             } placement="top">
-              <Avatar src={USER} alt={user} />
+              <Avatar src={USER} alt={experiment?.owner?.username} />
             </Tooltip>
           </CardContent>
         </CardActionArea>
