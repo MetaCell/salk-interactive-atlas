@@ -14,6 +14,7 @@ import { headerBorderColor, headerButtonBorderColor, headerBg } from "../../them
 import LOGO from "../../assets/images/logo.svg";
 import USER from "../../assets/images/icons/user.svg";
 import { UserAccountDialog } from "./UserAccountDialog";
+import { CreateExperimentDialog } from "./CreateExperimentDialog";
 
 const title = "Salk Mouse Cord Atlas";
 
@@ -79,6 +80,11 @@ export const Header = (props: any) => {
   const onExperimentsPage = location.pathname === '/experiments';
   const [dialogOpen, setDialogOpen] = React.useState(false);
   const menuAnchorRef = React.useRef(null);
+  const [experimentDialogOpen, setExperimentDialogOpen] = React.useState(false);
+
+  const handleExperimentDialogToggle = () => {
+    setExperimentDialogOpen((prevOpen) => !prevOpen);
+  };
 
 
   const handleDialogToggle = () => {
@@ -107,7 +113,10 @@ export const Header = (props: any) => {
                 size="large"
                 className={classes.button}
                 variant="contained"
-                disableElevation="true"
+                disableElevation
+                aria-controls={experimentDialogOpen && "user-menu"}
+                aria-haspopup="true"
+                onClick={handleExperimentDialogToggle}
               >
                 Create a new experiment
               </Button>
@@ -132,7 +141,7 @@ export const Header = (props: any) => {
                 size="large"
                 className={classes.button}
                 variant="contained"
-                disableElevation="true"
+                disableElevation
               >
                 Save in My Experiments
               </Button>
@@ -182,6 +191,7 @@ export const Header = (props: any) => {
       </Toolbar>
 
       <UserAccountDialog open={dialogOpen} handleClose={handleDialogToggle} user={user} />
+      <CreateExperimentDialog open={experimentDialogOpen} handleClose={handleExperimentDialogToggle} />
     </>
   );
 };
