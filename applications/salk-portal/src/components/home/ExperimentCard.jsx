@@ -239,7 +239,6 @@ const ExperimentCard = ({experiment, type}) => {
         </CardActionArea>
         <Menu
           className={classes.cardMenu}
-          id={i}
           anchorEl={experimentMenuEl}
           keepMounted
           open={Boolean(experimentMenuEl)}
