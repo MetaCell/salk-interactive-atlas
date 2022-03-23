@@ -191,7 +191,7 @@ export const Header = (props: any) => {
       </Toolbar>
 
       <UserAccountDialog open={dialogOpen} handleClose={handleDialogToggle} user={user} />
-      <CreateExperimentDialog open={experimentDialogOpen} handleClose={handleExperimentDialogToggle} />
+      <CreateExperimentDialog open={experimentDialogOpen} handleClose={handleExperimentDialogToggle} user={user}/>
     </>
   );
 };
