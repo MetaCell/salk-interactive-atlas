@@ -4,7 +4,7 @@ import { Typography, Box, Divider } from "@material-ui/core";
 import TextField from "@material-ui/core/TextField";
 import Button from "@material-ui/core/Button";
 import Drawer from "@material-ui/core/Drawer";
-import { headerBorderColor, headerButtonBorderColor, secondaryColor, inputFocusShadow, switchActiveColor } from "../../theme";
+import { headerBorderColor, headerButtonBorderColor, secondaryColor, inputFocusShadow, switchActiveColor, logoHoverbg, textDisabled, sidebarTextColor } from "../../theme";
 import EDIT from "../../assets/images/icons/edit.svg";
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
@@ -15,6 +15,7 @@ import Avatar from '@material-ui/core/Avatar';
 import LOGO from "../../assets/images/icons/salk-logo.svg";
 import USER from "../../assets/images/icons/user.svg";
 import ADD from "../../assets/images/icons/add_primary.svg";
+import ADD_WHITE from "../../assets/images/icons/add_white.svg";
 
 const useStyles = makeStyles(() => ({
   members: {
@@ -35,7 +36,7 @@ const useStyles = makeStyles(() => ({
       color: headerButtonBorderColor,
 
       '&.MuiTypography-body2': {
-        color: 'rgba(255, 255, 255, 0.3)',
+        color: textDisabled,
         marginLeft: '0.3125rem'
       },
     },
@@ -164,6 +165,10 @@ const useStyles = makeStyles(() => ({
       color: headerButtonBorderColor,
     },
 
+    '& label': {
+      height: '100%',
+    },
+
     '& .MuiTypography-root': {
       marginBottom: '1.25rem',
       display: 'block',
@@ -176,7 +181,7 @@ const useStyles = makeStyles(() => ({
       color: headerButtonBorderColor,
     },
 
-    '& span.MuiTypography-body2': {color: 'rgba(255, 255, 255, 0.4)',},
+    '& span.MuiTypography-body2': {color: sidebarTextColor,},
   },
 
   logo: {
@@ -185,9 +190,11 @@ const useStyles = makeStyles(() => ({
     height: '2.5rem',
     borderRadius: '50%',
     overflow: 'hidden',
+    backgroundPosition: 'center',
+    backgroundRepeat: 'no-repeat',
 
     '& .MuiBox-root': {
-      background: 'linear-gradient(0deg, rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6))',
+      background: `linear-gradient(0deg, ${logoHoverbg}, ${logoHoverbg})`,
       width: '100%',
       display: 'flex',
       alignItems: 'center',
@@ -200,12 +207,22 @@ const useStyles = makeStyles(() => ({
       display: 'none',
     },
   },
+
+  sendInvite: {
+    '& .MuiButton-root': {
+      flexShrink: 0,
+    },
+    '& .MuiFormControl-root': {
+      margin: '0 0.5rem 0 0'
+    },
+  },
 }));
 
 export const SalkTeamInfo = (props) => {
   const { infoDrawer, closeDrawer } = props;
   const classes = useStyles();
   const [editMode, setEditMode] = useState(false);
+  const [inviteMembers, setInviteMembers] = useState(false);
   const toggleEditMode = () => {
     setEditMode((prevEdit) => !prevEdit);
   }
@@ -218,9 +235,7 @@ export const SalkTeamInfo = (props) => {
     <Drawer anchor="right" className={classes.drawer} open={infoDrawer} onClose={closeDrawer}>
       { !editMode ? (
         <Box className={classes.header}>
-          <Box className={classes.logo}>
-            <Avatar src={LOGO} />
-          </Box>
+          <Box className={classes.logo} style={{ backgroundImage: `url(${LOGO})` }} />
 
           <Typography component="h3">{dummyTeamInfo?.team}</Typography>
 
@@ -232,15 +247,13 @@ export const SalkTeamInfo = (props) => {
         </Box>
       ) : (
         <Box className={classes.header}>
-          <Box className={classes.logo} position={"relative"}>
+          <Box className={classes.logo} style={{ backgroundImage: `url(${LOGO})` }}>
             <Typography component={"label"}>
               <input type={"file"} />
-              <Avatar src={LOGO} />
-              <Box top={0} position={"absolute"}>
+              <Box>
                 <img src={EDIT} alt="edit" />
               </Box>
             </Typography>
-
           </Box>
 
           <TextField
@@ -301,10 +314,21 @@ export const SalkTeamInfo = (props) => {
           </ListItem>
         </List>
 
-        <Button disableRipple>
-          <img className={classes.addIcon} src={ADD} alt="add" />
-          Invite Members
-        </Button>
+        {!inviteMembers ? (
+          <Button disableRipple onClick={() => setInviteMembers(true)}>
+            <img className={classes.addIcon} src={ADD} alt="add" />
+            Invite Members
+          </Button>
+        ) : (
+            <Box className={classes.sendInvite} display={'flex'} alignItems="center">
+              <img className={classes.addIcon} src={ADD_WHITE} alt="add" />
+              <TextField variant="outlined" placeholder="Email address" />
+              <Button variant="contained" onClick={() => setInviteMembers(false)}>
+                Send Invite
+              </Button>
+            </Box>
+        )}
+
       </Box>
     </Drawer>
   );

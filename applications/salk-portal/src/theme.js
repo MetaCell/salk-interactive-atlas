@@ -14,7 +14,7 @@ vars.gutter = vars.gutter.replace('px', '') * 1;
 
 export const {
   primaryColor, secondaryColor, font, fontColor, linkColor, teal, purple, brown, skyBlue, bgLightest, paragraph, bgLightestShade,
-  bgLight, bgRegular, bgDark, bgDarker, bgDarkest, bgInputs, gutter, radius, checkBoxColor, bgLighter, textColor, canvasBg, headerBorderColor,headerButtonBorderColor, bodyBgColor, headerBg, switchActiveColor, canvasIconColor, breadcrumbTextColor, sidebarBadgeBg, sidebarTextColor, defaultChipBg, primaryChipBg, secondaryChipBg, chipTextColor, cardTextColor, inputFocusShadow, backdropBg,
+  bgLight, bgRegular, bgDark, bgDarker, bgDarkest, bgInputs, gutter, radius, checkBoxColor, bgLighter, textColor, canvasBg, headerBorderColor,headerButtonBorderColor, bodyBgColor, headerBg, switchActiveColor, canvasIconColor, breadcrumbTextColor, sidebarBadgeBg, sidebarTextColor, defaultChipBg, primaryChipBg, secondaryChipBg, chipTextColor, cardTextColor, inputFocusShadow, backdropBg, logoHoverbg, textDisabled
 } = vars;
 
 const verticalFill = {
@@ -178,6 +178,11 @@ const theme = {
         padding: '0.4375rem 0.5rem',
         marginRight: gutter / 2,
         border: `0.0625rem solid ${headerButtonBorderColor}`,
+        '&:hover': {
+          borderColor: secondaryColor,
+          color: secondaryColor,
+          backgroundColor: 'transparent',
+        },
         '&:last-child': {
           marginRight: 0
         }
@@ -187,7 +192,7 @@ const theme = {
         backgroundColor: switchActiveColor,
         color: secondaryColor,
         "&:hover": {
-          backgroundColor: primaryColor,
+          backgroundColor: switchActiveColor,
         },
       },
       text: {
@@ -266,18 +271,6 @@ const theme = {
       root: {
         '&:last-child': {
           paddingBottom: 16
-        }
-      }
-    },
-    MuiDrawer: {
-      root: {
-        ...verticalFill
-
-      },
-      paper: {
-        ...verticalFill,
-        'div:only-child': {
-          ...verticalFill,
         }
       }
     },
@@ -540,6 +533,47 @@ const theme = {
           ...verticalFill,
         }
       }
+    },
+
+    MuiTextField: {
+      root: {
+        flexGrow: 1,
+      }
+    },
+
+    MuiOutlinedInput: {
+      root: {
+        borderRadius: '0.375rem',
+
+        '&.Mui-focused': {
+          '& .MuiOutlinedInput-notchedOutline': {
+            borderColor: switchActiveColor,
+            boxShadow: `0 0 0 0.125rem ${inputFocusShadow}`,
+          },
+        },
+      },
+
+      input: {
+        padding: '0 0.75rem',
+        height: '2rem',
+        fontWeight: '500',
+        fontSize: '0.75rem',
+        lineHeight: '1rem',
+        letterSpacing: '0.01em',
+        color: headerButtonBorderColor,
+      },
+
+      multiline: {
+        padding: '0.5rem 0.75rem',
+      },
+
+      inputMultiline: {
+        height: 'auto',
+      },
+
+      notchedOutline: {
+        borderColor: sidebarTextColor
+      },
     },
   },
 }
