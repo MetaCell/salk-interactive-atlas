@@ -287,13 +287,13 @@ const ExperimentCard = ({experiment, type}) => {
                 {type === EXPERIMENTS_HASH ? experiment.date_created : `Shared on ${experiment.date_created}` }
               </Typography>
             </Box>
-            <Avatar src={USER} alt={experiment.owner.username} />
             <Tooltip arrow title={
               <Typography>
                 <Typography component={'span'}>Owner</Typography>
                 {experiment.owner.username}
               </Typography>
             } placement="top">
+              <Avatar src={USER} alt={experiment.owner.username} />
             </Tooltip>
           </CardContent>
         </CardActionArea>
