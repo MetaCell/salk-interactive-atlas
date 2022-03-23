@@ -105,3 +105,54 @@
   }
 
 }
+
+
+.rdw-editor-wrapper {
+  width: 100%;
+  border: 0.0625rem solid @sidebarTextColor;
+  box-sizing: border-box !important;
+  border-radius: 0.375rem;
+  display: flex;
+  flex-direction: column;
+
+  .rdw-editor-main {
+    order: 1;
+    box-shadow: inset 0 -0.0625rem 0 @headerBorderColor;
+  }
+
+  .rdw-editor-toolbar {
+    order: 2;
+    padding:  0.25rem 0 0;
+    border-radius: 0;
+    border: none;
+    background: transparent;
+    margin: 0;
+  }
+
+  .public-DraftStyleDefault-block {
+    margin: 0;
+    padding: 0.5rem 0.75rem;
+    min-height: 6rem;
+  }
+
+  .rdw-option-wrapper {
+    border: none;
+    border-radius: 0.25rem;
+    color: @headerButtonBorderColor;
+    background-color: transparent;
+
+    &:hover {
+      box-shadow: none;
+    }
+    &.rdw-option-active {
+      background-color: @editorActiveOption;
+      box-shadow: none;
+    }
+  }
+
+
+
+  .rdw-inline-wrapper {
+    margin-bottom: 0.25rem;
+  }
+}
