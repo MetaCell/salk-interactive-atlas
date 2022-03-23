@@ -139,11 +139,11 @@ const ExperimentsPage = () => {
         const fetchData = async () => {
             const response = await workspaceService.getApi().retrieveExperiment(MOCKED_ID)
             const data = response.data;
-            await Promise.all(data.populations.map(async (p) => {
-                const path = '/media' + p.cells.split('/media')[1]
-                const cells = await getCells(path)
-                return {...p, cells}
+            const cells = await Promise.all(data.populations.map(async (p) => {
+                const path = "/media/" + p.cells
+                return getCells(path)
             }));
+            data.populations.forEach((p, i) => data.populations[i].cells = cells[i])
             setExperiment(data)
         }
 

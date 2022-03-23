@@ -319,7 +319,7 @@ export interface ExperimentPopulations {
      * @type {string}
      * @memberof ExperimentPopulations
      */
-    'cells'?: string;
+    'cells'?: Array<ExperimentCells> | string;
 }
 /**
  * 

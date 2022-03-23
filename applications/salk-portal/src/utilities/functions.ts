@@ -2,6 +2,7 @@ import {getAtlas} from "../service/AtlasService";
 import {AtlasChoice} from "./constants";
 import Range from "../models/Range";
 import {ExperimentCells} from "../apiclient/workspaces";
+import Cell from "../models/Cell";
 
 export const areAllSelected = (obj: { [x: string]: { selected: any } }) : boolean => {
    return Object.keys(obj)
@@ -29,8 +30,7 @@ export const getCells = async (uri: string) : Promise<ExperimentCells[]> => {
    const reader = response.body.getReader();
    const decoder = new TextDecoder('utf-8');
    const result = await reader.read()
-   const csv = decoder.decode(result.value);
-   console.log(csv)
-   return []
-
+   const csvString = decoder.decode(result.value);
+   const cells = csvString.split('\r\n')
+   return cells.map(cellCSV => new Cell(cellCSV))
 }
