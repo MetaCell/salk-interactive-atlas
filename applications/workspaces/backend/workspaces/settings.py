@@ -175,13 +175,11 @@ LOGGING = {
 # Static files (CSS, JavaScript, Images)
 MEDIA_ROOT = PERSISTENT_ROOT
 STATIC_ROOT = os.path.join(BASE_DIR, "static")
-try:
-    from cloudharness.applications import get_configuration
-    salk_portal_app = get_configuration("salk-portal")
-    MEDIA_URL = f"{salk_portal_app.get_public_address()}/media/"
-except:
-    MEDIA_URL = "/media/"
+MEDIA_URL = "/media/"
 STATIC_URL = "/static/"
+REST_FRAMEWORK.update({
+    "UPLOADED_FILES_USE_URL": False
+})
 
 # KC Client & roles
 KC_CLIENT_NAME = PROJECT_NAME.lower()
