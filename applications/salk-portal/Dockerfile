@@ -10,6 +10,8 @@ RUN npm run build
 ###
 FROM nginx:1.17-alpine
 ENV BUILDDIR=/builddir
+
+RUN mkdir -p  /usr/share/nginx/html/persistent
 COPY --from=base $BUILDDIR/public /usr/share/nginx/html
 
 EXPOSE 80

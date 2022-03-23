@@ -290,10 +290,10 @@ const ExperimentCard = ({experiment, type}) => {
             <Tooltip arrow title={
               <Typography>
                 <Typography component={'span'}>Owner</Typography>
-                {experiment?.owner?.username}
+                {experiment.owner.username}
               </Typography>
             } placement="top">
-              <Avatar src={USER} alt={experiment?.owner?.username} />
+              <Avatar src={USER} alt={experiment.owner.username} />
             </Tooltip>
           </CardContent>
         </CardActionArea>

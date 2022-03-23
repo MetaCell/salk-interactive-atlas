@@ -10,6 +10,7 @@ harness:
     volume:
       name: salk-files
       mountpath: /usr/src/app/persistent
+      auto: true
       size: 5Gi
   database:
     auto: true
