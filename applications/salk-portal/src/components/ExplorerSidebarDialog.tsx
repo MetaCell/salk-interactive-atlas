@@ -30,8 +30,8 @@ const useStyles = makeStyles(() => ({
 
         '& .MuiContainer-root': {
             border: "0.063rem solid",
-            width: 80,
-            height: 80,
+            width: "5rem",
+            height: "5rem",
             borderRadius: "50%",
             color:headerBorderColor
         }
