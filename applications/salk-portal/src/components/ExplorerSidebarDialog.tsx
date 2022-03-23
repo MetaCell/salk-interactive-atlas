@@ -4,22 +4,40 @@ import {
   makeStyles,
   Grid,
   Typography,
-  Link
+  Link,
+  Container
 } from "@material-ui/core";
-import { switchActiveColor } from "../theme";
-import LOGO from "../assets/images/logo.svg"
+import { switchActiveColor, headerBorderColor } from "../theme";
+import LOGO from "../assets/images/logo_icon.svg"
 import Modal from "./common/BaseDialog";
 
 const useStyles = makeStyles(() => ({
   learnMore: {
     '& .details': {
       flexGrow: 1,
-      paddingLeft: '1rem',
 
       '& .detail-block + .detail-block': {
         marginTop: '1.5rem',
       },
 
+      '& .logo-container': {
+
+        '& .logo': {
+          display:"flex",
+          justifyContent:"center",
+          alignItems:"center"
+        },
+
+        '& .MuiContainer-root': {
+            border: "0.063rem solid",
+            width: 80,
+            height: 80,
+            borderRadius: "50%",
+            color:headerBorderColor
+        }
+      }, 
+
+  
       '& .MuiTypography-root': {
         fontSize: '0.75rem',
         lineHeight: '0.9375rem',
@@ -48,19 +66,19 @@ const ExplorerDialog = (props: any) => {
   const classes = useStyles();
   const { open, handleClose} = props;
   return (
-    <Modal open={Boolean(open)} handleClose={handleClose} title="About Mouse Coord Atlas">
+    <Modal open={Boolean(open)} handleClose={handleClose} title="About Mouse Coord Atlas" maxWidth="xs">
       <Box className={classes.learnMore}>
-        <Grid container direction="row" className="details">
-          <Grid item> 
-            <Box>
-                {/* <img
+        <Grid container direction="row" className="details" spacing={2}>
+          <Grid item className="logo-container"> 
+            <Container disableGutters={true} className="logo">
+                <img 
                   src={LOGO}
-                /> */}
-            </Box>
+                />
+            </Container>
           </Grid>
           <Grid item container>
             <Box className="detail-block">
-              <Typography component="h3">About Mouse Corrd Atlas</Typography>
+              <Typography component="h3">About Mouse Cord Atlas</Typography>
               <Typography>Lorem ipsum dolor sit amet, consectetur adipiscing elit ut aliquam, purus sit amet luctus venenatis, lectus magna fringilla urna, porttitor rhoncus dolor purus non enim praesent elementum facilisis leo, vel fringilla est.</Typography>
             </Box>
             <Box className="detail-block">
