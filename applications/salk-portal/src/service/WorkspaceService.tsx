@@ -3,8 +3,6 @@ import { ApiApi } from '../apiclient/workspaces/api';
 
 const workspacesApiUri = '/proxy/workspaces';
 
-const PER_PAGE_DEFAULT = 10;
-
 class WorkspaceService {
 
   workspacesApi: ApiApi = null;

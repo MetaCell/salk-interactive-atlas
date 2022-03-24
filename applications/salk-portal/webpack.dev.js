@@ -50,7 +50,13 @@ module.exports = env => {
             target: replaceHost(proxyTarget, 'common'),
             secure: false,
             changeOrigin: true,
-          }
+          },
+          '/media': {
+            target: replaceHost(proxyTarget, 'www'),
+            secure: false,
+            changeOrigin: true,
+            logLevel: "debug"
+          },
         },
         port: PORT,
 
