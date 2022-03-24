@@ -32,18 +32,28 @@ module.exports = env => {
 
     module: {
       rules: [
-        {
-          test: /\.(js|jsx)$/,
-          exclude: /node_modules\/(?!(@metacell)\/).*/,
-          loader: 'babel-loader',
-          options: {
-            presets: [
-              ['@babel/preset-env', { modules: false }],
-              '@babel/preset-react',
-              { plugins: ['@babel/plugin-proposal-class-properties', '@babel/transform-runtime', '@babel/plugin-transform-modules-commonjs'] },
-            ],
+          {
+              test: /\.(js|jsx)$/,
+              exclude: [
+                  /node_modules\/(?!(@metacell\/geppetto-meta-client)|(@metacell\/geppetto-meta-core)|(@metacell\/geppetto-meta-ui)\/).*/,
+              ],
+              use: {
+                  loader: 'babel-loader',
+                  options: {
+                      presets: [
+                          '@babel/preset-env',
+                          '@babel/preset-react',
+                      ],
+                      plugins: [
+                          '@babel/plugin-syntax-dynamic-import',
+                          '@babel/plugin-proposal-class-properties',
+                          '@babel/plugin-transform-runtime',
+                          '@babel/plugin-transform-modules-commonjs'
+                      ],
+                      sourceType: 'unambiguous',
+                  },
+              },
           },
-        },
         {
           test: /\.ts(x?)$/,
           use: [
