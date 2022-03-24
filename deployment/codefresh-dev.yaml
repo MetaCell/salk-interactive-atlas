@@ -108,22 +108,6 @@ steps:
         image_name: salk/accounts
         title: Accounts
         working_directory: ./.overrides/applications/accounts
-      events:
-        type: build
-        stage: build
-        tag: '${{CF_BUILD_ID}}'
-        dockerfile: Dockerfile
-        registry: '${{CODEFRESH_REGISTRY}}'
-        buildkit: true
-        build_arguments:
-        - TAG=${{CF_BUILD_ID}}
-        - NAMESPACE=${{NAMESPACE}}
-        - DOMAIN=${{DOMAIN}}
-        - NOCACHE=${{CF_BUILD_ID}}
-        - REGISTRY=${{REGISTRY}}/salk/
-        image_name: salk/events
-        title: Events
-        working_directory: ./cloud-harness/applications/events
       common:
         type: build
         stage: build
@@ -141,6 +125,22 @@ steps:
         image_name: salk/common
         title: Common
         working_directory: ./cloud-harness/applications/common/server
+      events:
+        type: build
+        stage: build
+        tag: '${{CF_BUILD_ID}}'
+        dockerfile: Dockerfile
+        registry: '${{CODEFRESH_REGISTRY}}'
+        buildkit: true
+        build_arguments:
+        - TAG=${{CF_BUILD_ID}}
+        - NAMESPACE=${{NAMESPACE}}
+        - DOMAIN=${{DOMAIN}}
+        - NOCACHE=${{CF_BUILD_ID}}
+        - REGISTRY=${{REGISTRY}}/salk/
+        image_name: salk/events
+        title: Events
+        working_directory: ./cloud-harness/applications/events
       salk-portal:
         type: build
         stage: build
@@ -157,24 +157,6 @@ steps:
         image_name: salk/salk-portal
         title: Salk portal
         working_directory: ./applications/salk-portal
-      salk-portal-geppetto-meta:
-        type: build
-        stage: build
-        tag: '${{CF_BUILD_ID}}'
-        dockerfile: Dockerfile
-        registry: '${{CODEFRESH_REGISTRY}}'
-        buildkit: true
-        build_arguments:
-        - TAG=${{CF_BUILD_ID}}
-        - NAMESPACE=${{NAMESPACE}}
-        - DOMAIN=${{DOMAIN}}
-        - NOCACHE=${{CF_BUILD_ID}}
-        - REGISTRY=${{REGISTRY}}/salk/
-        - CLOUDHARNESS_FLASK=${{REGISTRY}}/salk/cloudharness-flask:${{CF_BUILD_ID}}
-        - CLOUDHARNESS_BASE=${{REGISTRY}}/salk/cloudharness-base:${{CF_BUILD_ID}}
-        image_name: salk/salk-portal-geppetto-meta
-        title: Salk portal geppetto meta
-        working_directory: ./applications/salk-portal/geppetto-meta
       workspaces:
         type: build
         stage: build
@@ -234,14 +216,6 @@ steps:
         tags:
         - '${{DEPLOYMENT_PUBLISH_TAG}}'
         registry: '${{REGISTRY_PUBLISH_URL}}'
-      publish_events:
-        stage: publish
-        type: push
-        title: Events
-        candidate: '${{REGISTRY}}/salk/events:${{CF_BUILD_ID}}'
-        tags:
-        - '${{DEPLOYMENT_PUBLISH_TAG}}'
-        registry: '${{REGISTRY_PUBLISH_URL}}'
       publish_common:
         stage: publish
         type: push
@@ -250,19 +224,19 @@ steps:
         tags:
         - '${{DEPLOYMENT_PUBLISH_TAG}}'
         registry: '${{REGISTRY_PUBLISH_URL}}'
+      publish_events:
+        stage: publish
+        type: push
+        title: Events
+        candidate: '${{REGISTRY}}/salk/events:${{CF_BUILD_ID}}'
+        tags:
+        - '${{DEPLOYMENT_PUBLISH_TAG}}'
+        registry: '${{REGISTRY_PUBLISH_URL}}'
       publish_salk-portal:
         stage: publish
         type: push
         title: Salk portal
         candidate: '${{REGISTRY}}/salk/salk-portal:${{CF_BUILD_ID}}'
-        tags:
-        - '${{DEPLOYMENT_PUBLISH_TAG}}'
-        registry: '${{REGISTRY_PUBLISH_URL}}'
-      publish_salk-portal-geppetto-meta:
-        stage: publish
-        type: push
-        title: Salk portal geppetto meta
-        candidate: '${{REGISTRY}}/salk/salk-portal-geppetto-meta:${{CF_BUILD_ID}}'
         tags:
         - '${{DEPLOYMENT_PUBLISH_TAG}}'
         registry: '${{REGISTRY_PUBLISH_URL}}'
