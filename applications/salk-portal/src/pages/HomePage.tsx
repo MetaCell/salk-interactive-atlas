@@ -6,6 +6,7 @@ import { bodyBgColor } from "../theme";
 import ExperimentList from "../components/home/ExperimentList";
 import Community from "../components/home/Community";
 import { EXPERIMENTS_HASH, SALK_TEAM, ACME_TEAM, COMMUNITY_HASH, SHARED_HASH } from "../constants";
+import { CloneExperimentDialog } from "../components/home/CloneExperimentDialog";
 
 const useStyles = makeStyles(() => ({
   layoutContainer: {
@@ -40,7 +41,11 @@ export default (props: any) => {
     }
     selectedRef.current.scrollIntoView();
   }
+  const [dialogOpen, setDialogOpen] = React.useState(false);
 
+  const handleDialogToggle = () => {
+    setDialogOpen((prevOpen) => !prevOpen);
+  };
   return (
     <Box display="flex">
       <Sidebar executeScroll={(r: string) => executeScroll(r)} />
@@ -49,21 +54,22 @@ export default (props: any) => {
           <ExperimentList heading={"My experiments"} description={"7 experiments"} type={EXPERIMENTS_HASH}/>
         </div>
         <div ref={shared} id={SHARED_HASH}>
-          <ExperimentList heading={"Shared with me"} description={"28 experiments"} type={SHARED_HASH} />
+          <ExperimentList heading={"Shared with me"} description={"28 experiments"} type={SHARED_HASH} handleDialogToggle={handleDialogToggle}/>
         </div>
         <div ref={salkteam} id={SALK_TEAM}>
-          <ExperimentList heading={"Salk Institute Team"} description={"19 experiments"} type={SALK_TEAM}/>
+          <ExperimentList heading={"Salk Institute Team"} description={"19 experiments"} type={SALK_TEAM} handleDialogToggle={handleDialogToggle}/>
         </div>
         <div ref={acmeteam} id={ACME_TEAM}>
-          <ExperimentList heading={"Acme Team"} description={"19 experiments"} type={ACME_TEAM}/>
+          <ExperimentList heading={"Acme Team"} description={"19 experiments"} type={ACME_TEAM} handleDialogToggle={handleDialogToggle}/>
         </div>
         <Box p={5}>
           <div ref={communityRef} id={COMMUNITY_HASH}>
-            <Community />
+            <Community handleDialogToggle={handleDialogToggle} />
           </div>
         </Box>
 
       </Box>
+      <CloneExperimentDialog open={dialogOpen} handleClose={handleDialogToggle} user={props?.user} />
     </Box>
   )
 };

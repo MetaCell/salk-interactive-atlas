@@ -186,7 +186,7 @@ const ExperimentList = (props) => {
 
   
   const tags = ["Project A", "Tag X", "Label 1"];
-  const { heading, description, type } = props;
+  const { heading, description, type, handleDialogToggle } = props;
   const sortOptions = ["Alphabetical", "Date created", "Last viewed"];
   const orderOptions = ["Oldest first", "Newest first"];
   const dummyExperiment = {
@@ -232,10 +232,6 @@ const ExperimentList = (props) => {
     },
     ]
   }
-  
-
- 
-
   return (
     <>
       <Box className={classes.subHeader} display="flex" alignItems="center">
@@ -317,7 +313,7 @@ const ExperimentList = (props) => {
       <Box p={5}>
         <Grid container item spacing={3}>
           {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map( i => (
-            <ExperimentCard experiment={dummyExperiment} type={type}/>
+            <ExperimentCard experiment={dummyExperiment} type={type} handleDialogToggle={handleDialogToggle}/>
             ))
           }
         </Grid>

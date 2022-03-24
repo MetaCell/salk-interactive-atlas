@@ -209,7 +209,7 @@ const useStyles = makeStyles(() => ({
 
 }));
 
-const ExperimentCard = ({experiment, type}) => {
+const ExperimentCard = ({experiment, type, handleDialogToggle}) => {
   const classes = useStyles();
   const history = useHistory()
   const handleClick = () => {
@@ -226,7 +226,7 @@ const ExperimentCard = ({experiment, type}) => {
     setExperimentMenuEl(null);
   };
   return (
-    <Grid item xs={12} md={3} key={`${experiment.name}experiment_${experiment.id}`} onClick={handleClick}>
+    <Grid item xs={12} md={3} key={`${experiment.name}experiment_${experiment.id}`} onClick={handleCardActions}>
       <Card className={classes.card} elevation={0}>
         <CardActionArea>
           {type === COMMUNITY_HASH && <img src={POPULAR} alt="POPULAR" />}
@@ -244,7 +244,7 @@ const ExperimentCard = ({experiment, type}) => {
           open={Boolean(experimentMenuEl)}
           onClose={closeFilter}
         >
-          <ListItem button>
+          <ListItem button onClick={handleClick}>
             <ListItemText primary="Open experiment" />
           </ListItem>
           <ListItem button>
@@ -267,7 +267,7 @@ const ExperimentCard = ({experiment, type}) => {
           </ListItem>
           <Divider />
           <ListItem button>
-            <ListItemText primary="Delete" />
+            {type === EXPERIMENTS_HASH ? <ListItemText primary="Delete" /> : <ListItemText primary="Clone this experiment" onClick={handleDialogToggle} /> }
           </ListItem>
         </Menu>
         <CardActionArea>
@@ -279,7 +279,7 @@ const ExperimentCard = ({experiment, type}) => {
                     experiment.tags?.map((tag, i) => <Chip key={`${experiment.name}_${i}_${tag.name}`} label={tag.name} color={i== 1 ? 'primary' : i === 2 ? 'secondary': 'default'}/>)
                   }
               </Box>}
-              <Typography component="h3">
+              <Typography component="h3" onClick={handleClick}>
                 {experiment.name || 'fff'}
               </Typography>
               <Typography component="p">
