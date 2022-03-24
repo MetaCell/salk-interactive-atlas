@@ -202,7 +202,7 @@ const Community = (props) => {
         <Typography component="h2">Popular experiments</Typography>
         <Grid container item spacing={3}>
           {[1, 2, 3, 4].map( i => (
-            <ExperimentCard experiment={dummyExperiment} type={COMMUNITY_HASH} handleDialogToggle={props?.handleDialogToggle} />
+            <ExperimentCard experiment={dummyExperiment} type={COMMUNITY_HASH} handleDialogToggle={props?.handleDialogToggle} handleExplorationDialogToggle={props?.handleExplorationDialogToggle} />
           ))}
         </Grid>
       </Box>
@@ -232,7 +232,7 @@ const Community = (props) => {
         <Typography component="h2">Last Published</Typography>
         <Grid container item spacing={3}>
           {[1, 2, 3, 4].map(i => (
-            <ExperimentCard experiment={dummyExperiment} type={COMMUNITY_HASH}/>
+            <ExperimentCard experiment={dummyExperiment} type={COMMUNITY_HASH} handleDialogToggle={props?.handleDialogToggle} handleExplorationDialogToggle={props?.handleExplorationDialogToggle} />
           ))}
         </Grid>
       </Box>

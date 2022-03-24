@@ -209,7 +209,7 @@ const useStyles = makeStyles(() => ({
 
 }));
 
-const ExperimentCard = ({experiment, type, handleDialogToggle}) => {
+const ExperimentCard = ({experiment, type, handleDialogToggle, handleExplorationDialogToggle}) => {
   const classes = useStyles();
   const history = useHistory()
   const handleClick = () => {
@@ -247,7 +247,7 @@ const ExperimentCard = ({experiment, type, handleDialogToggle}) => {
           <ListItem button onClick={handleClick}>
             <ListItemText primary="Open experiment" />
           </ListItem>
-          <ListItem button>
+          <ListItem button onClick={handleExplorationDialogToggle}>
             <ListItemText primary="Edit info and tags" />
           </ListItem>
           <Divider />
