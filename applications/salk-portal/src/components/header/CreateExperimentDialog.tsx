@@ -3,32 +3,19 @@ import {
   Box,
   makeStyles,
   Typography,
-  Avatar,
   TextField,
   Grid,
-  Chip,
-  IconButton,
   Button,
 } from "@material-ui/core";
-import Autocomplete from '@material-ui/lab/Autocomplete';
-import { tagsColorOptions, headerBorderColor, headerButtonBorderColor, secondaryChipBg, sidebarTextColor, switchActiveColor } from "../../theme";
-import USER from "../../assets/images/icons/user.svg";
+import { headerBorderColor, headerButtonBorderColor, switchActiveColor, filesBg } from "../../theme";
 import UPLOAD from "../../assets/images/icons/upload.svg";
-import CANCEL from "../../assets/images/icons/cancel.svg";
-import CHECK from "../../assets/images/icons/check.svg";
-import BOLD from "../../assets/images/icons/bold.svg";
-import LINK from "../../assets/images/icons/link.svg";
-import ITALIC from "../../assets/images/icons/italic.svg";
-import UNDERLINE from "../../assets/images/icons/underline.svg";
-import UNORDERED from "../../assets/images/icons/unordered_list.svg";
-import ORDERED from "../../assets/images/icons/ordered_list.svg";
 import CHECK_FILLED from "../../assets/images/icons/check_filled.svg";
 import Modal from "../common/BaseDialog";
 import { DropzoneArea } from 'material-ui-dropzone';
 import LinearProgress from '@material-ui/core/LinearProgress';
-import { Editor } from "react-draft-wysiwyg";
-import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
-import { EditorState } from 'draft-js';
+import { TagsAutocomplete } from "../common/ExperimentDialogs/TagsAutocomplete";
+import { TextEditor } from "../common/ExperimentDialogs/TextEditor";
+import { OwnerInfo } from "../common/ExperimentDialogs/OwnerInfo";
 
 
 const tags = [
@@ -36,13 +23,16 @@ const tags = [
   { title: 'Label B' },
   { title: 'Label XYZ' },
   { title: 'Project C' },
+  { title: 'Project d' },
+  { title: 'Label e' },
+  { title: 'Label XeYZ' },
+  { title: 'Project Ce' },
 ];
 
 const useStyles = makeStyles(() => ({
   fileDrop: {
     boxShadow: `inset 0 -0.0625rem 0 ${headerBorderColor}`,
     padding: '1rem',
-    minHeight: '8.25rem',
   },
 
   formGroup: {
@@ -63,37 +53,12 @@ const useStyles = makeStyles(() => ({
     },
   },
 
-  ownerInfo: {
-    '& .MuiTypography-root': {
-      fontWeight: '400',
-      fontSize: '0.75rem',
-      lineHeight: '0.9375rem',
-      color: headerButtonBorderColor,
-    },
-
-    '& .MuiAvatar-root': {
-      width: '1.5rem',
-      height: '1.5rem',
-      marginRight: '0.8rem',
-    },
-
-    '& span.MuiTypography-root': {color: sidebarTextColor,},
-  },
-
-  icon: {
-    width: '0.75rem',
-    height: '0.75rem',
-    marginRight: '0.5rem',
-    borderRadius: '0.1875rem',
-  },
-
-  mlAuto: {
-    marginLeft: 'auto',
-  },
-
   progress: {
     maxWidth: '13rem',
     width: '100%',
+    padding: '0.75rem',
+    background: filesBg,
+    borderRadius: '0.375rem',
 
     '& .MuiButton-text': {
       padding: 0,
@@ -141,13 +106,39 @@ const useStyles = makeStyles(() => ({
     },
   },
 
+  fileLabel: {
+    fontWeight: 600,
+    fontSize: '0.75rem',
+    lineHeight: '1rem',
+    letterSpacing: '0.005em',
+    color: headerButtonBorderColor,
+    marginBottom: '.25rem',
+  },
+
+  addSet: {
+    boxShadow: `inset 0 -0.0625rem 0 ${headerBorderColor}`,
+    padding: '1rem',
+
+    '& .MuiButton-text': {
+      padding: 0,
+      fontWeight: 500,
+      fontSize: '0.75rem',
+      lineHeight: '1rem',
+      letterSpacing: '0.01em',
+      color: switchActiveColor,
+      display: 'block',
+      '&:hover': {
+        backgroundColor: 'transparent'
+      },
+    },
+  },
+
 }));
 
 export const CreateExperimentDialog = (props: any) => {
   const classes = useStyles();
   const { open, handleClose, user } = props;
   const [files, setFiles] = React.useState<any>([]);
-  const [editorState, setEditorState] = React.useState(EditorState.createEmpty())
   const [uploaded, setUploaded] = React.useState(false);
   const fileUpload = (file: any) => {
     if(file.length > 0) {
@@ -173,9 +164,6 @@ export const CreateExperimentDialog = (props: any) => {
   //   };
   // }, []);
 
-  const onEditorStateChange = (updatedEditorState: any) => {
-    setEditorState(updatedEditorState)
-  }
   return (
     <Modal
       dialogActions
@@ -187,16 +175,17 @@ export const CreateExperimentDialog = (props: any) => {
     >
       <Box display={'flex'} alignItems="center" justifyContent={'center'} className={classes.fileDrop}>
         <Grid container item spacing={3}>
-          { !uploaded ? (
+          {!uploaded ? (
             <>
               <Grid item xs={12} sm={6}>
+                <Typography className={classes.fileLabel}>Key file</Typography>
                 <DropzoneArea
                   onChange={(files: any) => fileUpload(files)}
-                  dropzoneText="Select data file or drop it here"
+                  dropzoneText="Select your key file or drop it here"
                   Icon={() => <img src={UPLOAD} alt="upload" />}
                   showPreviews={false}
                   showPreviewsInDropzone={false}
-                  dropzoneClass={uploaded ? 'hide' : ''}
+                  dropzoneClass={uploaded && 'hide'}
                   filesLimit={1}
                   showAlerts={['error']}
                   classes={{ icon: "MuiButton-outlined primary" }}
@@ -204,13 +193,14 @@ export const CreateExperimentDialog = (props: any) => {
               </Grid>
 
               <Grid item xs={12} sm={6}>
+                <Typography className={classes.fileLabel}>Data file</Typography>
                 <DropzoneArea
                   onChange={(files: any) => fileUpload(files)}
-                  dropzoneText="Select data file or drop it here"
+                  dropzoneText="Select your data file or drop it here"
                   Icon={() => <img src={UPLOAD} alt="upload" />}
                   showPreviews={false}
                   showPreviewsInDropzone={false}
-                  dropzoneClass={uploaded ? 'hide' : ''}
+                  dropzoneClass={uploaded && 'hide'}
                   filesLimit={1}
                   showAlerts={['error']}
                   classes={{ icon: "MuiButton-outlined primary" }}
@@ -219,6 +209,7 @@ export const CreateExperimentDialog = (props: any) => {
             </>) : (
             <>
               <Grid item xs={12} sm={6}>
+                <Typography className={classes.fileLabel}>Key file</Typography>
                 <Box className={classes.progress}>
                   <Typography>
                     <img src={CHECK_FILLED} alt="check" />
@@ -229,6 +220,7 @@ export const CreateExperimentDialog = (props: any) => {
               </Grid>
 
               <Grid item xs={12} sm={6}>
+                <Typography className={classes.fileLabel}>Data file</Typography>
                 <Box className={classes.progress}>
                   <Typography>
                     <img src={CHECK_FILLED} alt="check" />
@@ -244,6 +236,7 @@ export const CreateExperimentDialog = (props: any) => {
 
         {/* <Grid container item spacing={3}>
           <Grid item xs={12} sm={6}>
+            <Typography className={classes.fileLabel}>Key file</Typography>
             <Box className={classes.progress}>
               <Typography>Uploading... {progress.toFixed()}%</Typography>
               <Box className={classes.bar} display={'flex'} alignItems="center">
@@ -256,6 +249,7 @@ export const CreateExperimentDialog = (props: any) => {
           </Grid>
 
           <Grid item xs={12} sm={6}>
+            <Typography className={classes.fileLabel}>Data file</Typography>
             <Box className={classes.progress}>
               <Typography>Uploading... {progress.toFixed()}%</Typography>
               <Box className={classes.bar} display={'flex'} alignItems="center">
@@ -269,6 +263,10 @@ export const CreateExperimentDialog = (props: any) => {
         </Grid> */}
       </Box>
 
+      <Box className={classes.addSet}>
+        <Button disableRipple>+ Add another set of files</Button>
+      </Box>
+
       <Box p={2} pb={5}>
         <Box display="flex" alignItems={"center"} className={classes.formGroup}>
           <Typography component="label">Name</Typography>
@@ -277,72 +275,17 @@ export const CreateExperimentDialog = (props: any) => {
 
         <Box display="flex" alignItems={"center"} className={classes.formGroup}>
           <Typography component="label">Description</Typography>
-          <Editor
-            editorState={editorState}
-            onEditorStateChange={onEditorStateChange}
-            toolbar={{
-              options: ['inline', 'list', 'link'],
-              inline: {
-                options: ['bold', 'italic', 'underline'],
-                bold: { icon: BOLD },
-                italic: { icon: ITALIC },
-                underline: { icon: UNDERLINE },
-              },
-              list: {
-                inDropdown: false,
-                options: ['unordered', 'ordered'],
-                unordered: { icon: UNORDERED },
-                ordered: { icon: ORDERED },
-              },
-              link: {
-                inDropdown: false,
-                showOpenOptionOnHover: true,
-                defaultTargetOption: '_blank',
-                options: ['link'],
-                link: { icon: LINK },
-              },
-            }}
-          />
+          <TextEditor />
         </Box>
 
         <Box display="flex" alignItems={"center"} className={classes.formGroup}>
           <Typography component="label">Tags</Typography>
-          <Autocomplete
-            multiple
-            closeIcon={false}
-            popupIcon={false}
-            fullWidth
-            id="tags-filled"
-            options={tags.map((option) => option.title)}
-            defaultValue={[tags[2].title]}
-            freeSolo
-            limitTags={3}
-            renderTags={(value, getTagProps) =>
-              value.map((option, index) => (
-                <Chip key={index} style={{...tagsColorOptions[index]}} onDelete={() => console.log(option)} label={option} {...getTagProps({ index })} />
-              ))
-            }
-            renderOption={(option, { selected }) => (
-              <>
-                <Box className={classes.icon} style={{backgroundColor: secondaryChipBg}}/>
-                {option}
-                {selected && <img src={CHECK} className={classes.mlAuto} alt="check" />}
-              </>
-            )}
-            renderInput={(params) => (
-              <TextField {...params} variant="outlined" placeholder="Search or Create a new tag" />
-            )}
-          />
+          <TagsAutocomplete tags={tags} />
         </Box>
 
         <Box display="flex" alignItems={"center"} className={classes.formGroup}>
           <Typography component="label">Owner</Typography>
-          <Box display="flex" alignItems={"center"} className={classes.ownerInfo}>
-            <Avatar title={user?.username} src={USER} />
-            <Typography>
-              {`${user?.firstName} ${user?.lastName}`} <Typography component="span">(You)</Typography>
-            </Typography>
-          </Box>
+          <OwnerInfo user={user} />
         </Box>
       </Box>
     </Modal>
