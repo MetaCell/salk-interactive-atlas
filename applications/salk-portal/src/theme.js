@@ -595,10 +595,11 @@ const theme = {
     MuiAutocomplete: {
       inputRoot: {
         '&[class*="MuiOutlinedInput-root"]': {
-          padding: '0',
+          padding: '0.1875rem',
 
           '& .MuiAutocomplete-input': {
             padding: '0 0.75rem !important',
+            height: '1.75rem',
           },
 
           '& .MuiAutocomplete-tag': {
@@ -610,13 +611,15 @@ const theme = {
       },
 
       tag: {
-        margin: '0.25rem 0 0.25rem 0.25rem',
+        margin: '0.125rem',
         fontWeight: '600',
         fontSize: '0.625rem',
         lineHeight: '0.75rem',
         letterSpacing: '-0.02em',
         '& .MuiChip-deleteIcon': {
-          display: 'none'
+          color: secondaryColor,
+          width: '0.875rem',
+          height: '0.875rem',
         },
       },
 

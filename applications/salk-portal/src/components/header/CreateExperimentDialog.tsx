@@ -16,6 +16,12 @@ import USER from "../../assets/images/icons/user.svg";
 import UPLOAD from "../../assets/images/icons/upload.svg";
 import CANCEL from "../../assets/images/icons/cancel.svg";
 import CHECK from "../../assets/images/icons/check.svg";
+import BOLD from "../../assets/images/icons/bold.svg";
+import LINK from "../../assets/images/icons/link.svg";
+import ITALIC from "../../assets/images/icons/italic.svg";
+import UNDERLINE from "../../assets/images/icons/underline.svg";
+import UNORDERED from "../../assets/images/icons/unordered_list.svg";
+import ORDERED from "../../assets/images/icons/ordered_list.svg";
 import CHECK_FILLED from "../../assets/images/icons/check_filled.svg";
 import Modal from "../common/BaseDialog";
 import { DropzoneArea } from 'material-ui-dropzone';
@@ -79,7 +85,6 @@ const useStyles = makeStyles(() => ({
     height: '0.75rem',
     marginRight: '0.5rem',
     borderRadius: '0.1875rem',
-    backgroundColor: secondaryChipBg,
   },
 
   mlAuto: {
@@ -264,7 +269,7 @@ export const CreateExperimentDialog = (props: any) => {
         </Grid> */}
       </Box>
 
-      <Box p={2}>
+      <Box p={2} pb={5}>
         <Box display="flex" alignItems={"center"} className={classes.formGroup}>
           <Typography component="label">Name</Typography>
           <TextField placeholder="Name" variant="outlined" />
@@ -278,30 +283,23 @@ export const CreateExperimentDialog = (props: any) => {
             toolbar={{
               options: ['inline', 'list', 'link'],
               inline: {
-                inDropdown: false,
-                className: undefined,
-                component: undefined,
-                dropdownClassName: undefined,
                 options: ['bold', 'italic', 'underline'],
+                bold: { icon: BOLD },
+                italic: { icon: ITALIC },
+                underline: { icon: UNDERLINE },
               },
               list: {
                 inDropdown: false,
-                className: undefined,
-                component: undefined,
-                dropdownClassName: undefined,
                 options: ['unordered', 'ordered'],
+                unordered: { icon: UNORDERED },
+                ordered: { icon: ORDERED },
               },
               link: {
                 inDropdown: false,
-                className: undefined,
-                component: undefined,
-                popupClassName: undefined,
-                dropdownClassName: undefined,
                 showOpenOptionOnHover: true,
-                defaultTargetOption: '_self',
+                defaultTargetOption: '_blank',
                 options: ['link'],
-                link: { icon: CHECK, className: undefined },
-                linkCallback: undefined
+                link: { icon: LINK },
               },
             }}
           />
@@ -311,6 +309,8 @@ export const CreateExperimentDialog = (props: any) => {
           <Typography component="label">Tags</Typography>
           <Autocomplete
             multiple
+            closeIcon={false}
+            popupIcon={false}
             fullWidth
             id="tags-filled"
             options={tags.map((option) => option.title)}
@@ -319,12 +319,12 @@ export const CreateExperimentDialog = (props: any) => {
             limitTags={3}
             renderTags={(value, getTagProps) =>
               value.map((option, index) => (
-                <Chip key={index} style={{...tagsColorOptions[index]}} label={option} {...getTagProps({ index })} />
+                <Chip key={index} style={{...tagsColorOptions[index]}} onDelete={() => console.log(option)} label={option} {...getTagProps({ index })} />
               ))
             }
             renderOption={(option, { selected }) => (
               <>
-                <Box className={classes.icon}/>
+                <Box className={classes.icon} style={{backgroundColor: secondaryChipBg}}/>
                 {option}
                 {selected && <img src={CHECK} className={classes.mlAuto} alt="check" />}
               </>
