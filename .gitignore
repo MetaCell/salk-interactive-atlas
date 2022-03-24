@@ -11,3 +11,4 @@ skaffold.yaml
 applications/workspaces/backend/static
 .overrides
 **/*.sqlite3
+/applications/salk-portal/geppetto-meta/
