@@ -316,10 +316,10 @@ export interface ExperimentPopulations {
     'atlas'?: string;
     /**
      * 
-     * @type {Array<ExperimentCells>}
+     * @type {string}
      * @memberof ExperimentPopulations
      */
-    'cells'?: Array<ExperimentCells>;
+    'cells'?: Array<ExperimentCells> | string;
 }
 /**
  * 

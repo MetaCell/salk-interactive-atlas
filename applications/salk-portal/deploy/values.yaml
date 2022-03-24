@@ -33,3 +33,5 @@ harness:
     - uri: /*
       roles:
         - default-roles-salk
+    - uri: /media/*
+      white-listed: true

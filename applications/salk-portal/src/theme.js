@@ -14,7 +14,7 @@ vars.gutter = vars.gutter.replace('px', '') * 1;
 
 export const {
   primaryColor, secondaryColor, font, fontColor, linkColor, teal, purple, brown, skyBlue, bgLightest, paragraph, bgLightestShade,
-  bgLight, bgRegular, bgDark, bgDarker, bgDarkest, bgInputs, gutter, radius, checkBoxColor, bgLighter, textColor, canvasBg, headerBorderColor, headerButtonBorderColor, bodyBgColor, headerBg, switchActiveColor, canvasIconColor, breadcrumbTextColor, sidebarBadgeBg, sidebarTextColor, defaultChipBg, primaryChipBg, secondaryChipBg, chipTextColor, cardTextColor, inputFocusShadow, chipDeleteIcon, filesBg
+  bgLight, bgRegular, bgDark, bgDarker, bgDarkest, bgInputs, gutter, radius, checkBoxColor, bgLighter, textColor, canvasBg, headerBorderColor,headerButtonBorderColor, bodyBgColor, headerBg, switchActiveColor, canvasIconColor, breadcrumbTextColor, sidebarBadgeBg, sidebarTextColor, defaultChipBg, primaryChipBg, secondaryChipBg, chipTextColor, cardTextColor, inputFocusShadow, backdropBg, logoHoverbg, textDisabled, chipDeleteIcon, filesBg
 } = vars;
 
 const verticalFill = {
@@ -200,6 +200,11 @@ const theme = {
         padding: '0.4375rem 0.5rem',
         marginRight: gutter / 2,
         border: `0.0625rem solid ${headerButtonBorderColor}`,
+        '&:hover': {
+          borderColor: secondaryColor,
+          color: secondaryColor,
+          backgroundColor: 'transparent',
+        },
         '&:last-child': {
           marginRight: 0
         }
@@ -209,7 +214,7 @@ const theme = {
         backgroundColor: switchActiveColor,
         color: secondaryColor,
         "&:hover": {
-          backgroundColor: primaryColor,
+          backgroundColor: switchActiveColor,
         },
       },
       text: {
@@ -288,18 +293,6 @@ const theme = {
       root: {
         '&:last-child': {
           paddingBottom: 16
-        }
-      }
-    },
-    MuiDrawer: {
-      root: {
-        ...verticalFill
-
-      },
-      paper: {
-        ...verticalFill,
-        'div:only-child': {
-          ...verticalFill,
         }
       }
     },
@@ -551,6 +544,29 @@ const theme = {
         color: 'rgba(255, 255, 255, 0.4)',
       },
     },
+    MuiBackdrop: {
+      root: {
+        backgroundColor: backdropBg,
+      },
+    },
+
+
+    MuiDrawer: {
+      root: {
+        ...verticalFill
+
+      },
+      paper: {
+        width: '21.5rem',
+        boxShadow: `-0.0625rem 0 0 ${headerBorderColor}`,
+        backgroundColor: headerBg,
+        padding: '1.25rem',
+        ...verticalFill,
+        'div:only-child': {
+          ...verticalFill,
+        }
+      }
+    },
 
     MuiTextField: {
       root: {
@@ -582,6 +598,14 @@ const theme = {
 
       notchedOutline: {
         borderColor: sidebarTextColor
+      },
+
+      multiline: {
+        padding: '0.5rem 0.75rem',
+      },
+
+      inputMultiline: {
+        height: 'auto',
       },
     },
 

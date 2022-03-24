@@ -18,8 +18,8 @@ import Sidebar from "../components/ExperimentSidebar";
 import {AtlasChoice} from "../utilities/constants"
 import {getAtlas} from "../service/AtlasService";
 import {Experiment, ExperimentPopulations} from "../apiclient/workspaces";
-import {areAllSelected} from "../utilities/functions";
-import MOCKED_CELLS from '../assets/mocked/transformed_cord.json';
+import {areAllSelected, getCells} from "../utilities/functions";
+import workspaceService from "../service/WorkspaceService";
 
 
 const useStyles = makeStyles({
@@ -43,7 +43,7 @@ const useStyles = makeStyles({
     }
 });
 
-const MOCKED_ID = 1
+const MOCKED_ID = "1"
 
 export const CanvasWidget = (selectedAtlas: AtlasChoice, activeSubdivisions: Set<string>, activePopulations: any) => {
     return {
@@ -70,70 +70,6 @@ export const ElectrophysiologyWidget = {
     status: WidgetStatus.ACTIVE,
 };
 
-const MOCKED_GET_EXPERIMENT = async (id: number) => {
-    return new Promise(resolve => {
-        // @ts-ignore
-        const mockedExperiment = {
-            "id": id,
-            "name": "Exploration of the Spinal Cord",
-            "is_private": true,
-            "description": "Description Experiment",
-            "date_created": "2022-03-14",
-            "last_modified": "2022-03-15",
-            "owner": {
-                "id": 1,
-                "username": "afonso",
-                "first_name": "",
-                "last_name": "",
-                "email": "afonso@metacell.us",
-                "groups": []
-            },
-            "teams": [],
-            "collaborators": [],
-            "populations": [
-                {
-                    "id": 1,
-                    "name": "Population XYZ",
-                    "color": "#9FEE9A",
-                    "atlas": "slk10",
-                    "cells": MOCKED_CELLS
-                },
-
-                {
-                    "id": 2,
-                    "name": "Population ABC",
-                    "color": "#44C9C9",
-                    "atlas": "slk10",
-                    "cells": MOCKED_CELLS
-                },
-
-                {
-                    "id": 3,
-                    "name": "Population 123",
-                    "color": "#9B3E8B",
-                    "atlas": "slk10",
-                    "cells": MOCKED_CELLS
-                },
-                {
-                    "id": 4,
-                    "name": "Population 798",
-                    "color": "#C99444",
-                    "atlas": "slk10",
-                    "cells": MOCKED_CELLS
-                },
-            ],
-            "tags": [
-                {
-                    "id": 1,
-                    "name": "Test Tag"
-                },
-            ]
-        }
-        setTimeout(() => {
-            resolve(mockedExperiment);
-        }, 10);
-    });
-};
 
 const getDefaultAtlas = () => AtlasChoice.slk10
 const getSubdivisions = (sa: AtlasChoice) => {
@@ -199,9 +135,20 @@ const ExperimentsPage = () => {
         setPopulations(nextPopulations)
     };
 
-
     useEffect(() => {
-        MOCKED_GET_EXPERIMENT(MOCKED_ID).then(e => setExperiment(e))
+        const fetchData = async () => {
+            const response = await workspaceService.getApi().retrieveExperiment(MOCKED_ID)
+            const data = response.data;
+            const cells = await Promise.all(data.populations.map(async (p) => {
+                const path = "/media/" + p.cells
+                return getCells(path)
+            }));
+            data.populations.forEach((p, i) => data.populations[i].cells = cells[i])
+            setExperiment(data)
+        }
+
+        fetchData()
+            .catch(console.error);
     }, [])
 
     useEffect(() => {
