@@ -14,7 +14,7 @@ vars.gutter = vars.gutter.replace('px', '') * 1;
 
 export const {
   primaryColor, secondaryColor, font, fontColor, linkColor, teal, purple, brown, skyBlue, bgLightest, paragraph, bgLightestShade,
-  bgLight, bgRegular, bgDark, bgDarker, bgDarkest, bgInputs, gutter, radius, checkBoxColor, bgLighter, textColor, canvasBg, headerBorderColor, headerButtonBorderColor, bodyBgColor, headerBg, switchActiveColor, canvasIconColor, breadcrumbTextColor, sidebarBadgeBg, sidebarTextColor, defaultChipBg, primaryChipBg, secondaryChipBg, chipTextColor, cardTextColor, inputFocusShadow, chipDeleteIcon
+  bgLight, bgRegular, bgDark, bgDarker, bgDarkest, bgInputs, gutter, radius, checkBoxColor, bgLighter, textColor, canvasBg, headerBorderColor, headerButtonBorderColor, bodyBgColor, headerBg, switchActiveColor, canvasIconColor, breadcrumbTextColor, sidebarBadgeBg, sidebarTextColor, defaultChipBg, primaryChipBg, secondaryChipBg, chipTextColor, cardTextColor, inputFocusShadow, chipDeleteIcon, filesBg
 } = vars;
 
 const verticalFill = {
@@ -168,14 +168,6 @@ const theme = {
         boxShadow: 'none !important'
       },
       select: { "&:focus": { background: "none" } },
-    },
-    MuiGrid: {
-      root: {
-        display: 'flex'
-      },
-      container: {
-        flex: 1
-      }
     },
     MuiCard: { root: { flex: 1 } },
     MuiBottomNavigation: { root: { backgroundColor: bgRegular, marginBottom: 8, borderRadius: 4 } },
@@ -537,6 +529,7 @@ const theme = {
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
+        padding: '0 3rem'
       },
 
       textContainer: {
@@ -595,7 +588,7 @@ const theme = {
     MuiAutocomplete: {
       inputRoot: {
         '&[class*="MuiOutlinedInput-root"]': {
-          padding: '0.1875rem',
+          padding: '0.1875rem !important',
 
           '& .MuiAutocomplete-input': {
             padding: '0 0.75rem !important',

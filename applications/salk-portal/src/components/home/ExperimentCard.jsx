@@ -226,9 +226,9 @@ const ExperimentCard = ({experiment, type, handleDialogToggle, handleExploration
     setExperimentMenuEl(null);
   };
   return (
-    <Grid item xs={12} md={3} key={`${experiment.name}experiment_${experiment.id}`} onClick={handleCardActions}>
+    <Grid item xs={12} md={3} key={`${experiment.name}experiment_${experiment.id}`} >
       <Card className={classes.card} elevation={0}>
-        <CardActionArea>
+        <CardActionArea onClick={handleCardActions}>
           {type === COMMUNITY_HASH && <img src={POPULAR} alt="POPULAR" />}
           <CardMedia
             component="img"
@@ -273,7 +273,7 @@ const ExperimentCard = ({experiment, type, handleDialogToggle, handleExploration
         <CardActionArea>
           <CardContent>
             <Box>
-               {type != COMMUNITY_HASH && 
+               {type != COMMUNITY_HASH &&
                 <Box>
                   {
                     experiment.tags?.map((tag, i) => <Chip key={`${experiment.name}_${i}_${tag.name}`} label={tag.name} color={i== 1 ? 'primary' : i === 2 ? 'secondary': 'default'}/>)
