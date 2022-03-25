@@ -11,12 +11,17 @@ import PREVIEW from "../../assets/images/icons/preview.svg";
 import { TagsAutocomplete } from "../common/ExperimentDialogs/TagsAutocomplete";
 import { TextEditor } from "../common/ExperimentDialogs/TextEditor";
 import { OwnerInfo } from "../common/ExperimentDialogs/OwnerInfo";
+import { ExperimentTags } from "../../apiclient/workspaces";
 
-const tags = [
-  { title: 'Project A' },
-  { title: 'Label B' },
-  { title: 'Label XYZ' },
-  { title: 'Project C' },
+const tags: ExperimentTags[] = [
+  { name: 'Project A', id: 1 },
+  { name: 'Label B', id: 2},
+  { name: 'Label XYZ', id: 3},
+  { name: 'Project C', id: 4 },
+  { name: 'Project d', id: 5 },
+  { name: 'Label e', id: 6},
+  { name: 'Label XeYZ', id: 7},
+  { name: 'Project Ce', id: 8},
 ];
 
 const useStyles = makeStyles(() => ({
@@ -76,9 +81,9 @@ export const CloneExperimentDialog = (props: any) => {
 
   return (
     <Modal
-      dialogActions
+      dialogActions={true}
       actionText="Create"
-      disableGutter
+      disableGutter={true}
       open={open}
       handleClose={handleClose}
       title="Clone experiment"

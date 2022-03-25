@@ -16,17 +16,17 @@ import LinearProgress from '@material-ui/core/LinearProgress';
 import { TagsAutocomplete } from "../common/ExperimentDialogs/TagsAutocomplete";
 import { TextEditor } from "../common/ExperimentDialogs/TextEditor";
 import { OwnerInfo } from "../common/ExperimentDialogs/OwnerInfo";
+import { ExperimentTags } from "../../apiclient/workspaces";
 
-
-const tags = [
-  { title: 'Project A' },
-  { title: 'Label B' },
-  { title: 'Label XYZ' },
-  { title: 'Project C' },
-  { title: 'Project d' },
-  { title: 'Label e' },
-  { title: 'Label XeYZ' },
-  { title: 'Project Ce' },
+const tags: ExperimentTags[] = [
+  { name: 'Project A', id: 1 },
+  { name: 'Label B', id: 2},
+  { name: 'Label XYZ', id: 3},
+  { name: 'Project C', id: 4 },
+  { name: 'Project d', id: 5 },
+  { name: 'Label e', id: 6},
+  { name: 'Label XeYZ', id: 7},
+  { name: 'Project Ce', id: 8},
 ];
 
 const useStyles = makeStyles(() => ({
@@ -138,11 +138,11 @@ const useStyles = makeStyles(() => ({
 export const CreateExperimentDialog = (props: any) => {
   const classes = useStyles();
   const { open, handleClose, user } = props;
-  const [files, setFiles] = React.useState<any>([]);
+  const [file, setFile] = React.useState<any>([]);
   const [uploaded, setUploaded] = React.useState(false);
-  const fileUpload = (file: any) => {
-    if(file.length > 0) {
-      setFiles(file);
+  const fileUpload = (upload: any) => {
+    if (upload.length > 0) {
+      setFile(upload);
       setUploaded(true);
     }
   };
@@ -166,18 +166,18 @@ export const CreateExperimentDialog = (props: any) => {
 
   return (
     <Modal
-      dialogActions
+      dialogActions={true}
       actionText="Create"
-      disableGutter
+      disableGutter={true}
       open={open}
       handleClose={handleClose}
       title="Create a new experiment"
     >
       <Box display={'flex'} alignItems="center" justifyContent={'center'} className={classes.fileDrop}>
-        <Grid container item spacing={3}>
+        <Grid container={true} item={true} spacing={3}>
           {!uploaded ? (
             <>
-              <Grid item xs={12} sm={6}>
+              <Grid item={true} xs={12} sm={6}>
                 <Typography className={classes.fileLabel}>Key file</Typography>
                 <DropzoneArea
                   onChange={(files: any) => fileUpload(files)}
@@ -192,7 +192,7 @@ export const CreateExperimentDialog = (props: any) => {
                 />
               </Grid>
 
-              <Grid item xs={12} sm={6}>
+              <Grid item={true} xs={12} sm={6}>
                 <Typography className={classes.fileLabel}>Data file</Typography>
                 <DropzoneArea
                   onChange={(files: any) => fileUpload(files)}
@@ -208,25 +208,25 @@ export const CreateExperimentDialog = (props: any) => {
               </Grid>
             </>) : (
             <>
-              <Grid item xs={12} sm={6}>
+              <Grid item={true} xs={12} sm={6}>
                 <Typography className={classes.fileLabel}>Key file</Typography>
                 <Box className={classes.progress}>
                   <Typography>
                     <img src={CHECK_FILLED} alt="check" />
                     data_v2.mca
                   </Typography>
-                  <Button disableRipple onClick={() => setUploaded(false)}>Remove</Button>
+                  <Button disableRipple={true} onClick={() => setUploaded(false)}>Remove</Button>
                 </Box>
               </Grid>
 
-              <Grid item xs={12} sm={6}>
+              <Grid item={true} xs={12} sm={6}>
                 <Typography className={classes.fileLabel}>Data file</Typography>
                 <Box className={classes.progress}>
                   <Typography>
                     <img src={CHECK_FILLED} alt="check" />
                     data_v2.mca
                   </Typography>
-                  <Button disableRipple onClick={() => setUploaded(false)}>Remove</Button>
+                  <Button disableRipple={true} onClick={() => setUploaded(false)}>Remove</Button>
                 </Box>
               </Grid>
             </>)
@@ -264,7 +264,7 @@ export const CreateExperimentDialog = (props: any) => {
       </Box>
 
       <Box className={classes.addSet}>
-        <Button disableRipple>+ Add another set of files</Button>
+        <Button disableRipple={true}>+ Add another set of files</Button>
       </Box>
 
       <Box p={2} pb={5}>

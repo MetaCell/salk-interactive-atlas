@@ -113,7 +113,7 @@ export const Header = (props: any) => {
                 size="large"
                 className={classes.button}
                 variant="contained"
-                disableElevation
+                disableElevation={true}
                 aria-controls={experimentDialogOpen && "user-menu"}
                 aria-haspopup="true"
                 onClick={handleExperimentDialogToggle}
@@ -141,7 +141,7 @@ export const Header = (props: any) => {
                 size="large"
                 className={classes.button}
                 variant="contained"
-                disableElevation
+                disableElevation={true}
               >
                 Save in My Experiments
               </Button>
