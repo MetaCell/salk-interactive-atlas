@@ -9,7 +9,6 @@ COPY . $BUILDDIR
 RUN npm run build
 ###
 FROM nginx:1.19.3-alpine
-# FROM openresty/openresty:1.19.9.1-alpine-fat
 
 ENV BUILDDIR=/builddir
 
@@ -18,6 +17,5 @@ COPY --from=base $BUILDDIR/public /usr/share/nginx/html
 
 EXPOSE 80
 
-# COPY conf/default.conf /etc/nginx/conf.d/default.conf
 RUN mv /etc/nginx/nginx.conf /etc/nginx/nginx.conf.orig
 COPY conf/nginx.conf /etc/nginx/nginx.conf

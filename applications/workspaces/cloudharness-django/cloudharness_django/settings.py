@@ -46,6 +46,7 @@ REST_FRAMEWORK = {
 #   see also the README.md
 
 # get the application CH config
+app_name = settings.PROJECT_NAME.lower()
 try:
     current_app = get_current_configuration()
 
@@ -55,12 +56,11 @@ except:
     # no current app found, fall back to the default settings, there is a god change that
     # we are running on a developers local machine
     from cloudharness.applications import ApplicationConfiguration
-    app_name = settings.PROJECT_NAME.lower()
     current_app = ApplicationConfiguration({
         "name": app_name,
         "harness": {
             "database": {
-                "name": os.path.join(getattr(settings,"PERSISTENT_ROOT","."), f"{app_name}.sqlite3"),
+                "name": app_name,
                 "type": "sqlite3",
                 "host": None,
             }
@@ -69,7 +69,7 @@ except:
 
 if current_app.harness.database.type == "sqlite3":
     DATABASE_ENGINE = "django.db.backends.sqlite3"
-    DATABASE_NAME = current_app.harness.database.name
+    DATABASE_NAME = os.path.join(getattr(settings,"PERSISTENT_ROOT","."), f"{app_name}.sqlite3")
     DATABSE_HOST = None
     DATABASE_PORT = None
 elif current_app.harness.database.type == "postgres":
