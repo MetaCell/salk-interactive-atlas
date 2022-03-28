@@ -209,7 +209,7 @@ const useStyles = makeStyles(() => ({
 
 }));
 
-const ExperimentCard = ({experiment, type}) => {
+const ExperimentCard = ({experiment, type, handleDialogToggle, handleExplorationDialogToggle}) => {
   const classes = useStyles();
   const history = useHistory()
   const handleClick = () => {
@@ -226,9 +226,9 @@ const ExperimentCard = ({experiment, type}) => {
     setExperimentMenuEl(null);
   };
   return (
-    <Grid item xs={12} md={3} key={`${experiment.name}experiment_${experiment.id}`} onClick={handleClick}>
+    <Grid item xs={12} md={3} key={`${experiment.name}experiment_${experiment.id}`} >
       <Card className={classes.card} elevation={0}>
-        <CardActionArea>
+        <CardActionArea onClick={handleCardActions}>
           {type === COMMUNITY_HASH && <img src={POPULAR} alt="POPULAR" />}
           <CardMedia
             component="img"
@@ -244,10 +244,10 @@ const ExperimentCard = ({experiment, type}) => {
           open={Boolean(experimentMenuEl)}
           onClose={closeFilter}
         >
-          <ListItem button>
+          <ListItem button onClick={handleClick}>
             <ListItemText primary="Open experiment" />
           </ListItem>
-          <ListItem button>
+          <ListItem button onClick={handleExplorationDialogToggle}>
             <ListItemText primary="Edit info and tags" />
           </ListItem>
           <Divider />
@@ -267,19 +267,19 @@ const ExperimentCard = ({experiment, type}) => {
           </ListItem>
           <Divider />
           <ListItem button>
-            <ListItemText primary="Delete" />
+            {type === EXPERIMENTS_HASH ? <ListItemText primary="Delete" /> : <ListItemText primary="Clone this experiment" onClick={handleDialogToggle} /> }
           </ListItem>
         </Menu>
         <CardActionArea>
           <CardContent>
             <Box>
-               {type != COMMUNITY_HASH && 
+               {type != COMMUNITY_HASH &&
                 <Box>
                   {
                     experiment.tags?.map((tag, i) => <Chip key={`${experiment.name}_${i}_${tag.name}`} label={tag.name} color={i== 1 ? 'primary' : i === 2 ? 'secondary': 'default'}/>)
                   }
               </Box>}
-              <Typography component="h3">
+              <Typography component="h3" onClick={handleClick}>
                 {experiment.name || 'fff'}
               </Typography>
               <Typography component="p">

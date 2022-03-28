@@ -14,7 +14,7 @@ vars.gutter = vars.gutter.replace('px', '') * 1;
 
 export const {
   primaryColor, secondaryColor, font, fontColor, linkColor, teal, purple, brown, skyBlue, bgLightest, paragraph, bgLightestShade,
-  bgLight, bgRegular, bgDark, bgDarker, bgDarkest, bgInputs, gutter, radius, checkBoxColor, bgLighter, textColor, canvasBg, headerBorderColor,headerButtonBorderColor, bodyBgColor, headerBg, switchActiveColor, canvasIconColor, breadcrumbTextColor, sidebarBadgeBg, sidebarTextColor, defaultChipBg, primaryChipBg, secondaryChipBg, chipTextColor, cardTextColor, inputFocusShadow, backdropBg, logoHoverbg, textDisabled
+  bgLight, bgRegular, bgDark, bgDarker, bgDarkest, bgInputs, gutter, radius, checkBoxColor, bgLighter, textColor, canvasBg, headerBorderColor,headerButtonBorderColor, bodyBgColor, headerBg, switchActiveColor, canvasIconColor, breadcrumbTextColor, sidebarBadgeBg, sidebarTextColor, defaultChipBg, primaryChipBg, secondaryChipBg, chipTextColor, cardTextColor, inputFocusShadow, backdropBg, logoHoverbg, textDisabled, chipDeleteIcon, filesBg
 } = vars;
 
 const verticalFill = {
@@ -23,6 +23,65 @@ const verticalFill = {
 }
 
 const spacing = [0, gutter / 2, gutter * 2 / 3, gutter, 24, 40, 50, 100, 150, 200, 300];
+
+const Charcoal = {
+  backgroundColor: '#344054',
+  color: '#F2F4F7'
+}
+const Iris = {
+  backgroundColor: '#6941C6',
+  color: '#F9F5FF'
+}
+const Carnelian = {
+  backgroundColor: '#B42318',
+  color: '#FEF3F2'
+}
+const Rust = {
+  backgroundColor: '#B54708',
+  color: '#FFFAEB'
+}
+const Green = {
+  backgroundColor: '#027A48',
+  color: '#ECFDF3'
+}
+const Blue = {
+  backgroundColor: '#363F72',
+  color: '#F8F9FC'
+}
+const PersianBlue = {
+  backgroundColor: '#026AA2',
+  color: '#F0F9FF'
+}
+const CelticBlue = {
+  backgroundColor: '#175CD3',
+  color: '#EFF8FF'
+}
+const PalatinateBlue = {
+  backgroundColor: '#3538CD',
+  color: '#EEF4FF'
+}
+const HanPurple = {
+  backgroundColor: '#5925DC',
+  color: '#F4F3FF'
+}
+const Magenta = {
+  backgroundColor: '#C11574',
+  color: '#FDF2FA'
+}
+const Carmine = {
+  backgroundColor: '#C01048',
+  color: '#FFF1F3'
+}
+const RustDark = {
+  backgroundColor: '#B93815',
+  color: '#FEF6EE'
+}
+const AntiFlashWhite  = {
+  backgroundColor: '#F2F4F7',
+  color: '#344054'
+}
+
+export const tagsColorOptions = [Charcoal, Iris, Carnelian, Rust, Green, Blue, PersianBlue, HanPurple, Magenta, Carmine, RustDark, AntiFlashWhite];
 
 const theme = {
   darkMode: true,
@@ -92,36 +151,7 @@ const theme = {
     }
   },
   overrides: {
-    MuiChip: {
-      root: {
-        marginRight: spacing[0.5],
-        marginLeft: spacing[1],
-        color: fontColor,
-        label: {
-          fontSize: '0.8rem',
-        },
 
-
-          "& .MuiChip-avatar": {
-            width: ".63rem",
-            height: ".63rem",
-            "&.MuiSvgIcon-colorPrimary": {
-              color: teal,
-            },
-            "&.MuiSvgIcon-colorSecondary": {
-              color: purple,
-            },
-          },
-
-      },
-      outlined: {
-        backgroundColor: bgDarker,
-        border: 'none',
-      },
-      deleteIcon: {
-        color: '#a6a6a6',
-      },
-    },
     MuiInput: {
       input: {
         outline: 'none !important',
@@ -138,14 +168,6 @@ const theme = {
         boxShadow: 'none !important'
       },
       select: { "&:focus": { background: "none" } },
-    },
-    MuiGrid: {
-      root: {
-        display: 'flex'
-      },
-      container: {
-        flex: 1
-      }
     },
     MuiCard: { root: { flex: 1 } },
     MuiBottomNavigation: { root: { backgroundColor: bgRegular, marginBottom: 8, borderRadius: 4 } },
@@ -308,30 +330,7 @@ const theme = {
         minHeight: 15
       }
     },
-    MuiAutocomplete: {
-      root: {
-        border: `0.125rem solid ${bgLight}`,
-        paddingTop: '0.625rem',
-        paddingBottom: '0.625rem',
-        borderRadius: '0.125rem',
-        '& div:first-child': {
-            paddingBottom: '0',
-        },
-        '& .MuiInputBase-root': {
-          paddingTop: '0 !important',
-          backgroundColor: 'transparent',
-          '& .MuiAutocomplete-endAdornment': {
-            display: 'none',
-          },
-        },
-        '& .MuiFilledInput-underline::before': {
-          borderBottom: 'none',
-        },
-        '& .MuiFilledInput-underline::after': {
-          borderBottom: 'none',
-        },
-      },
-    },
+
 
     MuiFormControlLabel: {
       labelPlacementStart: {
@@ -474,6 +473,10 @@ const theme = {
         boxShadow: '0 0.25rem 2.5rem rgba(0, 0, 0, 0.3), 0 0.5rem 0.5rem -0.25rem rgba(0, 0, 0, 0.1), 0 1.25rem 1.5rem -0.25rem rgba(0, 0, 0, 0.1)',
         borderRadius: '0.375rem',
       },
+
+      paperWidthSm: {
+        maxWidth: '30rem',
+      },
     },
 
     MuiDialogActions: {
@@ -510,7 +513,37 @@ const theme = {
     MuiDialogContent: {
       root: { padding: '1.5rem 1rem' }
     },
+    MuiDropzoneArea: {
+      root: {
+        minHeight: '6.25rem',
+        backgroundColor: 'transparent',
+        borderRadius: '0.375rem',
+        border: `0.0625rem dashed ${sidebarTextColor}`,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        padding: '0 3rem'
+      },
 
+      textContainer: {
+        display: 'flex',
+        alignItems: 'center',
+        flexDirection: 'column',
+
+        '& img': {marginBottom: '0.75rem',},
+      },
+
+      text: {
+        marginTop: 0,
+        marginBottom: 0,
+        fontWeight: 500,
+        fontSize: '0.75rem',
+        lineHeight: '1rem',
+        order: 2,
+        letterSpacing: '0.01em',
+        color: 'rgba(255, 255, 255, 0.4)',
+      },
+    },
     MuiBackdrop: {
       root: {
         backgroundColor: backdropBg,
@@ -563,6 +596,10 @@ const theme = {
         color: headerButtonBorderColor,
       },
 
+      notchedOutline: {
+        borderColor: sidebarTextColor
+      },
+
       multiline: {
         padding: '0.5rem 0.75rem',
       },
@@ -570,9 +607,106 @@ const theme = {
       inputMultiline: {
         height: 'auto',
       },
+    },
 
-      notchedOutline: {
-        borderColor: sidebarTextColor
+    MuiAutocomplete: {
+      inputRoot: {
+        '&[class*="MuiOutlinedInput-root"]': {
+          padding: '0.1875rem !important',
+
+          '& .MuiAutocomplete-input': {
+            padding: '0 0.75rem !important',
+            height: '1.75rem',
+          },
+
+          '& .MuiAutocomplete-tag': {
+            '& + .MuiAutocomplete-input': {
+              paddingLeft: '0.5rem !important',
+            },
+          },
+        },
+      },
+
+      tag: {
+        margin: '0.125rem',
+        fontWeight: '600',
+        fontSize: '0.625rem',
+        lineHeight: '0.75rem',
+        letterSpacing: '-0.02em',
+        '& .MuiChip-deleteIcon': {
+          color: secondaryColor,
+          width: '0.875rem',
+          height: '0.875rem',
+        },
+      },
+
+      paper: {
+        background: headerBg,
+        border: `0.0625rem solid ${headerBorderColor}`,
+        boxShadow: '0 0.75rem 2.5rem -0.25rem rgba(0, 0, 0, 0.3), 0 0.25rem 0.375 -0.125rem rgba(0, 0, 0, 0.2)',
+        borderRadius: '0.375rem',
+        margin: 0,
+      },
+
+      listbox: {
+        padding: 0,
+      },
+
+      option: {
+        padding: '0.625rem 1rem',
+        fontWeight: 500,
+        fontSize: '0.75rem',
+        lineHeight: '1.0625rem',
+        letterSpacing: '0.005em',
+        color: headerButtonBorderColor,
+        backgroundColor: 'transparent !important',
+      },
+    },
+
+    MuiChip: {
+      root: {
+        height: '1.5rem',
+        borderRadius: '0.25rem',
+        "& .MuiChip-avatar": {
+          width: ".63rem",
+          height: ".63rem",
+          "&.MuiSvgIcon-colorPrimary": {
+            color: teal,
+          },
+          "&.MuiSvgIcon-colorSecondary": {
+            color: purple,
+          },
+        },
+      },
+      outlined: {
+        backgroundColor: bgDarker,
+        border: 'none',
+      },
+      deleteIcon: {
+        color: chipDeleteIcon,
+      },
+
+      label: {
+        padding: '0.375rem',
+        fontWeight: '600',
+        fontSize: '0.625rem',
+        lineHeight: '0.75rem',
+        letterSpacing: '-0.02em',
+      },
+    },
+
+    MuiLinearProgress: {
+      root: {
+        borderRadius: '0.125rem',
+      },
+
+      colorPrimary: {
+        backgroundColor: sidebarTextColor,
+      },
+
+      barColorPrimary: {
+        backgroundColor: headerButtonBorderColor,
+        borderRadius: '0.125rem',
       },
     },
   },
