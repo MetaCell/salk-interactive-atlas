@@ -60,34 +60,10 @@ steps:
         - DOMAIN=${{DOMAIN}}
         - NOCACHE=${{CF_BUILD_ID}}
         - REGISTRY=${{REGISTRY}}/salk/
-        - CLOUDHARNESS_FLASK=${{REGISTRY}}/salk/cloudharness-flask:${{CF_BUILD_ID}}
         - CLOUDHARNESS_BASE=${{REGISTRY}}/salk/cloudharness-base:${{CF_BUILD_ID}}
         image_name: salk/cloudharness-base
         title: Cloudharness base
         working_directory: ./cloud-harness
-  build_static_images:
-    title: Build static images
-    type: parallel
-    stage: build
-    steps:
-      cloudharness-flask:
-        type: build
-        stage: build
-        tag: '${{CF_BUILD_ID}}'
-        dockerfile: Dockerfile
-        registry: '${{CODEFRESH_REGISTRY}}'
-        buildkit: true
-        build_arguments:
-        - TAG=${{CF_BUILD_ID}}
-        - NAMESPACE=${{NAMESPACE}}
-        - DOMAIN=${{DOMAIN}}
-        - NOCACHE=${{CF_BUILD_ID}}
-        - REGISTRY=${{REGISTRY}}/salk/
-        - CLOUDHARNESS_FLASK=${{REGISTRY}}/salk/cloudharness-flask:${{CF_BUILD_ID}}
-        - CLOUDHARNESS_BASE=${{REGISTRY}}/salk/cloudharness-base:${{CF_BUILD_ID}}
-        image_name: salk/cloudharness-flask
-        title: Cloudharness flask
-        working_directory: ./cloud-harness/infrastructure/common-images/cloudharness-flask
   build_application_images:
     type: parallel
     stage: build
@@ -108,23 +84,6 @@ steps:
         image_name: salk/accounts
         title: Accounts
         working_directory: ./.overrides/applications/accounts
-      common:
-        type: build
-        stage: build
-        tag: '${{CF_BUILD_ID}}'
-        dockerfile: Dockerfile
-        registry: '${{CODEFRESH_REGISTRY}}'
-        buildkit: true
-        build_arguments:
-        - TAG=${{CF_BUILD_ID}}
-        - NAMESPACE=${{NAMESPACE}}
-        - DOMAIN=${{DOMAIN}}
-        - NOCACHE=${{CF_BUILD_ID}}
-        - REGISTRY=${{REGISTRY}}/salk/
-        - CLOUDHARNESS_FLASK=${{REGISTRY}}/salk/cloudharness-flask:${{CF_BUILD_ID}}
-        image_name: salk/common
-        title: Common
-        working_directory: ./cloud-harness/applications/common/server
       events:
         type: build
         stage: build
@@ -200,27 +159,11 @@ steps:
         tags:
         - '${{DEPLOYMENT_PUBLISH_TAG}}'
         registry: '${{REGISTRY_PUBLISH_URL}}'
-      publish_cloudharness-flask:
-        stage: publish
-        type: push
-        title: Cloudharness flask
-        candidate: '${{REGISTRY}}/salk/cloudharness-flask:${{CF_BUILD_ID}}'
-        tags:
-        - '${{DEPLOYMENT_PUBLISH_TAG}}'
-        registry: '${{REGISTRY_PUBLISH_URL}}'
       publish_accounts:
         stage: publish
         type: push
         title: Accounts
         candidate: '${{REGISTRY}}/salk/accounts:${{CF_BUILD_ID}}'
-        tags:
-        - '${{DEPLOYMENT_PUBLISH_TAG}}'
-        registry: '${{REGISTRY_PUBLISH_URL}}'
-      publish_common:
-        stage: publish
-        type: push
-        title: Common
-        candidate: '${{REGISTRY}}/salk/common:${{CF_BUILD_ID}}'
         tags:
         - '${{DEPLOYMENT_PUBLISH_TAG}}'
         registry: '${{REGISTRY_PUBLISH_URL}}'
