@@ -3,6 +3,5 @@ harness:
   dependencies:
     soft:
       - accounts
-      - common
       - workspaces
 

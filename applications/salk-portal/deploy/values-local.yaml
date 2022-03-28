@@ -3,8 +3,4 @@ harness:
   dependencies:
     soft:
       - accounts
-      - common
       - workspaces
-      - workflows
-      - jupyterhub
-      - jupyterlab

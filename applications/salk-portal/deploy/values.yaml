@@ -19,16 +19,10 @@ harness:
   sentry: true
   use_services:
     - name: workspaces
-    - name: common
   dependencies:
     soft:
       - accounts
-      - common
       - workspaces
-      # - workflows
-      # - jupyterhub
-      # - jupyterlab
-      # - hub
   uri_role_mapping:
     - uri: /*
       roles:
