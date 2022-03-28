@@ -25,8 +25,6 @@ harness:
     hard:
     - accounts
     - events
-  use_services:
-    - name: common
   uri_role_mapping:
     - uri: /api/*
       roles:
