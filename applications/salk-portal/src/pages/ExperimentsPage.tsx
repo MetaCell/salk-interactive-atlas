@@ -18,8 +18,9 @@ import Sidebar from "../components/ExperimentSidebar";
 import {AtlasChoice} from "../utilities/constants"
 import {getAtlas} from "../service/AtlasService";
 import {Experiment, ExperimentPopulations} from "../apiclient/workspaces";
-import {areAllSelected, getCells} from "../utilities/functions";
+import {areAllSelected} from "../utilities/functions";
 import workspaceService from "../service/WorkspaceService";
+import Cell from "../models/Cell";
 
 
 const useStyles = makeStyles({
@@ -140,10 +141,12 @@ const ExperimentsPage = () => {
             const response = await workspaceService.getApi().retrieveExperiment(MOCKED_ID)
             const data = response.data;
             const cells = await Promise.all(data.populations.map(async (p) => {
-                const path = "/media/" + p.cells
-                return getCells(path)
+                const cellsFile = await workspaceService.getApi().cellsPopulation(`${p.id}`);
+                return cellsFile.data.split('\r\n').map(csv => new Cell(csv));
             }));
-            data.populations.forEach((p, i) => data.populations[i].cells = cells[i])
+            data.populations.forEach((p, i) => {
+                data.populations[i].cells = cells[i]
+            });
             setExperiment(data)
         }
 

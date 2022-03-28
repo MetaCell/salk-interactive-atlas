@@ -5,7 +5,7 @@ import { CssBaseline, makeStyles } from "@material-ui/core";
 import '@metacell/geppetto-meta-ui/flex-layout/style/dark.scss'
 import HomePage from "./pages/HomePage";
 import theme from "./theme";
-import { Header, ErrorDialog, ProtectedRoute, } from "./components";
+import { Header, ProtectedRoute, } from "./components";
 import ExperimentsPage from "./pages/ExperimentsPage";
 
 const GEPPETTO = {};
@@ -39,10 +39,8 @@ export const App = (props: any) => {
   const classes = useStyles();
 
   return (
-    // <SentryErrorBoundary>
       <ThemeProvider theme={theme}>
         <CssBaseline />
-        <ErrorDialog />
         {!props.error &&
           <Router>
             <div className={classes.mainContainer}>
@@ -61,6 +59,5 @@ export const App = (props: any) => {
           </Router>
         }
       </ThemeProvider>
-    // </SentryErrorBoundary>
   );
 };

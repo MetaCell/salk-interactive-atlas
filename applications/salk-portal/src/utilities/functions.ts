@@ -24,13 +24,3 @@ export const getAllowedRanges = (selectedAtlas: AtlasChoice, activeSubdivisions:
    });
    return ranges
 }
-
-export const getCells = async (uri: string) : Promise<ExperimentCells[]> => {
-   const response = await fetch(uri)
-   const reader = response.body.getReader();
-   const decoder = new TextDecoder('utf-8');
-   const result = await reader.read()
-   const csvString = decoder.decode(result.value);
-   const cells = csvString.split('\r\n')
-   return cells.map(cellCSV => new Cell(cellCSV))
-}

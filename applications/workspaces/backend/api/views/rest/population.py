@@ -2,10 +2,12 @@ import logging
 
 from dry_rest_permissions.generics import DRYPermissions
 from rest_framework import viewsets
+from rest_framework.decorators import action
 from rest_framework.response import Response
 
 from api.models import Population, Experiment
 from api.serializers import PopulationSerializer
+from api.utils import send_file
 
 log = logging.getLogger("__name__")
 
@@ -24,3 +26,9 @@ class PopulationViewSet(viewsets.ModelViewSet):
         queryset = Population.objects.filter(experiment__in=experiments)
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
+
+    @action(detail=True)
+    def cells(self, request, **kwargs):
+        instance = self.get_object()
+        response = send_file(instance.cells.file)
+        return response

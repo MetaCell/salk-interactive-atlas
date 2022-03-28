@@ -46,11 +46,6 @@ module.exports = env => {
             changeOrigin: true,
             pathRewrite: { '^/proxy/workspaces': '' }
           },
-          '/api/sentry': {
-            target: replaceHost(proxyTarget, 'common'),
-            secure: false,
-            changeOrigin: true,
-          },
           '/media': {
             target: replaceHost(proxyTarget, 'www'),
             secure: false,
