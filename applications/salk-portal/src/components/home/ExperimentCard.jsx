@@ -209,7 +209,7 @@ const useStyles = makeStyles(() => ({
 
 }));
 
-const ExperimentCard = ({experiment, type, handleDialogToggle, handleExplorationDialogToggle}) => {
+const ExperimentCard = ({experiment, type, handleDialogToggle, handleExplorationDialogToggle, handleDeleteDialogToggle}) => {
   const classes = useStyles();
   const history = useHistory()
   const handleClick = () => {
@@ -267,7 +267,7 @@ const ExperimentCard = ({experiment, type, handleDialogToggle, handleExploration
           </ListItem>
           <Divider />
           <ListItem button>
-            {type === EXPERIMENTS_HASH ? <ListItemText primary="Delete" /> : <ListItemText primary="Clone this experiment" onClick={handleDialogToggle} /> }
+            {type === EXPERIMENTS_HASH ? <ListItemText primary="Delete" onClick={handleDeleteDialogToggle}></ListItemText> : <ListItemText primary="Clone this experiment" onClick={handleDialogToggle} /> }
           </ListItem>
         </Menu>
         <CardActionArea>

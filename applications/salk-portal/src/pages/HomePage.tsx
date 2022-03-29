@@ -1,5 +1,6 @@
 import React, { useState, useRef } from "react";
 import Box from "@material-ui/core/Box";
+import Backdrop from '@material-ui/core/Backdrop';
 import { makeStyles } from "@material-ui/core/styles";
 import Sidebar from "../components/ExplorerSidebar";
 import { bodyBgColor } from "../theme";
@@ -7,14 +8,21 @@ import ExperimentList from "../components/home/ExperimentList";
 import Community from "../components/home/Community";
 import { EXPERIMENTS_HASH, SALK_TEAM, ACME_TEAM, COMMUNITY_HASH, SHARED_HASH } from "../constants";
 import { CloneExperimentDialog } from "../components/home/CloneExperimentDialog";
+import { DeleteExperimentDialog } from "../components/home/DeleteExperimentDialog";
 import { ExplorationSpinalCordDialog } from "../components/home/ExplorationSpinalCordDialog";
+import { bgLightestShade } from "../theme";
 
-const useStyles = makeStyles(() => ({
+const useStyles = makeStyles((theme) => ({
   layoutContainer: {
     width: 'calc(100% - 15rem)',
     overflow: 'auto',
     height: 'calc(100vh - 3rem)',
     backgroundColor: bodyBgColor,
+  },
+
+  backdrop: {
+    zIndex: theme.zIndex.drawer + 1,
+    color: bgLightestShade,
   },
 
 }));
@@ -49,16 +57,20 @@ export default (props: any) => {
   };
 
   const [explorationDialogOpen, setExplorationDialogOpen] = React.useState(false);
+  const [deleteDialogOpen, setDeleteDialogOpen] = React.useState(false);
 
   const handleExplorationDialogToggle = () => {
     setExplorationDialogOpen((prevOpen) => !prevOpen);
+  };
+  const handleDeleteDialogToggle = () => {
+    setDeleteDialogOpen((prevOpen) => !prevOpen);
   };
   return (
     <Box display="flex">
       <Sidebar executeScroll={(r: string) => executeScroll(r)} />
       <Box className={classes.layoutContainer}>
         <div ref={myRef} id={EXPERIMENTS_HASH}>
-          <ExperimentList heading={"My experiments"} description={"7 experiments"} type={EXPERIMENTS_HASH} handleExplorationDialogToggle={handleExplorationDialogToggle} infoIcon={false} />
+          <ExperimentList heading={"My experiments"} description={"7 experiments"} type={EXPERIMENTS_HASH} handleExplorationDialogToggle={handleExplorationDialogToggle} handleDeleteDialogToggle={handleDeleteDialogToggle} infoIcon={false} />
         </div>
         <div ref={shared} id={SHARED_HASH}>
           <ExperimentList heading={"Shared with me"} description={"28 experiments"} type={SHARED_HASH} handleDialogToggle={handleDialogToggle} handleExplorationDialogToggle={handleExplorationDialogToggle} infoIcon={false} />
@@ -76,7 +88,13 @@ export default (props: any) => {
         </Box>
 
       </Box>
+      <Backdrop
+        className={classes.backdrop}
+        open={deleteDialogOpen}
+        onClick={handleDeleteDialogToggle}
+      />
       <CloneExperimentDialog open={dialogOpen} handleClose={handleDialogToggle} user={props?.user} />
+      <DeleteExperimentDialog open={deleteDialogOpen} handleClose={handleDeleteDialogToggle}/>
       <ExplorationSpinalCordDialog open={explorationDialogOpen} handleClose={handleExplorationDialogToggle} />
     </Box>
   )
