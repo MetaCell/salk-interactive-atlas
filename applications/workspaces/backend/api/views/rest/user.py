@@ -51,10 +51,10 @@ class UserDetailViewSet(viewsets.ModelViewSet):
 
     def list(self, *args, **kwargs):
         try:
-            userdetail = list(self.request.user.userdetail)
+            userdetail = [self.request.user.userdetail]
         except UserDetail.DoesNotExist:
-            userdetail = [None]
-        serializer = self.get_serializer(userdetail, many=False)
+            userdetail = []
+        serializer = self.get_serializer(userdetail, many=True)
         return Response(serializer.data)
 
     def create(self, request, *args, **kwargs):
