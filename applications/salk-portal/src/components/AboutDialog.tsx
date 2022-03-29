@@ -58,7 +58,7 @@ const AboutCoordAtlasDialog = (props: any) => {
   const classes = useStyles();
   const { open, handleClose} = props;
   return (
-    <Modal open={Boolean(open)} handleClose={handleClose} title="About Mouse Coord Atlas" maxWidth="xs">
+    <Modal open={Boolean(open)} handleClose={handleClose} title="About Mouse Coord Atlas">
         <Grid container direction="row" className={classes.details} spacing={2}>
           <Grid item className={classes.avatar}> 
            <Avatar alt="About Mouse Coord Atlas logo" src={LOGO}/>
