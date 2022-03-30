@@ -33,8 +33,6 @@ export const DeleteExperimentDialog: React.FC<IDeleteDialog> = ({open, handleClo
       maxWidth='xs'
       open={open}
       onClose={handleClose}
-      aria-labelledby="alert-dialog-slide-title"
-      aria-describedby="alert-dialog-slide-description"
     >
       <DialogTitle>
       Delete this experiment?
