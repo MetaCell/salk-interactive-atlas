@@ -1454,6 +1454,39 @@ export const ApiApiAxiosParamCreator = function (configuration?: Configuration) 
             };
         },
         /**
+         * This viewset automatically provides `list`, `create`, `retrieve`, `update` actions.  The list action will always return the current user\'s userdetail as a list or an empty list if the current user has no userdetail
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        meUserDetail: async (options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/api/userdetails/me/`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication bearerAuth required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
          * This viewset automatically provides `list`, `create`, `retrieve`, `update` actions.  Additionally we also provide extra `magic` actions `members`, `members add` and `members delete`.
          * @param {string} id A unique integer value identifying this group.
          * @param {*} [options] Override http request option.
@@ -2619,6 +2652,15 @@ export const ApiApiFp = function(configuration?: Configuration) {
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
+         * This viewset automatically provides `list`, `create`, `retrieve`, `update` actions.  The list action will always return the current user\'s userdetail as a list or an empty list if the current user has no userdetail
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async meUserDetail(options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<UserDetail>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.meUserDetail(options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
          * This viewset automatically provides `list`, `create`, `retrieve`, `update` actions.  Additionally we also provide extra `magic` actions `members`, `members add` and `members delete`.
          * @param {string} id A unique integer value identifying this group.
          * @param {*} [options] Override http request option.
@@ -3062,6 +3104,14 @@ export const ApiApiFactory = function (configuration?: Configuration, basePath?:
          */
         listUsers(options?: any): AxiosPromise<Array<UserTeam>> {
             return localVarFp.listUsers(options).then((request) => request(axios, basePath));
+        },
+        /**
+         * This viewset automatically provides `list`, `create`, `retrieve`, `update` actions.  The list action will always return the current user\'s userdetail as a list or an empty list if the current user has no userdetail
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        meUserDetail(options?: any): AxiosPromise<UserDetail> {
+            return localVarFp.meUserDetail(options).then((request) => request(axios, basePath));
         },
         /**
          * This viewset automatically provides `list`, `create`, `retrieve`, `update` actions.  Additionally we also provide extra `magic` actions `members`, `members add` and `members delete`.
@@ -3527,6 +3577,16 @@ export class ApiApi extends BaseAPI {
      */
     public listUsers(options?: AxiosRequestConfig) {
         return ApiApiFp(this.configuration).listUsers(options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * This viewset automatically provides `list`, `create`, `retrieve`, `update` actions.  The list action will always return the current user\'s userdetail as a list or an empty list if the current user has no userdetail
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof ApiApi
+     */
+    public meUserDetail(options?: AxiosRequestConfig) {
+        return ApiApiFp(this.configuration).meUserDetail(options).then((request) => request(this.axios, this.basePath));
     }
 
     /**

@@ -3,6 +3,7 @@ import logging
 from django.contrib.auth.models import User
 from dry_rest_permissions.generics import DRYPermissions
 from rest_framework import mixins, status, viewsets
+from rest_framework.decorators import action
 from rest_framework.response import Response
 
 from api.models import UserDetail
@@ -55,6 +56,15 @@ class UserDetailViewSet(viewsets.ModelViewSet):
         except UserDetail.DoesNotExist:
             userdetail = []
         serializer = self.get_serializer(userdetail, many=True)
+        return Response(serializer.data)
+
+    @action(detail=False, methods=["get"], url_path="me", url_name="me")
+    def me(self, request):
+        try:
+            userdetail = self.request.user.userdetail
+        except UserDetail.DoesNotExist or AttributeError:
+            userdetail = None
+        serializer = self.get_serializer(userdetail, many=False)
         return Response(serializer.data)
 
     def create(self, request, *args, **kwargs):

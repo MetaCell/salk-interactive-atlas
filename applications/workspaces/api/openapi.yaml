@@ -754,6 +754,27 @@ paths:
           description: ''
       tags:
       - api
+  /api/userdetails/me/:
+    get:
+      operationId: meUserDetail
+      description: 'This viewset automatically provides `list`, `create`, `retrieve`,
+
+        `update` actions.
+
+
+        The list action will always return the current user''s userdetail as a list
+
+        or an empty list if the current user has no userdetail'
+      parameters: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserDetail'
+          description: ''
+      tags:
+      - api
   /api/userdetails/{id}/:
     get:
       operationId: retrieveUserDetail

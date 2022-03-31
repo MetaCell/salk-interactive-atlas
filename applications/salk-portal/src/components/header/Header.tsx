@@ -133,7 +133,7 @@ export const Header = (props: any) => {
                 My account
                 </Button>
 
-              <Avatar alt={user.username} title={user.username} src={USER} />
+              <Avatar alt={user.username} title={user.username} src={user.avatarUrl ? user.avatarUrl : USER} />
             </>
           ) : (
             <>

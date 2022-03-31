@@ -17,7 +17,7 @@ class WorkspaceService {
     this.workspacesApi = new ApiApi(new Configuration({ basePath: workspacesApiUri, accessToken: token }));
   }
 
-  getApi = () => {
+  getApi = (): ApiApi => {
       return this.workspacesApi;
   }
 }
