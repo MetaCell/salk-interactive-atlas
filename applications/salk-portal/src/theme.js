@@ -167,7 +167,14 @@ const theme = {
         border: 'none !important',
         boxShadow: 'none !important'
       },
-      select: { "&:focus": { background: "none" } },
+      selectMenu: {
+        height: '2rem',
+        alignItems: 'center',
+        display: 'flex',
+      },
+      select: {
+        "&:focus": { backgroundColor: "none" }
+      },
     },
     MuiCard: { root: { flex: 1 } },
     MuiBottomNavigation: { root: { backgroundColor: bgRegular, marginBottom: 8, borderRadius: 4 } },
@@ -239,12 +246,16 @@ const theme = {
     },
     MuiMenuItem: {
       root: {
-        fontSize: '1em',
-        paddingTop: gutter / 2,
+        fontWeight: '500',
+        fontSize: '0.75rem',
+        lineHeight: '1.0625rem',
+        letterSpacing: '0.005em',
+        display: 'flex',
+        alignItems: 'center',
+        color: secondaryColor,
       },
       gutters: {
-        paddingLeft: gutter * 2,
-        paddingRight: gutter * 2
+        padding: '0.5rem 1rem',
       }
 
     },
@@ -306,23 +317,22 @@ const theme = {
       }
     },
     MuiTab: {
+      textColorInherit: {
+        opacity: '0.6',
+        color: secondaryColor,
+      },
       root: {
+        fontWeight: 600,
+        fontSize: '0.75rem',
         textTransform: 'none',
-        fontSize: '1.1rem',
-        fontWeight: 400,
-        padding: '0 0.5rem 0 0',
-        textDecoration: 'none',
-        border: 0,
-        minHeight: '1.25rem',
-        height: '1.25rem',
-        minWidth: '9.375rem !important',
-        textAlign: 'left',
-        '&:first-child': {
-          borderRight: `0.0625rem solid ${secondaryColor}`,
+        lineHeight: '1rem',
+        letterSpacing: '0.005em',
+        padding: 0,
+        minWidth: '0.0625rem !important',
+
+        '&:not(:first-child)': {
+          marginLeft: '1rem',
         },
-        '&:last-child': {
-          padding: '0 0 0 0.5rem',
-        }
       }
     },
     MuiToolbar: {
@@ -333,6 +343,11 @@ const theme = {
 
 
     MuiFormControlLabel: {
+      root: {
+        display: 'flex',
+        marginRight: 0,
+        marginLeft: 0,
+      },
       labelPlacementStart: {
         marginLeft: 0,
         marginRight: 0,
@@ -485,17 +500,17 @@ const theme = {
         boxShadow: `inset 0 0.0625rem 0 ${headerBorderColor}`,
 
         '& .MuiButton-root': {
-          flexGrow: 1,
-          marginRight: 0,
+          width: 'calc((100% - 0.5rem) / 2)',
+          margin: 0,
         },
       },
     },
 
     MuiDialogTitle: {
       root: {
-        padding: '0.125rem 0.25rem 0.125rem 1rem',
         fontWeight: 600,
         fontSize: '1rem',
+        padding: '0.125rem 0.25rem 0.125rem 1rem',
         boxShadow: `inset 0 -0.0625rem 0 ${headerBorderColor}`,
 
         '& .MuiTypography-root': {
@@ -541,7 +556,7 @@ const theme = {
         lineHeight: '1rem',
         order: 2,
         letterSpacing: '0.01em',
-        color: 'rgba(255, 255, 255, 0.4)',
+        color: sidebarTextColor,
       },
     },
     MuiBackdrop: {
@@ -577,6 +592,11 @@ const theme = {
     MuiOutlinedInput: {
       root: {
         borderRadius: '0.375rem',
+
+        '& .MuiSelect-customIcon': {
+          top: 'auto',
+          right: '0.625rem',
+        },
 
         '&.Mui-focused': {
           '& .MuiOutlinedInput-notchedOutline': {
@@ -707,6 +727,26 @@ const theme = {
       barColorPrimary: {
         backgroundColor: headerButtonBorderColor,
         borderRadius: '0.125rem',
+      },
+    },
+
+    MuiMenu: {
+      paper: {
+        transform: 'translateY(2.25rem) !important',
+        boxShadow: '0 0.75rem 2.5rem -0.25rem rgba(0, 0, 0, 0.3), 0 0.25rem 0.375rem -0.125rem rgba(0, 0, 0, 0.2)',
+        maxWidth: '10rem',
+        width: '100%',
+        border: `0.0625rem solid ${headerBorderColor}`,
+        background: headerBg,
+        borderRadius: '0.375rem',
+        padding: '0.75rem 0',
+      },
+    },
+
+    MuiList: {
+      padding: {
+        paddingTop: 0,
+        paddingBottom: 0,
       },
     },
   },
