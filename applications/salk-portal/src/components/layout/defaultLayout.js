@@ -5,6 +5,7 @@ export default {
         tabSetTabStripHeight: 26,
         enableEdgeDock: false,
         borderBarSize: 0,
+        tabEnableDrag: false
     },
     layout: {
         type: "tabset",
