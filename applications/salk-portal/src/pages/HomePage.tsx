@@ -8,6 +8,8 @@ import Community from "../components/home/Community";
 import { EXPERIMENTS_HASH, SALK_TEAM, ACME_TEAM, COMMUNITY_HASH, SHARED_HASH } from "../constants";
 import { CloneExperimentDialog } from "../components/home/CloneExperimentDialog";
 import { ExplorationSpinalCordDialog } from "../components/home/ExplorationSpinalCordDialog";
+import { ShareExperimentDialog } from "../components/home/ShareExperiment";
+import { ShareMultipleExperimentDialog } from "../components/home/ShareMultipleExperiment";
 
 const useStyles = makeStyles(() => ({
   layoutContainer: {
@@ -53,31 +55,46 @@ export default (props: any) => {
   const handleExplorationDialogToggle = () => {
     setExplorationDialogOpen((prevOpen) => !prevOpen);
   };
+
+  const [shareDialogOpen, setShareDialogOpen] = React.useState(false);
+
+  const handleShareDialogToggle = () => {
+    setShareDialogOpen((prevOpen) => !prevOpen);
+  };
+
+  const [shareMultipleDialogOpen, setShareMultipleDialogOpen] = React.useState(false);
+
+  const handleShareMultipleDialogToggle = () => {
+    setShareMultipleDialogOpen((prevOpen) => !prevOpen);
+  };
+
   return (
     <Box display="flex">
       <Sidebar executeScroll={(r: string) => executeScroll(r)} />
       <Box className={classes.layoutContainer}>
         <div ref={myRef} id={EXPERIMENTS_HASH}>
-          <ExperimentList heading={"My experiments"} description={"7 experiments"} type={EXPERIMENTS_HASH} handleExplorationDialogToggle={handleExplorationDialogToggle} infoIcon={false} />
+          <ExperimentList heading={"My experiments"} description={"7 experiments"} type={EXPERIMENTS_HASH} handleExplorationDialogToggle={handleExplorationDialogToggle} infoIcon={false} handleShareDialogToggle={handleShareDialogToggle} handleShareMultipleDialogToggle={handleShareMultipleDialogToggle}/>
         </div>
         <div ref={shared} id={SHARED_HASH}>
-          <ExperimentList heading={"Shared with me"} description={"28 experiments"} type={SHARED_HASH} handleDialogToggle={handleDialogToggle} handleExplorationDialogToggle={handleExplorationDialogToggle} infoIcon={false} />
+          <ExperimentList heading={"Shared with me"} description={"28 experiments"} type={SHARED_HASH} handleDialogToggle={handleDialogToggle} handleExplorationDialogToggle={handleExplorationDialogToggle} infoIcon={false} handleShareDialogToggle={handleShareDialogToggle} handleShareMultipleDialogToggle={handleShareMultipleDialogToggle} />
         </div>
         <div ref={salkteam} id={SALK_TEAM}>
-          <ExperimentList heading={"Salk Institute Team"} description={"19 experiments"} type={SALK_TEAM} handleDialogToggle={handleDialogToggle}handleExplorationDialogToggle={handleExplorationDialogToggle} infoIcon={true} />
+          <ExperimentList heading={"Salk Institute Team"} description={"19 experiments"} type={SALK_TEAM} handleDialogToggle={handleDialogToggle}handleExplorationDialogToggle={handleExplorationDialogToggle} infoIcon={true} handleShareDialogToggle={handleShareDialogToggle} handleShareMultipleDialogToggle={handleShareMultipleDialogToggle} />
         </div>
         <div ref={acmeteam} id={ACME_TEAM}>
-          <ExperimentList heading={"Acme Team"} description={"19 experiments"} type={ACME_TEAM} handleDialogToggle={handleDialogToggle} handleExplorationDialogToggle={handleExplorationDialogToggle} infoIcon={false}/>
+          <ExperimentList heading={"Acme Team"} description={"19 experiments"} type={ACME_TEAM} handleDialogToggle={handleDialogToggle} handleExplorationDialogToggle={handleExplorationDialogToggle} infoIcon={false}handleShareDialogToggle={handleShareDialogToggle} handleShareMultipleDialogToggle={handleShareMultipleDialogToggle} />
         </div>
         <Box p={5}>
           <div ref={communityRef} id={COMMUNITY_HASH}>
-            <Community handleDialogToggle={handleDialogToggle} handleExplorationDialogToggle={handleExplorationDialogToggle} />
+            <Community handleDialogToggle={handleDialogToggle} handleExplorationDialogToggle={handleExplorationDialogToggle} handleShareDialogToggle={handleShareDialogToggle} handleShareMultipleDialogToggle={handleShareMultipleDialogToggle} />
           </div>
         </Box>
 
       </Box>
       <CloneExperimentDialog open={dialogOpen} handleClose={handleDialogToggle} user={props?.user} />
       <ExplorationSpinalCordDialog open={explorationDialogOpen} handleClose={handleExplorationDialogToggle} />
+      <ShareExperimentDialog open={shareDialogOpen} handleClose={handleShareDialogToggle} />
+      <ShareMultipleExperimentDialog open={shareMultipleDialogOpen} handleClose={handleShareMultipleDialogToggle} />
     </Box>
   )
 };
