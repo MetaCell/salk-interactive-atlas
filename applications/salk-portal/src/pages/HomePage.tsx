@@ -60,21 +60,6 @@ export default (props: any) => {
         <div ref={myRef} id={EXPERIMENTS_HASH}>
           <ExperimentList heading={"My experiments"} description={"1 experiments"} type={EXPERIMENTS_HASH} handleExplorationDialogToggle={handleExplorationDialogToggle} infoIcon={false} />
         </div>
-        {/*<div ref={shared} id={SHARED_HASH}>*/}
-        {/*  <ExperimentList heading={"Shared with me"} description={"28 experiments"} type={SHARED_HASH} handleDialogToggle={handleDialogToggle} handleExplorationDialogToggle={handleExplorationDialogToggle} infoIcon={false} />*/}
-        {/*</div>*/}
-        {/*<div ref={salkteam} id={SALK_TEAM}>*/}
-        {/*  <ExperimentList heading={"Salk Institute Team"} description={"19 experiments"} type={SALK_TEAM} handleDialogToggle={handleDialogToggle}handleExplorationDialogToggle={handleExplorationDialogToggle} infoIcon={true} />*/}
-        {/*</div>*/}
-        {/*<div ref={acmeteam} id={ACME_TEAM}>*/}
-        {/*  <ExperimentList heading={"Acme Team"} description={"19 experiments"} type={ACME_TEAM} handleDialogToggle={handleDialogToggle} handleExplorationDialogToggle={handleExplorationDialogToggle} infoIcon={false}/>*/}
-        {/*</div>*/}
-        {/*<Box p={5}>*/}
-        {/*  <div ref={communityRef} id={COMMUNITY_HASH}>*/}
-        {/*    <Community handleDialogToggle={handleDialogToggle} handleExplorationDialogToggle={handleExplorationDialogToggle} />*/}
-        {/*  </div>*/}
-        {/*</Box>*/}
-
       </Box>
       <CloneExperimentDialog open={dialogOpen} handleClose={handleDialogToggle} user={props?.user} />
       <ExplorationSpinalCordDialog open={explorationDialogOpen} handleClose={handleExplorationDialogToggle} />
