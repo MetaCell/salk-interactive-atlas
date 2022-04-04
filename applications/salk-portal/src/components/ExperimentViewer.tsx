@@ -104,7 +104,13 @@ class ExperimentViewer extends Component {
 
     componentDidUpdate(prevProps: Readonly<{}>, prevState: Readonly<{}>, snapshot?: any) {
         // @ts-ignore
-        this.updatePopulations(!eqSet(prevProps.activeSubdivisions, this.props.activeSubdivisions))
+        this.updatePopulations(!eqSet(prevProps.activeSubdivisions, this.props.activeSubdivisions) ||
+            !eqSet(
+                // @ts-ignore
+                new Set(Object.keys(prevProps.activePopulations).map(pId => prevProps.activePopulations[pId].color)),
+                // @ts-ignore
+                new Set(Object.keys(this.props.activePopulations).map(pId => this.props.activePopulations[pId].color)))
+            )
     }
 
     updatePopulations(performCleanUpdate = false) {
