@@ -64,7 +64,6 @@ const useStyles = makeStyles({
 
         '& .population-entry': {
             display: 'flex',
-            justifyContent: 'space-between',
             alignItems: 'center',
             lineHeight: '0.938rem',
             fontWeight: 400,
@@ -72,6 +71,9 @@ const useStyles = makeStyles({
         },
 
         '& .population-label': {
+            display: 'flex',
+            flex: '1',
+            justifyContent: 'space-between',
             lineHeight: '0.938rem',
             fontWeight: 400,
             fontSize: '0.75rem',
@@ -292,10 +294,12 @@ const ExperimentSidebar = ({
                             />
                             {Object.keys(populations).map(pId =>
                                 <span className='population-entry'>
-                                    <span className='population-color' onClick={(event) => handlePopoverClick(event, pId)}>
+                                    <span className='population-color'
+                                          onClick={(event) => handlePopoverClick(event, pId)}>
                                         <Box style={{backgroundColor: populations[pId].color}} component="span"
-                                             className='square' />
-                                        <ArrowDropDownIcon fontSize='small' style={{opacity: POPULATION_ICONS_OPACITY}}/>
+                                             className='square'/>
+                                        <ArrowDropDownIcon fontSize='small'
+                                                           style={{opacity: POPULATION_ICONS_OPACITY}}/>
                                     </span>
                                     <Popover
                                         open={pId === selectedPopoverId}
@@ -310,11 +314,13 @@ const ExperimentSidebar = ({
                                             (color) => handlePopulationColorChange(pId, color)
                                         }/>
                                     </Popover>
-                                    <FormControlLabel key={pId} control={<Switch/>}
-                                                      label={<PopulationLabel labelText={populations[pId].name}/>}
-                                                      labelPlacement="start"
-                                                      onChange={() => handlePopulationSwitch(pId)}
-                                                      checked={populations[pId].selected}
+                                    <FormControlLabel
+                                        className={'population-label'}
+                                        key={pId} control={<Switch/>}
+                                        label={<PopulationLabel labelText={populations[pId].name}/>}
+                                        labelPlacement="start"
+                                        onChange={() => handlePopulationSwitch(pId)}
+                                        checked={populations[pId].selected}
                                     />
                                 </span>
                             )}
