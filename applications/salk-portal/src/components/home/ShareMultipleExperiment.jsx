@@ -4,15 +4,43 @@ import {
   makeStyles,
   FormControlLabel,
   Checkbox,
+  TextField
 } from "@material-ui/core";
 import Modal from "../common/BaseDialog";
 import CHECK_ICON from "../../assets/images/icons/checkbox.svg";
 import CHECKED_ICON from "../../assets/images/icons/checkbox-filled.svg";
 import { ShareExperimentTabs } from "../common/ExperimentDialogs/ShareExperimentTabs";
+import { headerBorderColor, headerBg, sidebarTextColor, secondaryColor } from "../../theme";
 
 const useStyles = makeStyles(() => ({
   checkboxGroup: {
     padding: '0.5rem 1rem 4.25rem 0.375rem',
+  },
+
+  searchExperiment: {
+    padding: '0 1rem',
+    boxShadow: `inset 0 -0.0625rem 0 ${headerBorderColor}`,
+    height: '2.75rem',
+    position: 'sticky',
+    top: 0,
+    backgroundColor: headerBg,
+    zIndex: 99,
+
+    '& .MuiInputBase-input': {
+      padding: 0,
+      height: '2.75rem',
+      fontWeight: 500,
+      fontSize: '0.75rem',
+      lineHeight: '1.0625rem',
+      letterSpacing: '0.005em',
+      color: secondaryColor,
+      '&:placeholder': {color: sidebarTextColor,},
+    },
+
+    '& .MuiInput-underline': {
+      '&::before': { display: 'none' },
+      '&::after': { display: 'none' },
+    },
   },
 }));
 
@@ -24,7 +52,7 @@ export const ShareMultipleExperimentDialog = (props) => {
   const handleChange = (event, newValue) => {
     setValue(newValue);
   };
-
+  const experiments = ["Exploration of the spinal cord", "Exploration of the spinal cord", "Exploration of the spinal cord"];
   return (
     <Modal
       dialogActions={!tabsView || (tabsView && value!== 0)}
@@ -36,53 +64,27 @@ export const ShareMultipleExperimentDialog = (props) => {
       title="Share multiple experiments"
     >
       {!tabsView ? (
-        <Box className={classes.checkboxGroup}>
-          <FormControlLabel
-            control={
-              <Checkbox
-                icon={<img src={CHECK_ICON} alt="" />}
-                checkedIcon={<img src={CHECKED_ICON} alt="" />}
-              />
+        <>
+          <Box className={classes.searchExperiment}>
+            <TextField fullWidth placeholder="Search for an experiment" />
+          </Box>
+          <Box className={classes.checkboxGroup}>
+            {
+              experiments.map((experiment, index) =>(
+                <FormControlLabel
+                  key={`${experiment}_${index}`}
+                  control={
+                    <Checkbox
+                      icon={<img src={CHECK_ICON} alt="" />}
+                      checkedIcon={<img src={CHECKED_ICON} alt="" />}
+                    />
+                  }
+                  label={experiment}
+                />
+              ))
             }
-            label="Exploration of the spinal cord"
-          />
-          <FormControlLabel
-            control={
-              <Checkbox
-                icon={<img src={CHECK_ICON} alt="" />}
-                checkedIcon={<img src={CHECKED_ICON} alt="" />}
-              />
-            }
-            label="Exploration of the spinal cord"
-          />
-          <FormControlLabel
-            control={
-              <Checkbox
-                icon={<img src={CHECK_ICON} alt="" />}
-                checkedIcon={<img src={CHECKED_ICON} alt="" />}
-              />
-            }
-            label="Exploration of the spinal cord"
-          />
-          <FormControlLabel
-            control={
-              <Checkbox
-                icon={<img src={CHECK_ICON} alt="" />}
-                checkedIcon={<img src={CHECKED_ICON} alt="" />}
-              />
-            }
-            label="Exploration of the spinal cord"
-          />
-          <FormControlLabel
-            control={
-              <Checkbox
-                icon={<img src={CHECK_ICON} alt="" />}
-                checkedIcon={<img src={CHECKED_ICON} alt="" />}
-              />
-            }
-            label="Exploration of the spinal cord"
-          />
-        </Box>
+          </Box>
+        </>
       ) : (
          <ShareExperimentTabs value={value} handleChange={handleChange}/>
       )}
