@@ -7,6 +7,7 @@ from keycloak.exceptions import KeycloakGetError
 
 from cloudharness.auth.keycloak import AuthClient
 from cloudharness.middleware import get_authentication_token
+from cloudharness_django.services import get_user_service
 
 
 class AutomaticLoginUserMiddleware:
@@ -22,7 +23,10 @@ class AutomaticLoginUserMiddleware:
         if self.ac and get_authentication_token():
             try:
                 kc_user = self.ac.get_current_user()
-                user = User.objects.get(member__kc_id=kc_user["id"])
+                try:
+                    user = User.objects.get(member__kc_id=kc_user["id"])
+                except User.DoesNotExist:
+                    user = get_user_service().sync_kc_user(kc_user)
                 if user:
                     # auto login, set the user
                     request.user = user

@@ -199,7 +199,7 @@ const Sidebar = (props) => {
             <img src={EXP} alt="experiments" />
           </ListItemIcon>
           <ListItemText primary="My experiments" />
-          <Badge badgeContent={4} />
+          <Badge badgeContent={1} />
         </ListItemLink>
 
         <ListItemLink href="#shared" onClick={() => props.executeScroll(SHARED_HASH)} selected={hash === `#${SHARED_HASH}`}>
@@ -207,7 +207,6 @@ const Sidebar = (props) => {
             <img src={SHARED} alt="Shared" />
           </ListItemIcon>
           <ListItemText primary="Shared with me" />
-          <Badge badgeContent={4} />
         </ListItemLink>
 
         <ListItem button onClick={handleClick}>
@@ -221,12 +220,10 @@ const Sidebar = (props) => {
           <List component="div" disablePadding>
             <ListItemLink href="#salkteam" onClick={() => props.executeScroll(SALK_TEAM)} selected={hash === `#${SALK_TEAM}`}>
               <ListItemText primary="Salk Institute Team" />
-              <Badge badgeContent={4} />
             </ListItemLink>
 
             <ListItemLink href="#acmeteam" onClick={() => props.executeScroll(ACME_TEAM)} selected={hash === `#${ACME_TEAM}`}>
               <ListItemText primary="Acme Team" />
-              <Badge badgeContent={4} />
             </ListItemLink>
           </List>
         </Collapse>
@@ -241,7 +238,6 @@ const Sidebar = (props) => {
             <img src={COMMUNITY} alt="Community" />
           </ListItemIcon>
           <ListItemText primary="Community" />
-          <Badge badgeContent={4} />
         </ListItemLink>
         <ListItemLink href="#simple-list">
           <ListItemIcon>

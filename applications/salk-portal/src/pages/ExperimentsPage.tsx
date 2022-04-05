@@ -98,6 +98,7 @@ const ExperimentsPage = () => {
     const [selectedAtlas, setSelectedAtlas] = useState(getDefaultAtlas());
     const [subdivisions, setSubdivisions] = useState(getSubdivisions(selectedAtlas));
     const [populations, setPopulations] = useState({});
+    const [widgetsReady, setWidgetsReady] = useState(false)
 
     const dispatch = useDispatch();
     const [LayoutComponent, setLayoutManager] = useState(undefined);
@@ -159,6 +160,7 @@ const ExperimentsPage = () => {
             setPopulations(getPopulations(experiment, selectedAtlas))
             dispatch(addWidget(CanvasWidget(selectedAtlas, new Set(), {})));
             dispatch(addWidget(ElectrophysiologyWidget));
+            setWidgetsReady(true)
         }
     }, [experiment])
 
@@ -173,7 +175,10 @@ const ExperimentsPage = () => {
                 obj[key] = populations[key];
                 return obj;
             }, {});
-        dispatch(updateWidget(CanvasWidget(selectedAtlas, subdivisionsSet, activePopulations)))
+
+        if (widgetsReady) {
+            dispatch(updateWidget(CanvasWidget(selectedAtlas, subdivisionsSet, activePopulations)))
+        }
     }, [subdivisions, populations, selectedAtlas])
 
     useEffect(() => {
