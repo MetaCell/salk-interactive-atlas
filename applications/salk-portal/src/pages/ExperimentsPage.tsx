@@ -92,6 +92,7 @@ const getPopulations = (e: Experiment, sa: AtlasChoice) => {
  */
 const ExperimentsPage = () => {
 
+    const api = workspaceService.getApi()
     const classes = useStyles();
     const store = useStore();
     const [experiment, setExperiment] = useState(null)
@@ -137,12 +138,24 @@ const ExperimentsPage = () => {
         setPopulations(nextPopulations)
     };
 
+    const handlePopulationColorChange = async (id: string, color: string) => {
+        // @ts-ignore
+        await api.partialUpdatePopulation(id, {color})
+        // @ts-ignore
+        const nextPopulations = {...populations};
+        // @ts-ignore
+        nextPopulations[id] = {...nextPopulations[id], color}
+        setPopulations(nextPopulations)
+    }
+
+
     useEffect(() => {
         const fetchData = async () => {
-            const response = await workspaceService.getApi().retrieveExperiment(MOCKED_ID)
+            const response = await api.retrieveExperiment(MOCKED_ID)
             const data = response.data;
             const cells = await Promise.all(data.populations.map(async (p) => {
-                const cellsFile = await workspaceService.getApi().cellsPopulation(`${p.id}`);
+                const cellsFile = await api.cellsPopulation(`${p.id}`);
+                // @ts-ignore
                 return cellsFile.data.split('\r\n').map(csv => new Cell(csv));
             }));
             data.populations.forEach((p, i) => {
@@ -197,6 +210,7 @@ const ExperimentsPage = () => {
                      handlePopulationSwitch={handlePopulationSwitch}
                      handleShowAllSubdivisions={handleShowAllSubdivisions}
                      handleShowAllPopulations={handleShowAllPopulations}
+                     handlePopulationColorChange={handlePopulationColorChange}
             />
             <Box className={classes.layoutContainer}>
                 {LayoutComponent === undefined ? <CircularProgress/> : <LayoutComponent/>}

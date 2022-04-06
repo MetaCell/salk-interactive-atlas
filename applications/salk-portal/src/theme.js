@@ -151,6 +151,20 @@ const theme = {
     }
   },
   overrides: {
+    MuiPopover: {
+      paper: {
+        '& .picker': {
+          '& .chrome-picker ': {
+            background:  `${headerBorderColor} !important`,
+            '& input': {
+              backgroundColor:  `${headerBorderColor} !important`,
+              color: 'white !important',
+              boxShadow: 'none !important'
+            },
+          },
+        },
+        },
+      },
 
     MuiInput: {
       input: {
