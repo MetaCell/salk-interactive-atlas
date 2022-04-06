@@ -209,7 +209,7 @@ const useStyles = makeStyles(() => ({
 
 }));
 
-const ExperimentCard = ({experiment, type, handleDialogToggle, handleExplorationDialogToggle}) => {
+const ExperimentCard = ({experiment, type, handleDialogToggle, handleExplorationDialogToggle, handleShareDialogToggle, handleShareMultipleDialogToggle}) => {
   const classes = useStyles();
   const history = useHistory()
   const handleClick = () => {
@@ -257,10 +257,10 @@ const ExperimentCard = ({experiment, type, handleDialogToggle, handleExploration
           <ListItem>
             <ListItemText primary="Share" secondary={<ArrowRightIcon />} />
             <List component="nav" aria-label="secondary mailbox folders">
-              <ListItem button>
+              <ListItem button onClick={handleShareDialogToggle}>
                 <ListItemText primary="Share this experiment" />
               </ListItem>
-              <ListItem button>
+              <ListItem button onClick={handleShareMultipleDialogToggle}>
                 <ListItemText primary="Share multiple experiments" />
               </ListItem>
             </List>
