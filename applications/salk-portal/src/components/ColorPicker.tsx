@@ -7,7 +7,7 @@ const ColorPicker = ({selectedColor, handleColorChange}) => {
     const [background, setBackground] = useState(selectedColor);
 
     const onChangeCompleteHandler = async (color: ColorResult) => {
-        await handleColorChange(color, color.rgb.a)
+        await handleColorChange(color.hex, color.rgb.a)
         setBackground(color.rgb)
     }
 

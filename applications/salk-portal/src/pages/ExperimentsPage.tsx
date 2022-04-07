@@ -144,7 +144,7 @@ const ExperimentsPage = () => {
         // @ts-ignore
         const nextPopulations = {...populations};
         // @ts-ignore
-        nextPopulations[id] = {...nextPopulations[id], color}
+        nextPopulations[id] = {...nextPopulations[id], color, opacity}
         setPopulations(nextPopulations)
     }
 

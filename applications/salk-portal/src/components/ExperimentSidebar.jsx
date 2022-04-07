@@ -190,8 +190,8 @@ const ExperimentSidebar = ({
     };
 
     const getRGBAColor = (pId) => {
-        const {hex, opacity} = populations[pId]
-        return getRGBAFromHexAlpha(hex, opacity)
+        const {color, opacity} = populations[pId]
+        return getRGBAFromHexAlpha(color, opacity)
     }
 
 

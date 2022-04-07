@@ -38,5 +38,5 @@ export function getRGBAFromHexAlpha(hex: string, opacity: number){
 }
 
 export function getRGBAString(rgba: { r: number; g: number; b: number; a: number; }){
-   return `rgba(${rgba.r},${rgba.g},${rgba.b},${rgba.a}`
+   return `rgba(${rgba.r},${rgba.g},${rgba.b},${rgba.a})`
 }
