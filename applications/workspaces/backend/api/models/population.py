@@ -1,3 +1,4 @@
+from django.core.validators import MinValueValidator, MaxValueValidator
 from django.db import models
 
 from .atlas import AtlasesChoice
@@ -11,7 +12,7 @@ class Population(models.Model):
     )
     name = models.CharField(max_length=100, unique=True)
     color = models.CharField(max_length=7)  # hex color
-
+    opacity = models.FloatField(validators=[MinValueValidator(0.0), MaxValueValidator(1.0)], default=1.0)
     cells = models.FileField(upload_to='populations')
 
     @staticmethod
