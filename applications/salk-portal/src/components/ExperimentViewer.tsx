@@ -88,7 +88,6 @@ class ExperimentViewer extends Component {
     // @ts-ignore
     constructor(props) {
         super(props);
-        const instancesIds = this.getInstancesToShow()
         this.scene = null
         this.populationsMap = {}
         this.onMount = this.onMount.bind(this)
