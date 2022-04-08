@@ -24,7 +24,7 @@ import ADD from "../assets/images/icons/add.svg";
 import UP_ICON from "../assets/images/icons/up.svg";
 import POPULATION from "../assets/images/icons/population.svg";
 import {atlasMap} from "../utilities/constants";
-import {areAllSelected} from "../utilities/functions";
+import {areAllSelected, getRGBAFromHexAlpha, getRGBAString} from "../utilities/functions";
 import ColorPicker from "./ColorPicker";
 
 const useStyles = makeStyles({
@@ -189,6 +189,11 @@ const ExperimentSidebar = ({
         setShrink((prevState) => !prevState)
     };
 
+    const getRGBAColor = (pId) => {
+        const {color, opacity} = populations[pId]
+        return getRGBAFromHexAlpha(color, opacity)
+    }
+
 
     const sidebarClass = `${classes.sidebar} scrollbar ${shrink ? `${classes.shrink}` : ``}`;
     const PopulationLabel = ({labelText}) => {
@@ -296,7 +301,7 @@ const ExperimentSidebar = ({
                                 <span className='population-entry'>
                                     <span className='population-color'
                                           onClick={(event) => handlePopoverClick(event, pId)}>
-                                        <Box style={{backgroundColor: populations[pId].color}} component="span"
+                                        <Box style={{backgroundColor: getRGBAString(getRGBAColor(pId))}} component="span"
                                              className='square'/>
                                         <ArrowDropDownIcon fontSize='small'
                                                            style={{opacity: POPULATION_ICONS_OPACITY}}/>
@@ -310,8 +315,8 @@ const ExperimentSidebar = ({
                                             horizontal: 'left',
                                         }}
                                     >
-                                        <ColorPicker selectedColor={populations[pId].color} handleColorChange={
-                                            (color) => handlePopulationColorChange(pId, color)
+                                        <ColorPicker selectedColor={getRGBAColor(pId)} handleColorChange={
+                                            (color, opacity) => handlePopulationColorChange(pId, color, opacity)
                                         }/>
                                     </Popover>
                                     <FormControlLabel

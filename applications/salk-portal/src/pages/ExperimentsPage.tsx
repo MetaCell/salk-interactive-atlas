@@ -138,13 +138,13 @@ const ExperimentsPage = () => {
         setPopulations(nextPopulations)
     };
 
-    const handlePopulationColorChange = async (id: string, color: string) => {
+    const handlePopulationColorChange = async (id: string, color: string, opacity: number) => {
         // @ts-ignore
-        await api.partialUpdatePopulation(id, {color})
+        await api.partialUpdatePopulation(id, {color, opacity})
         // @ts-ignore
         const nextPopulations = {...populations};
         // @ts-ignore
-        nextPopulations[id] = {...nextPopulations[id], color}
+        nextPopulations[id] = {...nextPopulations[id], color, opacity}
         setPopulations(nextPopulations)
     }
 

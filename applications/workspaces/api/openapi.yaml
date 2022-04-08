@@ -1203,6 +1203,10 @@ components:
               cells:
                 type: string
                 format: binary
+              opacity:
+                type: number
+                maximum: 1.0
+                minimum: 0.0
             required:
             - name
             - color
@@ -1248,6 +1252,10 @@ components:
         cells:
           type: string
           format: binary
+        opacity:
+          type: number
+          maximum: 1.0
+          minimum: 0.0
       required:
       - name
       - color

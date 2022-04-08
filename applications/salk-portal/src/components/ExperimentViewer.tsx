@@ -81,6 +81,10 @@ function mapToCanvasData(data: Set<string>[]) {
     ))
 }
 
+const getColorOpacityPair = (color: string, opacity: number) => {
+    return `${color}-${opacity}`
+}
+
 class ExperimentViewer extends Component {
     private scene: THREE.Scene;
     private readonly populationsMap: {};
@@ -88,7 +92,6 @@ class ExperimentViewer extends Component {
     // @ts-ignore
     constructor(props) {
         super(props);
-        const instancesIds = this.getInstancesToShow()
         this.scene = null
         this.populationsMap = {}
         this.onMount = this.onMount.bind(this)
@@ -103,14 +106,26 @@ class ExperimentViewer extends Component {
     }
 
     componentDidUpdate(prevProps: Readonly<{}>, prevState: Readonly<{}>, snapshot?: any) {
-        // @ts-ignore
-        this.updatePopulations(!eqSet(prevProps.activeSubdivisions, this.props.activeSubdivisions) ||
-            !eqSet(
+        this.updatePopulations(
+            // @ts-ignore
+            !eqSet(prevProps.activeSubdivisions, this.props.activeSubdivisions) || !eqSet(
                 // @ts-ignore
-                new Set(Object.keys(prevProps.activePopulations).map(pId => prevProps.activePopulations[pId].color)),
+                new Set(Object.keys(prevProps.activePopulations)
+                    .map(pId => getColorOpacityPair(
+                        // @ts-ignore
+                        prevProps.activePopulations[pId].color,
+                        // @ts-ignore
+                        prevProps.activePopulations[pId].opacity)
+                    )),
                 // @ts-ignore
-                new Set(Object.keys(this.props.activePopulations).map(pId => this.props.activePopulations[pId].color)))
-            )
+                new Set(Object.keys(this.props.activePopulations)
+                    .map(pId => getColorOpacityPair(
+                        // @ts-ignore
+                        this.props.activePopulations[pId].color,
+                        // @ts-ignore
+                        this.props.activePopulations[pId].opacity)
+                    ))
+            ))
     }
 
     updatePopulations(performCleanUpdate = false) {
@@ -162,7 +177,9 @@ class ExperimentViewer extends Component {
         const geometry = new THREE.SphereGeometry(1, 32, 16);
         const dummy = new THREE.Object3D();
         const position = new THREE.Vector3();
-        const material = new THREE.MeshBasicMaterial({color: population.color, transparent: true, opacity: 0.5});
+        const material = new THREE.MeshBasicMaterial(
+            {color: population.color, transparent: true, opacity: population.opacity}
+        );
         const mesh = new THREE.InstancedMesh(geometry, material, population.cells.length);
         mesh.frustumCulled = false
         for (let i = 0; i < population.cells.length; i++) {
