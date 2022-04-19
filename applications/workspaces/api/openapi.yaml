@@ -898,6 +898,27 @@ paths:
           description: ''
       tags:
       - api
+  /api/experiments/density_map/:
+    post:
+      operationId: retrieveDensityMapExperiment
+      description: 'This viewset automatically provides `list`, `create`, `retrieve`,
+
+        `update` and `destroy` actions.'
+      parameters: []
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/DensityMap'
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DensityMap'
+          description: ''
+      tags:
+      - api
   /api/experiments/{id}/tag/:
     post:
       operationId: addTagExperiment
@@ -1197,8 +1218,8 @@ components:
                 type: integer
               atlas:
                 enum:
-                - slk10
-                - aln20
+                - salk_cord_10um
+                - allen_cord_20um
                 type: string
               cells:
                 type: string
@@ -1246,8 +1267,8 @@ components:
           type: integer
         atlas:
           enum:
-          - slk10
-          - aln20
+          - salk_cord_10um
+          - allen_cord_20um
           type: string
         cells:
           type: string
@@ -1364,6 +1385,29 @@ components:
           format: binary
       required:
       - avatar
+    DensityMap:
+      type: object
+      properties:
+        atlas:
+          type: string
+        cells:
+          type: array
+          items:
+            type: object
+            properties:
+              x:
+                type: number
+              y:
+                type: number
+              z:
+                type: number
+            required:
+            - x
+            - y
+            - z
+          readOnly: true
+      required:
+      - atlas
     ExperimentFileUpload:
       type: object
       properties:

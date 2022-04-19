@@ -1,5 +1,5 @@
 # ARG MNP_UI
-ARG CLOUDHARNESS_BASE
+ARG CLOUDHARNESS_BASE_DEBIAN
 
 # FROM $MNP_UI as frontend
 
@@ -15,7 +15,7 @@ ARG CLOUDHARNESS_BASE
 
 #####
 
-FROM $CLOUDHARNESS_BASE
+FROM $CLOUDHARNESS_BASE_DEBIAN
 
 ENV MODULE_NAME=workspaces
 ENV PORT=8080
@@ -24,14 +24,17 @@ ENV PRODUCTION=true
 ENV APP_DIR=/usr/src/app
 
 WORKDIR ${APP_DIR}/..
+RUN apt update
+
 COPY cloudharness-django ./cloudharness-django
-RUN  apk add jpeg-dev zlib-dev git && \
-     python3 -m pip install --upgrade pip && \
+RUN  apt install libjpeg-dev zlib1g-dev git -y
+RUN  python3 -m pip install --upgrade pip && \
      python3 -m pip install -e cloudharness-django --no-cache-dir --upgrade
 
 WORKDIR ${APP_DIR}
 COPY backend/requirements.txt .
 RUN  python3 -m pip install -r requirements.txt --no-cache-dir --upgrade
+COPY local-atlas/salk_cord_10um_v1.0 /root/.brainglobe/salk_cord_10um_v1.0
 
 COPY backend ${APP_DIR}
 RUN python3 -m pip install -e . && \

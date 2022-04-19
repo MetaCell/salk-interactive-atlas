@@ -8,7 +8,7 @@ from .experiment import Experiment
 class Population(models.Model):
     experiment = models.ForeignKey(Experiment, on_delete=models.DO_NOTHING)
     atlas = models.CharField(
-        max_length=5, choices=AtlasesChoice.choices, default=AtlasesChoice.SLK10
+        max_length=100, choices=AtlasesChoice.choices, default=AtlasesChoice.SLK10
     )
     name = models.CharField(max_length=100, unique=True)
     color = models.CharField(max_length=7)  # hex color

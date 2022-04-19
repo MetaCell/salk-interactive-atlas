@@ -1,4 +1,6 @@
 import logging
+import json
+
 
 from dry_rest_permissions.generics import DRYPermissions
 from rest_framework import status, viewsets
@@ -6,14 +8,14 @@ from rest_framework.decorators import action
 from rest_framework.parsers import MultiPartParser
 from rest_framework.response import Response
 
-from api.models import Experiment, Tag
+from api.helpers.density_map import generate_density_map
+from api.models import Experiment
 from api.serializers import (
     ExperimentFileUploadSerializer,
     ExperimentSerializer,
-    TagSerializer,
+    TagSerializer, DensityMapSerializer,
 )
 from api.services import ExperimentService
-
 
 log = logging.getLogger("__name__")
 
@@ -30,6 +32,7 @@ class ExperimentViewSet(viewsets.ModelViewSet):
     custom_serializer_map = {
         "upload_file": ExperimentFileUploadSerializer,
         "add_tag": TagSerializer,
+        "retrieve_density_map": DensityMapSerializer,
     }
 
     def get_serializer_class(self):
@@ -104,3 +107,11 @@ class ExperimentViewSet(viewsets.ModelViewSet):
         experiment = serializer.save(
             owner=self.request.user,
         )
+
+    @action(detail=False, methods=["post"], url_path="density_map", url_name="get_density_map")
+    def retrieve_density_map(self, request):
+        atlas = request.data.get("atlas")
+        # TODO: remove json deserialization
+        cells = json.loads(request.data.get("cells")) 
+        density_map = generate_density_map(atlas, cells)
+        return Response(density_map)

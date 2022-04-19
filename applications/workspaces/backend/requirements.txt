@@ -5,3 +5,5 @@ whitenoise==6.0.0
 gunicorn==20.1.0
 django-dry-rest-permissions==1.2.0
 Pillow==9.0.1
+bg-atlasapi==1.0.2
+git+https://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@github.com/afonsobspinto/cordmap.git@salk_test

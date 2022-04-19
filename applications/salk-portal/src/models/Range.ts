@@ -11,4 +11,11 @@ export default class Range{
         return num >= this.start && num <= this.end
     }
 
+    public setStart(start: number){
+        this.start = start
+    }
+    public setEnd(end: number){
+        this.end = end
+    }
+
 }

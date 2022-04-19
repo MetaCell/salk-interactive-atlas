@@ -17,10 +17,11 @@ import Sidebar from "../components/ExperimentSidebar";
 // @ts-ignore
 import {AtlasChoice} from "../utilities/constants"
 import {getAtlas} from "../service/AtlasService";
-import {Experiment, ExperimentPopulations} from "../apiclient/workspaces";
-import {areAllSelected} from "../utilities/functions";
+import {Experiment, ExperimentPopulations, Population} from "../apiclient/workspaces";
+import {areAllSelected, getAllowedRanges} from "../utilities/functions";
 import workspaceService from "../service/WorkspaceService";
 import Cell from "../models/Cell";
+import {CanvasWidget, DensityWidget, ElectrophysiologyWidget} from "../widgets";
 
 
 const useStyles = makeStyles({
@@ -45,32 +46,6 @@ const useStyles = makeStyles({
 });
 
 const MOCKED_ID = "1"
-
-export const CanvasWidget = (selectedAtlas: AtlasChoice, activeSubdivisions: Set<string>, activePopulations: any) => {
-    return {
-        id: 'canvasWidget',
-        name: "Spinal Cord Atlas",
-        component: "experimentViewer",
-        panelName: "leftPanel",
-        enableClose: false,
-        status: WidgetStatus.ACTIVE,
-        config: {
-            selectedAtlas,
-            activeSubdivisions,
-            activePopulations,
-        }
-    }
-};
-
-export const ElectrophysiologyWidget = {
-    id: 'epWidget',
-    name: "Electrophysiology",
-    component: "electrophysiologyViewer",
-    panelName: "rightPanel",
-    enableClose: false,
-    status: WidgetStatus.ACTIVE,
-};
-
 
 const getDefaultAtlas = () => AtlasChoice.slk10
 const getSubdivisions = (sa: AtlasChoice) => {
@@ -99,6 +74,7 @@ const ExperimentsPage = () => {
     const [selectedAtlas, setSelectedAtlas] = useState(getDefaultAtlas());
     const [subdivisions, setSubdivisions] = useState(getSubdivisions(selectedAtlas));
     const [populations, setPopulations] = useState({});
+    const [densityMapValue, setDensityMapValue] = useState(null);
     const [widgetsReady, setWidgetsReady] = useState(false)
 
     const dispatch = useDispatch();
@@ -138,7 +114,11 @@ const ExperimentsPage = () => {
         setPopulations(nextPopulations)
     };
 
-    const handlePopulationColorChange = async (id: string, color: string, opacity: number) => {
+    const handleDensityMapChange = (subSubSegmentId: string) => {
+        setDensityMapValue(subSubSegmentId)
+    };
+
+    const handlePopulationColorChange = async (id: string, color: string) => {
         // @ts-ignore
         await api.partialUpdatePopulation(id, {color, opacity})
         // @ts-ignore
@@ -147,7 +127,6 @@ const ExperimentsPage = () => {
         nextPopulations[id] = {...nextPopulations[id], color, opacity}
         setPopulations(nextPopulations)
     }
-
 
     useEffect(() => {
         const fetchData = async () => {
@@ -173,6 +152,7 @@ const ExperimentsPage = () => {
             setPopulations(getPopulations(experiment, selectedAtlas))
             dispatch(addWidget(CanvasWidget(selectedAtlas, new Set(), {})));
             dispatch(addWidget(ElectrophysiologyWidget));
+            dispatch(addWidget(DensityWidget(Object.keys(subdivisions), [], selectedAtlas, densityMapValue, handleDensityMapChange)))
             setWidgetsReady(true)
         }
     }, [experiment])
@@ -191,6 +171,9 @@ const ExperimentsPage = () => {
 
         if (widgetsReady) {
             dispatch(updateWidget(CanvasWidget(selectedAtlas, subdivisionsSet, activePopulations)))
+            dispatch(updateWidget(DensityWidget(Object.keys(subdivisions), Object.values(activePopulations),
+                selectedAtlas, densityMapValue, handleDensityMapChange)
+            ))
         }
     }, [subdivisions, populations, selectedAtlas])
 

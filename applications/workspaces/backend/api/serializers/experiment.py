@@ -2,11 +2,21 @@ from cloudharness_django.serializers import GroupSerializer
 from rest_framework import serializers
 
 from api.models import Experiment
+from .cell import CellSerializer
 
 from .collaborator import CollaboratorInfoSerializer
 from .population import PopulationSerializer
 from .tag import TagSerializer
 from .user import UserTeamSerializer
+
+
+class DensityMapSerializer(serializers.Serializer):
+    atlas = serializers.CharField()
+    cells = CellSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = Experiment
+        fields = ()
 
 
 class ExperimentFileUploadSerializer(serializers.Serializer):

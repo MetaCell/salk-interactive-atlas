@@ -21,7 +21,7 @@ harness:
     path: /k8s/ready
   dependencies:
     build:
-    - cloudharness-base
+    - cloudharness-base-debian
     hard:
     - accounts
     - events
