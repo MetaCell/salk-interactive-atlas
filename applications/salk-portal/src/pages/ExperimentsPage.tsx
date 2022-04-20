@@ -152,7 +152,7 @@ const ExperimentsPage = () => {
             setPopulations(getPopulations(experiment, selectedAtlas))
             dispatch(addWidget(CanvasWidget(selectedAtlas, new Set(), {})));
             dispatch(addWidget(ElectrophysiologyWidget));
-            dispatch(addWidget(DensityWidget(Object.keys(subdivisions), [], selectedAtlas, densityMapValue, handleDensityMapChange)))
+            dispatch(addWidget(DensityWidget(MOCKED_ID, Object.keys(subdivisions), [], selectedAtlas, densityMapValue, handleDensityMapChange)))
             setWidgetsReady(true)
         }
     }, [experiment])
@@ -171,7 +171,7 @@ const ExperimentsPage = () => {
 
         if (widgetsReady) {
             dispatch(updateWidget(CanvasWidget(selectedAtlas, subdivisionsSet, activePopulations)))
-            dispatch(updateWidget(DensityWidget(Object.keys(subdivisions), Object.values(activePopulations),
+            dispatch(updateWidget(DensityWidget(MOCKED_ID, Object.keys(subdivisions), Object.values(activePopulations),
                 selectedAtlas, densityMapValue, handleDensityMapChange)
             ))
         }

@@ -89,3 +89,10 @@ class Experiment(models.Model):
                 > 0
             )
         )
+
+    @staticmethod
+    def has_retrieve_density_map_permission(request):
+        return True
+
+    def has_object_retrieve_density_map_permission(self, request):
+        return self.has_object_read_permission(request)

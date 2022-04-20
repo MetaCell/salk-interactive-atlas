@@ -29,7 +29,7 @@ export const ElectrophysiologyWidget = {
     status: WidgetStatus.ACTIVE,
 };
 
-export const DensityWidget = (subdivisions: string[], activePopulations: Population[], selectedAtlas: AtlasChoice,
+export const DensityWidget = (experimentId: string, subdivisions: string[], activePopulations: Population[], selectedAtlas: AtlasChoice,
                               selectedValue: string, handleDensityMapChange: (value: string) => void) => {
     return {
         id: 'densWidget',
@@ -39,6 +39,7 @@ export const DensityWidget = (subdivisions: string[], activePopulations: Populat
         enableClose: false,
         status: WidgetStatus.ACTIVE,
         config: {
+            experimentId,
             subdivisions,
             activePopulations,
             selectedAtlas,

@@ -12,10 +12,8 @@ import {
 import ArrowForwardIosIcon from '@material-ui/icons/ArrowForwardIos';
 // @ts-ignore
 import CORD from "../assets/images/cord.png";
-import Cell from "../models/Cell";
 import {Population} from "../apiclient/workspaces";
 import {AtlasChoice} from "../utilities/constants";
-import {getAtlas} from "../service/AtlasService";
 import workspaceService from "../service/WorkspaceService";
 
 const useStyles = makeStyles({
@@ -82,37 +80,13 @@ const RadioButton = ({onChange, isChecked, label}) => {
     );
 }
 
-const getSubSubdivisionRange = (selectedAtlas: AtlasChoice, selectedSubSubdivision: string) => {
-    const atlas = getAtlas(selectedAtlas)
-    const [subdivisionId, part] = selectedSubSubdivision.split('-')
-    const range = atlas.segments.find(as => as.id === subdivisionId).range
-    if (part === ROSTRAL) {
-        range.setEnd(range.end / 2)
-    } else {
-        range.setStart(range.end / 2)
-    }
-    return range
-}
-
-const getActiveCells = (activePopulations: Population[], selectedAtlas: AtlasChoice, selectedSubSubdivision: string) => {
-    const activeCells: Cell[] = []
-    const range = getSubSubdivisionRange(selectedAtlas, selectedSubSubdivision)
-    for (const pop of activePopulations) {
-        for (const cell of pop.cells) {
-            if (range.includes(cell.x)) {
-                activeCells.push(cell)
-            }
-        }
-    }
-    return activeCells
-}
-
 const DensityMap = (props: {
+    experimentId: string,
     subdivisions: string[], activePopulations: Population[],
     selectedAtlas: AtlasChoice, selectedValue: string, onChange: (value: string) => void
 }) => {
     const api = workspaceService.getApi()
-    const {activePopulations, selectedAtlas, onChange} = props
+    const {experimentId, activePopulations, selectedAtlas, onChange} = props
     const [selectedValue, setSelectedValue] = React.useState(props.selectedValue);
     const [densityRequest, setDensityRequest] = React.useState({
         loading: false,
@@ -126,8 +100,7 @@ const DensityMap = (props: {
 
     useEffect(() => {
         const fetchData = async () => {
-            const cells = getActiveCells(activePopulations, selectedAtlas, selectedValue);
-            const response = await api.retrieveDensityMapExperiment(selectedAtlas, cells)
+            const response = await api.retrieveDensityMapExperiment(experimentId, selectedAtlas, selectedValue, activePopulations.map(p => p.id))
             const data = response.data;
             setDensityRequest({loading: false, data})
         }
@@ -136,7 +109,7 @@ const DensityMap = (props: {
         }
         setDensityRequest({loading: true, data: null})
         fetchData()
-            .catch(console.error);
+            .catch(() => setDensityRequest({loading: false, data: null}));
 
     }, [selectedValue, activePopulations, selectedAtlas])
 
@@ -147,7 +120,9 @@ const DensityMap = (props: {
     const gridStyle = {className: `${classes.container} ${classes.border}`, container: true, columns: 2}
     const content = selectedValue === null ? <Typography>{NO_SUBREGION}</Typography> :
         activePopulations.length === 0 ? <Typography>{NO_POPULATIONS}</Typography> :
-            <p className={classes.placeholder}>Density Placeholder</p>
+            densityRequest.loading ? <p className={classes.placeholder}>Density Map Loading... </p> :
+                densityRequest.data ? <img className={classes.placeholder} src={densityRequest.data} alt={"Density Map"}/> :
+                    null
     return (
         <Box sx={boxStyle}>
             <Grid {...gridStyle}>
