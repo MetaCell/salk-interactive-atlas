@@ -46,7 +46,8 @@ def get_cells(bg_atlas, subdivision, populations_ids):
 
 def generate_density_map(atlas, subdivision, populations):
     bg_atlas = BrainGlobeAtlas(atlas, check_latest=False)
-    cells = get_cells(bg_atlas, subdivision, populations)
+    populations_ids = [int(i) for i in populations.split(',')]
+    cells = get_cells(bg_atlas, subdivision, populations_ids)
     depth = int(cells[0][0])
     save_prob_map = False
     output_directory = 'N/A'
