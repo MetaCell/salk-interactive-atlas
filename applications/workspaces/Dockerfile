@@ -31,10 +31,14 @@ RUN  apt install libjpeg-dev zlib1g-dev git -y
 RUN  python3 -m pip install --upgrade pip && \
      python3 -m pip install -e cloudharness-django --no-cache-dir --upgrade
 
+COPY cordmap ./cordmap
+RUN python3 -m pip install -e cordmap --no-cache-dir --upgrade
+
 WORKDIR ${APP_DIR}
 COPY backend/requirements.txt .
 RUN  python3 -m pip install -r requirements.txt --no-cache-dir --upgrade
-COPY local-atlas/salk_cord_10um_v1.0 /root/.brainglobe/salk_cord_10um_v1.0
+
+ADD  local-atlas/salk_cord_10um_v1.0.tar.gz /root/.brainglobe/
 
 COPY backend ${APP_DIR}
 RUN python3 -m pip install -e . && \
