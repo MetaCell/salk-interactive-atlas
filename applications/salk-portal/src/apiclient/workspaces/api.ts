@@ -80,10 +80,16 @@ export interface DensityMap {
     'atlas': string;
     /**
      * 
-     * @type {Array<DensityMapCells>}
+     * @type {string}
      * @memberof DensityMap
      */
-    'cells'?: Array<DensityMapCells>;
+    'subdivision': string;
+    /**
+     * 
+     * @type {Array<number>}
+     * @memberof DensityMap
+     */
+    'populations': Array<number>;
 }
 /**
  * 
@@ -1956,15 +1962,24 @@ export const ApiApiAxiosParamCreator = function (configuration?: Configuration) 
         },
         /**
          * This viewset automatically provides `list`, `create`, `retrieve`, `update` and `destroy` actions.
+         * @param {string} id A unique integer value identifying this experiment.
          * @param {string} atlas 
-         * @param {Array<DensityMapCells>} [cells] 
+         * @param {string} subdivision 
+         * @param {Array<number>} populations 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        retrieveDensityMapExperiment: async (atlas: string, cells?: Array<DensityMapCells>, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+        retrieveDensityMapExperiment: async (id: string, atlas: string, subdivision: string, populations: Array<number>, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'id' is not null or undefined
+            assertParamExists('retrieveDensityMapExperiment', 'id', id)
             // verify required parameter 'atlas' is not null or undefined
             assertParamExists('retrieveDensityMapExperiment', 'atlas', atlas)
-            const localVarPath = `/api/experiments/density_map/`;
+            // verify required parameter 'subdivision' is not null or undefined
+            assertParamExists('retrieveDensityMapExperiment', 'subdivision', subdivision)
+            // verify required parameter 'populations' is not null or undefined
+            assertParamExists('retrieveDensityMapExperiment', 'populations', populations)
+            const localVarPath = `/api/experiments/{id}/density_map/`
+                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -1985,9 +2000,12 @@ export const ApiApiAxiosParamCreator = function (configuration?: Configuration) 
             if (atlas !== undefined) { 
                 localVarFormParams.append('atlas', atlas as any);
             }
-            if (cells) {
-                // TODO: Fix
-                localVarFormParams.append('cells', JSON.stringify(cells));
+    
+            if (subdivision !== undefined) { 
+                localVarFormParams.append('subdivision', subdivision as any);
+            }
+                if (populations) {
+                localVarFormParams.append('populations', populations.join(COLLECTION_FORMATS.csv));
             }
 
     
@@ -2855,13 +2873,15 @@ export const ApiApiFp = function(configuration?: Configuration) {
         },
         /**
          * This viewset automatically provides `list`, `create`, `retrieve`, `update` and `destroy` actions.
+         * @param {string} id A unique integer value identifying this experiment.
          * @param {string} atlas 
-         * @param {Array<DensityMapCells>} [cells] 
+         * @param {string} subdivision 
+         * @param {Array<number>} populations 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async retrieveDensityMapExperiment(atlas: string, cells?: Array<DensityMapCells>, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<DensityMap>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.retrieveDensityMapExperiment(atlas, cells, options);
+        async retrieveDensityMapExperiment(id: string, atlas: string, subdivision: string, populations: Array<number>, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<DensityMap>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.retrieveDensityMapExperiment(id, atlas, subdivision, populations, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
@@ -3309,13 +3329,15 @@ export const ApiApiFactory = function (configuration?: Configuration, basePath?:
         },
         /**
          * This viewset automatically provides `list`, `create`, `retrieve`, `update` and `destroy` actions.
+         * @param {string} id A unique integer value identifying this experiment.
          * @param {string} atlas 
-         * @param {Array<DensityMapCells>} [cells] 
+         * @param {string} subdivision 
+         * @param {Array<number>} populations 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        retrieveDensityMapExperiment(atlas: string, cells?: Array<DensityMapCells>, options?: any): AxiosPromise<DensityMap> {
-            return localVarFp.retrieveDensityMapExperiment(atlas, cells, options).then((request) => request(axios, basePath));
+        retrieveDensityMapExperiment(id: string, atlas: string, subdivision: string, populations: Array<number>, options?: any): AxiosPromise<DensityMap> {
+            return localVarFp.retrieveDensityMapExperiment(id, atlas, subdivision, populations, options).then((request) => request(axios, basePath));
         },
         /**
          * This viewset automatically provides `list`, `create`, `retrieve`, `update` and `destroy` actions.
@@ -3815,14 +3837,16 @@ export class ApiApi extends BaseAPI {
 
     /**
      * This viewset automatically provides `list`, `create`, `retrieve`, `update` and `destroy` actions.
+     * @param {string} id A unique integer value identifying this experiment.
      * @param {string} atlas 
-     * @param {Array<DensityMapCells>} [cells] 
+     * @param {string} subdivision 
+     * @param {Array<number>} populations 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof ApiApi
      */
-    public retrieveDensityMapExperiment(atlas: string, cells?: Array<DensityMapCells>, options?: AxiosRequestConfig) {
-        return ApiApiFp(this.configuration).retrieveDensityMapExperiment(atlas, cells, options).then((request) => request(this.axios, this.basePath));
+    public retrieveDensityMapExperiment(id: string, atlas: string, subdivision: string, populations: Array<number>, options?: AxiosRequestConfig) {
+        return ApiApiFp(this.configuration).retrieveDensityMapExperiment(id, atlas, subdivision, populations, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**

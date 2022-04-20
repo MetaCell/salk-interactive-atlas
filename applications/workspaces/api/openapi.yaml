@@ -898,27 +898,6 @@ paths:
           description: ''
       tags:
       - api
-  /api/experiments/density_map/:
-    post:
-      operationId: retrieveDensityMapExperiment
-      description: 'This viewset automatically provides `list`, `create`, `retrieve`,
-
-        `update` and `destroy` actions.'
-      parameters: []
-      requestBody:
-        content:
-          multipart/form-data:
-            schema:
-              $ref: '#/components/schemas/DensityMap'
-      responses:
-        '201':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/DensityMap'
-          description: ''
-      tags:
-      - api
   /api/experiments/{id}/tag/:
     post:
       operationId: addTagExperiment
@@ -943,6 +922,33 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Tag'
+          description: ''
+      tags:
+      - api
+  /api/experiments/{id}/density_map/:
+    post:
+      operationId: retrieveDensityMapExperiment
+      description: 'This viewset automatically provides `list`, `create`, `retrieve`,
+
+        `update` and `destroy` actions.'
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: A unique integer value identifying this experiment.
+        schema:
+          type: string
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/DensityMap'
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DensityMap'
           description: ''
       tags:
       - api
@@ -1390,24 +1396,16 @@ components:
       properties:
         atlas:
           type: string
-        cells:
+        subdivision:
+          type: string
+        populations:
           type: array
           items:
-            type: object
-            properties:
-              x:
-                type: number
-              y:
-                type: number
-              z:
-                type: number
-            required:
-            - x
-            - y
-            - z
-          readOnly: true
+            type: integer
       required:
       - atlas
+      - subdivision
+      - populations
     ExperimentFileUpload:
       type: object
       properties:

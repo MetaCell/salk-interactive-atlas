@@ -1,18 +1,20 @@
 from cloudharness_django.serializers import GroupSerializer
 from rest_framework import serializers
-
 from api.models import Experiment
-from .cell import CellSerializer
-
 from .collaborator import CollaboratorInfoSerializer
 from .population import PopulationSerializer
 from .tag import TagSerializer
 from .user import UserTeamSerializer
 
 
+class IntegerListField(serializers.ListField):
+    child = serializers.IntegerField()
+
+
 class DensityMapSerializer(serializers.Serializer):
     atlas = serializers.CharField()
-    cells = CellSerializer(many=True, read_only=True)
+    subdivision = serializers.CharField()
+    populations = IntegerListField()
 
     class Meta:
         model = Experiment

@@ -1,7 +1,6 @@
 import logging
-import json
 
-
+from django.http import HttpResponse
 from dry_rest_permissions.generics import DRYPermissions
 from rest_framework import status, viewsets
 from rest_framework.decorators import action
@@ -108,10 +107,12 @@ class ExperimentViewSet(viewsets.ModelViewSet):
             owner=self.request.user,
         )
 
-    @action(detail=False, methods=["post"], url_path="density_map", url_name="get_density_map")
-    def retrieve_density_map(self, request):
-        atlas = request.data.get("atlas")
-        # TODO: remove json deserialization
-        cells = json.loads(request.data.get("cells")) 
-        density_map = generate_density_map(atlas, cells)
-        return Response(density_map)
+    @action(detail=True, methods=['post'], name="retrieve-density-map", url_path="density_map")
+    def retrieve_density_map(self, request, pk):
+        atlas = request.data.get('atlas')
+        subdivision = request.data.get('subdivision')
+        populations = request.data.get('populations')
+        density_map = generate_density_map(atlas, subdivision, populations)
+        response = HttpResponse(content_type='image/jpg')
+        density_map.save(response, "JPEG")
+        return response
