@@ -6,8 +6,8 @@ ENV MODULE_NAME=workspaces
 ENV PORT=8080
 ENV WORKERS=2
 ENV PRODUCTION=true
-ENV BASE_DIR=/usr/src/app
-ENV APP_DIR=${BASE_DIR}/backend
+ENV BASE_DIR=/usr/src
+ENV APP_DIR=${BASE_DIR}/app
 
 RUN mkdir -p ${BASE_DIR}
 
