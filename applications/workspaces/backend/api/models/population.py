@@ -19,7 +19,7 @@ class Population(models.Model):
     def save(self, force_insert=False, force_update=False, using=None,
              update_fields=None):
         super(Population, self).save(force_insert, force_update, using, update_fields)
-        split_cells_per_segment(self.atlas, self.id, self.cells)
+        split_cells_per_segment(self)
 
     @staticmethod
     def has_read_permission(request):

@@ -1,12 +1,5 @@
-import os
 import shutil
-
-
-def remove_file(file_path):
-    try:
-        os.remove(file_path)
-    except (IsADirectoryError, FileNotFoundError) as e:
-        pass
+from pathlib import Path
 
 
 def remove_dir(dir_path):
@@ -14,3 +7,7 @@ def remove_dir(dir_path):
         shutil.rmtree(dir_path)
     except OSError as e:
         pass
+
+
+def create_dir(dir_path):
+    Path(dir_path).mkdir(parents=True, exist_ok=True)

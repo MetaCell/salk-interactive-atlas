@@ -6,15 +6,15 @@ from rest_framework import status, viewsets
 from rest_framework.decorators import action
 from rest_framework.parsers import MultiPartParser
 from rest_framework.response import Response
-
 from api.helpers.density_map import generate_density_map
-from api.models import Experiment
+from api.models import Experiment, Population
 from api.serializers import (
     ExperimentFileUploadSerializer,
     ExperimentSerializer,
     TagSerializer, DensityMapSerializer,
 )
 from api.services.experiment_service import add_tag, delete_tag, upload_file
+from api.validators.experiment import validate_density_map_request
 
 log = logging.getLogger("__name__")
 
@@ -114,11 +114,15 @@ class ExperimentViewSet(viewsets.ModelViewSet):
         instance = self.get_object()
         subdivision = request.data.get('subdivision')
         populations = request.data.get('populations')
+        populations_ids = [int(i) for i in populations.split(',')]
+        validation_status = validate_density_map_request(instance, subdivision, populations_ids)
 
-        # ToDo: test that the requested subdivision & populations belong to the experiment
-        # ToDo: test that the populations have are from the requested atlas "type"
+        if validation_status >= 400:
+            return HttpResponse(status=validation_status)
 
-        density_map = generate_density_map(subdivision, populations)
-        response = HttpResponse(content_type='image/jpg')
+        # Assumes all populations belong to the same atlas
+        atlas = Population.objects.get(experiment_id=instance.id, id=populations[0]).atlas
+        density_map = generate_density_map(atlas, subdivision, populations_ids)
+        response = HttpResponse(content_type='image/jpg', status=validation_status)
         density_map.save(response, "JPEG")
         return response

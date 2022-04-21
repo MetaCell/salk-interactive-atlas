@@ -12,7 +12,6 @@ class IntegerListField(serializers.ListField):
 
 
 class DensityMapSerializer(serializers.Serializer):
-    atlas = serializers.CharField()
     subdivision = serializers.CharField()
     populations = IntegerListField()
 
