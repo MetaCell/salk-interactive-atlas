@@ -108,10 +108,15 @@ class ExperimentViewSet(viewsets.ModelViewSet):
         )
 
     @action(detail=True, methods=['post'], name="retrieve-density-map", url_path="density_map")
-    def retrieve_density_map(self, request, pk):
+    def retrieve_density_map(self, request, **kwargs):
+        instance = self.get_object()
         atlas = request.data.get('atlas')
         subdivision = request.data.get('subdivision')
         populations = request.data.get('populations')
+
+        # ToDo: test that the requested subdivision & populations belong to the experiment
+        # ToDo: test that the populations have are from the requested atlas "type"
+
         density_map = generate_density_map(atlas, subdivision, populations)
         response = HttpResponse(content_type='image/jpg')
         density_map.save(response, "JPEG")
