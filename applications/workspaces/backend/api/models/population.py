@@ -3,6 +3,7 @@ from django.db import models
 
 from .atlas import AtlasesChoice
 from .experiment import Experiment
+from ..services.population_service import split_cells_per_segment
 
 
 class Population(models.Model):
@@ -14,6 +15,11 @@ class Population(models.Model):
     color = models.CharField(max_length=7)  # hex color
     opacity = models.FloatField(validators=[MinValueValidator(0.0), MaxValueValidator(1.0)], default=1.0)
     cells = models.FileField(upload_to='populations')
+
+    def save(self, force_insert=False, force_update=False, using=None,
+             update_fields=None):
+        super(Population, self).save(force_insert, force_update, using, update_fields)
+        split_cells_per_segment(self.atlas, self.id, self.cells)
 
     @staticmethod
     def has_read_permission(request):

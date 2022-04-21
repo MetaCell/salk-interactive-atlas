@@ -14,7 +14,7 @@ from api.serializers import (
     ExperimentSerializer,
     TagSerializer, DensityMapSerializer,
 )
-from api.services import ExperimentService
+from api.services.experiment_service import add_tag, delete_tag, upload_file
 
 log = logging.getLogger("__name__")
 
@@ -72,7 +72,7 @@ class ExperimentViewSet(viewsets.ModelViewSet):
     def add_tag(self, request, pk):
         instance = self.get_object()
         tag_name = request.data.get("name")
-        tag = ExperimentService.add_tag(instance, tag_name)
+        tag = add_tag(instance, tag_name)
 
         serializer = self.get_serializer(tag)
         return Response(serializer.data)
@@ -86,7 +86,7 @@ class ExperimentViewSet(viewsets.ModelViewSet):
     def delete_tag(self, request, tag_name, **kwargs):
         instance = self.get_object()
         tag_name = request.data.get("name")
-        ExperimentService.delete_tag(instance, tag_name)
+        delete_tag(instance, tag_name)
         return Response(status=status.HTTP_204_NO_CONTENT)
 
     @action(
@@ -100,7 +100,9 @@ class ExperimentViewSet(viewsets.ModelViewSet):
         instance = self.get_object()
         file = request.FILES.get('file')
         population_name = request.data.get("population_name")
-        ExperimentService.upload_file(instance, population_name, file)
+        created = upload_file(instance, population_name, file)
+        response_status = status.HTTP_201_CREATED if created else status.HTTP_200_OK
+        return Response(status=response_status)
 
     def perform_create(self, serializer):
         experiment = serializer.save(
@@ -110,14 +112,13 @@ class ExperimentViewSet(viewsets.ModelViewSet):
     @action(detail=True, methods=['post'], name="retrieve-density-map", url_path="density_map")
     def retrieve_density_map(self, request, **kwargs):
         instance = self.get_object()
-        atlas = request.data.get('atlas')
         subdivision = request.data.get('subdivision')
         populations = request.data.get('populations')
 
         # ToDo: test that the requested subdivision & populations belong to the experiment
         # ToDo: test that the populations have are from the requested atlas "type"
 
-        density_map = generate_density_map(atlas, subdivision, populations)
+        density_map = generate_density_map(subdivision, populations)
         response = HttpResponse(content_type='image/jpg')
         density_map.save(response, "JPEG")
         return response
