@@ -12,6 +12,9 @@ The workspace micro service for the SALK platform
     /static/        : static files
 ```
 
+## Mandatory manual steps
+- Clone [cordmap](https://github.com/afonsobspinto/cordmap/tree/salk_test) (salk_test branch) into the workspaces directory
+
 ## How to retrieve the accounts api admin password from the cluster
 
 The account admin api password is stored in the accounts secret in the k8s cluster.
@@ -55,6 +58,13 @@ example Visual Studio Code launch entry:
       "request": "launch",
       "type": "python"
     },
+```
+
+you will also need to add our custom salk cord atlas to your brainglobe atlas storage:
+
+```
+tar -xf local-atlas/salk_cord_10um_v1.0.tar.gz
+mv salk_cord_10um_v1.0 ~/.brainglobe
 ```
 
 ### database migrations
