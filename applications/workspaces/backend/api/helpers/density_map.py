@@ -1,18 +1,19 @@
 import numpy as np
-import csv
+from cordmap.postprocessing.prob_map import generate_prob_map
 from PIL import Image
-from bg_atlasapi import BrainGlobeAtlas
 
 from api.helpers.atlas import get_bg_atlas
-from api.models import Population
 from api.services.population_service import get_cells
-from cordmap.postprocessing.prob_map import generate_prob_map
 
 ROSTRAL = "Rostral"
 CAUDAL = "Caudal"
 
 
 def _set_min_depth_cells(cells):
+    """
+    Given a list o @cells we change the depth of each cell to the min depth we can find in the array
+    Used as sort of a workaround to generate the probability map as we want though cordmap api
+    """
     cells_list = []
     min_depth = int(min([cell[0] for cell in cells]))
     for cell in cells:
@@ -20,11 +21,11 @@ def _set_min_depth_cells(cells):
     return min_depth, np.array(cells_list)
 
 
-def generate_density_map(atlas, subdivision, populations_ids):
+def generate_density_map(atlas, subdivision, populations):
     bg_atlas = get_bg_atlas(atlas)
-    min_depth, cells = _set_min_depth_cells(get_cells(subdivision, populations_ids))
+    min_depth, cells = _set_min_depth_cells(get_cells(subdivision, populations))
     save_prob_map = False
-    output_directory = 'N/A'
+    output_directory = "N/A"
     mask_prob_map = True
     prob_map_smoothing = 100
     prob_map_normalise = True
@@ -40,5 +41,5 @@ def generate_density_map(atlas, subdivision, populations_ids):
     img = probability_map[min_depth]
     scaled_image = 256 / np.max(img) * img
     density_img = Image.fromarray(scaled_image)
-    density_img = density_img.convert('RGB')
+    density_img = density_img.convert("RGB")
     return density_img

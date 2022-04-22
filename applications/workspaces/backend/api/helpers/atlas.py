@@ -1,17 +1,19 @@
 from bg_atlasapi import BrainGlobeAtlas
 
-from api.constants import ROSTRAL, CAUDAL
+from api.constants import CAUDAL, ROSTRAL
 
 
 def get_subdivision_boundaries(atlas_id):
     bg_atlas = get_bg_atlas(atlas_id)
-    segments_metadata = bg_atlas.metadata['atlas_segments']
+    segments_metadata = bg_atlas.metadata["atlas_segments"]
 
     breakpoints, subdivision = [], []
-    segments_metadata.sort(key=lambda s: s['End'])
+    segments_metadata.sort(key=lambda s: s["End"])
     for seg in segments_metadata:
-        breakpoints.append(seg['End'] / 2)
-        breakpoints.append(seg['End'])
+        # We are dividing each segment in the brainglobe atlas into
+        # 2 evenly separated areas (Rostral and Caudal)
+        breakpoints.append(seg["End"] / 2)
+        breakpoints.append(seg["End"])
         subdivision.append(f"{seg['Segment']}-{ROSTRAL}")
         subdivision.append(f"{seg['Segment']}-{CAUDAL}")
     return breakpoints, subdivision

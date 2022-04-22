@@ -6,15 +6,23 @@ from rest_framework import status, viewsets
 from rest_framework.decorators import action
 from rest_framework.parsers import MultiPartParser
 from rest_framework.response import Response
+
 from api.helpers.density_map import generate_density_map
+from api.helpers.exceptions import (
+    AuthorizationError,
+    DensityMapIncorrectSubdivisionError,
+    DensityMapMultipleAtlasesFoundError,
+    InvalidInputError,
+)
 from api.models import Experiment, Population
 from api.serializers import (
+    DensityMapSerializer,
     ExperimentFileUploadSerializer,
     ExperimentSerializer,
-    TagSerializer, DensityMapSerializer,
+    TagSerializer,
 )
 from api.services.experiment_service import add_tag, delete_tag, upload_file
-from api.validators.experiment import validate_density_map_request
+from api.validators.density_map import validate_density_map
 
 log = logging.getLogger("__name__")
 
@@ -98,7 +106,7 @@ class ExperimentViewSet(viewsets.ModelViewSet):
     )
     def upload_file(self, request, **kwargs):
         instance = self.get_object()
-        file = request.FILES.get('file')
+        file = request.FILES.get("file")
         population_name = request.data.get("population_name")
         created = upload_file(instance, population_name, file)
         response_status = status.HTTP_201_CREATED if created else status.HTTP_200_OK
@@ -109,20 +117,31 @@ class ExperimentViewSet(viewsets.ModelViewSet):
             owner=self.request.user,
         )
 
-    @action(detail=True, methods=['post'], name="retrieve-density-map", url_path="density_map")
+    @action(
+        detail=True,
+        methods=["post"],
+        name="retrieve-density-map",
+        url_path="density_map",
+    )
     def retrieve_density_map(self, request, **kwargs):
         instance = self.get_object()
-        subdivision = request.data.get('subdivision')
-        populations = request.data.get('populations')
-        populations_ids = [int(i) for i in populations.split(',')]
-        validation_status = validate_density_map_request(instance, subdivision, populations_ids)
+        subdivision = request.data.get("subdivision")
 
-        if validation_status >= 400:
-            return HttpResponse(status=validation_status)
+        populations_ids = [int(i) for i in request.data.get("populations").split(",")]
+        populations = Population.objects.filter(pk__in=populations_ids)
+        try:
+            validate_density_map(instance, subdivision, populations)
+        except AuthorizationError:
+            return HttpResponse(status=status.HTTP_401_UNAUTHORIZED)
+        except (
+            DensityMapIncorrectSubdivisionError,
+            DensityMapMultipleAtlasesFoundError,
+            InvalidInputError,
+        ):
+            return HttpResponse(status=status.HTTP_400_BAD_REQUEST)
 
-        # Assumes all populations belong to the same atlas
-        atlas = Population.objects.get(experiment_id=instance.id, id=populations[0]).atlas
-        density_map = generate_density_map(atlas, subdivision, populations_ids)
-        response = HttpResponse(content_type='image/jpg', status=validation_status)
+        atlas = populations[0].atlas
+        density_map = generate_density_map(atlas, subdivision, populations)
+        response = HttpResponse(content_type="image/jpg", status=status.HTTP_200_OK)
         density_map.save(response, "JPEG")
         return response
