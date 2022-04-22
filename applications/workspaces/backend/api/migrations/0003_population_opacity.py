@@ -7,13 +7,19 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('api', '0002_alter_population_unique_together'),
+        ("api", "0002_alter_population_unique_together"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='population',
-            name='opacity',
-            field=models.FloatField(default=1.0, validators=[django.core.validators.MinValueValidator(0.0), django.core.validators.MaxValueValidator(1.0)]),
+            model_name="population",
+            name="opacity",
+            field=models.FloatField(
+                default=1.0,
+                validators=[
+                    django.core.validators.MinValueValidator(0.0),
+                    django.core.validators.MaxValueValidator(1.0),
+                ],
+            ),
         ),
     ]
