@@ -21,6 +21,12 @@ const useStyles = makeStyles({
         height: "100%",
         margin: 0,
     },
+    densityMapImage: {
+        height: "100%",
+        width: "100%",
+        objectFit: "contain",
+        margin: 0,
+    },
     container: {
         background: "#323436",
         height: "100%"
@@ -100,9 +106,8 @@ const DensityMap = (props: {
 
     useEffect(() => {
         const fetchData = async () => {
-            const response = await api.retrieveDensityMapExperiment(experimentId, selectedAtlas, selectedValue, activePopulations.map(p => p.id))
-            const data = response.data;
-            setDensityRequest({loading: false, data})
+            const response = await api.retrieveDensityMapExperiment(experimentId, selectedAtlas, selectedValue, activePopulations.map(p => p.id), {responseType: 'blob'})
+            setDensityRequest({loading: false, data: URL.createObjectURL(response.data)})
         }
         if (!(selectedValue && activePopulations.length > 0 && selectedAtlas)) {
             return
@@ -121,7 +126,8 @@ const DensityMap = (props: {
     const content = selectedValue === null ? <Typography>{NO_SUBREGION}</Typography> :
         activePopulations.length === 0 ? <Typography>{NO_POPULATIONS}</Typography> :
             densityRequest.loading ? <p className={classes.placeholder}>Density Map Loading... </p> :
-                densityRequest.data ? <img className={classes.placeholder} src={densityRequest.data} alt={"Density Map"}/> :
+                densityRequest.data ? <img className={classes.densityMapImage}
+                                           src={densityRequest.data} alt={"Density Map"}/> :
                     null
     return (
         <Box sx={boxStyle}>
