@@ -12,6 +12,13 @@ harness:
       mountpath: /usr/src/app/persistent
       auto: true
       size: 5Gi
+    resources:
+      requests:
+        memory: "1024Mi" # for cordmap density map we need at least 800Mi memory
+        cpu: "1000m"
+      limits:
+        memory: "2048Mi"
+        cpu: "1000m"
   database:
     auto: true
     type: postgres
@@ -21,7 +28,7 @@ harness:
     path: /k8s/ready
   dependencies:
     build:
-    - cloudharness-base
+    - cloudharness-base-debian
     hard:
     - accounts
     - events

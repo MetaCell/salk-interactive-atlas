@@ -1,6 +1,6 @@
 # init the auth service
-from django.conf import settings
 from cloudharness_django.services import init_services
+from django.conf import settings
 
 init_services(
     client_name=settings.KC_CLIENT_NAME,

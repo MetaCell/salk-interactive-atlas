@@ -18,11 +18,9 @@ import PLACEHOLDER from "../../assets/images/placeholder.png";
 import {COMMUNITY_HASH, EXPERIMENTS_HASH} from "../../constants"
 import Tooltip from "@material-ui/core/Tooltip";
 import Menu from "@material-ui/core/Menu";
-import MenuItem from '@material-ui/core/MenuItem';
 import Divider from "@material-ui/core/Divider";
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
 import ArrowRightIcon from '@material-ui/icons/ArrowRight';
 
