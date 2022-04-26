@@ -31,6 +31,7 @@
     "@metacell/geppetto-meta-client": "1.0.0-rc8-salk-poc",
     "@metacell/geppetto-meta-core": "1.0.0-rc8-salk-poc",
     "@metacell/geppetto-meta-ui": "1.0.0-rc8-salk-poc",
+    "@qiuz/react-image-map": "^1.1.5",
     "@reduxjs/toolkit": "^1.5.1",
     "axios": "^0.21.0",
     "draft-js": "^0.11.7",

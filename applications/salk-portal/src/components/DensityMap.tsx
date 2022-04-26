@@ -11,10 +11,13 @@ import {
 } from "@material-ui/core";
 import ArrowForwardIosIcon from '@material-ui/icons/ArrowForwardIos';
 // @ts-ignore
-import CORD from "../assets/images/cord.png";
+import Loader from "@metacell/geppetto-meta-ui/loader/Loader";
+// @ts-ignore
 import {Population} from "../apiclient/workspaces";
 import {AtlasChoice} from "../utilities/constants";
 import workspaceService from "../service/WorkspaceService";
+import CordImageMapper from "./CordImageMapper";
+
 
 const useStyles = makeStyles({
     placeholder: {
@@ -125,7 +128,10 @@ const DensityMap = (props: {
     const gridStyle = {className: `${classes.container} ${classes.border}`, container: true, columns: 2}
     const content = selectedValue === null ? <Typography>{NO_SUBREGION}</Typography> :
         activePopulations.length === 0 ? <Typography>{NO_POPULATIONS}</Typography> :
-            densityRequest.loading ? <p className={classes.placeholder}>Density Map Loading... </p> :
+            densityRequest.loading ?
+                <Loader
+                    active={densityRequest.loading}
+                /> :
                 densityRequest.data ? <img className={classes.densityMapImage}
                                            src={densityRequest.data} alt={"Density Map"}/> :
                     null
@@ -134,7 +140,11 @@ const DensityMap = (props: {
             <Grid {...gridStyle}>
                 <Grid item={true} xs={4}>
                     <Box className={`${classes.cordImageContainer} ${classes.border}`}>
-                        <img src={CORD} width="80%" height="80%" alt={"Cord"}/>
+                        <CordImageMapper
+                            segments={subdivisions.flatMap((s) => [`${s}-${ROSTRAL}`, `${s}-${CAUDAL}`])}
+                            selected={selectedValue}
+                            onChange={handleChange}
+                        />
                     </Box>
                     <Box>
                         <FormControl className={classes.fullWidth}>
