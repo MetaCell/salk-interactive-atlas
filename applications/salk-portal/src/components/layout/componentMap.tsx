@@ -1,11 +1,13 @@
 import ExperimentViewer from "../ExperimentViewer";
 import ElectrophysiologyViewer from "../ElectrophysiologyViewer";
 import DensityMap from "../DensityMap";
+import {OVERLAYS} from "../../utilities/constants";
+
 
 const componentMap = {
     'experimentViewer': ExperimentViewer,
     'electrophysiologyViewer': ElectrophysiologyViewer,
-    'densityMap': DensityMap
+    [OVERLAYS.densityMap.id]: DensityMap
 };
 
 export default componentMap;

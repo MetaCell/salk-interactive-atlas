@@ -7,7 +7,7 @@ import {getLayoutManagerInstance} from "@metacell/geppetto-meta-client/common/la
 // @ts-ignore
 import {WidgetStatus} from "@metacell/geppetto-meta-client/common/layout/model";
 // @ts-ignore
-import {addWidget, updateWidget} from '@metacell/geppetto-meta-client/common/layout/actions';
+import {addWidget, updateWidget, deleteWidget} from '@metacell/geppetto-meta-client/common/layout/actions';
 // @ts-ignore
 import Loader from '@metacell/geppetto-meta-ui/loader/Loader'
 
@@ -15,7 +15,7 @@ import {Box} from "@material-ui/core";
 import {bodyBgColor, font} from "../theme";
 import Sidebar from "../components/ExperimentSidebar";
 // @ts-ignore
-import {AtlasChoice} from "../utilities/constants"
+import {AtlasChoice, OVERLAYS} from "../utilities/constants"
 import {getAtlas} from "../service/AtlasService";
 import {Experiment, ExperimentPopulations, Population} from "../apiclient/workspaces";
 import {areAllSelected, getAllowedRanges} from "../utilities/functions";
@@ -61,6 +61,13 @@ const getPopulations = (e: Experiment, sa: AtlasChoice) => {
     return populations
 }
 
+const getDefaultOverlays = () => {
+    const overlays = {}
+    // @ts-ignore
+    Object.keys(OVERLAYS).forEach(k => overlays[k] = false)
+    return overlays
+}
+
 
 /**
  * The component that renders the FlexLayout component of the LayoutManager.
@@ -76,6 +83,8 @@ const ExperimentsPage = () => {
     const [populations, setPopulations] = useState({});
     const [densityMapValue, setDensityMapValue] = useState(null);
     const [widgetsReady, setWidgetsReady] = useState(false)
+    const [overlays, setOverlays] = useState(getDefaultOverlays())
+
 
     const dispatch = useDispatch();
     const [LayoutComponent, setLayoutManager] = useState(undefined);
@@ -118,6 +127,22 @@ const ExperimentsPage = () => {
         setDensityMapValue(subSubSegmentId)
     };
 
+    const handleOverlaySwitch = (overlayId: string) => {
+        // @ts-ignore
+        const isOverlayActive = overlays[overlayId]
+        const widget = getOverlayWidget(overlayId)
+        if (widget) {
+            if (isOverlayActive) {
+                dispatch(deleteWidget(widget.id))
+            } else {
+                dispatch(addWidget(widget))
+            }
+        }
+
+        // @ts-ignore
+        setOverlays({...overlays, [overlayId]: !isOverlayActive})
+    };
+
     const handlePopulationColorChange = async (id: string, color: string) => {
         // @ts-ignore
         await api.partialUpdatePopulation(id, {color, opacity})
@@ -126,6 +151,37 @@ const ExperimentsPage = () => {
         // @ts-ignore
         nextPopulations[id] = {...nextPopulations[id], color, opacity}
         setPopulations(nextPopulations)
+    }
+
+    const getOverlayWidget = (overlayId: string) => {
+        switch (overlayId) {
+            case OVERLAYS.densityMap.id:
+                return DensityWidget(MOCKED_ID, Object.keys(subdivisions), Object.values(getActivePopulations()),
+                    selectedAtlas, densityMapValue, handleDensityMapChange)
+            default:
+                return null
+        }
+    }
+
+    const getActivePopulations = () => Object.keys(populations)
+        // @ts-ignore
+        .filter(pId => populations[pId].selected)
+        .reduce((obj, key) => {
+            // @ts-ignore
+            obj[key] = populations[key];
+            return obj;
+        }, {});
+
+    const handleOverlays = () => {
+        Object.keys(overlays).forEach((k) => {
+            // @ts-ignore
+            if (overlays[k]) {
+                const widget = getOverlayWidget(k)
+                if (widget) {
+                    dispatch(updateWidget(widget))
+                }
+            }
+        })
     }
 
     useEffect(() => {
@@ -152,7 +208,7 @@ const ExperimentsPage = () => {
             setPopulations(getPopulations(experiment, selectedAtlas))
             dispatch(addWidget(CanvasWidget(selectedAtlas, new Set(), {})));
             dispatch(addWidget(ElectrophysiologyWidget));
-            dispatch(addWidget(DensityWidget(MOCKED_ID, Object.keys(subdivisions), [], selectedAtlas, densityMapValue, handleDensityMapChange)))
+            //dispatch(addWidget(DensityWidget(MOCKED_ID, Object.keys(subdivisions), [], selectedAtlas, densityMapValue, handleDensityMapChange)))
             setWidgetsReady(true)
         }
     }, [experiment])
@@ -160,20 +216,10 @@ const ExperimentsPage = () => {
     useEffect(() => {
         const subdivisionsSet = new Set(Object.keys(subdivisions).filter(sId => subdivisions[sId].selected))
         // @ts-ignore
-        const activePopulations = Object.keys(populations)
-            // @ts-ignore
-            .filter(pId => populations[pId].selected)
-            .reduce((obj, key) => {
-                // @ts-ignore
-                obj[key] = populations[key];
-                return obj;
-            }, {});
 
         if (widgetsReady) {
-            dispatch(updateWidget(CanvasWidget(selectedAtlas, subdivisionsSet, activePopulations)))
-            dispatch(updateWidget(DensityWidget(MOCKED_ID, Object.keys(subdivisions), Object.values(activePopulations),
-                selectedAtlas, densityMapValue, handleDensityMapChange)
-            ))
+            dispatch(updateWidget(CanvasWidget(selectedAtlas, subdivisionsSet, getActivePopulations())))
+            handleOverlays()
         }
     }, [subdivisions, populations, selectedAtlas])
 
@@ -188,12 +234,15 @@ const ExperimentsPage = () => {
 
     return experiment != null ? (
         <Box display="flex">
-            <Sidebar selectedAtlas={selectedAtlas} subdivisions={subdivisions} populations={populations}
-                     handleAtlasChange={handleAtlasChange} handleSubdivisionSwitch={handleSubdivisionSwitch}
+            <Sidebar selectedAtlas={selectedAtlas} subdivisions={subdivisions}
+                     populations={populations} overlays={Object.keys(overlays)}
+                     handleAtlasChange={handleAtlasChange}
+                     handleSubdivisionSwitch={handleSubdivisionSwitch}
                      handlePopulationSwitch={handlePopulationSwitch}
                      handleShowAllSubdivisions={handleShowAllSubdivisions}
                      handleShowAllPopulations={handleShowAllPopulations}
                      handlePopulationColorChange={handlePopulationColorChange}
+                     handleOverlaySwitch={handleOverlaySwitch}
             />
             <Box className={classes.layoutContainer}>
                 {LayoutComponent === undefined ? <CircularProgress/> : <LayoutComponent/>}

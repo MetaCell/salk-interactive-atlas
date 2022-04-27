@@ -23,7 +23,7 @@ import FormControl from '@material-ui/core/FormControl';
 import FormLabel from '@material-ui/core/FormLabel';
 import Checkbox from '@material-ui/core/Checkbox';
 import { SalkTeamInfo } from "./SalkTeamInfo";
-import { SALK_TEAM } from "../../constants";
+import { SALK_TEAM } from "../../utilities/constants";
 
 const useStyles = makeStyles(() => ({
   subHeader: {
