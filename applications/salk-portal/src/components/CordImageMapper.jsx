@@ -2,8 +2,17 @@ import React from 'react';
 // @ts-ignore
 import CORD from "../assets/images/cord.png";
 import { ImageMap} from "@qiuz/react-image-map";
+import {makeStyles} from "@material-ui/core/styles";
+
+const useStyles = makeStyles({
+    imageMap: {
+        margin: "2rem",
+        width: "60%!important",
+    },
+});
 
 const CordImageMapper = (props) => {
+    const classes = useStyles();
     const {segments, selected, onChange} = props
     const widthPercentage = 100 / (segments.length)
     const generateArea = (index) => {
@@ -21,7 +30,7 @@ const CordImageMapper = (props) => {
     const mapArea = segments.map((s, i) => generateArea(i));
 
     return (
-        <ImageMap src={CORD} map={mapArea} onMapClick={onMapClick}/>
+        <ImageMap className={classes.imageMap} src={CORD} map={mapArea} onMapClick={onMapClick}/>
     )
 }
 
