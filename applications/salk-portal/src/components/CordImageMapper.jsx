@@ -8,6 +8,7 @@ const useStyles = makeStyles({
     imageMap: {
         margin: "2rem",
         width: "60%!important",
+        cursor: "pointer"
     },
 });
 
