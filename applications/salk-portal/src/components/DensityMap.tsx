@@ -25,10 +25,11 @@ const useStyles = makeStyles({
         margin: 0,
     },
     densityMapImage: {
-        height: "100%",
         width: "100%",
         objectFit: "contain",
         margin: 0,
+        position: "sticky",
+        top: 0
     },
     container: {
         background: "#323436",
@@ -130,7 +131,7 @@ const DensityMap = (props: {
     const subdivisions = props.subdivisions.sort()
     const classes = useStyles();
     // @ts-ignore
-    const boxStyle = {flexGrow: 1, background: canvasBg, padding: "1rem"}
+    const boxStyle = {flexGrow: 1, background: canvasBg, padding: "1rem", minHeight: "100%"}
     const gridStyle = {className: `${classes.container} ${classes.border}`, container: true, columns: 2}
     const content = selectedValue === null ? <Typography>{NO_SUBREGION}</Typography> :
         activePopulations.length === 0 ? <Typography>{NO_POPULATIONS}</Typography> :

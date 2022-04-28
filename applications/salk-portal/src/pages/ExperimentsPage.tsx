@@ -208,7 +208,6 @@ const ExperimentsPage = () => {
             setPopulations(getPopulations(experiment, selectedAtlas))
             dispatch(addWidget(CanvasWidget(selectedAtlas, new Set(), {})));
             dispatch(addWidget(ElectrophysiologyWidget));
-            //dispatch(addWidget(DensityWidget(MOCKED_ID, Object.keys(subdivisions), [], selectedAtlas, densityMapValue, handleDensityMapChange)))
             setWidgetsReady(true)
         }
     }, [experiment])
