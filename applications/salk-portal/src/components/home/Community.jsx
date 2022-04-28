@@ -10,7 +10,7 @@ import Avatar from '@material-ui/core/Avatar';
 import { headerBg, headerBorderColor, headerButtonBorderColor, defaultChipBg, secondaryChipBg, primaryChipBg, chipTextColor, cardTextColor } from "../../theme";
 import USER from "../../assets/images/icons/user.svg";
 import ExperimentCard from "./ExperimentCard";
-import { COMMUNITY_HASH } from "../../constants";
+import { COMMUNITY_HASH } from "../../utilities/constants";
 
 const useStyles = makeStyles(() => ({
   card: {

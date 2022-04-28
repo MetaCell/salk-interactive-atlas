@@ -15,7 +15,7 @@ import USER from "../../assets/images/icons/user.svg";
 import POPULAR from "../../assets/images/icons/popular.svg";
 import CLONE from "../../assets/images/icons/clone.svg";
 import PLACEHOLDER from "../../assets/images/placeholder.png";
-import {COMMUNITY_HASH, EXPERIMENTS_HASH} from "../../constants"
+import {COMMUNITY_HASH, EXPERIMENTS_HASH} from "../../utilities/constants"
 import Tooltip from "@material-ui/core/Tooltip";
 import Menu from "@material-ui/core/Menu";
 import Divider from "@material-ui/core/Divider";

@@ -12,7 +12,7 @@ def get_subdivision_boundaries(atlas_id):
     for seg in segments_metadata:
         # We are dividing each segment in the brainglobe atlas into
         # 2 evenly separated areas (Rostral and Caudal)
-        breakpoints.append(seg["End"] / 2)
+        breakpoints.append((seg['Start'] + seg["End"]) / 2)
         breakpoints.append(seg["End"])
         subdivision.append(f"{seg['Segment']}-{ROSTRAL}")
         subdivision.append(f"{seg['Segment']}-{CAUDAL}")

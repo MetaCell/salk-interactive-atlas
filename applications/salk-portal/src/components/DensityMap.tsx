@@ -25,10 +25,11 @@ const useStyles = makeStyles({
         margin: 0,
     },
     densityMapImage: {
-        height: "100%",
         width: "100%",
         objectFit: "contain",
         margin: 0,
+        position: "sticky",
+        top: 0
     },
     container: {
         background: "#323436",
@@ -51,12 +52,18 @@ const useStyles = makeStyles({
         width: "100%"
     },
     border: {
-        border: `1px solid ${headerBorderColor}`
+        border: `1px solid rgba(255, 255, 255, 0.05)`,
+        borderRadius: "4px 4px 4px 4px"
+    },
+    subsectionBorder: {
+        borderTop: `1px solid rgba(255, 255, 255, 0.05)`,
+        borderRight: `1px solid rgba(255, 255, 255, 0.05)`,
     },
     cordImageContainer: {
         display: 'flex',
         flex: '1',
-        justifyContent: 'center'
+        justifyContent: 'center',
+        borderRight: `1px solid rgba(255, 255, 255, 0.05)`
     },
     fontSize: {
         fontSize: "0.75rem"
@@ -124,7 +131,7 @@ const DensityMap = (props: {
     const subdivisions = props.subdivisions.sort()
     const classes = useStyles();
     // @ts-ignore
-    const boxStyle = {flexGrow: 1, background: canvasBg, padding: "1rem"}
+    const boxStyle = {flexGrow: 1, background: canvasBg, padding: "1rem", minHeight: "100%"}
     const gridStyle = {className: `${classes.container} ${classes.border}`, container: true, columns: 2}
     const content = selectedValue === null ? <Typography>{NO_SUBREGION}</Typography> :
         activePopulations.length === 0 ? <Typography>{NO_POPULATIONS}</Typography> :
@@ -139,7 +146,7 @@ const DensityMap = (props: {
         <Box sx={boxStyle}>
             <Grid {...gridStyle}>
                 <Grid item={true} xs={4}>
-                    <Box className={`${classes.cordImageContainer} ${classes.border}`}>
+                    <Box className={`${classes.cordImageContainer}`}>
                         <CordImageMapper
                             segments={subdivisions.flatMap((s) => [`${s}-${ROSTRAL}`, `${s}-${CAUDAL}`])}
                             selected={selectedValue}
@@ -153,7 +160,7 @@ const DensityMap = (props: {
                                 name={RADIO_GROUP_NAME}
                             >
                                 {subdivisions.map(sId => (
-                                        <Box key={sId} className={classes.border}>
+                                        <Box key={sId} className={classes.subsectionBorder}>
                                             <RadioButton
                                                 onChange={handleChange}
                                                 isChecked={selectedValue === `${sId}-${ROSTRAL}`}

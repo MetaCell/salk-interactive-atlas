@@ -19,11 +19,11 @@ import {canvasIconColor, headerBg, headerBorderColor, teal, blue, brown, skyBlue
 import TOGGLE from "../assets/images/icons/toggle.svg";
 import ATLAS from "../assets/images/icons/atlas.svg";
 import SUBDIVISIONS from "../assets/images/icons/subdivisions.svg";
-import OVERLAYS from "../assets/images/icons/overlays.svg";
+import OVERLAYS_ICON from "../assets/images/icons/overlays.svg";
 import ADD from "../assets/images/icons/add.svg";
 import UP_ICON from "../assets/images/icons/up.svg";
 import POPULATION from "../assets/images/icons/population.svg";
-import {atlasMap} from "../utilities/constants";
+import {atlasMap, OVERLAYS} from "../utilities/constants";
 import {areAllSelected, getRGBAFromHexAlpha, getRGBAString} from "../utilities/functions";
 import ColorPicker from "./ColorPicker";
 
@@ -155,7 +155,6 @@ const useStyles = makeStyles({
     },
 });
 
-const overlays = ['Density Map', 'Populations Map', 'Neuronal Locations'];
 
 const POPULATION_ICONS_OPACITY = 0.4
 
@@ -163,12 +162,14 @@ const ExperimentSidebar = ({
                                selectedAtlas,
                                subdivisions,
                                populations,
+                               overlays,
                                handleAtlasChange,
                                handleSubdivisionSwitch,
                                handlePopulationSwitch,
                                handleShowAllSubdivisions,
                                handleShowAllPopulations,
-                               handlePopulationColorChange
+                               handlePopulationColorChange,
+                               handleOverlaySwitch
                            }) => {
     const classes = useStyles();
     const [shrink, setShrink] = useState(false);
@@ -337,13 +338,17 @@ const ExperimentSidebar = ({
                             expandIcon={<img src={UP_ICON} alt=""/>}
                         >
                             <Typography>
-                                <img src={OVERLAYS} alt=""/>
+                                <img src={OVERLAYS_ICON} alt=""/>
                                 Overlays
                             </Typography>
                         </AccordionSummary>
                         <AccordionDetails>
-                            {overlays.map(atlas => <FormControlLabel key={atlas} control={<Switch/>} label={atlas}
-                                                                     labelPlacement="start"/>)}
+                            {overlays.map(oId =>
+                                <FormControlLabel key={oId} control={<Switch/>} label={OVERLAYS[oId].name}
+                                                  labelPlacement="start"
+                                                  onChange={(event) => handleOverlaySwitch(oId)}
+                                />
+                            )}
                         </AccordionDetails>
                     </Accordion>
                 </>

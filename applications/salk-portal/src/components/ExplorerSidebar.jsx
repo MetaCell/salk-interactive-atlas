@@ -22,7 +22,7 @@ import TEAMS from "../assets/images/icons/teams.svg";
 import COMMUNITY from "../assets/images/icons/community.svg";
 import HELP from "../assets/images/icons/help.svg";
 import UP_ICON from "../assets/images/icons/up.svg";
-import { EXPERIMENTS_HASH, SALK_TEAM, ACME_TEAM, COMMUNITY_HASH, SHARED_HASH } from "../constants";
+import { EXPERIMENTS_HASH, SALK_TEAM, ACME_TEAM, COMMUNITY_HASH, SHARED_HASH } from "../utilities/constants";
 
 const useStyles = makeStyles({
   sidebar: {

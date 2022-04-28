@@ -5,7 +5,7 @@ import Sidebar from "../components/ExplorerSidebar";
 import { bodyBgColor } from "../theme";
 import ExperimentList from "../components/home/ExperimentList";
 import Community from "../components/home/Community";
-import { EXPERIMENTS_HASH, SALK_TEAM, ACME_TEAM, COMMUNITY_HASH, SHARED_HASH } from "../constants";
+import { EXPERIMENTS_HASH, SALK_TEAM, ACME_TEAM, COMMUNITY_HASH, SHARED_HASH } from "../utilities/constants";
 import { CloneExperimentDialog } from "../components/home/CloneExperimentDialog";
 import { ExplorationSpinalCordDialog } from "../components/home/ExplorationSpinalCordDialog";
 import { ShareExperimentDialog } from "../components/home/ShareExperiment";

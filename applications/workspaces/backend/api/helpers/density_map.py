@@ -14,6 +14,8 @@ def _set_min_depth_cells(cells):
     Given a list o @cells we change the depth of each cell to the min depth we can find in the array
     Used as sort of a workaround to generate the probability map as we want though cordmap api
     """
+    if len(cells) == 0:
+        return 0, []
     cells_list = []
     min_depth = int(min([cell[0] for cell in cells]))
     for cell in cells:
