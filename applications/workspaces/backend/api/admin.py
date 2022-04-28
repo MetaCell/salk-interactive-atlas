@@ -4,10 +4,12 @@ from api.models import Collaborator, Experiment, Population, Tag, UserDetail
 
 # Register your models here.
 
+
 class PopulationInline(admin.TabularInline):
     model = Population
     show_change_link = True
     extra = 1
+
 
 class UserDetailAdmin(admin.ModelAdmin):
     list_display = ("user",)
@@ -22,7 +24,9 @@ class ExperimentAdmin(admin.ModelAdmin):
         "teams",
         "tags",
     )
-    inlines = [PopulationInline,]
+    inlines = [
+        PopulationInline,
+    ]
 
 
 class CollaboratorAdmin(admin.ModelAdmin):

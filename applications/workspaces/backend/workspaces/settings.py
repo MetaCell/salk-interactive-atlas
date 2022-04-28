@@ -177,9 +177,7 @@ MEDIA_ROOT = PERSISTENT_ROOT
 STATIC_ROOT = os.path.join(BASE_DIR, "static")
 MEDIA_URL = "/media/"
 STATIC_URL = "/static/"
-REST_FRAMEWORK.update({
-    "UPLOADED_FILES_USE_URL": False
-})
+REST_FRAMEWORK.update({"UPLOADED_FILES_USE_URL": False})
 
 # KC Client & roles
 KC_CLIENT_NAME = PROJECT_NAME.lower()

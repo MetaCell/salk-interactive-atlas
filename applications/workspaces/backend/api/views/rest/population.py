@@ -5,7 +5,7 @@ from rest_framework import viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
 
-from api.models import Population, Experiment
+from api.models import Experiment, Population
 from api.serializers import PopulationSerializer
 from api.utils import send_file
 

@@ -1,44 +1,38 @@
-# ARG MNP_UI
-ARG CLOUDHARNESS_BASE
+ARG CLOUDHARNESS_BASE_DEBIAN
 
-# FROM $MNP_UI as frontend
-
-# ENV APP_DIR=/app
-
-# WORKDIR ${APP_DIR}
-# COPY frontend/package.json ${APP_DIR}
-# COPY frontend/package-lock.json ${APP_DIR}
-# RUN npm ci
-
-# COPY frontend ${APP_DIR}
-# RUN npm run build
-
-#####
-
-FROM $CLOUDHARNESS_BASE
+FROM $CLOUDHARNESS_BASE_DEBIAN
 
 ENV MODULE_NAME=workspaces
 ENV PORT=8080
 ENV WORKERS=2
 ENV PRODUCTION=true
-ENV APP_DIR=/usr/src/app
+ENV BASE_DIR=/usr/src
+ENV APP_DIR=${BASE_DIR}/app
 
-WORKDIR ${APP_DIR}/..
+RUN mkdir -p ${BASE_DIR}
+
+WORKDIR ${BASE_DIR}
+RUN apt update -y && apt install libjpeg-dev zlib1g-dev git -y
+
 COPY cloudharness-django ./cloudharness-django
-RUN  apk add jpeg-dev zlib-dev git && \
-     python3 -m pip install --upgrade pip && \
-     python3 -m pip install -e cloudharness-django --no-cache-dir --upgrade
+RUN python3 -m pip install --upgrade pip && \
+    python3 -m pip install -e cloudharness-django --no-cache-dir --upgrade
+
+COPY cordmap ./cordmap
+RUN python3 -m pip install -e cordmap --no-cache-dir --upgrade
+
+ADD local-atlas/salk_cord_10um_v1.0.tar.gz /root/.brainglobe/
 
 WORKDIR ${APP_DIR}
 COPY backend/requirements.txt .
-RUN  python3 -m pip install -r requirements.txt --no-cache-dir --upgrade
+RUN python3 -m pip install -r requirements.txt --no-cache-dir --upgrade
+
+COPY backend/requirements.txt backend/setup.py ${APP_DIR}
+RUN python3 -m pip install -e .
 
 COPY backend ${APP_DIR}
-RUN python3 -m pip install -e . && \
-    python3 manage.py collectstatic --noinput
+RUN python3 manage.py collectstatic --noinput
 
 RUN mkdir -p ${APP_DIR}/static/www
-# COPY --from=frontend app/dist/ ${APP_DIR}/static/www
-
 
 ENTRYPOINT gunicorn --workers=$WORKERS --bind=0.0.0.0:${PORT} $MODULE_NAME.wsgi:application

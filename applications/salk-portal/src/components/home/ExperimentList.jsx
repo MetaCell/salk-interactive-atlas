@@ -222,7 +222,7 @@ const ExperimentList = (props) => {
             id: 1,
             name: "Test Population",
             color: "#FFFF00",
-            atlas: "slk10",
+            atlas: "salk_cord_10um",
             cells: {
             }
         }

@@ -3,7 +3,6 @@ import createMuiTheme from '@material-ui/core/styles/createTheme';
 import lessToJs from 'less-vars-to-js';
 
 import './css/mui.less';
-import './css/main.less';
 import './css/flexLayout.less';
 
 // Read the less file in as string: using the raw-loader to override the default loader
