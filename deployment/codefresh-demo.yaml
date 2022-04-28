@@ -47,11 +47,11 @@ steps:
     type: parallel
     stage: build
     steps:
-      cloudharness-base:
+      cloudharness-base-debian:
         type: build
         stage: build
         tag: '${{CF_BUILD_ID}}'
-        dockerfile: infrastructure/base-images/cloudharness-base/Dockerfile
+        dockerfile: infrastructure/base-images/cloudharness-base-debian/Dockerfile
         registry: '${{CODEFRESH_REGISTRY}}'
         buildkit: true
         build_arguments:
@@ -60,9 +60,9 @@ steps:
         - DOMAIN=${{DOMAIN}}
         - NOCACHE=${{CF_BUILD_ID}}
         - REGISTRY=${{REGISTRY}}/salk/
-        - CLOUDHARNESS_BASE=${{REGISTRY}}/salk/cloudharness-base:${{CF_BUILD_ID}}
-        image_name: salk/cloudharness-base
-        title: Cloudharness base
+        - CLOUDHARNESS_BASE_DEBIAN=${{REGISTRY}}/salk/cloudharness-base-debian:${{CF_BUILD_ID}}
+        image_name: salk/cloudharness-base-debian
+        title: Cloudharness base debian
         working_directory: ./cloud-harness
   build_application_images:
     type: parallel
@@ -129,7 +129,7 @@ steps:
         - DOMAIN=${{DOMAIN}}
         - NOCACHE=${{CF_BUILD_ID}}
         - REGISTRY=${{REGISTRY}}/salk/
-        - CLOUDHARNESS_BASE=${{REGISTRY}}/salk/cloudharness-base:${{CF_BUILD_ID}}
+        - CLOUDHARNESS_BASE_DEBIAN=${{REGISTRY}}/salk/cloudharness-base-debian:${{CF_BUILD_ID}}
         image_name: salk/workspaces
         title: Workspaces
         working_directory: ./applications/workspaces
@@ -151,11 +151,11 @@ steps:
     type: parallel
     stage: publish
     steps:
-      publish_cloudharness-base:
+      publish_cloudharness-base-debian:
         stage: publish
         type: push
-        title: Cloudharness base
-        candidate: '${{REGISTRY}}/salk/cloudharness-base:${{CF_BUILD_ID}}'
+        title: Cloudharness base debian
+        candidate: '${{REGISTRY}}/salk/cloudharness-base-debian:${{CF_BUILD_ID}}'
         tags:
         - '${{DEPLOYMENT_PUBLISH_TAG}}'
         registry: '${{REGISTRY_PUBLISH_URL}}'
