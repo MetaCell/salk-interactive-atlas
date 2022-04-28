@@ -67,11 +67,11 @@ steps:
     type: parallel
     stage: publish
     steps:
-      publish_cloudharness-base:
+      publish_cloudharness-base-debian:
         stage: publish
         type: push
-        title: Cloudharness base
-        candidate: '${{REGISTRY}}/salk/cloudharness-base:${{DEPLOYMENT_TAG}}'
+        title: Cloudharness base debian
+        candidate: '${{REGISTRY}}/salk/cloudharness-base-debian:${{DEPLOYMENT_TAG}}'
         tags:
         - '${{DEPLOYMENT_PUBLISH_TAG}}'
         - latest
