@@ -15,10 +15,10 @@ import {Box} from "@material-ui/core";
 import {bodyBgColor, font} from "../theme";
 import Sidebar from "../components/ExperimentSidebar";
 // @ts-ignore
-import {AtlasChoice, OVERLAYS} from "../utilities/constants"
+import {AtlasChoice, OVERLAYS, OverlaysDependencies} from "../utilities/constants"
 import {getAtlas} from "../service/AtlasService";
-import {Experiment, ExperimentPopulations, Population} from "../apiclient/workspaces";
-import {areAllSelected, getAllowedRanges} from "../utilities/functions";
+import {Experiment, ExperimentPopulations} from "../apiclient/workspaces";
+import {areAllSelected, setIntersection} from "../utilities/functions";
 import workspaceService from "../service/WorkspaceService";
 import Cell from "../models/Cell";
 import {CanvasWidget, DensityWidget, ElectrophysiologyWidget} from "../widgets";
@@ -62,10 +62,10 @@ const getPopulations = (e: Experiment, sa: AtlasChoice) => {
 }
 
 const getDefaultOverlays = () => {
-    const overlays = {}
+    const overlaysSwitchState = {}
     // @ts-ignore
-    Object.keys(OVERLAYS).forEach(k => overlays[k] = false)
-    return overlays
+    Object.keys(OVERLAYS).forEach(k => overlaysSwitchState[k] = false)
+    return overlaysSwitchState
 }
 
 
@@ -83,7 +83,7 @@ const ExperimentsPage = () => {
     const [populations, setPopulations] = useState({});
     const [densityMapValue, setDensityMapValue] = useState(null);
     const [widgetsReady, setWidgetsReady] = useState(false)
-    const [overlays, setOverlays] = useState(getDefaultOverlays())
+    const [overlaysSwitchState, setOverlaysSwitchState] = useState(getDefaultOverlays())
 
 
     const dispatch = useDispatch();
@@ -129,7 +129,7 @@ const ExperimentsPage = () => {
 
     const handleOverlaySwitch = (overlayId: string) => {
         // @ts-ignore
-        const isOverlayActive = overlays[overlayId]
+        const isOverlayActive = overlaysSwitchState[overlayId]
         const widget = getOverlayWidget(overlayId)
         if (widget) {
             if (isOverlayActive) {
@@ -140,7 +140,7 @@ const ExperimentsPage = () => {
         }
 
         // @ts-ignore
-        setOverlays({...overlays, [overlayId]: !isOverlayActive})
+        setOverlaysSwitchState({...overlaysSwitchState, [overlayId]: !isOverlayActive})
     };
 
     const handlePopulationColorChange = async (id: string, color: string) => {
@@ -172,10 +172,10 @@ const ExperimentsPage = () => {
             return obj;
         }, {});
 
-    const handleOverlays = () => {
-        Object.keys(overlays).forEach((k) => {
+    const handleOverlays = (dependencies: Set<string>) => {
+        Object.keys(overlaysSwitchState).forEach((k) => {
             // @ts-ignore
-            if (overlays[k]) {
+            if (overlaysSwitchState[k] && setIntersection(OVERLAYS[k].dependencies, dependencies).size > 0) {
                 const widget = getOverlayWidget(k)
                 if (widget) {
                     dispatch(updateWidget(widget))
@@ -218,9 +218,12 @@ const ExperimentsPage = () => {
 
         if (widgetsReady) {
             dispatch(updateWidget(CanvasWidget(selectedAtlas, subdivisionsSet, getActivePopulations())))
-            handleOverlays()
         }
     }, [subdivisions, populations, selectedAtlas])
+
+    useEffect(() => {
+        handleOverlays(new Set([OverlaysDependencies.POPULATIONS]))
+    }, [populations])
 
     useEffect(() => {
         if (LayoutComponent === undefined) {
@@ -234,7 +237,7 @@ const ExperimentsPage = () => {
     return experiment != null ? (
         <Box display="flex">
             <Sidebar selectedAtlas={selectedAtlas} subdivisions={subdivisions}
-                     populations={populations} overlays={Object.keys(overlays)}
+                     populations={populations} overlays={Object.keys(overlaysSwitchState)}
                      handleAtlasChange={handleAtlasChange}
                      handleSubdivisionSwitch={handleSubdivisionSwitch}
                      handlePopulationSwitch={handlePopulationSwitch}
