@@ -5,6 +5,7 @@ from api.helpers.atlas import get_subdivision_boundaries
 
 
 def split_cells_per_segment(population):
+    population.remove_split_cells_csv()
     breakpoints, subdivisions = get_subdivision_boundaries(population.atlas)
     get_cell_segment = lambda depth: _boundaries(breakpoints, subdivisions, depth)
 
