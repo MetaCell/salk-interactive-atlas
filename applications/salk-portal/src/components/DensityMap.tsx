@@ -14,7 +14,7 @@ import ArrowForwardIosIcon from '@material-ui/icons/ArrowForwardIos';
 import Loader from "@metacell/geppetto-meta-ui/loader/Loader";
 // @ts-ignore
 import {Population} from "../apiclient/workspaces";
-import {AtlasChoice} from "../utilities/constants";
+import {AtlasChoice, REQUEST_STATE} from "../utilities/constants";
 import workspaceService from "../service/WorkspaceService";
 import CordImageMapper from "./CordImageMapper";
 
@@ -75,6 +75,8 @@ const ROSTRAL = "Rostral"
 const CAUDAL = "Caudal"
 const NO_POPULATIONS = "No population(s) selected to generate the heatmap"
 const NO_SUBREGION = "No subregion selected to generate the heatmap"
+const NO_CELLS = "Selected region has no active cells"
+const ERROR = "Something went wrong"
 
 // @ts-ignore
 const RadioButton = ({onChange, isChecked, label}) => {
@@ -107,6 +109,7 @@ const DensityMap = (props: {
     const [densityRequest, setDensityRequest] = React.useState({
         loading: false,
         data: null,
+        state: null
     });
 
     const handleChange = (value: string) => {
@@ -117,14 +120,24 @@ const DensityMap = (props: {
     useEffect(() => {
         const fetchData = async () => {
             const response = await api.retrieveDensityMapExperiment(experimentId, selectedAtlas, selectedValue, activePopulations.map(p => p.id), {responseType: 'blob'})
-            setDensityRequest({loading: false, data: URL.createObjectURL(response.data)})
+            if (response.status === 200){
+                setDensityRequest({
+                        loading: false,
+                        data: URL.createObjectURL(response.data),
+                        state: REQUEST_STATE.SUCCESS
+                    })
+            }else if (response.status === 204){
+                setDensityRequest({loading: false, data: null, state: REQUEST_STATE.NO_CONTENT})
+            }else{
+                setDensityRequest({loading: false, data: null, state: REQUEST_STATE.ERROR})
+            }
         }
         if (!(selectedValue && activePopulations.length > 0 && selectedAtlas)) {
             return
         }
-        setDensityRequest({loading: true, data: null})
+        setDensityRequest({loading: true, data: null, state: null})
         fetchData()
-            .catch(() => setDensityRequest({loading: false, data: null}));
+            .catch(() => setDensityRequest({loading: false, data: null, state: REQUEST_STATE.ERROR}));
 
     }, [selectedValue, activePopulations, selectedAtlas])
 
@@ -139,9 +152,10 @@ const DensityMap = (props: {
                 <Loader
                     active={densityRequest.loading}
                 /> :
-                densityRequest.data ? <img className={classes.densityMapImage}
-                                           src={densityRequest.data} alt={"Density Map"}/> :
-                    null
+                densityRequest.state === REQUEST_STATE.SUCCESS ?
+                    <img className={classes.densityMapImage} src={densityRequest.data} alt={"Density Map"}/> :
+                    densityRequest.state === REQUEST_STATE.NO_CONTENT ?
+                        <Typography>{NO_CELLS}</Typography> : <Typography>{ERROR}</Typography>
     return (
         <Box sx={boxStyle}>
             <Grid {...gridStyle}>

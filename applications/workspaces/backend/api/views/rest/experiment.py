@@ -141,7 +141,10 @@ class ExperimentViewSet(viewsets.ModelViewSet):
             return HttpResponse(status=status.HTTP_400_BAD_REQUEST)
 
         atlas = populations[0].atlas
-        density_map = generate_density_map(atlas, subdivision, populations)
-        response = HttpResponse(content_type="image/jpg", status=status.HTTP_200_OK)
-        density_map.save(response, "JPEG")
-        return response
+        try:
+            density_map = generate_density_map(atlas, subdivision, populations)
+            response = HttpResponse(content_type="image/jpg", status=status.HTTP_200_OK)
+            density_map.save(response, "JPEG")
+            return response
+        except ValueError:
+            return HttpResponse(status=status.HTTP_204_NO_CONTENT)

@@ -24,3 +24,9 @@ export const OVERLAYS = {
     populationMap: new OverlayMetadata("populationMap", "Population Map"),
     neuronalLocations:  new OverlayMetadata("neuronalLocations", "Neuronal Locations"),
 }
+
+export enum REQUEST_STATE {
+    NO_CONTENT ,
+    SUCCESS,
+    ERROR
+}
