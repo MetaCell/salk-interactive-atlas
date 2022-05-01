@@ -13,11 +13,14 @@ kubectl create ns salk
 kubectl create rolebinding salk-admin-default --clusterrole=admin --serviceaccount=salk:default -n salk
 
 eval $(minikube docker-env)
+kubectl config use-context minikube
+
+harness-deployment cloud-harness . -l -d salk.local -dtls -n salk -e dev -i salk-portal
 
 kubectl config use-context minikube
-harness-deployment cloud-harness . -m build -u -l -d salk.local -dtls -n salk -e dev -i salk-portal
 
-kubectl config use-context minikube
-skaffold debug --cleanup=false
+skaffold dev --cleanup=false
+#skaffold build
+#helm upgrade salk ./deployment/helm --install --reset-values --version 0.0.1 --namespace salk --values ./deployment/helm/values.yaml --timeout 600s 
 
 echo To activate the minikube cluster please execute: eval \$\(minikube docker-env\)

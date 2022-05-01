@@ -1,9 +1,14 @@
 harness:
   subdomain: www
-  secured: false
+  secured: true
   deployment:
     auto: true
     port: 80
+    volume:
+      name: salk-files
+      mountpath: /usr/share/nginx/html/persistent
+      auto: false
+      size: 5Gi
   service:
     auto: true
     port: 80
@@ -11,16 +16,16 @@ harness:
     - name: "keycloak"
       src: "keycloak.json"
       dst: "/usr/share/nginx/html/keycloak.json"
-  sentry: true
+  sentry: false
   use_services:
     - name: workspaces
-    - name: common
   dependencies:
     soft:
       - accounts
-      - common
-      - volumemanager
       - workspaces
-      - workflows
-      - jupyterhub
-      - jupyterlab
+  uri_role_mapping:
+    - uri: /*
+      roles:
+        - default-roles-salk
+    - uri: /avatars/*
+      white-listed: true

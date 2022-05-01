@@ -1,26 +1,41 @@
 import * as React from "react";
-
+import { useLocation } from 'react-router-dom'
 import {
   Toolbar,
   Box,
   Button,
-  Paper,
-  Popper,
-  MenuItem,
-  MenuList,
-  ClickAwayListener,
   makeStyles,
+  Typography,
+  Breadcrumbs,
+  Link,
+  Avatar,
 } from "@material-ui/core";
-import PersonIcon from "@material-ui/icons/Person";
+import { headerBorderColor, headerButtonBorderColor, headerBg } from "../../theme";
+import LOGO from "../../assets/images/logo.svg";
+import USER from "../../assets/images/icons/user.svg";
+import { UserAccountDialog } from "./UserAccountDialog";
+import { CreateExperimentDialog } from "./CreateExperimentDialog";
 
-const title = "Open Source Brain";
+const title = "Salk Mouse Cord Atlas";
 
 const useStyles = makeStyles((theme) => ({
   toolbar: {
-    backgroundColor: theme.palette.background.paper,
-    paddingRight: theme.spacing(1),
-    paddingLeft: theme.spacing(1),
+    backgroundColor: headerBg,
+    paddingRight: "0.5rem",
+    paddingLeft: "0.875rem",
     justifyContent: "space-between",
+    borderBottom: `0.0625rem solid ${headerBorderColor}`,
+    height: '3rem',
+    flexShrink: 0,
+
+    '& .MuiAvatar-root': {
+      width: '1.5rem',
+      height: '1.5rem',
+    },
+
+    '& img': {
+      display: 'block',
+    },
   },
   toolbarTitle: {
     flex: 1,
@@ -39,35 +54,41 @@ const useStyles = makeStyles((theme) => ({
   },
   button: {
     textTransform: "none",
+    padding: "0 0.75rem",
+    height: '2rem',
+    fontWeight: 500,
+    fontSize: '0.75rem',
+    lineHeight: '1rem',
+    letterSpacing: '0.01em',
+    color: headerButtonBorderColor,
+    borderRadius: '0.375rem',
+
+    '&:not(:first-child)': {
+      marginLeft: '0.5rem',
+    },
   },
-  logoChip: {
-    backgroundColor: "rgba(255, 255, 255, 0.2)",
-    borderRadius: 2,
-    textTransform: 'uppercase',
-    fontSize: 9,
-    padding: 3,
-    lineHeight: '1em',
-    marginTop: 3,
-    fontWeight: 700,
-    marginLeft: '1em',
-    alignSelf: 'flex-start'
 
+  logo: {
+    minWidth: '10.9375rem',
+  },
 
-  }
 }));
 
 export const Header = (props: any) => {
   const classes = useStyles();
-
-  const [menuOpen, setMenuOpen] = React.useState(false);
+  const location = useLocation();
+  const onExperimentsPage = location.pathname === '/experiments';
+  const [dialogOpen, setDialogOpen] = React.useState(false);
   const menuAnchorRef = React.useRef(null);
+  const [experimentDialogOpen, setExperimentDialogOpen] = React.useState(false);
 
-  const handleMenuToggle = () => {
-    setMenuOpen((prevOpen) => !prevOpen);
+  const handleExperimentDialogToggle = () => {
+    setExperimentDialogOpen((prevOpen) => !prevOpen);
   };
 
-  const handleMenuClose = () => {
-    setMenuOpen(false);
+
+  const handleDialogToggle = () => {
+    setDialogOpen((prevOpen) => !prevOpen);
   };
 
   const user = props.user;
@@ -85,29 +106,55 @@ export const Header = (props: any) => {
         Sign in
       </Button>
     ) : (
-      <Box alignItems="center" display="flex">
-        <Popper open={Boolean(menuOpen)} anchorEl={menuAnchorRef.current}>
-          <Paper>
-            <ClickAwayListener onClickAway={handleMenuClose}>
-              <MenuList autoFocusItem={menuOpen} id="user-menu">
-                {/* <MenuItem>My account</MenuItem>
-                <MenuItem>Settings</MenuItem> */}
-                <MenuItem onClick={handleUserLogout}>Logout</MenuItem>
-              </MenuList>
-            </ClickAwayListener>
-          </Paper>
-        </Popper>
-        <Button
-          size="large"
-          ref={menuAnchorRef}
-          aria-controls={menuOpen ? "user-menu" : undefined}
-          aria-haspopup="true"
-          onClick={handleMenuToggle}
-          startIcon={<PersonIcon fontSize="large" />}
-          className={classes.button}
-        >
-          {user.username}
-        </Button>
+        <Box alignItems="center" display="flex">
+          {!onExperimentsPage ? (
+            <>
+              <Button
+                size="large"
+                className={classes.button}
+                variant="contained"
+                disableElevation={true}
+                aria-controls={experimentDialogOpen && "user-menu"}
+                aria-haspopup="true"
+                onClick={handleExperimentDialogToggle}
+              >
+                Create a new experiment
+              </Button>
+
+              <Button
+                size="large"
+                ref={menuAnchorRef}
+                aria-controls={dialogOpen && "user-menu"}
+                aria-haspopup="true"
+                onClick={handleDialogToggle}
+                className={classes.button}
+                variant="outlined"
+              >
+                My account
+                </Button>
+
+              <Avatar alt={user.username} title={user.username} src={user.avatarUrl ? user.avatarUrl : USER} />
+            </>
+          ) : (
+            <>
+              <Button
+                size="large"
+                className={classes.button}
+                variant="contained"
+                disableElevation={true}
+              >
+                Save in My Experiments
+              </Button>
+
+              <Button
+                size="large"
+                className={classes.button}
+                variant="outlined"
+              >
+                Share
+              </Button>
+            </>
+          )}
       </Box>
     );
 
@@ -119,27 +166,32 @@ export const Header = (props: any) => {
   };
 
   return (
-    <React.Fragment>
+    <>
       <Toolbar className={classes.toolbar}>
-        <Box display="flex">
+        <Box display="flex" className={classes.logo}>
           <a href="/" onClick={handleToggleDrawer}>
             <img
-              src="https://www.salk.edu/wp-content/themes/salk/images/salk@2x.png"
+              src={LOGO}
               alt={title}
               title={title}
-              height="25"
             />
-
           </a>
-          <sup className={classes.logoChip} >alpha</sup>
         </Box>
+        { onExperimentsPage && (<Box>
+          <Breadcrumbs aria-label="breadcrumb">
+            <Link color="inherit" href="/">
+              My experiments
+            </Link>
+            <Typography color="textPrimary">Exploration of the spinal cord</Typography>
+          </Breadcrumbs>
+        </Box>) }
         <Box>
-          {/* <IconButton>
-              <SearchIcon />
-            </IconButton> */}
           {headerText}
         </Box>
       </Toolbar>
-    </React.Fragment>
+
+      <UserAccountDialog open={dialogOpen} handleClose={handleDialogToggle} user={user} />
+      <CreateExperimentDialog open={experimentDialogOpen} handleClose={handleExperimentDialogToggle} user={user}/>
+    </>
   );
 };

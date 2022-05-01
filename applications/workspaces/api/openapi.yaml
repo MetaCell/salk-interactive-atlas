@@ -3,15 +3,147 @@ info:
   title: ''
   version: ''
 paths:
-  /api/experiment/:
+  /api/collaborator/:
+    get:
+      operationId: listCollaborators
+      description: This viewset automatically provides `list` actions.
+      parameters: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Collaborator'
+          description: ''
+      tags:
+      - api
+    post:
+      operationId: createCollaborator
+      description: This viewset automatically provides `list` actions.
+      parameters: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Collaborator'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Collaborator'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Collaborator'
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Collaborator'
+          description: ''
+      tags:
+      - api
+  /api/collaborator/{id}/:
+    get:
+      operationId: retrieveCollaborator
+      description: This viewset automatically provides `list` actions.
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: A unique integer value identifying this collaborator.
+        schema:
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Collaborator'
+          description: ''
+      tags:
+      - api
+    put:
+      operationId: updateCollaborator
+      description: This viewset automatically provides `list` actions.
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: A unique integer value identifying this collaborator.
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Collaborator'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Collaborator'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Collaborator'
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Collaborator'
+          description: ''
+      tags:
+      - api
+    patch:
+      operationId: partialUpdateCollaborator
+      description: This viewset automatically provides `list` actions.
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: A unique integer value identifying this collaborator.
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Collaborator'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Collaborator'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Collaborator'
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Collaborator'
+          description: ''
+      tags:
+      - api
+    delete:
+      operationId: destroyCollaborator
+      description: This viewset automatically provides `list` actions.
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: A unique integer value identifying this collaborator.
+        schema:
+          type: string
+      responses:
+        '204':
+          description: ''
+      tags:
+      - api
+  /api/experiments/:
     get:
       operationId: listExperiments
       description: 'This viewset automatically provides `list`, `create`, `retrieve`,
 
-        `update` and `destroy` actions.
-
-
-        Additionally we also provide an extra `magic` action.'
+        `update` and `destroy` actions.'
       parameters: []
       responses:
         '200':
@@ -28,19 +160,10 @@ paths:
       operationId: createExperiment
       description: 'This viewset automatically provides `list`, `create`, `retrieve`,
 
-        `update` and `destroy` actions.
-
-
-        Additionally we also provide an extra `magic` action.'
+        `update` and `destroy` actions.'
       parameters: []
       requestBody:
         content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/Experiment'
-          application/x-www-form-urlencoded:
-            schema:
-              $ref: '#/components/schemas/Experiment'
           multipart/form-data:
             schema:
               $ref: '#/components/schemas/Experiment'
@@ -53,15 +176,76 @@ paths:
           description: ''
       tags:
       - api
-  /api/experiment/{id}/:
+  /api/experiments/mine/:
+    get:
+      operationId: mineExperiment
+      description: 'This viewset automatically provides `list`, `create`, `retrieve`,
+
+        `update` and `destroy` actions.'
+      parameters: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Experiment'
+          description: ''
+      tags:
+      - api
+  /api/experiments/myteams/:
+    get:
+      operationId: myteamsExperiment
+      description: 'This viewset automatically provides `list`, `create`, `retrieve`,
+
+        `update` and `destroy` actions.'
+      parameters: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Experiment'
+          description: ''
+      tags:
+      - api
+  /api/experiments/public/:
+    get:
+      operationId: publicExperiment
+      description: 'This viewset automatically provides `list`, `create`, `retrieve`,
+
+        `update` and `destroy` actions.'
+      parameters: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Experiment'
+          description: ''
+      tags:
+      - api
+  /api/experiments/sharedwithme/:
+    get:
+      operationId: sharedwithmeExperiment
+      description: 'This viewset automatically provides `list`, `create`, `retrieve`,
+
+        `update` and `destroy` actions.'
+      parameters: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Experiment'
+          description: ''
+      tags:
+      - api
+  /api/experiments/{id}/:
     get:
       operationId: retrieveExperiment
       description: 'This viewset automatically provides `list`, `create`, `retrieve`,
 
-        `update` and `destroy` actions.
-
-
-        Additionally we also provide an extra `magic` action.'
+        `update` and `destroy` actions.'
       parameters:
       - name: id
         in: path
@@ -82,10 +266,7 @@ paths:
       operationId: updateExperiment
       description: 'This viewset automatically provides `list`, `create`, `retrieve`,
 
-        `update` and `destroy` actions.
-
-
-        Additionally we also provide an extra `magic` action.'
+        `update` and `destroy` actions.'
       parameters:
       - name: id
         in: path
@@ -95,12 +276,6 @@ paths:
           type: string
       requestBody:
         content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/Experiment'
-          application/x-www-form-urlencoded:
-            schema:
-              $ref: '#/components/schemas/Experiment'
           multipart/form-data:
             schema:
               $ref: '#/components/schemas/Experiment'
@@ -117,10 +292,7 @@ paths:
       operationId: partialUpdateExperiment
       description: 'This viewset automatically provides `list`, `create`, `retrieve`,
 
-        `update` and `destroy` actions.
-
-
-        Additionally we also provide an extra `magic` action.'
+        `update` and `destroy` actions.'
       parameters:
       - name: id
         in: path
@@ -130,12 +302,6 @@ paths:
           type: string
       requestBody:
         content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/Experiment'
-          application/x-www-form-urlencoded:
-            schema:
-              $ref: '#/components/schemas/Experiment'
           multipart/form-data:
             schema:
               $ref: '#/components/schemas/Experiment'
@@ -152,10 +318,7 @@ paths:
       operationId: destroyExperiment
       description: 'This viewset automatically provides `list`, `create`, `retrieve`,
 
-        `update` and `destroy` actions.
-
-
-        Additionally we also provide an extra `magic` action.'
+        `update` and `destroy` actions.'
       parameters:
       - name: id
         in: path
@@ -168,33 +331,1103 @@ paths:
           description: ''
       tags:
       - api
+  /api/population/:
+    get:
+      operationId: listPopulations
+      description: This viewset automatically provides `list` actions.
+      parameters: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Population'
+          description: ''
+      tags:
+      - api
+    post:
+      operationId: createPopulation
+      description: This viewset automatically provides `list` actions.
+      parameters: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Population'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Population'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Population'
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Population'
+          description: ''
+      tags:
+      - api
+  /api/population/{id}/:
+    get:
+      operationId: retrievePopulation
+      description: This viewset automatically provides `list` actions.
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: A unique integer value identifying this population.
+        schema:
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Population'
+          description: ''
+      tags:
+      - api
+    put:
+      operationId: updatePopulation
+      description: This viewset automatically provides `list` actions.
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: A unique integer value identifying this population.
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Population'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Population'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Population'
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Population'
+          description: ''
+      tags:
+      - api
+    patch:
+      operationId: partialUpdatePopulation
+      description: This viewset automatically provides `list` actions.
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: A unique integer value identifying this population.
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Population'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Population'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Population'
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Population'
+          description: ''
+      tags:
+      - api
+    delete:
+      operationId: destroyPopulation
+      description: This viewset automatically provides `list` actions.
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: A unique integer value identifying this population.
+        schema:
+          type: string
+      responses:
+        '204':
+          description: ''
+      tags:
+      - api
+  /api/population/{id}/cells/:
+    get:
+      operationId: cellsPopulation
+      description: This viewset automatically provides `list` actions.
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: A unique integer value identifying this population.
+        schema:
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Population'
+          description: ''
+      tags:
+      - api
+  /api/tags/:
+    get:
+      operationId: listTags
+      description: This viewset automatically provides `list`
+      parameters: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Tag'
+          description: ''
+      tags:
+      - api
+  /api/teams/:
+    get:
+      operationId: listGroups
+      description: 'This viewset automatically provides `list`, `create`, `retrieve`,
+
+        `update` actions.
+
+
+        Additionally we also provide extra `magic` actions `members`,
+
+        `members add` and `members delete`.'
+      parameters: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Team'
+          description: ''
+      tags:
+      - api
+    post:
+      operationId: createGroup
+      description: 'This viewset automatically provides `list`, `create`, `retrieve`,
+
+        `update` actions.
+
+
+        Additionally we also provide extra `magic` actions `members`,
+
+        `members add` and `members delete`.'
+      parameters: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Team'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Team'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Team'
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Team'
+          description: ''
+      tags:
+      - api
+  /api/teams/{id}/:
+    get:
+      operationId: retrieveGroup
+      description: 'This viewset automatically provides `list`, `create`, `retrieve`,
+
+        `update` actions.
+
+
+        Additionally we also provide extra `magic` actions `members`,
+
+        `members add` and `members delete`.'
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: A unique integer value identifying this group.
+        schema:
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Team'
+          description: ''
+      tags:
+      - api
+    put:
+      operationId: updateGroup
+      description: 'This viewset automatically provides `list`, `create`, `retrieve`,
+
+        `update` actions.
+
+
+        Additionally we also provide extra `magic` actions `members`,
+
+        `members add` and `members delete`.'
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: A unique integer value identifying this group.
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Team'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Team'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Team'
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Team'
+          description: ''
+      tags:
+      - api
+    patch:
+      operationId: partialUpdateGroup
+      description: 'This viewset automatically provides `list`, `create`, `retrieve`,
+
+        `update` actions.
+
+
+        Additionally we also provide extra `magic` actions `members`,
+
+        `members add` and `members delete`.'
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: A unique integer value identifying this group.
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Team'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Team'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Team'
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Team'
+          description: ''
+      tags:
+      - api
+  /api/teams/{id}/members/:
+    get:
+      operationId: membersGroup
+      description: 'This viewset automatically provides `list`, `create`, `retrieve`,
+
+        `update` actions.
+
+
+        Additionally we also provide extra `magic` actions `members`,
+
+        `members add` and `members delete`.'
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: A unique integer value identifying this group.
+        schema:
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Team'
+          description: ''
+      tags:
+      - api
+  /api/users/:
+    get:
+      operationId: listUsers
+      description: This viewset automatically provides `list` actions.
+      parameters: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/UserTeam'
+          description: ''
+      tags:
+      - api
+  /api/userdetails/:
+    get:
+      operationId: listUserDetails
+      description: 'This viewset automatically provides `list`, `create`, `retrieve`,
+
+        `update` actions.
+
+
+        The list action will always return the current user''s userdetail as a list
+
+        or an empty list if the current user has no userdetail'
+      parameters: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/UserDetail'
+          description: ''
+      tags:
+      - api
+    post:
+      operationId: createUserDetail
+      description: 'This viewset automatically provides `list`, `create`, `retrieve`,
+
+        `update` actions.
+
+
+        The list action will always return the current user''s userdetail as a list
+
+        or an empty list if the current user has no userdetail'
+      parameters: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserDetail'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/UserDetail'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/UserDetail'
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserDetail'
+          description: ''
+      tags:
+      - api
+  /api/userdetails/me/:
+    get:
+      operationId: meUserDetail
+      description: 'This viewset automatically provides `list`, `create`, `retrieve`,
+
+        `update` actions.
+
+
+        The list action will always return the current user''s userdetail as a list
+
+        or an empty list if the current user has no userdetail'
+      parameters: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserDetail'
+          description: ''
+      tags:
+      - api
+  /api/userdetails/{id}/:
+    get:
+      operationId: retrieveUserDetail
+      description: 'This viewset automatically provides `list`, `create`, `retrieve`,
+
+        `update` actions.
+
+
+        The list action will always return the current user''s userdetail as a list
+
+        or an empty list if the current user has no userdetail'
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: A unique integer value identifying this user detail.
+        schema:
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserDetail'
+          description: ''
+      tags:
+      - api
+    put:
+      operationId: updateUserDetail
+      description: 'This viewset automatically provides `list`, `create`, `retrieve`,
+
+        `update` actions.
+
+
+        The list action will always return the current user''s userdetail as a list
+
+        or an empty list if the current user has no userdetail'
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: A unique integer value identifying this user detail.
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserDetail'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/UserDetail'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/UserDetail'
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserDetail'
+          description: ''
+      tags:
+      - api
+    patch:
+      operationId: partialUpdateUserDetail
+      description: 'This viewset automatically provides `list`, `create`, `retrieve`,
+
+        `update` actions.
+
+
+        The list action will always return the current user''s userdetail as a list
+
+        or an empty list if the current user has no userdetail'
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: A unique integer value identifying this user detail.
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserDetail'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/UserDetail'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/UserDetail'
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserDetail'
+          description: ''
+      tags:
+      - api
+    delete:
+      operationId: destroyUserDetail
+      description: 'This viewset automatically provides `list`, `create`, `retrieve`,
+
+        `update` actions.
+
+
+        The list action will always return the current user''s userdetail as a list
+
+        or an empty list if the current user has no userdetail'
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: A unique integer value identifying this user detail.
+        schema:
+          type: string
+      responses:
+        '204':
+          description: ''
+      tags:
+      - api
+  /api/experiments/{id}/tag/:
+    post:
+      operationId: addTagExperiment
+      description: 'This viewset automatically provides `list`, `create`, `retrieve`,
+
+        `update` and `destroy` actions.'
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: A unique integer value identifying this experiment.
+        schema:
+          type: string
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Tag'
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Tag'
+          description: ''
+      tags:
+      - api
+  /api/experiments/{id}/density_map/:
+    post:
+      operationId: retrieveDensityMapExperiment
+      description: 'This viewset automatically provides `list`, `create`, `retrieve`,
+
+        `update` and `destroy` actions.'
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: A unique integer value identifying this experiment.
+        schema:
+          type: string
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/DensityMap'
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DensityMap'
+          description: ''
+      tags:
+      - api
+  /api/experiments/{id}/upload-file/:
+    post:
+      operationId: uploadFileExperiment
+      description: 'This viewset automatically provides `list`, `create`, `retrieve`,
+
+        `update` and `destroy` actions.'
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: A unique integer value identifying this experiment.
+        schema:
+          type: string
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ExperimentFileUpload'
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExperimentFileUpload'
+          description: ''
+      tags:
+      - api
+  /api/teams/{id}/add_members/:
+    post:
+      operationId: addMembersGroup
+      description: 'This viewset automatically provides `list`, `create`, `retrieve`,
+
+        `update` actions.
+
+
+        Additionally we also provide extra `magic` actions `members`,
+
+        `members add` and `members delete`.'
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: A unique integer value identifying this group.
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Member'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Member'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Member'
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Member'
+          description: ''
+      tags:
+      - api
+  /api/experiments/{id}/tag/{tag_name}/:
+    delete:
+      operationId: deleteTagExperiment
+      description: 'This viewset automatically provides `list`, `create`, `retrieve`,
+
+        `update` and `destroy` actions.'
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: A unique integer value identifying this experiment.
+        schema:
+          type: string
+      - name: tag_name
+        in: path
+        required: true
+        description: ''
+        schema:
+          type: string
+      responses:
+        '204':
+          description: ''
+      tags:
+      - api
+  /api/teams/{id}/members/{user_id}/:
+    delete:
+      operationId: delMemberGroup
+      description: 'This viewset automatically provides `list`, `create`, `retrieve`,
+
+        `update` actions.
+
+
+        Additionally we also provide extra `magic` actions `members`,
+
+        `members add` and `members delete`.'
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: A unique integer value identifying this group.
+        schema:
+          type: string
+      - name: user_id
+        in: path
+        required: true
+        description: ''
+        schema:
+          type: string
+      responses:
+        '204':
+          description: ''
+      tags:
+      - api
 components:
   schemas:
+    Collaborator:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        role:
+          enum:
+          - v
+          - e
+          type: string
+        shared_on:
+          type: string
+          format: date-time
+          readOnly: true
+        user:
+          type: integer
+        experiment:
+          type: integer
+      required:
+      - user
+      - experiment
     Experiment:
       type: object
       properties:
         id:
           type: integer
           readOnly: true
-        date_created:
-          type: string
-          format: date
         name:
           type: string
           maxLength: 100
-        description:
-          type: string
         is_private:
           type: boolean
-        owner_user_id:
+        description:
           type: string
-          maxLength: 40
+        date_created:
+          type: string
+          readOnly: true
         last_modified:
           type: string
-          format: date
+          format: date-time
+          readOnly: true
+        owner:
+          type: object
+          properties:
+            id:
+              type: integer
+              readOnly: true
+            username:
+              type: string
+              description: Required. 150 characters or fewer. Letters, digits and
+                @/./+/-/_ only.
+              pattern: ^[\w.@+-]+\z
+              maxLength: 150
+            first_name:
+              type: string
+              maxLength: 150
+            last_name:
+              type: string
+              maxLength: 150
+            email:
+              type: string
+              format: email
+              maxLength: 254
+            groups:
+              type: array
+              items:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                    readOnly: true
+                  name:
+                    type: string
+                    maxLength: 150
+                required:
+                - name
+              readOnly: true
+            avatar:
+              type: string
+          required:
+          - username
+          - avatar
+          readOnly: true
+        teams:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: integer
+                readOnly: true
+              name:
+                type: string
+                maxLength: 150
+            required:
+            - name
+          readOnly: true
+        collaborators:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: integer
+                readOnly: true
+              user:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                    readOnly: true
+                  first_name:
+                    type: string
+                    maxLength: 150
+                  last_name:
+                    type: string
+                    maxLength: 150
+                  email:
+                    type: string
+                    format: email
+                    maxLength: 254
+              shared_on:
+                type: string
+                format: date-time
+                readOnly: true
+              role:
+                enum:
+                - v
+                - e
+                type: string
+            required:
+            - user
+          readOnly: true
+        populations:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: integer
+                readOnly: true
+              name:
+                type: string
+                maxLength: 100
+              color:
+                type: string
+                maxLength: 7
+              experiment:
+                type: integer
+              atlas:
+                enum:
+                - salk_cord_10um
+                - allen_cord_20um
+                type: string
+              cells:
+                type: string
+                format: binary
+              opacity:
+                type: number
+                maximum: 1.0
+                minimum: 0.0
+            required:
+            - name
+            - color
+            - experiment
+            - cells
+          readOnly: true
+        tags:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: integer
+                readOnly: true
+              name:
+                type: string
+                maxLength: 40
+            required:
+            - name
           readOnly: true
       required:
-      - date_created
       - name
       - description
-      - owner_user_id
+    Population:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        name:
+          type: string
+          maxLength: 100
+        color:
+          type: string
+          maxLength: 7
+        experiment:
+          type: integer
+        atlas:
+          enum:
+          - salk_cord_10um
+          - allen_cord_20um
+          type: string
+        cells:
+          type: string
+          format: binary
+        opacity:
+          type: number
+          maximum: 1.0
+          minimum: 0.0
+      required:
+      - name
+      - color
+      - experiment
+      - cells
+    Tag:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        name:
+          type: string
+          maxLength: 40
+      required:
+      - name
+    Team:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        name:
+          type: string
+          maxLength: 150
+      required:
+      - name
+    UserTeam:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        username:
+          type: string
+          description: Required. 150 characters or fewer. Letters, digits and @/./+/-/_
+            only.
+          pattern: ^[\w.@+-]+\z
+          maxLength: 150
+        first_name:
+          type: string
+          maxLength: 150
+        last_name:
+          type: string
+          maxLength: 150
+        email:
+          type: string
+          format: email
+          maxLength: 254
+        groups:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: integer
+                readOnly: true
+              name:
+                type: string
+                maxLength: 150
+            required:
+            - name
+          readOnly: true
+        avatar:
+          type: string
+      required:
+      - username
+      - avatar
+    UserDetail:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        user:
+          type: object
+          properties:
+            id:
+              type: integer
+              readOnly: true
+            first_name:
+              type: string
+              maxLength: 150
+            last_name:
+              type: string
+              maxLength: 150
+            email:
+              type: string
+              format: email
+              maxLength: 254
+          readOnly: true
+        notification_method:
+          enum:
+          - email
+          type: string
+        notify_on_new_share:
+          type: boolean
+        notify_on_new_team_invite:
+          type: boolean
+        notify_on_clone_my_experiment:
+          type: boolean
+        notify_on_news:
+          type: boolean
+        avatar:
+          type: string
+          format: binary
+      required:
+      - avatar
+    DensityMap:
+      type: object
+      properties:
+        atlas:
+          type: string
+        subdivision:
+          type: string
+        populations:
+          type: array
+          items:
+            type: integer
+      required:
+      - atlas
+      - subdivision
+      - populations
+    ExperimentFileUpload:
+      type: object
+      properties:
+        population_name:
+          type: string
+        file:
+          type: string
+          format: binary
+      required:
+      - population_name
+      - file
+    Member:
+      type: object
+      properties:
+        user_id:
+          type: integer
+      required:
+      - user_id
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+security:
+- bearerAuth: []

@@ -1,27 +1,11 @@
-from django.contrib.auth.models import User
-from django.urls import reverse
+# init the auth service
+from cloudharness_django.services import init_services
+from django.conf import settings
 
-from rest_framework import authentication
-from rest_framework import exceptions
-
-from ch.auth import AuthClient
-
-ac = AuthClient()
-
-class BearerAuthentication(authentication.BaseAuthentication):
-    def authenticate(self, request):
-        if request.get_full_path() == reverse('openapi-schema'):
-            return (User(), None)
-
-        ac.set_token(request.META.get("HTTP_AUTHORIZATION"))
-        kcuser = ac.get_current_user()
-        if not kcuser:
-         return None
-
-        user = User()
-        user.id = kcuser.id
-        user.username = kcuser.username
-        user.first_name = kcuser.firstName
-        user.last_name = kcuser.lastName
-        user.email = kcuser.email
-        return (user, None)
+init_services(
+    client_name=settings.KC_CLIENT_NAME,
+    client_roles=settings.KC_ALL_ROLES,
+    default_user_role=settings.KC_USER_ROLE,
+    privileged_roles=settings.KC_PRIVILEGED_ROLES,
+    admin_role=settings.KC_ADMIN_ROLE,
+)

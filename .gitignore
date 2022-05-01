@@ -1,8 +1,13 @@
 /cloud-harness
 .idea
 **/helm
-/build
+build/
 .vscode
 skaffold.yaml
 /deployment.yaml
 **/__pycache__
+**/*.egg-info
+/build
+applications/workspaces/backend/static
+.overrides
+**/*.sqlite3

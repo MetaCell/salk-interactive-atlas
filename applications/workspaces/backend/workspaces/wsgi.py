@@ -11,6 +11,14 @@ import os
 
 from django.core.wsgi import get_wsgi_application
 
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'workspaces.settings')
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "workspaces.settings")
 
 application = get_wsgi_application()
+
+# init the auth service
+from cloudharness_django.services import init_services
+
+init_services()
+
+# start the kafka event listener
+import cloudharness_django.services.events

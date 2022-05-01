@@ -1,3 +1,5 @@
 domain: salk.metacell.us
 mainapp: salk-portal
 tls: true
+backup:
+  active: false

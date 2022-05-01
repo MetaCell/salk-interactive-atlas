@@ -2,11 +2,24 @@ import * as React from "react";
 import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 import { ThemeProvider } from "@material-ui/core/styles";
 import { CssBaseline, makeStyles } from "@material-ui/core";
-import SentryErrorBoundary from "./components/sentry/SentryErrorBoundary";
+import '@metacell/geppetto-meta-ui/flex-layout/style/dark.scss'
 import HomePage from "./pages/HomePage";
 import theme from "./theme";
+import { Header, ProtectedRoute, } from "./components";
+import ExperimentsPage from "./pages/ExperimentsPage";
 
-import { Header, ErrorDialog, ProtectedRoute, } from "./components/index";
+const GEPPETTO = {};
+// @ts-ignore
+window.GEPPETTO = GEPPETTO;
+// @ts-ignore
+// tslint:disable-next-line:no-var-requires
+GEPPETTO.Resources = require('@metacell/geppetto-meta-core/Resources').default;
+
+// @ts-ignore
+// tslint:disable-next-line:no-var-requires
+GEPPETTO.Manager = require('@metacell/geppetto-meta-client/common/GeppettoManager').default;
+// @ts-ignore
+window.Instances = [];
 
 const useStyles = makeStyles(() => ({
   mainContainer: {
@@ -21,26 +34,24 @@ const useStyles = makeStyles(() => ({
   },
 }));
 
+
 export const App = (props: any) => {
   const classes = useStyles();
 
   return (
-    // <SentryErrorBoundary>
       <ThemeProvider theme={theme}>
         <CssBaseline />
-        <ErrorDialog />
         {!props.error &&
           <Router>
             <div className={classes.mainContainer}>
               <Header />
 
-
               <Switch>
-                <Route exact={true} path="/">
+                <ProtectedRoute exact={true} path="/">
                   <HomePage />
-                </Route>
-                <ProtectedRoute exact={true} path="/home">
-                  <HomePage />
+                </ProtectedRoute>
+                <ProtectedRoute exact={true} path="/experiments/:id">
+                  <ExperimentsPage />
                 </ProtectedRoute>
               </Switch>
 
@@ -48,6 +59,5 @@ export const App = (props: any) => {
           </Router>
         }
       </ThemeProvider>
-    // </SentryErrorBoundary>
   );
 };

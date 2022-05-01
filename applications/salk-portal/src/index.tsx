@@ -7,7 +7,6 @@ import { Provider } from 'react-redux';
 import { userLogin } from './store/actions/user';
 
 import { CONFIGURATION } from "./config";
-import { initErrorHandler } from './service/ErrorHandleService';
 import { initUser } from './service/UserService';
 
 import { UserInfo } from "./types/user";
@@ -42,5 +41,3 @@ timeout(20000, initUser()).then((user: UserInfo) => {
     store.dispatch(userLogin(user));
   }
 }).finally(renderMain);
-
-// initErrorHandler(appName);
