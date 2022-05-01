@@ -13,6 +13,12 @@ export function eqSet(set1: Set<any>, set2: Set<any>) : boolean {
    return true;
 }
 
+export function setIntersection(setA: Set<any>, setB: Set<any>) {
+   return new Set(
+       [...setA].filter(element => setB.has(element))
+   );
+}
+
 export const getAllowedRanges = (selectedAtlas: AtlasChoice, activeSubdivisions: Set<string>) : Range[] => {
    const ranges : Range[] = []
    const atlas = getAtlas(selectedAtlas)
