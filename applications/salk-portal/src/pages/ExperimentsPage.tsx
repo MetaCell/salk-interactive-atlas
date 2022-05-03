@@ -143,7 +143,7 @@ const ExperimentsPage = () => {
         setOverlaysSwitchState({...overlaysSwitchState, [overlayId]: !isOverlayActive})
     };
 
-    const handlePopulationColorChange = async (id: string, color: string) => {
+    const handlePopulationColorChange = async (id: string, color: string, opacity: string) => {
         // @ts-ignore
         await api.partialUpdatePopulation(id, {color, opacity})
         // @ts-ignore
