@@ -22,6 +22,7 @@ import {areAllSelected, setIntersection} from "../utilities/functions";
 import workspaceService from "../service/WorkspaceService";
 import Cell from "../models/Cell";
 import {CanvasWidget, DensityWidget, ElectrophysiologyWidget} from "../widgets";
+import {hasExperimentEditPermission} from '../service/UserService';
 
 
 const useStyles = makeStyles({
@@ -196,7 +197,7 @@ const ExperimentsPage = () => {
             data.populations.forEach((p, i) => {
                 data.populations[i].cells = cells[i]
             });
-            setExperiment(data)
+            setExperiment({data, hasEditPermission: hasExperimentEditPermission(data)})
         }
 
         fetchData()
@@ -205,7 +206,7 @@ const ExperimentsPage = () => {
 
     useEffect(() => {
         if (experiment != null) {
-            setPopulations(getPopulations(experiment, selectedAtlas))
+            setPopulations(getPopulations(experiment.data, selectedAtlas))
             dispatch(addWidget(CanvasWidget(selectedAtlas, new Set(), {})));
             dispatch(addWidget(ElectrophysiologyWidget));
             setWidgetsReady(true)
@@ -245,6 +246,7 @@ const ExperimentsPage = () => {
                      handleShowAllPopulations={handleShowAllPopulations}
                      handlePopulationColorChange={handlePopulationColorChange}
                      handleOverlaySwitch={handleOverlaySwitch}
+                     hasEditPermission={experiment.hasEditPermission}
             />
             <Box className={classes.layoutContainer}>
                 {LayoutComponent === undefined ? <CircularProgress/> : <LayoutComponent/>}

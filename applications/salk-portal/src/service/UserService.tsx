@@ -5,6 +5,7 @@ import { UserInfo } from '../types/user';
 import { getBaseDomain } from '../utils';
 
 import workspaceService from './WorkspaceService';
+import {PERMISSIONS} from "../utilities/constants";
 
 const keycloak = Keycloak('/keycloak.json');
 
@@ -81,7 +82,7 @@ export async function initUser(): Promise<UserInfo> {
 
 export async function login(): Promise<UserInfo> {
     const userInfo: any = await keycloak.login();
-    return mapKeycloakUser(userInfo);
+    return mapKeycloakUser(userInfo, null);
 }
 
 export async function logout() {
@@ -94,4 +95,8 @@ export async function register() {
 
 const errorCallback = (error: any) => {
     initApis(null);
+}
+
+export const hasExperimentEditPermission = (experiment : any) => {
+    return experiment.permission_level === PERMISSIONS.READ_WRITE
 }
