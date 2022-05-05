@@ -8,9 +8,11 @@ from ..helpers.filesystem import create_dir, remove_dir
 from ..services.population_service import split_cells_per_segment
 from .atlas import AtlasesChoice
 from .experiment import Experiment
+from ..utils import is_valid_hex_str
 
 
 class Population(models.Model):
+    DEFAULT_COLOR = "#000000"
     experiment = models.ForeignKey(Experiment, on_delete=models.DO_NOTHING)
     atlas = models.CharField(
         max_length=100, choices=AtlasesChoice.choices, default=AtlasesChoice.SLK10
@@ -36,8 +38,9 @@ class Population(models.Model):
         create_dir(self.save_dir_path)
 
     def save(
-        self, force_insert=False, force_update=False, using=None, update_fields=None
+            self, force_insert=False, force_update=False, using=None, update_fields=None
     ):
+        self.update_color()
         super(Population, self).save(force_insert, force_update, using, update_fields)
         split_cells_per_segment(self)
 
@@ -63,6 +66,10 @@ class Population(models.Model):
 
     def has_object_write_permission(self, request):
         return self.experiment.has_object_write_permission(request)
+
+    def update_color(self):
+        if not is_valid_hex_str(self.color):
+            self.color = Population.DEFAULT_COLOR
 
     def __str__(self):
         return f"{self.experiment} {self.name}"
