@@ -13,8 +13,8 @@ class ExperimentsObjectsManager(models.Manager):
     def team_experiments(self, user):
         return (
             self.get_queryset()
-            .filter(teams__user=user)  # my teams experiments
-            .distinct()
+                .filter(teams__user=user)  # my teams experiments
+                .distinct()
         )
 
     def collaborate_experiments(self, user):
@@ -31,11 +31,16 @@ class ExperimentsObjectsManager(models.Manager):
     def list_ids(self, user):
         return (
             self.my_experiments(user)
-            .only("id")
-            .union(self.team_experiments(user).only("id"))
-            .union(self.collaborate_experiments(user).only("id"))
-            .union(self.public_experiments().only("id"))
+                .only("id")
+                .union(self.team_experiments(user).only("id"))
+                .union(self.collaborate_experiments(user).only("id"))
+                .union(self.public_experiments().only("id"))
         )
+
+
+class ExperimentPermissions(models.TextChoices):
+    READ = "read",
+    READ_WRITE = "read_write"
 
 
 class Experiment(models.Model):
@@ -74,20 +79,15 @@ class Experiment(models.Model):
 
     def has_object_write_permission(self, request):
         return (
-            self.owner == request.user
-            or (
-                self.teams
-                and len(self.teams.filter(team__group__user=request.user)) > 0
-            )
-            or (
-                self.collaborators
-                and len(
-                    self.collaborator_set.filter(
-                        user=request.user.id, role=CollaboratorRole.EDITOR
-                    )
+                self.owner == request.user
+                or (
+                        self.teams
+                        and len(self.teams.filter(team__group__user=request.user)) > 0
                 )
-                > 0
-            )
+                or (
+                        self.collaborators
+                        and len(self.collaborator_set.filter(user=request.user.id, role=CollaboratorRole.EDITOR)) > 0
+                )
         )
 
     @staticmethod
@@ -96,3 +96,7 @@ class Experiment(models.Model):
 
     def has_object_retrieve_density_map_permission(self, request):
         return self.has_object_read_permission(request)
+
+    def set_permission_level(self, request):
+        self.permission_level = ExperimentPermissions.READ_WRITE if self.has_object_write_permission(request) \
+            else ExperimentPermissions.READ
