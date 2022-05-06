@@ -62,4 +62,4 @@ class ExperimentSerializer(serializers.ModelSerializer):
         )
 
     def get_has_edit_permission(self, obj):
-        return obj.has_object_write_permission(self.context['request'])
+        return obj.has_object_write_permission(self.context["request"])

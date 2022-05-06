@@ -6,9 +6,9 @@ from django.db import models
 
 from ..helpers.filesystem import create_dir, remove_dir
 from ..services.population_service import split_cells_per_segment
+from ..utils import is_valid_hex_str
 from .atlas import AtlasesChoice
 from .experiment import Experiment
-from ..utils import is_valid_hex_str
 
 
 class Population(models.Model):
@@ -38,7 +38,7 @@ class Population(models.Model):
         create_dir(self.save_dir_path)
 
     def save(
-            self, force_insert=False, force_update=False, using=None, update_fields=None
+        self, force_insert=False, force_update=False, using=None, update_fields=None
     ):
         self.update_color()
         super(Population, self).save(force_insert, force_update, using, update_fields)

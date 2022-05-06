@@ -49,12 +49,14 @@ class ExperimentViewSet(viewsets.ModelViewSet):
 
     def retrieve(self, request, *args, **kwargs):
         instance = self.get_object()
-        serializer = self.get_serializer(instance, context={'request': request})
+        serializer = self.get_serializer(instance, context={"request": request})
         return Response(serializer.data)
 
     def list(self, request, **kwargs):
         queryset = Experiment.objects.list(request.user)
-        serializer = self.get_serializer(queryset, many=True, context={'request': request})
+        serializer = self.get_serializer(
+            queryset, many=True, context={"request": request}
+        )
         return Response(serializer.data)
 
     @action(detail=False)
