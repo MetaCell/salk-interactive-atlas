@@ -97,6 +97,3 @@ class Experiment(models.Model):
     def has_object_retrieve_density_map_permission(self, request):
         return self.has_object_read_permission(request)
 
-    def set_permission_level(self, request):
-        self.permission_level = ExperimentPermissions.READ_WRITE if self.has_object_write_permission(request) \
-            else ExperimentPermissions.READ
