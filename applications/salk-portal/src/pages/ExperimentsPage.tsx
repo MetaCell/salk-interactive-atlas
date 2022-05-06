@@ -14,10 +14,10 @@ import {Box} from "@material-ui/core";
 import {bodyBgColor, font} from "../theme";
 import Sidebar from "../components/ExperimentSidebar";
 // @ts-ignore
-import {AtlasChoice, OVERLAYS, OverlaysDependencies} from "../utilities/constants"
+import {AtlasChoice, OVERLAYS} from "../utilities/constants"
 import {getAtlas} from "../service/AtlasService";
 import {Experiment, ExperimentPopulations} from "../apiclient/workspaces";
-import {areAllSelected, setIntersection} from "../utilities/functions";
+import {areAllSelected} from "../utilities/functions";
 import workspaceService from "../service/WorkspaceService";
 import Cell from "../models/Cell";
 import {CanvasWidget, DensityWidget, ElectrophysiologyWidget} from "../widgets";
@@ -170,10 +170,10 @@ const ExperimentsPage = () => {
             return obj;
         }, {});
 
-    const handleOverlays = (dependencies: Set<string>) => {
+    const handleOverlays = () => {
         Object.keys(overlaysSwitchState).forEach((k) => {
             // @ts-ignore
-            if (overlaysSwitchState[k] && setIntersection(OVERLAYS[k].dependencies, dependencies).size > 0) {
+            if (overlaysSwitchState[k]) {
                 const widget = getOverlayWidget(k)
                 if (widget) {
                     dispatch(updateWidget(widget))
@@ -220,7 +220,7 @@ const ExperimentsPage = () => {
     }, [subdivisions, populations, selectedAtlas])
 
     useEffect(() => {
-        handleOverlays(new Set([OverlaysDependencies.POPULATIONS]))
+        handleOverlays()
     }, [populations])
 
     useEffect(() => {
