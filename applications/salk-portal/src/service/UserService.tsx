@@ -1,12 +1,7 @@
 import Keycloak from 'keycloak-js';
-
-
 import { UserInfo } from '../types/user';
 import { getBaseDomain } from '../utils';
-
 import workspaceService from './WorkspaceService';
-import {PERMISSIONS} from "../utilities/constants";
-
 const keycloak = Keycloak('/keycloak.json');
 
 declare const window: any;
@@ -95,8 +90,4 @@ export async function register() {
 
 const errorCallback = (error: any) => {
     initApis(null);
-}
-
-export const hasExperimentEditPermission = (experiment : any) => {
-    return experiment.permission_level === PERMISSIONS.READ_WRITE
 }

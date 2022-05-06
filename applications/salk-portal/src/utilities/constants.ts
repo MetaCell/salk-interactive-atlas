@@ -33,8 +33,3 @@ export enum REQUEST_STATE {
     SUCCESS,
     ERROR
 }
-
-export enum PERMISSIONS {
-    READ= "read",
-    READ_WRITE = "read_write"
-}

@@ -10,7 +10,6 @@ import {WidgetStatus} from "@metacell/geppetto-meta-client/common/layout/model";
 import {addWidget, updateWidget, deleteWidget} from '@metacell/geppetto-meta-client/common/layout/actions';
 // @ts-ignore
 import Loader from '@metacell/geppetto-meta-ui/loader/Loader'
-
 import {Box} from "@material-ui/core";
 import {bodyBgColor, font} from "../theme";
 import Sidebar from "../components/ExperimentSidebar";
@@ -22,8 +21,6 @@ import {areAllSelected, setIntersection} from "../utilities/functions";
 import workspaceService from "../service/WorkspaceService";
 import Cell from "../models/Cell";
 import {CanvasWidget, DensityWidget, ElectrophysiologyWidget} from "../widgets";
-import {hasExperimentEditPermission} from '../service/UserService';
-
 
 const useStyles = makeStyles({
     layoutContainer: {
@@ -197,7 +194,7 @@ const ExperimentsPage = () => {
             data.populations.forEach((p, i) => {
                 data.populations[i].cells = cells[i]
             });
-            setExperiment({data, hasEditPermission: hasExperimentEditPermission(data)})
+            setExperiment(data)
         }
 
         fetchData()
@@ -206,7 +203,7 @@ const ExperimentsPage = () => {
 
     useEffect(() => {
         if (experiment != null) {
-            setPopulations(getPopulations(experiment.data, selectedAtlas))
+            setPopulations(getPopulations(experiment, selectedAtlas))
             dispatch(addWidget(CanvasWidget(selectedAtlas, new Set(), {})));
             dispatch(addWidget(ElectrophysiologyWidget));
             setWidgetsReady(true)
@@ -246,7 +243,7 @@ const ExperimentsPage = () => {
                      handleShowAllPopulations={handleShowAllPopulations}
                      handlePopulationColorChange={handlePopulationColorChange}
                      handleOverlaySwitch={handleOverlaySwitch}
-                     hasEditPermission={experiment.hasEditPermission}
+                     hasEditPermission={experiment.has_edit_permission}
             />
             <Box className={classes.layoutContainer}>
                 {LayoutComponent === undefined ? <CircularProgress/> : <LayoutComponent/>}
