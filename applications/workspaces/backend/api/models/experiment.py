@@ -38,11 +38,6 @@ class ExperimentsObjectsManager(models.Manager):
         )
 
 
-class ExperimentPermissions(models.TextChoices):
-    READ = ("read",)
-    READ_WRITE = "read_write"
-
-
 class Experiment(models.Model):
     name = models.CharField(max_length=100)
     description = models.TextField()
