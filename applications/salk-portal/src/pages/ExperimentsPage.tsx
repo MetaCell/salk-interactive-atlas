@@ -7,7 +7,7 @@ import {getLayoutManagerInstance} from "@metacell/geppetto-meta-client/common/la
 // @ts-ignore
 import {WidgetStatus} from "@metacell/geppetto-meta-client/common/layout/model";
 // @ts-ignore
-import {addWidget, updateWidget, deleteWidget} from '@metacell/geppetto-meta-client/common/layout/actions';
+import {addWidget, deleteWidget, updateWidget} from '@metacell/geppetto-meta-client/common/layout/actions';
 // @ts-ignore
 import Loader from '@metacell/geppetto-meta-ui/loader/Loader'
 
@@ -212,16 +212,24 @@ const ExperimentsPage = () => {
         }
     }, [experiment])
 
-    useEffect(() => {
-        const subdivisionsSet = new Set(Object.keys(subdivisions).filter(sId => subdivisions[sId].selected))
-        // @ts-ignore
+    function getSelectedSubdivisionsSet() {
+        return new Set(Object.keys(subdivisions).filter(sId => subdivisions[sId].selected));
+    }
 
+    // TODO: Handle selectedAtlas changes
+
+    useEffect(() => {
+        const subdivisionsSet = getSelectedSubdivisionsSet()
         if (widgetsReady) {
-            dispatch(updateWidget(CanvasWidget(selectedAtlas, subdivisionsSet, getActivePopulations())))
+            dispatch(updateWidget(CanvasWidget(selectedAtlas, subdivisionsSet, getActivePopulations(), true)))
         }
-    }, [subdivisions, populations, selectedAtlas])
+    }, [subdivisions])
 
     useEffect(() => {
+        const subdivisionsSet = getSelectedSubdivisionsSet();
+        if (widgetsReady) {
+            dispatch(updateWidget(CanvasWidget(selectedAtlas, subdivisionsSet, getActivePopulations(), false)))
+        }
         handleOverlays(new Set([OverlaysDependencies.POPULATIONS]))
     }, [populations])
 
