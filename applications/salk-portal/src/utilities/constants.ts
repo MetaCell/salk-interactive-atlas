@@ -19,13 +19,9 @@ export const ACME_TEAM = 'acmeteam';
 export const SALK_TEAM = 'salkteam';
 export const COMMUNITY_HASH = 'community';
 
-export enum OverlaysDependencies {
-    POPULATIONS = "Populations"
-}
-
 export const OVERLAYS = {
-    densityMap: new OverlayMetadata("densityMap", "Density Map", new Set([OverlaysDependencies.POPULATIONS])),
-    neuronalLocations:  new OverlayMetadata("neuronalLocations", "Neuronal Locations", new Set([])),
+    densityMap: new OverlayMetadata("densityMap", "Density Map"),
+    neuronalLocations:  new OverlayMetadata("neuronalLocations", "Neuronal Locations"),
 }
 
 export enum REQUEST_STATE {

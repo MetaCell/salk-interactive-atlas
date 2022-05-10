@@ -1,4 +1,5 @@
 import os
+import re
 
 from django.http import FileResponse
 
@@ -15,3 +16,15 @@ def send_file(file):
         file.name
     )
     return response
+
+
+def is_valid_hex_str(hex_str: str) -> bool:
+    if hex_str is None:
+        return False
+
+    regex = "^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$"
+    p = re.compile(regex)
+    if re.search(p, hex_str):
+        return True
+
+    return False

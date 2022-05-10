@@ -1,11 +1,7 @@
 import Keycloak from 'keycloak-js';
-
-
 import { UserInfo } from '../types/user';
 import { getBaseDomain } from '../utils';
-
 import workspaceService from './WorkspaceService';
-
 const keycloak = Keycloak('/keycloak.json');
 
 declare const window: any;
@@ -81,7 +77,7 @@ export async function initUser(): Promise<UserInfo> {
 
 export async function login(): Promise<UserInfo> {
     const userInfo: any = await keycloak.login();
-    return mapKeycloakUser(userInfo);
+    return mapKeycloakUser(userInfo, null);
 }
 
 export async function logout() {
