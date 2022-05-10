@@ -1,13 +1,24 @@
 import math
+
 import numpy as np
 from skimage.filters import gaussian
+
 from api.helpers.atlas import get_bg_atlas
-from api.helpers.image_manipulation import black_to_transparent, get_image_from_array, apply_greyscale_alpha_mask, \
-    stack_images
+from api.helpers.image_manipulation import black_to_transparent, get_image_from_array, apply_greyscale_alpha_mask
 from api.services.population_service import get_cells
 
 ROSTRAL = "Rostral"
 CAUDAL = "Caudal"
+
+
+def generate_annotation_image(atlas, subdivision):
+    subdivision_limits = get_subdivision_limits(atlas, subdivision)
+    middle_point = int((subdivision_limits[0] + subdivision_limits[1]) / 2)
+    annot_array = atlas.annotation[middle_point]
+    # scale image to 'greyish' tons (max value matches with #808080 (128))
+    scaled_annot_array = 128 / np.max(annot_array) * annot_array
+    annot_img = get_image_from_array(scaled_annot_array, 'RGB')
+    return black_to_transparent(annot_img)
 
 
 def generate_density_map(atlas, subdivision, populations):
@@ -27,9 +38,7 @@ def generate_density_map(atlas, subdivision, populations):
     img_data = get_accumulated_probability_map(probability_map)
     scaled_image_data = 256 / np.max(img_data) * img_data
     img = get_image_from_array(scaled_image_data)
-    density_img = apply_greyscale_alpha_mask(img)
-    annot_img = get_annotation_image(atlas, subdivision)
-    return stack_images(annot_img, density_img)
+    return apply_greyscale_alpha_mask(img)
 
 
 def get_bins(image_size, bin_sizes, bin_limits):
@@ -85,15 +94,3 @@ def get_accumulated_probability_map(probability_map):
     for slice in probability_map:
         acc += slice
     return acc / len(probability_map)
-
-
-def get_annotation_image(atlas, subdivision):
-    subdivision_limits = get_subdivision_limits(atlas, subdivision)
-    middle_point = int((subdivision_limits[0]+subdivision_limits[1])/2)
-    annot_array = atlas.annotation[middle_point]
-    # scale image to 'greyish' tons (max value matches with #808080 (128))
-    scaled_annot_array = 128 / np.max(annot_array) * annot_array
-    annot_img = get_image_from_array(scaled_annot_array, 'RGB')
-    return black_to_transparent(annot_img)
-
-
