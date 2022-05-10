@@ -1,10 +1,10 @@
 import {AtlasChoice} from "./utilities/constants";
 // @ts-ignore
 import {WidgetStatus} from "@metacell/geppetto-meta-client/common/layout/model";
-import Cell from "./models/Cell";
 import {Population} from "./apiclient/workspaces";
 
-export const CanvasWidget = (selectedAtlas: AtlasChoice, activeSubdivisions: Set<string>, activePopulations: any) => {
+export const CanvasWidget = (selectedAtlas: AtlasChoice, activeSubdivisions: Set<string>, activePopulations: any,
+                             shouldCameraReset: boolean = false) => {
     return {
         id: 'canvasWidget',
         name: "Spinal Cord Atlas",
@@ -16,6 +16,7 @@ export const CanvasWidget = (selectedAtlas: AtlasChoice, activeSubdivisions: Set
             selectedAtlas,
             activeSubdivisions,
             activePopulations,
+            shouldCameraReset
         }
     }
 };

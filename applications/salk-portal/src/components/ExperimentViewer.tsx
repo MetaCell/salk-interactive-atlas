@@ -88,7 +88,6 @@ const getColorOpacityPair = (color: string, opacity: number) => {
 class ExperimentViewer extends Component {
     private scene: THREE.Scene;
     private readonly populationsMap: {};
-
     // @ts-ignore
     constructor(props) {
         super(props);
@@ -231,7 +230,10 @@ class ExperimentViewer extends Component {
     render() {
         // @ts-ignore
         const {classes} = this.props
-        const {cameraOptions, captureOptions} = getDefaultOptions()
+        // tslint:disable-next-line:prefer-const
+        let {cameraOptions, captureOptions} = getDefaultOptions()
+        // @ts-ignore
+        cameraOptions = {...cameraOptions, reset: this.props.shouldCameraReset}
         // @ts-ignore
         const canvasData: any = mapToCanvasData(this.getInstancesToShow())
         return (<div className={classes.canvasContainer}>
