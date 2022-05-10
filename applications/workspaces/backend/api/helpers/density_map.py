@@ -1,9 +1,9 @@
 import math
-
 import numpy as np
-from PIL import Image
 from skimage.filters import gaussian
 from api.helpers.atlas import get_bg_atlas
+from api.helpers.image_manipulation import black_to_transparent, get_image_from_array, apply_greyscale_alpha_mask, \
+    stack_images
 from api.services.population_service import get_cells
 
 ROSTRAL = "Rostral"
@@ -13,7 +13,7 @@ CAUDAL = "Caudal"
 def generate_density_map(atlas, subdivision, populations):
     bg_atlas = get_bg_atlas(atlas)
     cells = get_cells(subdivision, populations)
-    prob_map_smoothing = 100
+    prob_map_smoothing = 50
     prob_map_normalise = True
     bin_limits = get_subdivision_bin_limits(atlas, subdivision)
 
@@ -24,15 +24,12 @@ def generate_density_map(atlas, subdivision, populations):
         smoothing=prob_map_smoothing,
         normalise=prob_map_normalise,
     )
-    img = get_accumulated_probability_map(probability_map)
-    scaled_image = 256 / np.max(img) * img
-
-    i = Image.fromarray(scaled_image)
-    i = i.convert('RGBA')
-    mask = i.convert('L')
-    i.putalpha(mask)
-
-    return i
+    img_data = get_accumulated_probability_map(probability_map)
+    scaled_image_data = 256 / np.max(img_data) * img_data
+    img = get_image_from_array(scaled_image_data)
+    density_img = apply_greyscale_alpha_mask(img)
+    annot_img = get_annotation_image(atlas, subdivision)
+    return stack_images(annot_img, density_img)
 
 
 def get_bins(image_size, bin_sizes, bin_limits):
@@ -69,15 +66,18 @@ def generate_prob_map(
     return probability_map
 
 
-def get_subdivision_bin_limits(atlas, subdivision):
+def get_subdivision_limits(atlas, subdivision):
     segment, part = subdivision.split('-')
     for s in atlas.metadata['atlas_segments']:
         if s['Segment'] == segment:
             if part == ROSTRAL:
-                return (s['Start'], int(math.floor((s['Start']+s['End'])/2))), None, None
+                return s['Start'], int(math.floor((s['Start'] + s['End']) / 2))
             else:
-                return (int(math.ceil((s['Start']+s['End']))/2), s['End']), None, None
-    return None, None, None
+                return int(math.ceil((s['Start'] + s['End'])) / 2), s['End']
+
+
+def get_subdivision_bin_limits(atlas, subdivision):
+    return get_subdivision_limits(atlas, subdivision), None, None
 
 
 def get_accumulated_probability_map(probability_map):
@@ -85,3 +85,15 @@ def get_accumulated_probability_map(probability_map):
     for slice in probability_map:
         acc += slice
     return acc / len(probability_map)
+
+
+def get_annotation_image(atlas, subdivision):
+    subdivision_limits = get_subdivision_limits(atlas, subdivision)
+    middle_point = int((subdivision_limits[0]+subdivision_limits[1])/2)
+    annot_array = atlas.annotation[middle_point]
+    # scale image to 'greyish' tons (max value matches with #808080 (128))
+    scaled_annot_array = 128 / np.max(annot_array) * annot_array
+    annot_img = get_image_from_array(scaled_annot_array, 'RGB')
+    return black_to_transparent(annot_img)
+
+
