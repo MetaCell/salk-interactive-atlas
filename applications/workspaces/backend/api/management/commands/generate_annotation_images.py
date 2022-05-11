@@ -1,6 +1,6 @@
-from django.core.management.base import BaseCommand, CommandError
+from django.core.management.base import BaseCommand
 
-from api.helpers.atlas import get_bg_atlas, get_subdivision_boundaries
+from api.helpers.atlas import get_bg_atlas, get_subdivisions
 from api.helpers.density_map import generate_annotation_image
 from api.models import AtlasesChoice
 from api.services.atlas_service import save_annotation_image
@@ -19,7 +19,7 @@ class Command(BaseCommand):
                 self.stdout.write(self.style.WARNING(f'{atlas_id} not recognized. Skipping'))
                 continue
             bg_atlas = get_bg_atlas(atlas_id)
-            _, subdivisions = get_subdivision_boundaries(atlas_id)
+            subdivisions = get_subdivisions(atlas_id)
             for s in subdivisions:
                 save_annotation_image(generate_annotation_image(bg_atlas, s), s)
         self.stdout.write(self.style.SUCCESS('Generate annotations finished'))

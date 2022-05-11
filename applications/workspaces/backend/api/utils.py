@@ -28,3 +28,10 @@ def is_valid_hex_str(hex_str: str) -> bool:
         return True
 
     return False
+
+
+def flat_map(f, lst):
+    ys = []
+    for e in lst:
+        ys.extend(f(e))
+    return ys

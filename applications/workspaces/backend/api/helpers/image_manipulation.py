@@ -10,7 +10,8 @@ def get_image_from_array(img_array, mode='RGBA'):
 
 def apply_greyscale_alpha_mask(img):
     mask = img.convert('L')
-    return img.putalpha(mask)
+    img.putalpha(mask)
+    return img
 
 
 def black_to_transparent(img):

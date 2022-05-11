@@ -1,4 +1,6 @@
-from django.core.management.base import BaseCommand, CommandError
+from django.core.management.base import BaseCommand
+
+from api.models import Population
 
 
 class Command(BaseCommand):
@@ -10,7 +12,13 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         for pop_id in options['population_ids']:
             try:
-                print(pop_id)
-            except Exception:
-                raise CommandError('Something went wrong')
-        self.stdout.write(self.style.SUCCESS('Successfully generated plots'))
+                p = Population.objects.get(pk=pop_id)
+            except Population.DoesNotExist:
+                self.stdout.write(self.style.WARNING(f'{pop_id}  does not exist. Skipping'))
+                continue
+            try:
+                p.generate_images()
+            except Exception as e:
+                self.stdout.write(self.style.WARNING(f'{pop_id}: {e}. Skipped'))
+
+        self.stdout.write(self.style.SUCCESS('Generate population images finished'))

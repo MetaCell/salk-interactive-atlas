@@ -1,4 +1,4 @@
-from api.helpers.atlas import get_subdivision_boundaries
+from api.helpers.atlas import get_subdivisions
 from api.helpers.exceptions import (
     AuthorizationError,
     DensityMapIncorrectSubdivisionError,
@@ -23,7 +23,7 @@ def validate_density_map(experiment, subdivision, populations):
         if pop.experiment.id != experiment.id:
             raise AuthorizationError
 
-    _, subdivisions = get_subdivision_boundaries(atlas)
+    subdivisions = get_subdivisions(atlas)
     if subdivision not in set(subdivisions):
         raise DensityMapIncorrectSubdivisionError
 
