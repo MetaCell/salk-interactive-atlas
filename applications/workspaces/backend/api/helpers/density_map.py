@@ -1,10 +1,12 @@
 import math
 
 import numpy as np
+from matplotlib import pyplot as plt
 from skimage.filters import gaussian
 
 from api.helpers.atlas import get_bg_atlas
-from api.helpers.image_manipulation import black_to_transparent, get_image_from_array, apply_greyscale_alpha_mask
+from api.helpers.image_manipulation import black_to_transparent, get_image_from_array, apply_greyscale_alpha_mask, \
+    fig_to_img
 from api.services.population_service import get_cells
 
 ROSTRAL = "Rostral"
@@ -19,6 +21,19 @@ def generate_annotation_image(atlas, subdivision):
     scaled_annot_array = 128 / np.max(annot_array) * annot_array
     annot_img = get_image_from_array(scaled_annot_array, 'RGB')
     return black_to_transparent(annot_img)
+
+
+def generate_centroids(atlas, subdivision, points):
+    subdivision_limits = get_subdivision_limits(atlas, subdivision)
+    points_slice = points[np.logical_and(subdivision_limits[0] <= points[:, 0], points[:, 0] <= subdivision_limits[1])]
+    points_slice = points_slice[:, 1:]
+    px = 1 / plt.rcParams['figure.dpi']  # pixel in inches
+    plt_1 = plt.figure(figsize=(atlas.annotation.shape[2] * px, atlas.annotation.shape[1] * px))
+    plt.gca().invert_yaxis()
+    plt.axis('off')
+    plt.plot(points_slice[:, 1], points_slice[:, 0], 'o', color='white', markersize=0.5)
+    plt.gca().set_position([0, 0, 1, 1])
+    return fig_to_img(plt_1)
 
 
 def generate_density_map(atlas, subdivision, populations):

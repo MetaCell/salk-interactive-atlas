@@ -1,4 +1,5 @@
 import numpy as np
+import io
 from PIL import Image
 
 
@@ -31,3 +32,11 @@ def black_to_transparent(img):
 
 def stack_images(background, foreground):
     return Image.alpha_composite(background, foreground)
+
+
+def fig_to_img(fig):
+    buf = io.BytesIO()
+    fig.savefig(buf, transparent=True)
+    buf.seek(0)
+    img = Image.open(buf)
+    return img
