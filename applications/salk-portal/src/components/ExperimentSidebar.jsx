@@ -169,7 +169,8 @@ const ExperimentSidebar = ({
                                handleShowAllSubdivisions,
                                handleShowAllPopulations,
                                handlePopulationColorChange,
-                               handleOverlaySwitch
+                               handleOverlaySwitch,
+                               hasEditPermission
                            }) => {
     const classes = useStyles();
     const [shrink, setShrink] = useState(false);
@@ -177,6 +178,9 @@ const ExperimentSidebar = ({
     const [selectedPopoverId, setSelectedPopoverId] = React.useState(null);
 
     const handlePopoverClick = (event, id) => {
+        if(!hasEditPermission){
+            return
+        }
         setPopoverAnchorEl(event.currentTarget);
         setSelectedPopoverId(id);
     };
@@ -204,6 +208,7 @@ const ExperimentSidebar = ({
             </Typography>
         )
     }
+    const populationTextStyle = hasEditPermission ? {} : {marginLeft: "8px"}
 
     return (
         <Box className={sidebarClass}>
@@ -304,10 +309,10 @@ const ExperimentSidebar = ({
                                           onClick={(event) => handlePopoverClick(event, pId)}>
                                         <Box style={{backgroundColor: getRGBAString(getRGBAColor(pId))}} component="span"
                                              className='square'/>
-                                        <ArrowDropDownIcon fontSize='small'
-                                                           style={{opacity: POPULATION_ICONS_OPACITY}}/>
+                                        {hasEditPermission && <ArrowDropDownIcon fontSize='small'
+                                                           style={{opacity: POPULATION_ICONS_OPACITY}}/>}
                                     </span>
-                                    <Popover
+                                    {hasEditPermission && <Popover
                                         open={pId === selectedPopoverId}
                                         anchorEl={popoverAnchorEl}
                                         onClose={handlePopoverClose}
@@ -320,6 +325,7 @@ const ExperimentSidebar = ({
                                             (color, opacity) => handlePopulationColorChange(pId, color, opacity)
                                         }/>
                                     </Popover>
+                                    }
                                     <FormControlLabel
                                         className={'population-label'}
                                         key={pId} control={<Switch/>}
@@ -327,6 +333,7 @@ const ExperimentSidebar = ({
                                         labelPlacement="start"
                                         onChange={() => handlePopulationSwitch(pId)}
                                         checked={populations[pId].selected}
+                                        style={populationTextStyle}
                                     />
                                 </span>
                             )}

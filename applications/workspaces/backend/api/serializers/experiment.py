@@ -42,6 +42,7 @@ class ExperimentSerializer(serializers.ModelSerializer):
     )
     tags = TagSerializer(many=True, read_only=True)
     date_created = serializers.CharField(read_only=True)
+    has_edit_permission = serializers.SerializerMethodField()
 
     class Meta:
         model = Experiment
@@ -57,4 +58,8 @@ class ExperimentSerializer(serializers.ModelSerializer):
             "collaborators",
             "populations",
             "tags",
+            "has_edit_permission",
         )
+
+    def get_has_edit_permission(self, obj):
+        return obj.has_object_write_permission(self.context["request"])

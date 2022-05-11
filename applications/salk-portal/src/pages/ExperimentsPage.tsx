@@ -7,22 +7,20 @@ import {getLayoutManagerInstance} from "@metacell/geppetto-meta-client/common/la
 // @ts-ignore
 import {WidgetStatus} from "@metacell/geppetto-meta-client/common/layout/model";
 // @ts-ignore
-import {addWidget, updateWidget, deleteWidget} from '@metacell/geppetto-meta-client/common/layout/actions';
+import {addWidget, deleteWidget, updateWidget} from '@metacell/geppetto-meta-client/common/layout/actions';
 // @ts-ignore
 import Loader from '@metacell/geppetto-meta-ui/loader/Loader'
-
 import {Box} from "@material-ui/core";
 import {bodyBgColor, font} from "../theme";
 import Sidebar from "../components/ExperimentSidebar";
 // @ts-ignore
-import {AtlasChoice, OVERLAYS, OverlaysDependencies} from "../utilities/constants"
+import {AtlasChoice, OVERLAYS} from "../utilities/constants"
 import {getAtlas} from "../service/AtlasService";
 import {Experiment, ExperimentPopulations} from "../apiclient/workspaces";
-import {areAllSelected, setIntersection} from "../utilities/functions";
+import {areAllSelected} from "../utilities/functions";
 import workspaceService from "../service/WorkspaceService";
 import Cell from "../models/Cell";
 import {CanvasWidget, DensityWidget, ElectrophysiologyWidget} from "../widgets";
-
 
 const useStyles = makeStyles({
     layoutContainer: {
@@ -143,7 +141,7 @@ const ExperimentsPage = () => {
         setOverlaysSwitchState({...overlaysSwitchState, [overlayId]: !isOverlayActive})
     };
 
-    const handlePopulationColorChange = async (id: string, color: string) => {
+    const handlePopulationColorChange = async (id: string, color: string, opacity: string) => {
         // @ts-ignore
         await api.partialUpdatePopulation(id, {color, opacity})
         // @ts-ignore
@@ -172,10 +170,10 @@ const ExperimentsPage = () => {
             return obj;
         }, {});
 
-    const handleOverlays = (dependencies: Set<string>) => {
+    const handleOverlays = () => {
         Object.keys(overlaysSwitchState).forEach((k) => {
             // @ts-ignore
-            if (overlaysSwitchState[k] && setIntersection(OVERLAYS[k].dependencies, dependencies).size > 0) {
+            if (overlaysSwitchState[k]) {
                 const widget = getOverlayWidget(k)
                 if (widget) {
                     dispatch(updateWidget(widget))
@@ -212,17 +210,25 @@ const ExperimentsPage = () => {
         }
     }, [experiment])
 
-    useEffect(() => {
-        const subdivisionsSet = new Set(Object.keys(subdivisions).filter(sId => subdivisions[sId].selected))
-        // @ts-ignore
+    function getSelectedSubdivisionsSet() {
+        return new Set(Object.keys(subdivisions).filter(sId => subdivisions[sId].selected));
+    }
 
+    // TODO: Handle selectedAtlas changes
+
+    useEffect(() => {
+        const subdivisionsSet = getSelectedSubdivisionsSet()
         if (widgetsReady) {
-            dispatch(updateWidget(CanvasWidget(selectedAtlas, subdivisionsSet, getActivePopulations())))
+            dispatch(updateWidget(CanvasWidget(selectedAtlas, subdivisionsSet, getActivePopulations(), true)))
         }
-    }, [subdivisions, populations, selectedAtlas])
+    }, [subdivisions])
 
     useEffect(() => {
-        handleOverlays(new Set([OverlaysDependencies.POPULATIONS]))
+        const subdivisionsSet = getSelectedSubdivisionsSet();
+        if (widgetsReady) {
+            dispatch(updateWidget(CanvasWidget(selectedAtlas, subdivisionsSet, getActivePopulations(), false)))
+        }
+        handleOverlays()
     }, [populations])
 
     useEffect(() => {
@@ -245,6 +251,7 @@ const ExperimentsPage = () => {
                      handleShowAllPopulations={handleShowAllPopulations}
                      handlePopulationColorChange={handlePopulationColorChange}
                      handleOverlaySwitch={handleOverlaySwitch}
+                     hasEditPermission={experiment.has_edit_permission}
             />
             <Box className={classes.layoutContainer}>
                 {LayoutComponent === undefined ? <CircularProgress/> : <LayoutComponent/>}
