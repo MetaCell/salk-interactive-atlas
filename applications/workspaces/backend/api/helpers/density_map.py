@@ -13,10 +13,10 @@ ROSTRAL = "Rostral"
 CAUDAL = "Caudal"
 
 
-def generate_annotation_image(atlas, subdivision):
-    subdivision_limits = get_subdivision_limits(atlas, subdivision)
+def generate_annotation_image(bg_atlas, subdivision):
+    subdivision_limits = get_subdivision_limits(bg_atlas, subdivision)
     middle_point = int((subdivision_limits[0] + subdivision_limits[1]) / 2)
-    annot_array = atlas.annotation[middle_point]
+    annot_array = bg_atlas.annotation[middle_point]
     # scale image to 'greyish' tons (max value matches with #808080 (128))
     scaled_annot_array = 128 / np.max(annot_array) * annot_array
     annot_img = get_image_from_array(scaled_annot_array, 'RGB')
