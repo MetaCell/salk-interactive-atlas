@@ -18,6 +18,7 @@ import {AtlasChoice, REQUEST_STATE} from "../utilities/constants";
 import workspaceService from "../service/WorkspaceService";
 import CordImageMapper from "./CordImageMapper";
 import {getAtlas} from "../service/AtlasService";
+import {clearCanvas, drawImage} from "../service/CanvasService";
 
 
 const useStyles = makeStyles({

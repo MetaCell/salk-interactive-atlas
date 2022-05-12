@@ -20,12 +20,12 @@ export const ACME_TEAM = 'acmeteam';
 export const SALK_TEAM = 'salkteam';
 export const COMMUNITY_HASH = 'community';
 
-const probabilityMapId = 'probabilityMap'
-const neuronalLocationsId = 'neuronalLocations'
+export const PROBABILITY_MAP_ID = 'probabilityMap'
+export const NEURONAL_LOCATIONS_ID = 'neuronalLocations'
 
 export const OVERLAYS = {
-    [probabilityMapId]: new OverlayMetadata(probabilityMapId, "Probability Map", widgetIds.densityMap),
-    [neuronalLocationsId]:  new OverlayMetadata(neuronalLocationsId, "Neuronal Locations", widgetIds.densityMap),
+    [PROBABILITY_MAP_ID]: new OverlayMetadata(PROBABILITY_MAP_ID, "Probability Map", widgetIds.densityMap),
+    [NEURONAL_LOCATIONS_ID]:  new OverlayMetadata(NEURONAL_LOCATIONS_ID, "Neuronal Locations", widgetIds.densityMap),
 }
 
 export enum REQUEST_STATE {

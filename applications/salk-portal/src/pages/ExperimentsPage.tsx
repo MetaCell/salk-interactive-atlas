@@ -14,7 +14,7 @@ import {Box} from "@material-ui/core";
 import {bodyBgColor, font} from "../theme";
 import Sidebar from "../components/ExperimentSidebar";
 // @ts-ignore
-import {AtlasChoice, OVERLAYS} from "../utilities/constants"
+import {AtlasChoice, NEURONAL_LOCATIONS_ID, OVERLAYS, PROBABILITY_MAP_ID} from "../utilities/constants"
 import {getAtlas} from "../service/AtlasService";
 import {Experiment, ExperimentPopulations} from "../apiclient/workspaces";
 import {areAllSelected} from "../utilities/functions";
@@ -124,41 +124,41 @@ const ExperimentsPage = () => {
         setDensityMapValue(subSubSegmentId)
     };
 
-    const handleWidgets = (nextSwitchState: boolean, widgetId: string) => {
+    const handleWidgets = () => {
+        const switchableWidgets = new Set()
         // if the widget is not active
-        if (nextSwitchState && !(widgetId in store.getState().widgets)){
-            const widget = getOverlayWidget(widgetId)
-            dispatch(addWidget(widget))
+        for (const overlay of Object.keys(overlaysSwitchState)){
+            // @ts-ignore
+            const widgetId = OVERLAYS[overlay].widgetId
+            // if switch is active but widget is not added
+            if (overlaysSwitchState[overlay] && !(widgetId in store.getState().widgets)){
+                dispatch(addWidget(getOverlayWidget(widgetId)))
+            }
+            switchableWidgets.add(widgetId)
         }
-        // if there are no active overlays for the widget
-        if (!nextSwitchState && isLastOverlayActive(widgetId)){
-            dispatch(deleteWidget(widgetId))
+
+        for (const wId of Object.keys(store.getState().widgets)){
+            // if widget is visible but no switch is on
+            if (switchableWidgets.has(wId) && !hasActiveSwitch(wId)){
+                dispatch(deleteWidget(wId))
+            }
         }
     }
 
-    const isLastOverlayActive = (widgetId: string) => {
-        let count = 0
+    const hasActiveSwitch = (widgetId: string) => {
         for (const overlayId of Object.keys(overlaysSwitchState)){
             // @ts-ignore
             if (OVERLAYS[overlayId].widgetId === widgetId){
                 if (overlaysSwitchState[overlayId]){
-                    count += 1
+                    return true
                 }
             }
-            if (count > 1){
-                return false
-            }
         }
-        return true
+        return false
     }
 
     const handleOverlaySwitch = (overlayId: string) => {
-        const nextSwitchState = !overlaysSwitchState[overlayId]
-        // @ts-ignore
-        const widgetId = OVERLAYS[overlayId].widgetId
-
-        handleWidgets(nextSwitchState, widgetId)
-        setOverlaysSwitchState({...overlaysSwitchState, [overlayId]: nextSwitchState})
+        setOverlaysSwitchState({...overlaysSwitchState, [overlayId]: !overlaysSwitchState[overlayId]})
     };
 
     const handlePopulationColorChange = async (id: string, color: string, opacity: string) => {
@@ -175,8 +175,8 @@ const ExperimentsPage = () => {
         switch (widgetId) {
             case widgetIds.densityMap:
                 return DensityWidget(MOCKED_ID, Object.keys(subdivisions), Object.values(getActivePopulations()),
-                    selectedAtlas, densityMapValue, overlaysSwitchState[OVERLAYS.probabilityMap.id],
-                    overlaysSwitchState[OVERLAYS.neuronalLocations.id], handleDensityMapChange)
+                    selectedAtlas, densityMapValue, overlaysSwitchState[PROBABILITY_MAP_ID],
+                    overlaysSwitchState[NEURONAL_LOCATIONS_ID], handleDensityMapChange)
             default:
                 return null
         }
@@ -191,17 +191,11 @@ const ExperimentsPage = () => {
             return obj;
         }, {});
 
-    const handleOverlays = () => {
-        Object.keys(overlaysSwitchState).forEach((k) => {
-            // @ts-ignore
-            if (overlaysSwitchState[k]) {
-                const widget = getOverlayWidget(k)
-                if (widget) {
-                    dispatch(updateWidget(widget))
-                }
-            }
-        })
+
+    const getSelectedSubdivisionsSet = () => {
+        return new Set(Object.keys(subdivisions).filter(sId => subdivisions[sId].selected));
     }
+
 
     useEffect(() => {
         const fetchData = async () => {
@@ -230,9 +224,10 @@ const ExperimentsPage = () => {
         }
     }, [experiment])
 
-    function getSelectedSubdivisionsSet() {
-        return new Set(Object.keys(subdivisions).filter(sId => subdivisions[sId].selected));
-    }
+
+    useEffect(() => {
+        handleWidgets()
+    }, [overlaysSwitchState])
 
     // TODO: Handle selectedAtlas changes
 
@@ -248,7 +243,6 @@ const ExperimentsPage = () => {
         if (widgetIds.canvas in store.getState().widgets) {
             dispatch(updateWidget(CanvasWidget(selectedAtlas, subdivisionsSet, getActivePopulations(), false)))
         }
-        handleOverlays()
     }, [populations])
 
     useEffect(() => {
