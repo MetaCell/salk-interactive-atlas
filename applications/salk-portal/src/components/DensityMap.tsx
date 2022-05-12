@@ -127,22 +127,13 @@ const DensityMap = (props: {
         if (canvas == null){
             return
         }
-        const ctx = canvas.getContext('2d')
+
         // Clear previous content
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        const backgroundSrc = atlas.getAnnotationImageSrc(selectedValue)
-        if (backgroundSrc){
-            const backgroundImg = new Image();
-            backgroundImg.onload = () => {
-                ctx.drawImage(backgroundImg, 0, 0);
-            };
-            backgroundImg.src = backgroundSrc
-            // if (middleground){
-            //     ctx.drawImage(middleground, 0, 0);
-            // }
-            // if (foreground){
-            //     ctx.drawImage(foreground, 0, 0);
-            // }
+        clearCanvas(canvas)
+        const ctx = canvas.getContext('2d')
+        const background = atlas.getAnnotationImageSrc(selectedValue)
+        if (background){
+            drawImage(ctx, background)
         }
     }
 
