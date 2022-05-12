@@ -1,5 +1,6 @@
 import Atlas from "../models/Atlas";
 import OverlayMetadata from "../models/OverlayMetadata";
+import {widgetIds} from "../widgets";
 
 export enum AtlasChoice {
     slk10 = "salk_cord_10um",
@@ -19,9 +20,12 @@ export const ACME_TEAM = 'acmeteam';
 export const SALK_TEAM = 'salkteam';
 export const COMMUNITY_HASH = 'community';
 
+const probabilityMapId = 'probabilityMap'
+const neuronalLocationsId = 'neuronalLocations'
+
 export const OVERLAYS = {
-    probabilityMap: new OverlayMetadata("probabilityMap", "Probability Map"),
-    neuronalLocations:  new OverlayMetadata("neuronalLocations", "Neuronal Locations"),
+    [probabilityMapId]: new OverlayMetadata(probabilityMapId, "Probability Map", widgetIds.densityMap),
+    [neuronalLocationsId]:  new OverlayMetadata(neuronalLocationsId, "Neuronal Locations", widgetIds.densityMap),
 }
 
 export enum REQUEST_STATE {

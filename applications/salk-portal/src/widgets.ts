@@ -3,10 +3,16 @@ import {AtlasChoice} from "./utilities/constants";
 import {WidgetStatus} from "@metacell/geppetto-meta-client/common/layout/model";
 import {Population} from "./apiclient/workspaces";
 
+export const widgetIds = {
+    canvas: 'canvasWidget',
+    electrophysiologyViewer: 'epWidget',
+    densityMap: 'densWidget'
+}
+
 export const CanvasWidget = (selectedAtlas: AtlasChoice, activeSubdivisions: Set<string>, activePopulations: any,
                              shouldCameraReset: boolean = false) => {
     return {
-        id: 'canvasWidget',
+        id: widgetIds.canvas,
         name: "Spinal Cord Atlas",
         component: "experimentViewer",
         panelName: "topLeftPanel",
@@ -22,7 +28,7 @@ export const CanvasWidget = (selectedAtlas: AtlasChoice, activeSubdivisions: Set
 };
 
 export const ElectrophysiologyWidget = {
-    id: 'epWidget',
+    id: widgetIds.electrophysiologyViewer,
     name: "Electrophysiology",
     component: "electrophysiologyViewer",
     panelName: "rightPanel",
@@ -34,7 +40,7 @@ export const DensityWidget = (experimentId: string, subdivisions: string[], acti
                               selectedValue: string, showProbabilityMap: boolean, showNeuronalLocations: boolean,
                               handleDensityMapChange: (value: string) => void) => {
     return {
-        id: 'densWidget',
+        id: widgetIds.densityMap,
         name: "Density Map",
         component: "densityMap",
         panelName: "bottomLeftPanel",
