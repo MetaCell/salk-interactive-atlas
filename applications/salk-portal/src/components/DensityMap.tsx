@@ -1,6 +1,6 @@
-import React, {useEffect} from 'react';
+import React, {useEffect, useRef} from 'react';
 import {makeStyles} from "@material-ui/core/styles";
-import {canvasBg, headerBorderColor} from "../theme";
+import {canvasBg} from "../theme";
 import {
     Box, Button,
     FormControl,
@@ -17,6 +17,7 @@ import {Population} from "../apiclient/workspaces";
 import {AtlasChoice, REQUEST_STATE} from "../utilities/constants";
 import workspaceService from "../service/WorkspaceService";
 import CordImageMapper from "./CordImageMapper";
+import {getAtlas} from "../service/AtlasService";
 
 
 const useStyles = makeStyles({
@@ -101,14 +102,18 @@ const RadioButton = ({onChange, isChecked, label}) => {
 const DensityMap = (props: {
     experimentId: string,
     subdivisions: string[], activePopulations: Population[],
-    selectedAtlas: AtlasChoice, selectedValue: string, onChange: (value: string) => void
+    selectedAtlas: AtlasChoice, selectedValue: string,
+    showProbabilityMap: boolean, showNeuronalLocations: boolean,
+    onChange: (value: string) => void
 }) => {
     const api = workspaceService.getApi()
+    const atlas = getAtlas(props.selectedAtlas)
+    const canvasRef = useRef(null)
     const {experimentId, activePopulations, selectedAtlas, onChange} = props
     const [selectedValue, setSelectedValue] = React.useState(props.selectedValue);
     const [densityRequest, setDensityRequest] = React.useState({
         loading: false,
-        data: null,
+        data : null,
         state: null
     });
 
@@ -117,45 +122,64 @@ const DensityMap = (props: {
         onChange(value)
     };
 
-    useEffect(() => {
-        const fetchData = async () => {
-            const response = await api.retrieveDensityMapExperiment(experimentId, selectedAtlas, selectedValue, activePopulations.map(p => p.id), {responseType: 'blob'})
-            if (response.status === 200){
-                setDensityRequest({
-                        loading: false,
-                        data: URL.createObjectURL(response.data),
-                        state: REQUEST_STATE.SUCCESS
-                    })
-            }else if (response.status === 204){
-                setDensityRequest({loading: false, data: null, state: REQUEST_STATE.NO_CONTENT})
-            }else{
-                setDensityRequest({loading: false, data: null, state: REQUEST_STATE.ERROR})
-            }
-        }
-        if (!(selectedValue && activePopulations.length > 0 && selectedAtlas)) {
+    const drawContent = () => {
+        const canvas = canvasRef.current
+        if (canvas == null){
             return
         }
-        setDensityRequest({loading: true, data: null, state: null})
-        fetchData()
-            .catch(() => setDensityRequest({loading: false, data: null, state: REQUEST_STATE.ERROR}));
+        const ctx = canvas.getContext('2d')
+        // Clear previous content
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        const backgroundSrc = atlas.getAnnotationImageSrc(selectedValue)
+        if (backgroundSrc){
+            const backgroundImg = new Image();
+            backgroundImg.onload = () => {
+                ctx.drawImage(backgroundImg, 0, 0);
+            };
+            backgroundImg.src = backgroundSrc
+            // if (middleground){
+            //     ctx.drawImage(middleground, 0, 0);
+            // }
+            // if (foreground){
+            //     ctx.drawImage(foreground, 0, 0);
+            // }
+        }
+    }
 
-    }, [selectedValue, activePopulations, selectedAtlas])
+    // useEffect(() => {
+    //     const fetchData = async () => {
+    //         const response = await api.retrieveDensityMapExperiment(experimentId, selectedAtlas, selectedValue, activePopulations.map(p => p.id), {responseType: 'blob'})
+    //         if (response.status === 200){
+    //             // @ts-ignore
+    //             const data =  URL.createObjectURL(response.data)
+    //             setDensityRequest({
+    //                     loading: false,
+    //                     data,
+    //                     state: REQUEST_STATE.SUCCESS
+    //                 })
+    //         }else if (response.status === 204){
+    //             setDensityRequest({loading: false, data: null, state: REQUEST_STATE.NO_CONTENT})
+    //         }else{
+    //             setDensityRequest({loading: false, data: null, state: REQUEST_STATE.ERROR})
+    //         }
+    //     }
+    //     if (!(selectedValue && activePopulations.length > 0 && selectedAtlas)) {
+    //         return
+    //     }
+    //     setDensityRequest({loading: true, data: null, state: null})
+    //     fetchData()
+    //         .catch(() => setDensityRequest({loading: false, data: null, state: REQUEST_STATE.ERROR}));
+    //
+    // }, [selectedValue, activePopulations, selectedAtlas])
 
     const subdivisions = props.subdivisions.sort()
     const classes = useStyles();
     // @ts-ignore
     const boxStyle = {flexGrow: 1, background: canvasBg, padding: "1rem", minHeight: "100%"}
     const gridStyle = {className: `${classes.container} ${classes.border}`, container: true, columns: 2}
-    const content = selectedValue === null ? <Typography>{NO_SUBREGION}</Typography> :
-        activePopulations.length === 0 ? <Typography>{NO_POPULATIONS}</Typography> :
-            densityRequest.loading ?
-                <Loader
-                    active={densityRequest.loading}
-                /> :
-                densityRequest.state === REQUEST_STATE.SUCCESS ?
-                    <img className={classes.densityMapImage} src={densityRequest.data} alt={"Density Map"}/> :
-                    densityRequest.state === REQUEST_STATE.NO_CONTENT ?
-                        <Typography>{NO_CELLS}</Typography> : <Typography>{ERROR}</Typography>
+
+    drawContent()
+
     return (
         <Box sx={boxStyle}>
             <Grid {...gridStyle}>
@@ -193,7 +217,7 @@ const DensityMap = (props: {
                     </Box>
                 </Grid>
                 <Grid item={true} xs={8}>
-                    {content}
+                    <canvas ref={canvasRef}/>
                 </Grid>
             </Grid>
         </Box>

@@ -20,7 +20,7 @@ export const SALK_TEAM = 'salkteam';
 export const COMMUNITY_HASH = 'community';
 
 export const OVERLAYS = {
-    densityMap: new OverlayMetadata("densityMap", "Density Map"),
+    probabilityMap: new OverlayMetadata("probabilityMap", "Probability Map"),
     neuronalLocations:  new OverlayMetadata("neuronalLocations", "Neuronal Locations"),
 }
 

@@ -31,7 +31,8 @@ export const ElectrophysiologyWidget = {
 };
 
 export const DensityWidget = (experimentId: string, subdivisions: string[], activePopulations: Population[], selectedAtlas: AtlasChoice,
-                              selectedValue: string, handleDensityMapChange: (value: string) => void) => {
+                              selectedValue: string, showProbabilityMap: boolean, showNeuronalLocations: boolean,
+                              handleDensityMapChange: (value: string) => void) => {
     return {
         id: 'densWidget',
         name: "Density Map",
@@ -45,6 +46,8 @@ export const DensityWidget = (experimentId: string, subdivisions: string[], acti
             activePopulations,
             selectedAtlas,
             selectedValue,
+            showProbabilityMap,
+            showNeuronalLocations,
             onChange: handleDensityMapChange
         }
     }

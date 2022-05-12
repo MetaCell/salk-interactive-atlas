@@ -60,7 +60,7 @@ const getPopulations = (e: Experiment, sa: AtlasChoice) => {
 }
 
 const getDefaultOverlays = () => {
-    const overlaysSwitchState = {}
+    const overlaysSwitchState : { [key: string]: boolean } = {}
     // @ts-ignore
     Object.keys(OVERLAYS).forEach(k => overlaysSwitchState[k] = false)
     return overlaysSwitchState
@@ -153,9 +153,11 @@ const ExperimentsPage = () => {
 
     const getOverlayWidget = (overlayId: string) => {
         switch (overlayId) {
-            case OVERLAYS.densityMap.id:
+            case OVERLAYS.probabilityMap.id:
+            case OVERLAYS.neuronalLocations.id:
                 return DensityWidget(MOCKED_ID, Object.keys(subdivisions), Object.values(getActivePopulations()),
-                    selectedAtlas, densityMapValue, handleDensityMapChange)
+                    selectedAtlas, densityMapValue, overlaysSwitchState[OVERLAYS.probabilityMap.id],
+                    overlaysSwitchState[OVERLAYS.neuronalLocations.id], handleDensityMapChange)
             default:
                 return null
         }
