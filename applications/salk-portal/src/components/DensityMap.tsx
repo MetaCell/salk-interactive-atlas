@@ -107,6 +107,9 @@ const DensityMap = (props: {
 }) => {
     const api = workspaceService.getApi()
     const {activePopulations, selectedAtlas, showProbabilityMap, showNeuronalLocations} = props
+    // FIXME: useEffect was detecting activePopulations changes although the object content wasn't changing
+    // Line below is a workaround to fix the issue
+    const activePopulationIds = activePopulations.map(pop => pop.id).sort().toString()
     const atlas = getAtlas(props.selectedAtlas)
     const canvasRef = useRef(null)
     const [selectedValue, setSelectedValue] = React.useState('');
@@ -129,36 +132,41 @@ const DensityMap = (props: {
     }
 
     function getCentroids() {
-        if (showNeuronalLocations) {
-            Promise.all(activePopulations.map(p =>
-                fetchData(p, (id, subdivision, options) => api.centroidsPopulation(id, subdivision, options))))
-                .then(centroidsResponses => {
-                    const cData = centroidsResponses.reduce((acc, res) => {
-                        const {id, data} = res;
-                        return {...acc, [id]: data};
-                    }, {});
-                    setCentroidsData(cData)
-                })
+        if (selectedValue) {
+            if (showNeuronalLocations) {
+                Promise.all(activePopulations.map(p =>
+                    fetchData(p, (id, subdivision, options) => api.centroidsPopulation(id, subdivision, options))))
+                    .then(centroidsResponses => {
+                        const cData = centroidsResponses.reduce((acc, res) => {
+                            const {id, data} = res;
+                            return {...acc, [id]: data};
+                        }, {});
+                        setCentroidsData(cData)
+                    })
+            }
         }
     }
+
     function getProbabilityMap() {
-        if (showProbabilityMap) {
-            Promise.all(activePopulations.map(p =>
-                fetchData(p, (id, subdivision, options) => api.probabilityMapPopulation(id, subdivision, options))))
-                .then(probabilityMapResponses => {
-                    const probData = probabilityMapResponses.reduce((acc, res) => {
-                        const {id, data} = res;
-                        return {...acc, [id]: data};
-                    }, {});
-                    setProbabilityData(probData)
-                })
+        if (selectedValue) {
+            if (showProbabilityMap) {
+                Promise.all(activePopulations.map(p =>
+                    fetchData(p, (id, subdivision, options) => api.probabilityMapPopulation(id, subdivision, options))))
+                    .then(probabilityMapResponses => {
+                        const probData = probabilityMapResponses.reduce((acc, res) => {
+                            const {id, data} = res;
+                            return {...acc, [id]: data};
+                        }, {});
+                        setProbabilityData(probData)
+                    })
+            }
         }
     }
 
     useEffect(() => {
         getProbabilityMap()
         getCentroids();
-    }, [selectedValue, activePopulations])
+    }, [selectedValue, activePopulationIds])
 
     useEffect(() => {
         getProbabilityMap();
