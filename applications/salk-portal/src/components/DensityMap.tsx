@@ -14,7 +14,7 @@ import ArrowForwardIosIcon from '@material-ui/icons/ArrowForwardIos';
 import Loader from "@metacell/geppetto-meta-ui/loader/Loader";
 // @ts-ignore
 import {Population} from "../apiclient/workspaces";
-import {AtlasChoice, REQUEST_STATE} from "../utilities/constants";
+import {AtlasChoice, PROBABILITY_MAP_ID, REQUEST_STATE} from "../utilities/constants";
 import workspaceService from "../service/WorkspaceService";
 import CordImageMapper from "./CordImageMapper";
 import {getAtlas} from "../service/AtlasService";
@@ -101,31 +101,76 @@ const RadioButton = ({onChange, isChecked, label}) => {
 }
 
 const DensityMap = (props: {
-    experimentId: string,
     subdivisions: string[], activePopulations: Population[],
-    selectedAtlas: AtlasChoice, selectedValue: string,
+    selectedAtlas: AtlasChoice,
     showProbabilityMap: boolean, showNeuronalLocations: boolean,
-    onChange: (value: string) => void
 }) => {
     const api = workspaceService.getApi()
+    const {activePopulations, selectedAtlas, showProbabilityMap, showNeuronalLocations} = props
     const atlas = getAtlas(props.selectedAtlas)
     const canvasRef = useRef(null)
-    const {experimentId, activePopulations, selectedAtlas, onChange} = props
-    const [selectedValue, setSelectedValue] = React.useState(props.selectedValue);
-    const [densityRequest, setDensityRequest] = React.useState({
-        loading: false,
-        data : null,
-        state: null
-    });
+    const [selectedValue, setSelectedValue] = React.useState('');
+    const [probabilityData, setProbabilityData] = React.useState({});
+    const [centroidsData, setCentroidsData] = React.useState({});
 
     const handleChange = (value: string) => {
         setSelectedValue(value);
-        onChange(value)
     };
+
+    const fetchData = async (population: Population, apiMethod: (id: string, subdivision: string, options: any) => Promise<any>) => {
+        const response = await apiMethod(population.id.toString(), selectedValue, {responseType: 'blob'})
+        if (response.status === 200) {
+            // @ts-ignore
+            return {'id': population.id, 'data': URL.createObjectURL(response.data)}
+        } else if (response.status === 204) {
+            return {'id': population.id, 'data': REQUEST_STATE.NO_CONTENT}
+        }
+        return {'id': population.id, 'data': REQUEST_STATE.ERROR}
+    }
+
+    function getCentroids() {
+        if (showNeuronalLocations) {
+            Promise.all(activePopulations.map(p =>
+                fetchData(p, (id, subdivision, options) => api.centroidsPopulation(id, subdivision, options))))
+                .then(centroidsResponses => {
+                    const cData = centroidsResponses.reduce((acc, res) => {
+                        const {id, data} = res;
+                        return {...acc, [id]: data};
+                    }, {});
+                    setCentroidsData(cData)
+                })
+        }
+    }
+    function getProbabilityMap() {
+        if (showProbabilityMap) {
+            Promise.all(activePopulations.map(p =>
+                fetchData(p, (id, subdivision, options) => api.probabilityMapPopulation(id, subdivision, options))))
+                .then(probabilityMapResponses => {
+                    const probData = probabilityMapResponses.reduce((acc, res) => {
+                        const {id, data} = res;
+                        return {...acc, [id]: data};
+                    }, {});
+                    setProbabilityData(probData)
+                })
+        }
+    }
+
+    useEffect(() => {
+        getProbabilityMap()
+        getCentroids();
+    }, [selectedValue, activePopulations])
+
+    useEffect(() => {
+        getProbabilityMap();
+    }, [showProbabilityMap])
+
+    useEffect(() => {
+        getCentroids();
+    }, [showNeuronalLocations])
 
     const drawContent = () => {
         const canvas = canvasRef.current
-        if (canvas == null){
+        if (canvas == null) {
             return
         }
 
@@ -133,36 +178,10 @@ const DensityMap = (props: {
         clearCanvas(canvas)
         const ctx = canvas.getContext('2d')
         const background = atlas.getAnnotationImageSrc(selectedValue)
-        if (background){
+        if (background) {
             drawImage(ctx, background)
         }
     }
-
-    // useEffect(() => {
-    //     const fetchData = async () => {
-    //         const response = await api.retrieveDensityMapExperiment(experimentId, selectedAtlas, selectedValue, activePopulations.map(p => p.id), {responseType: 'blob'})
-    //         if (response.status === 200){
-    //             // @ts-ignore
-    //             const data =  URL.createObjectURL(response.data)
-    //             setDensityRequest({
-    //                     loading: false,
-    //                     data,
-    //                     state: REQUEST_STATE.SUCCESS
-    //                 })
-    //         }else if (response.status === 204){
-    //             setDensityRequest({loading: false, data: null, state: REQUEST_STATE.NO_CONTENT})
-    //         }else{
-    //             setDensityRequest({loading: false, data: null, state: REQUEST_STATE.ERROR})
-    //         }
-    //     }
-    //     if (!(selectedValue && activePopulations.length > 0 && selectedAtlas)) {
-    //         return
-    //     }
-    //     setDensityRequest({loading: true, data: null, state: null})
-    //     fetchData()
-    //         .catch(() => setDensityRequest({loading: false, data: null, state: REQUEST_STATE.ERROR}));
-    //
-    // }, [selectedValue, activePopulations, selectedAtlas])
 
     const subdivisions = props.subdivisions.sort()
     const classes = useStyles();

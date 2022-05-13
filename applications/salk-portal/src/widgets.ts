@@ -9,7 +9,7 @@ export const widgetIds = {
     densityMap: 'densWidget'
 }
 
-export const CanvasWidget = (selectedAtlas: AtlasChoice, activeSubdivisions: Set<string>, activePopulations: any,
+export const canvasWidget = (selectedAtlas: AtlasChoice, activeSubdivisions: Set<string>, activePopulations: any,
                              shouldCameraReset: boolean = false) => {
     return {
         id: widgetIds.canvas,
@@ -36,9 +36,8 @@ export const ElectrophysiologyWidget = {
     status: WidgetStatus.ACTIVE,
 };
 
-export const DensityWidget = (experimentId: string, subdivisions: string[], activePopulations: Population[], selectedAtlas: AtlasChoice,
-                              selectedValue: string, showProbabilityMap: boolean, showNeuronalLocations: boolean,
-                              handleDensityMapChange: (value: string) => void) => {
+export const densityWidget = (subdivisions: string[], activePopulations: Population[], selectedAtlas: AtlasChoice,
+                              showProbabilityMap: boolean, showNeuronalLocations: boolean) => {
     return {
         id: widgetIds.densityMap,
         name: "Density Map",
@@ -47,14 +46,11 @@ export const DensityWidget = (experimentId: string, subdivisions: string[], acti
         enableClose: false,
         status: WidgetStatus.ACTIVE,
         config: {
-            experimentId,
             subdivisions,
             activePopulations,
             selectedAtlas,
-            selectedValue,
             showProbabilityMap,
             showNeuronalLocations,
-            onChange: handleDensityMapChange
         }
     }
 };

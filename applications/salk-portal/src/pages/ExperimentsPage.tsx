@@ -20,7 +20,7 @@ import {Experiment, ExperimentPopulations} from "../apiclient/workspaces";
 import {areAllSelected} from "../utilities/functions";
 import workspaceService from "../service/WorkspaceService";
 import Cell from "../models/Cell";
-import {CanvasWidget, DensityWidget, ElectrophysiologyWidget, widgetIds} from "../widgets";
+import {canvasWidget, densityWidget, ElectrophysiologyWidget, widgetIds} from "../widgets";
 
 const useStyles = makeStyles({
     layoutContainer: {
@@ -79,7 +79,6 @@ const ExperimentsPage = () => {
     const [selectedAtlas, setSelectedAtlas] = useState(getDefaultAtlas());
     const [subdivisions, setSubdivisions] = useState(getSubdivisions(selectedAtlas));
     const [populations, setPopulations] = useState({});
-    const [densityMapValue, setDensityMapValue] = useState(null);
     const [overlaysSwitchState, setOverlaysSwitchState] = useState(getDefaultOverlays())
 
 
@@ -118,10 +117,6 @@ const ExperimentsPage = () => {
         const nextPopulations: any = {...populations}
         nextPopulations[populationId].selected = !nextPopulations[populationId].selected
         setPopulations(nextPopulations)
-    };
-
-    const handleDensityMapChange = (subSubSegmentId: string) => {
-        setDensityMapValue(subSubSegmentId)
     };
 
     const handleWidgets = () => {
@@ -174,9 +169,8 @@ const ExperimentsPage = () => {
     const getOverlayWidget = (widgetId: string) => {
         switch (widgetId) {
             case widgetIds.densityMap:
-                return DensityWidget(MOCKED_ID, Object.keys(subdivisions), Object.values(getActivePopulations()),
-                    selectedAtlas, densityMapValue, overlaysSwitchState[PROBABILITY_MAP_ID],
-                    overlaysSwitchState[NEURONAL_LOCATIONS_ID], handleDensityMapChange)
+                return densityWidget(Object.keys(subdivisions), Object.values(getActivePopulations()),
+                    selectedAtlas, overlaysSwitchState[PROBABILITY_MAP_ID], overlaysSwitchState[NEURONAL_LOCATIONS_ID])
             default:
                 return null
         }
@@ -219,7 +213,7 @@ const ExperimentsPage = () => {
     useEffect(() => {
         if (experiment != null) {
             setPopulations(getPopulations(experiment, selectedAtlas))
-            dispatch(addWidget(CanvasWidget(selectedAtlas, new Set(), {})));
+            dispatch(addWidget(canvasWidget(selectedAtlas, new Set(), {})));
             dispatch(addWidget(ElectrophysiologyWidget));
         }
     }, [experiment])
@@ -227,6 +221,9 @@ const ExperimentsPage = () => {
 
     useEffect(() => {
         handleWidgets()
+        if (widgetIds.densityMap in store.getState().widgets) {
+            dispatch(updateWidget(getOverlayWidget(widgetIds.densityMap)))
+        }
     }, [overlaysSwitchState])
 
     // TODO: Handle selectedAtlas changes
@@ -234,14 +231,17 @@ const ExperimentsPage = () => {
     useEffect(() => {
         const subdivisionsSet = getSelectedSubdivisionsSet()
         if (widgetIds.canvas in store.getState().widgets) {
-            dispatch(updateWidget(CanvasWidget(selectedAtlas, subdivisionsSet, getActivePopulations(), true)))
+            dispatch(updateWidget(canvasWidget(selectedAtlas, subdivisionsSet, getActivePopulations(), true)))
         }
     }, [subdivisions])
 
     useEffect(() => {
         const subdivisionsSet = getSelectedSubdivisionsSet();
         if (widgetIds.canvas in store.getState().widgets) {
-            dispatch(updateWidget(CanvasWidget(selectedAtlas, subdivisionsSet, getActivePopulations(), false)))
+            dispatch(updateWidget(canvasWidget(selectedAtlas, subdivisionsSet, getActivePopulations(), false)))
+        }
+        if (widgetIds.densityMap in store.getState().widgets) {
+            dispatch(updateWidget(getOverlayWidget(widgetIds.densityMap)))
         }
     }, [populations])
 
