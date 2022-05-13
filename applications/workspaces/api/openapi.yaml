@@ -486,6 +486,58 @@ paths:
           description: ''
       tags:
       - api
+  /api/population/{id}/centroids/{subdivision}/:
+    get:
+      operationId: centroidsPopulation
+      description: This viewset automatically provides `list` actions.
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: A unique integer value identifying this population.
+        schema:
+          type: string
+      - name: subdivision
+        in: path
+        required: true
+        description: ''
+        schema:
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Population'
+          description: ''
+      tags:
+      - api
+  /api/population/{id}/probability_map/{subdivision}/:
+    get:
+      operationId: probabilityMapPopulation
+      description: This viewset automatically provides `list` actions.
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: A unique integer value identifying this population.
+        schema:
+          type: string
+      - name: subdivision
+        in: path
+        required: true
+        description: ''
+        schema:
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Population'
+          description: ''
+      tags:
+      - api
   /api/tags/:
     get:
       operationId: listTags
@@ -925,33 +977,6 @@ paths:
           description: ''
       tags:
       - api
-  /api/experiments/{id}/density_map/:
-    post:
-      operationId: retrieveDensityMapExperiment
-      description: 'This viewset automatically provides `list`, `create`, `retrieve`,
-
-        `update` and `destroy` actions.'
-      parameters:
-      - name: id
-        in: path
-        required: true
-        description: A unique integer value identifying this experiment.
-        schema:
-          type: string
-      requestBody:
-        content:
-          multipart/form-data:
-            schema:
-              $ref: '#/components/schemas/DensityMap'
-      responses:
-        '201':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/DensityMap'
-          description: ''
-      tags:
-      - api
   /api/experiments/{id}/upload-file/:
     post:
       operationId: uploadFileExperiment
@@ -1254,6 +1279,9 @@ components:
             required:
             - name
           readOnly: true
+        has_edit_permission:
+          type: string
+          readOnly: true
       required:
       - name
       - description
@@ -1391,21 +1419,6 @@ components:
           format: binary
       required:
       - avatar
-    DensityMap:
-      type: object
-      properties:
-        atlas:
-          type: string
-        subdivision:
-          type: string
-        populations:
-          type: array
-          items:
-            type: integer
-      required:
-      - atlas
-      - subdivision
-      - populations
     ExperimentFileUpload:
       type: object
       properties:

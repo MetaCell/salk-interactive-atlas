@@ -5,7 +5,9 @@ import numpy as np
 
 from api.constants import PopulationPersistentFiles
 from api.helpers.atlas import get_subdivision_boundaries, get_bg_atlas, get_subdivisions
-from api.helpers.density_map import generate_density_map, generate_centroids
+from api.helpers.density_map.centroids_creator import CentroidsCreator
+from api.helpers.density_map.iimage_creator import IImageCreator
+from api.helpers.density_map.probability_map_creator import ProbabilityMapCreator
 
 
 def split_cells_per_segment(population):
@@ -67,17 +69,11 @@ def generate_images(population):
     subdivisions = get_subdivisions(bg_atlas)
     for s in subdivisions:
         cells = np.array(get_cells(s, [population]))
-        _generate_density_image(bg_atlas, cells, population, s)
-        _generate_centroids_image(bg_atlas, cells, population, s)
+        _store_image(CentroidsCreator(), PopulationPersistentFiles.CENTROIDS_IMG, bg_atlas, cells, population, s)
+        _store_image(ProbabilityMapCreator(), PopulationPersistentFiles.PROBABILITY_MAP_IMG, bg_atlas, cells, population, s)
 
 
-def _generate_centroids_image(bg_atlas, cells, population, s):
-    c_img = generate_centroids(bg_atlas=bg_atlas, subdivision=s, points=cells)
-    c_img.save(population.get_subdivision_path(s, PopulationPersistentFiles.CENTROIDS_IMG))
-
-
-def _generate_density_image(bg_atlas, cells, population, s):
-    d_img = generate_density_map(bg_atlas=bg_atlas, subdivision=s, cells=cells)
-    d_img.save(population.get_subdivision_path(s, PopulationPersistentFiles.DENSITY_IMG))
-
+def _store_image(creator: IImageCreator, extension: PopulationPersistentFiles, bg_atlas, cells, population, s, ):
+    img = creator.get_image(bg_atlas=bg_atlas, subdivision=s, points=cells)
+    img.save(population.get_subdivision_path(s, extension))
 

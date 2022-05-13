@@ -1,20 +1,21 @@
 import numpy as np
 import io
 from PIL import Image
+from matplotlib.figure import Figure
 
 
-def get_image_from_array(img_array, mode='RGBA'):
+def get_image_from_array(img_array: np.array, mode: str = 'RGBA') -> Image:
     i = Image.fromarray(img_array)
     return i.convert(mode)
 
 
-def apply_greyscale_alpha_mask(img):
+def apply_greyscale_alpha_mask(img: Image) -> Image:
     mask = img.convert('L')
     img.putalpha(mask)
     return img
 
 
-def black_to_transparent(img):
+def black_to_transparent(img: Image) -> Image:
     rgb = np.array(img)
     h, w = rgb.shape[:2]
 
@@ -31,11 +32,11 @@ def black_to_transparent(img):
     return Image.fromarray(rgba)
 
 
-def stack_images(background, foreground):
+def stack_images(background: Image, foreground: Image) -> Image:
     return Image.alpha_composite(background, foreground)
 
 
-def fig_to_img(fig):
+def fig_to_img(fig: Figure) -> Image:
     buf = io.BytesIO()
     fig.savefig(buf, transparent=True)
     buf.seek(0)

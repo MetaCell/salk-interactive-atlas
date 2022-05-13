@@ -1,7 +1,7 @@
 from django.core.management.base import BaseCommand
 
 from api.helpers.atlas import get_bg_atlas, get_subdivisions
-from api.helpers.density_map import generate_annotation_image
+from api.helpers.density_map.annotation_image import generate_annotation_image
 from api.models import AtlasesChoice
 from api.services.atlas_service import save_annotation_image
 
