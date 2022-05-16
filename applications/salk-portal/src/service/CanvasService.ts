@@ -1,14 +1,16 @@
 import {hexToRgb} from "../utilities/functions";
 
-export const drawImage = (ctx: CanvasRenderingContext2D, src: string, dx: number = 0, dy: number = 0) => {
+export const drawImage = (canvas: { getContext: (arg0: string) => any; width: number; height: number; } , src: string,) => {
+    const ctx = canvas.getContext('2d')
     const img = new Image();
     img.onload = () => {
-        ctx.drawImage(img, dx, dy);
+        ctx.drawImage(img, canvas.width / 2 - img.width / 2,
+            canvas.height / 2 - img.height / 2);
     };
     img.src = src
 }
 
-export const drawColoredImage = (canvas: { getContext: (arg0: string) => any; },
+export const drawColoredImage = (canvas: { getContext: (arg0: string) => any; width: number; height: number; },
                                  hCanvas: { getContext: (arg0: string) => any; width: any; height: any; },
                                  src: string, color: any) => {
     const img = new Image();
@@ -19,7 +21,8 @@ export const drawColoredImage = (canvas: { getContext: (arg0: string) => any; },
     img.onload = () => {
         if (colorRGB) {
             clearCanvas(hCanvas)
-            hctx.drawImage(img, 0, 0);
+            hctx.drawImage(img, hCanvas.width / 2 - img.width / 2,
+                hCanvas.height / 2 - img.height / 2);
             const imageData = hctx.getImageData(0, 0, hCanvas.width, hCanvas.height);
             const data = imageData.data;
 
@@ -38,7 +41,8 @@ export const drawColoredImage = (canvas: { getContext: (arg0: string) => any; },
             console.log(count)
             hctx.putImageData(imageData, 0, 0);
 
-            ctx.drawImage(hCanvas, 0, 0)
+            ctx.drawImage(hCanvas, canvas.width / 2 - hCanvas.width / 2,
+                canvas.height / 2 - hCanvas.height / 2)
         }
 
     };

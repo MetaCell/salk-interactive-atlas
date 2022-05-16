@@ -189,10 +189,9 @@ const DensityMap = (props: {
 
         // Clear previous content
         clearCanvas(canvas)
-        const ctx = canvas.getContext('2d')
         const background = atlas.getAnnotationImageSrc(selectedValue)
         if (background) {
-            drawImage(ctx, background)
+            drawImage(canvas, background)
         }
         if (showProbabilityMap && probabilityData) {
             // @ts-ignore
