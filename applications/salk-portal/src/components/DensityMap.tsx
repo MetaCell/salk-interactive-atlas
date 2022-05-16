@@ -250,7 +250,7 @@ const DensityMap = (props: {
                     </Box>
                 </Grid>
                 <Grid item={true} xs={8}>
-                    <canvas ref={canvasRef}/>
+                    <canvas className={classes.densityMapImage} ref={canvasRef}/>
                 </Grid>
             </Grid>
         </Box>
