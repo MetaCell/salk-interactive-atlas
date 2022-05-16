@@ -169,6 +169,10 @@ const DensityMap = (props: {
     }
 
     const drawContent = async () => {
+        if (!selectedValue){
+            setIsDrawingReady(true)
+            return
+        }
         const canvas = canvasRef.current
         const hiddenCanvas = hiddenCanvasRef.current
         if (canvas == null || hiddenCanvas == null) {
@@ -187,14 +191,22 @@ const DensityMap = (props: {
             // @ts-ignore
             for (const pId of Object.keys(probabilityData)) {
                 // @ts-ignore
-                promises.push(drawColoredImage(canvas, hiddenCanvas, probabilityData[pId], activePopulationsColorMap[pId]))
+                const data = probabilityData[pId]
+                if (data !== REQUEST_STATE.NO_CONTENT && data !== REQUEST_STATE.ERROR){
+                    // @ts-ignore
+                    promises.push(drawColoredImage(canvas, hiddenCanvas, data, activePopulationsColorMap[pId]))
+                }
             }
         }
         if (showNeuronalLocations && centroidsData) {
             // @ts-ignore
             for (const pId of Object.keys(centroidsData)) {
                 // @ts-ignore
-                promises.push(drawColoredImage(canvas, hiddenCanvas, centroidsData[pId], activePopulationsColorMap[pId]))
+                const data = centroidsData[pId]
+                if (data !== REQUEST_STATE.NO_CONTENT && data !== REQUEST_STATE.ERROR) {
+                    // @ts-ignore
+                    promises.push(drawColoredImage(canvas, hiddenCanvas, data, activePopulationsColorMap[pId]))
+                }
             }
         }
         await Promise.all(promises)
