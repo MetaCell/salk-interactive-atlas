@@ -33,3 +33,4 @@ export enum REQUEST_STATE {
     SUCCESS,
     ERROR
 }
+

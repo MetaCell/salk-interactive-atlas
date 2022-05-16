@@ -18,7 +18,7 @@ import {AtlasChoice, PROBABILITY_MAP_ID, REQUEST_STATE} from "../utilities/const
 import workspaceService from "../service/WorkspaceService";
 import CordImageMapper from "./CordImageMapper";
 import {getAtlas} from "../service/AtlasService";
-import {clearCanvas, drawImage} from "../service/CanvasService";
+import {clearCanvas, drawColoredImage, drawImage} from "../service/CanvasService";
 
 
 const useStyles = makeStyles({
@@ -107,11 +107,15 @@ const DensityMap = (props: {
 }) => {
     const api = workspaceService.getApi()
     const {activePopulations, selectedAtlas, showProbabilityMap, showNeuronalLocations} = props
+    const activePopulationsColorMap = activePopulations.reduce((acc, pop) => {
+        return {...acc, [pop.id]: pop.color}
+    }, {})
     // FIXME: useEffect was detecting activePopulations changes although the object content wasn't changing
     // Line below is a workaround to fix the issue
     const activePopulationIds = activePopulations.map(pop => pop.id).sort().toString()
     const atlas = getAtlas(props.selectedAtlas)
     const canvasRef = useRef(null)
+    const hiddenCanvasRef = useRef(null)
     const [selectedValue, setSelectedValue] = React.useState('');
     const [probabilityData, setProbabilityData] = React.useState({});
     const [centroidsData, setCentroidsData] = React.useState({});
@@ -178,7 +182,8 @@ const DensityMap = (props: {
 
     const drawContent = () => {
         const canvas = canvasRef.current
-        if (canvas == null) {
+        const hiddenCanvas = hiddenCanvasRef.current
+        if (canvas == null || hiddenCanvas == null) {
             return
         }
 
@@ -189,18 +194,19 @@ const DensityMap = (props: {
         if (background) {
             drawImage(ctx, background)
         }
-        if (showProbabilityMap && probabilityData){
+        if (showProbabilityMap && probabilityData) {
             // @ts-ignore
-            for (const data of Object.values(probabilityData)){
+            for (const pId of Object.keys(probabilityData)) {
                 // @ts-ignore
-                drawImage(ctx, data)
+                drawColoredImage(canvas, hiddenCanvas, probabilityData[pId], activePopulationsColorMap[pId])
             }
         }
-        if (showNeuronalLocations && centroidsData){
+        if (showNeuronalLocations && centroidsData) {
             // @ts-ignore
-            for (const data of Object.values(centroidsData)){
+            for (const pId of Object.keys(centroidsData)) {
                 // @ts-ignore
-                drawImage(ctx, data)
+                drawColoredImage(canvas, hiddenCanvas, centroidsData[pId], activePopulationsColorMap[pId])
+
             }
         }
     }
@@ -250,6 +256,7 @@ const DensityMap = (props: {
                     </Box>
                 </Grid>
                 <Grid item={true} xs={8}>
+                    <canvas hidden={true} ref={hiddenCanvasRef}/>
                     <canvas className={classes.densityMapImage} ref={canvasRef}/>
                 </Grid>
             </Grid>
