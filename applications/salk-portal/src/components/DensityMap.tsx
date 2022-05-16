@@ -189,6 +189,20 @@ const DensityMap = (props: {
         if (background) {
             drawImage(ctx, background)
         }
+        if (showProbabilityMap && probabilityData){
+            // @ts-ignore
+            for (const data of Object.values(probabilityData)){
+                // @ts-ignore
+                drawImage(ctx, data)
+            }
+        }
+        if (showNeuronalLocations && centroidsData){
+            // @ts-ignore
+            for (const data of Object.values(centroidsData)){
+                // @ts-ignore
+                drawImage(ctx, data)
+            }
+        }
     }
 
     const subdivisions = props.subdivisions.sort()
