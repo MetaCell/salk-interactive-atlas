@@ -119,6 +119,7 @@ const DensityMap = (props: {
     const [selectedValue, setSelectedValue] = React.useState('');
     const [probabilityData, setProbabilityData] = React.useState({});
     const [centroidsData, setCentroidsData] = React.useState({});
+    const [isDrawingReady, setIsDrawingReady] = React.useState(false);
 
     const handleChange = (value: string) => {
         setSelectedValue(value);
@@ -167,23 +168,11 @@ const DensityMap = (props: {
         }
     }
 
-    useEffect(() => {
-        getProbabilityMap()
-        getCentroids();
-    }, [selectedValue, activePopulationIds])
-
-    useEffect(() => {
-        getProbabilityMap();
-    }, [showProbabilityMap])
-
-    useEffect(() => {
-        getCentroids();
-    }, [showNeuronalLocations])
-
-    const drawContent = () => {
+    const drawContent = async () => {
         const canvas = canvasRef.current
         const hiddenCanvas = hiddenCanvasRef.current
         if (canvas == null || hiddenCanvas == null) {
+            setIsDrawingReady(true)
             return
         }
 
@@ -193,22 +182,45 @@ const DensityMap = (props: {
         if (background) {
             drawImage(canvas, background)
         }
+        const promises = []
         if (showProbabilityMap && probabilityData) {
             // @ts-ignore
             for (const pId of Object.keys(probabilityData)) {
                 // @ts-ignore
-                drawColoredImage(canvas, hiddenCanvas, probabilityData[pId], activePopulationsColorMap[pId])
+                promises.push(drawColoredImage(canvas, hiddenCanvas, probabilityData[pId], activePopulationsColorMap[pId]))
             }
         }
         if (showNeuronalLocations && centroidsData) {
             // @ts-ignore
             for (const pId of Object.keys(centroidsData)) {
                 // @ts-ignore
-                drawColoredImage(canvas, hiddenCanvas, centroidsData[pId], activePopulationsColorMap[pId])
-
+                promises.push(drawColoredImage(canvas, hiddenCanvas, centroidsData[pId], activePopulationsColorMap[pId]))
             }
         }
+        await Promise.all(promises)
+        setIsDrawingReady(true)
     }
+
+    useEffect(() => {
+        getProbabilityMap()
+        getCentroids();
+        setIsDrawingReady(false)
+
+    }, [selectedValue, activePopulationIds])
+
+    useEffect(() => {
+        getProbabilityMap();
+        setIsDrawingReady(false)
+    }, [showProbabilityMap])
+
+    useEffect(() => {
+        getCentroids();
+        setIsDrawingReady(false)
+    }, [showNeuronalLocations])
+
+    useEffect(() => {
+        drawContent().catch(console.error)
+    }, [centroidsData, probabilityData])
 
     const subdivisions = props.subdivisions.sort()
     const classes = useStyles();
@@ -216,7 +228,6 @@ const DensityMap = (props: {
     const boxStyle = {flexGrow: 1, background: canvasBg, padding: "1rem", minHeight: "100%"}
     const gridStyle = {className: `${classes.container} ${classes.border}`, container: true, columns: 2}
 
-    drawContent()
 
     return (
         <Box sx={boxStyle}>
@@ -255,8 +266,9 @@ const DensityMap = (props: {
                     </Box>
                 </Grid>
                 <Grid item={true} xs={8}>
+                    <Loader active={!isDrawingReady}/>
                     <canvas hidden={true} ref={hiddenCanvasRef}/>
-                    <canvas className={classes.densityMapImage} ref={canvasRef}/>
+                    <canvas hidden={!isDrawingReady} className={classes.densityMapImage} ref={canvasRef}/>
                 </Grid>
             </Grid>
         </Box>

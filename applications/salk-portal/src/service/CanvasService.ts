@@ -1,6 +1,6 @@
 import {hexToRgb} from "../utilities/functions";
 
-export const drawImage = (canvas: { getContext: (arg0: string) => any; width: number; height: number; } , src: string,) => {
+export const drawImage = (canvas: { getContext: (arg0: string) => any; width: number; height: number; } , src: string, ) => {
     const ctx = canvas.getContext('2d')
     const img = new Image();
     img.onload = () => {
@@ -13,6 +13,10 @@ export const drawImage = (canvas: { getContext: (arg0: string) => any; width: nu
 export const drawColoredImage = (canvas: { getContext: (arg0: string) => any; width: number; height: number; },
                                  hCanvas: { getContext: (arg0: string) => any; width: any; height: any; },
                                  src: string, color: any) => {
+
+   return new Promise(resolve => {
+
+
     const img = new Image();
     const ctx = canvas.getContext('2d')
     const hctx = hCanvas.getContext('2d')
@@ -27,7 +31,6 @@ export const drawColoredImage = (canvas: { getContext: (arg0: string) => any; wi
             const data = imageData.data;
 
             const A = 4
-            let count = 0
             for (let i = 0; i < data.length; i++) {
                 const opacityIndex = i * A - 1;
                 if (data[opacityIndex] === 0) {
@@ -36,17 +39,16 @@ export const drawColoredImage = (canvas: { getContext: (arg0: string) => any; wi
                 data[opacityIndex - 3] = colorRGB.r
                 data[opacityIndex - 2] = colorRGB.g
                 data[opacityIndex - 1] = colorRGB.b
-                count++
             }
-            console.log(count)
             hctx.putImageData(imageData, 0, 0);
 
             ctx.drawImage(hCanvas, canvas.width / 2 - hCanvas.width / 2,
                 canvas.height / 2 - hCanvas.height / 2)
+            resolve(true)
         }
-
     };
     img.src = src
+   })
 }
 
 export const clearCanvas = (canvas: { getContext: (arg0: string) => any; width: any; height: any; }) => {
