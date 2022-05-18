@@ -148,7 +148,11 @@ const DensityMap = (props: {
                         }, {});
                         setCentroidsData(cData)
                     })
+            } else {
+                setCentroidsData({})
             }
+        } else {
+            setCentroidsData({})
         }
     }
 
@@ -164,12 +168,16 @@ const DensityMap = (props: {
                         }, {});
                         setProbabilityData(probData)
                     })
+            } else {
+                setProbabilityData({})
             }
+        } else {
+            setProbabilityData({})
         }
     }
 
     const drawContent = async () => {
-        if (!selectedValue){
+        if (!selectedValue) {
             setIsDrawingReady(true)
             return
         }
@@ -192,7 +200,7 @@ const DensityMap = (props: {
             for (const pId of Object.keys(probabilityData)) {
                 // @ts-ignore
                 const data = probabilityData[pId]
-                if (data !== REQUEST_STATE.NO_CONTENT && data !== REQUEST_STATE.ERROR){
+                if (data !== REQUEST_STATE.NO_CONTENT && data !== REQUEST_STATE.ERROR) {
                     // @ts-ignore
                     promises.push(drawColoredImage(canvas, hiddenCanvas, data, activePopulationsColorMap[pId]))
                 }
