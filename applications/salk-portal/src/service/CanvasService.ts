@@ -1,6 +1,6 @@
 import {hexToRgb} from "../utilities/functions";
 
-export const drawImage = (canvas: { getContext: (arg0: string) => any; width: number; height: number; } , src: string, ) => {
+export const drawImage = (canvas: { getContext: (arg0: string) => any; width: number; height: number; } , src: string) => {
     const ctx = canvas.getContext('2d')
     const img = new Image();
     img.onload = () => {
