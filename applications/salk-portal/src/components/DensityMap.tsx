@@ -112,7 +112,7 @@ const DensityMap = (props: {
     }, {})
     // FIXME: useEffect was detecting activePopulations changes although the object content wasn't changing
     // Line below is a workaround to fix the issue
-    const activePopulationIds = activePopulations.map(pop => pop.id).sort().toString()
+    const activePopulationIds = activePopulations.map(pop => `${pop.id}_${pop.color}_${pop.opacity}`).sort().toString()
     const atlas = getAtlas(props.selectedAtlas)
     const canvasRef = useRef(null)
     const hiddenCanvasRef = useRef(null)
