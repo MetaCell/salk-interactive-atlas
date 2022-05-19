@@ -28,9 +28,16 @@ export const OVERLAYS = {
     [NEURONAL_LOCATIONS_ID]:  new OverlayMetadata(NEURONAL_LOCATIONS_ID, "Neuronal Locations", widgetIds.densityMap),
 }
 
-export enum REQUEST_STATE {
+export enum RequestState {
     NO_CONTENT ,
     SUCCESS,
     ERROR
 }
 
+export const ROSTRAL = "Rostral"
+export const CAUDAL = "Caudal"
+
+export enum DensityMapTypes {
+    PROBABILITY_DATA = "probabilityData",
+    CENTROIDS_DATA = "centroidsData"
+}
