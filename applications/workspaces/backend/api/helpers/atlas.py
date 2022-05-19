@@ -1,10 +1,16 @@
 from bg_atlasapi import BrainGlobeAtlas
-
 from api.constants import CAUDAL, ROSTRAL
+from api.utils import flat_map
 
 
-def get_subdivision_boundaries(atlas_id):
-    bg_atlas = get_bg_atlas(atlas_id)
+split_segments = lambda seg: [f"{seg['Segment']}-{ROSTRAL}", f"{seg['Segment']}-{CAUDAL}"]
+
+
+def get_subdivisions(bg_atlas: BrainGlobeAtlas) -> list:
+    return flat_map(split_segments, bg_atlas.metadata["atlas_segments"])
+
+
+def get_subdivision_boundaries(bg_atlas: BrainGlobeAtlas) -> tuple:
     segments_metadata = bg_atlas.metadata["atlas_segments"]
 
     breakpoints, subdivision = [], []
@@ -19,5 +25,5 @@ def get_subdivision_boundaries(atlas_id):
     return breakpoints, subdivision
 
 
-def get_bg_atlas(atlas_id):
+def get_bg_atlas(atlas_id: str) -> BrainGlobeAtlas:
     return BrainGlobeAtlas(atlas_id, check_latest=False)

@@ -4,11 +4,12 @@ from django.conf import settings
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 
-from ..helpers.filesystem import create_dir, remove_dir
-from ..services.population_service import split_cells_per_segment
-from ..utils import is_valid_hex_str
 from .atlas import AtlasesChoice
 from .experiment import Experiment
+from ..constants import PopulationPersistentFiles
+from ..helpers.filesystem import create_dir, remove_dir
+from ..services.population_service import split_cells_per_segment, generate_images
+from ..utils import is_valid_hex_str
 
 
 class Population(models.Model):
@@ -28,8 +29,8 @@ class Population(models.Model):
     def save_dir_path(self):
         return os.path.join(settings.PERSISTENT_ROOT, "populations", str(self.id))
 
-    def get_subdivision_file_path(self, subdivision):
-        return os.path.join(self.save_dir_path, subdivision + ".csv")
+    def get_subdivision_path(self, subdivision, content: PopulationPersistentFiles):
+        return os.path.join(self.save_dir_path, subdivision + content.value)
 
     def remove_split_cells_csv(self):
         remove_dir(self.save_dir_path)
@@ -38,11 +39,16 @@ class Population(models.Model):
         create_dir(self.save_dir_path)
 
     def save(
-        self, force_insert=False, force_update=False, using=None, update_fields=None
+            self, force_insert=False, force_update=False, using=None, update_fields=None
     ):
         self.update_color()
         super(Population, self).save(force_insert, force_update, using, update_fields)
         split_cells_per_segment(self)
+        # TODO: also needs to generate new images
+
+    def generate_images(self):
+        # TODO: Add error handling
+        generate_images(self)
 
     @staticmethod
     def has_read_permission(request):

@@ -14,13 +14,13 @@ import {Box} from "@material-ui/core";
 import {bodyBgColor, font} from "../theme";
 import Sidebar from "../components/ExperimentSidebar";
 // @ts-ignore
-import {AtlasChoice, OVERLAYS} from "../utilities/constants"
+import {AtlasChoice, NEURONAL_LOCATIONS_ID, OVERLAYS, PROBABILITY_MAP_ID} from "../utilities/constants"
 import {getAtlas} from "../service/AtlasService";
 import {Experiment, ExperimentPopulations} from "../apiclient/workspaces";
 import {areAllSelected} from "../utilities/functions";
 import workspaceService from "../service/WorkspaceService";
 import Cell from "../models/Cell";
-import {CanvasWidget, DensityWidget, ElectrophysiologyWidget} from "../widgets";
+import {canvasWidget, densityWidget, ElectrophysiologyWidget, widgetIds} from "../widgets";
 
 const useStyles = makeStyles({
     layoutContainer: {
@@ -60,7 +60,7 @@ const getPopulations = (e: Experiment, sa: AtlasChoice) => {
 }
 
 const getDefaultOverlays = () => {
-    const overlaysSwitchState = {}
+    const overlaysSwitchState : { [key: string]: boolean } = {}
     // @ts-ignore
     Object.keys(OVERLAYS).forEach(k => overlaysSwitchState[k] = false)
     return overlaysSwitchState
@@ -79,8 +79,6 @@ const ExperimentsPage = () => {
     const [selectedAtlas, setSelectedAtlas] = useState(getDefaultAtlas());
     const [subdivisions, setSubdivisions] = useState(getSubdivisions(selectedAtlas));
     const [populations, setPopulations] = useState({});
-    const [densityMapValue, setDensityMapValue] = useState(null);
-    const [widgetsReady, setWidgetsReady] = useState(false)
     const [overlaysSwitchState, setOverlaysSwitchState] = useState(getDefaultOverlays())
 
 
@@ -121,24 +119,41 @@ const ExperimentsPage = () => {
         setPopulations(nextPopulations)
     };
 
-    const handleDensityMapChange = (subSubSegmentId: string) => {
-        setDensityMapValue(subSubSegmentId)
-    };
-
-    const handleOverlaySwitch = (overlayId: string) => {
-        // @ts-ignore
-        const isOverlayActive = overlaysSwitchState[overlayId]
-        const widget = getOverlayWidget(overlayId)
-        if (widget) {
-            if (isOverlayActive) {
-                dispatch(deleteWidget(widget.id))
-            } else {
-                dispatch(addWidget(widget))
+    const handleWidgets = () => {
+        const switchableWidgets = new Set()
+        // if the widget is not active
+        for (const overlay of Object.keys(overlaysSwitchState)){
+            // @ts-ignore
+            const widgetId = OVERLAYS[overlay].widgetId
+            // if switch is active but widget is not added
+            if (overlaysSwitchState[overlay] && !(widgetId in store.getState().widgets)){
+                dispatch(addWidget(getOverlayWidget(widgetId)))
             }
+            switchableWidgets.add(widgetId)
         }
 
-        // @ts-ignore
-        setOverlaysSwitchState({...overlaysSwitchState, [overlayId]: !isOverlayActive})
+        for (const wId of Object.keys(store.getState().widgets)){
+            // if widget is visible but no switch is on
+            if (switchableWidgets.has(wId) && !hasActiveSwitch(wId)){
+                dispatch(deleteWidget(wId))
+            }
+        }
+    }
+
+    const hasActiveSwitch = (widgetId: string) => {
+        for (const overlayId of Object.keys(overlaysSwitchState)){
+            // @ts-ignore
+            if (OVERLAYS[overlayId].widgetId === widgetId){
+                if (overlaysSwitchState[overlayId]){
+                    return true
+                }
+            }
+        }
+        return false
+    }
+
+    const handleOverlaySwitch = (overlayId: string) => {
+        setOverlaysSwitchState({...overlaysSwitchState, [overlayId]: !overlaysSwitchState[overlayId]})
     };
 
     const handlePopulationColorChange = async (id: string, color: string, opacity: string) => {
@@ -151,11 +166,11 @@ const ExperimentsPage = () => {
         setPopulations(nextPopulations)
     }
 
-    const getOverlayWidget = (overlayId: string) => {
-        switch (overlayId) {
-            case OVERLAYS.densityMap.id:
-                return DensityWidget(MOCKED_ID, Object.keys(subdivisions), Object.values(getActivePopulations()),
-                    selectedAtlas, densityMapValue, handleDensityMapChange)
+    const getOverlayWidget = (widgetId: string) => {
+        switch (widgetId) {
+            case widgetIds.densityMap:
+                return densityWidget(Object.keys(subdivisions), Object.values(getActivePopulations()),
+                    selectedAtlas, overlaysSwitchState[PROBABILITY_MAP_ID], overlaysSwitchState[NEURONAL_LOCATIONS_ID])
             default:
                 return null
         }
@@ -170,17 +185,11 @@ const ExperimentsPage = () => {
             return obj;
         }, {});
 
-    const handleOverlays = () => {
-        Object.keys(overlaysSwitchState).forEach((k) => {
-            // @ts-ignore
-            if (overlaysSwitchState[k]) {
-                const widget = getOverlayWidget(k)
-                if (widget) {
-                    dispatch(updateWidget(widget))
-                }
-            }
-        })
+
+    const getSelectedSubdivisionsSet = () => {
+        return new Set(Object.keys(subdivisions).filter(sId => subdivisions[sId].selected));
     }
+
 
     useEffect(() => {
         const fetchData = async () => {
@@ -204,31 +213,36 @@ const ExperimentsPage = () => {
     useEffect(() => {
         if (experiment != null) {
             setPopulations(getPopulations(experiment, selectedAtlas))
-            dispatch(addWidget(CanvasWidget(selectedAtlas, new Set(), {})));
+            dispatch(addWidget(canvasWidget(selectedAtlas, new Set(), {})));
             dispatch(addWidget(ElectrophysiologyWidget));
-            setWidgetsReady(true)
         }
     }, [experiment])
 
-    function getSelectedSubdivisionsSet() {
-        return new Set(Object.keys(subdivisions).filter(sId => subdivisions[sId].selected));
-    }
+
+    useEffect(() => {
+        handleWidgets()
+        if (widgetIds.densityMap in store.getState().widgets) {
+            dispatch(updateWidget(getOverlayWidget(widgetIds.densityMap)))
+        }
+    }, [overlaysSwitchState])
 
     // TODO: Handle selectedAtlas changes
 
     useEffect(() => {
         const subdivisionsSet = getSelectedSubdivisionsSet()
-        if (widgetsReady) {
-            dispatch(updateWidget(CanvasWidget(selectedAtlas, subdivisionsSet, getActivePopulations(), true)))
+        if (widgetIds.canvas in store.getState().widgets) {
+            dispatch(updateWidget(canvasWidget(selectedAtlas, subdivisionsSet, getActivePopulations(), true)))
         }
     }, [subdivisions])
 
     useEffect(() => {
         const subdivisionsSet = getSelectedSubdivisionsSet();
-        if (widgetsReady) {
-            dispatch(updateWidget(CanvasWidget(selectedAtlas, subdivisionsSet, getActivePopulations(), false)))
+        if (widgetIds.canvas in store.getState().widgets) {
+            dispatch(updateWidget(canvasWidget(selectedAtlas, subdivisionsSet, getActivePopulations(), false)))
         }
-        handleOverlays()
+        if (widgetIds.densityMap in store.getState().widgets) {
+            dispatch(updateWidget(getOverlayWidget(widgetIds.densityMap)))
+        }
     }, [populations])
 
     useEffect(() => {

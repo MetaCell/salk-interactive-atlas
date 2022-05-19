@@ -23,7 +23,7 @@ export const getAllowedRanges = (selectedAtlas: AtlasChoice, activeSubdivisions:
    return ranges
 }
 
-function hexToRgb(hex: string) {
+export function hexToRgb(hex: string) {
    const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
    return result ? {
       r: parseInt(result[1], 16),

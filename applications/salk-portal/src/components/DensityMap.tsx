@@ -1,6 +1,6 @@
-import React, {useEffect} from 'react';
+import React, {useEffect, useRef} from 'react';
 import {makeStyles} from "@material-ui/core/styles";
-import {canvasBg, headerBorderColor} from "../theme";
+import {canvasBg} from "../theme";
 import {
     Box, Button,
     FormControl,
@@ -14,9 +14,11 @@ import ArrowForwardIosIcon from '@material-ui/icons/ArrowForwardIos';
 import Loader from "@metacell/geppetto-meta-ui/loader/Loader";
 // @ts-ignore
 import {Population} from "../apiclient/workspaces";
-import {AtlasChoice, REQUEST_STATE} from "../utilities/constants";
+import {AtlasChoice, PROBABILITY_MAP_ID, REQUEST_STATE} from "../utilities/constants";
 import workspaceService from "../service/WorkspaceService";
 import CordImageMapper from "./CordImageMapper";
+import {getAtlas} from "../service/AtlasService";
+import {clearCanvas, drawColoredImage, drawImage} from "../service/CanvasService";
 
 
 const useStyles = makeStyles({
@@ -99,63 +101,154 @@ const RadioButton = ({onChange, isChecked, label}) => {
 }
 
 const DensityMap = (props: {
-    experimentId: string,
     subdivisions: string[], activePopulations: Population[],
-    selectedAtlas: AtlasChoice, selectedValue: string, onChange: (value: string) => void
+    selectedAtlas: AtlasChoice,
+    showProbabilityMap: boolean, showNeuronalLocations: boolean,
 }) => {
     const api = workspaceService.getApi()
-    const {experimentId, activePopulations, selectedAtlas, onChange} = props
-    const [selectedValue, setSelectedValue] = React.useState(props.selectedValue);
-    const [densityRequest, setDensityRequest] = React.useState({
-        loading: false,
-        data: null,
-        state: null
-    });
+    const {activePopulations, selectedAtlas, showProbabilityMap, showNeuronalLocations} = props
+    const activePopulationsColorMap = activePopulations.reduce((acc, pop) => {
+        return {...acc, [pop.id]: pop.color}
+    }, {})
+    // FIXME: useEffect was detecting activePopulations changes although the object content wasn't changing
+    // Line below is a workaround to fix the issue
+    const activePopulationIds = activePopulations.map(pop => `${pop.id}_${pop.color}_${pop.opacity}`).sort().toString()
+    const atlas = getAtlas(props.selectedAtlas)
+    const canvasRef = useRef(null)
+    const hiddenCanvasRef = useRef(null)
+    const [selectedValue, setSelectedValue] = React.useState('');
+    const [probabilityData, setProbabilityData] = React.useState({});
+    const [centroidsData, setCentroidsData] = React.useState({});
+    const [isDrawingReady, setIsDrawingReady] = React.useState(false);
 
     const handleChange = (value: string) => {
         setSelectedValue(value);
-        onChange(value)
     };
 
-    useEffect(() => {
-        const fetchData = async () => {
-            const response = await api.retrieveDensityMapExperiment(experimentId, selectedAtlas, selectedValue, activePopulations.map(p => p.id), {responseType: 'blob'})
-            if (response.status === 200){
-                setDensityRequest({
-                        loading: false,
-                        data: URL.createObjectURL(response.data),
-                        state: REQUEST_STATE.SUCCESS
-                    })
-            }else if (response.status === 204){
-                setDensityRequest({loading: false, data: null, state: REQUEST_STATE.NO_CONTENT})
-            }else{
-                setDensityRequest({loading: false, data: null, state: REQUEST_STATE.ERROR})
-            }
+    const fetchData = async (population: Population, apiMethod: (id: string, subdivision: string, options: any) => Promise<any>) => {
+        const response = await apiMethod(population.id.toString(), selectedValue, {responseType: 'blob'})
+        if (response.status === 200) {
+            // @ts-ignore
+            return {'id': population.id, 'data': URL.createObjectURL(response.data)}
+        } else if (response.status === 204) {
+            return {'id': population.id, 'data': REQUEST_STATE.NO_CONTENT}
         }
-        if (!(selectedValue && activePopulations.length > 0 && selectedAtlas)) {
+        return {'id': population.id, 'data': REQUEST_STATE.ERROR}
+    }
+
+    function getCentroids() {
+        if (selectedValue) {
+            if (showNeuronalLocations) {
+                Promise.all(activePopulations.map(p =>
+                    fetchData(p, (id, subdivision, options) => api.centroidsPopulation(id, subdivision, options))))
+                    .then(centroidsResponses => {
+                        const cData = centroidsResponses.reduce((acc, res) => {
+                            const {id, data} = res;
+                            return {...acc, [id]: data};
+                        }, {});
+                        setCentroidsData(cData)
+                    })
+            } else {
+                setCentroidsData({})
+            }
+        } else {
+            setCentroidsData({})
+        }
+    }
+
+    function getProbabilityMap() {
+        if (selectedValue) {
+            if (showProbabilityMap) {
+                Promise.all(activePopulations.map(p =>
+                    fetchData(p, (id, subdivision, options) => api.probabilityMapPopulation(id, subdivision, options))))
+                    .then(probabilityMapResponses => {
+                        const probData = probabilityMapResponses.reduce((acc, res) => {
+                            const {id, data} = res;
+                            return {...acc, [id]: data};
+                        }, {});
+                        setProbabilityData(probData)
+                    })
+            } else {
+                setProbabilityData({})
+            }
+        } else {
+            setProbabilityData({})
+        }
+    }
+
+    const drawContent = async () => {
+        if (!selectedValue) {
+            setIsDrawingReady(true)
             return
         }
-        setDensityRequest({loading: true, data: null, state: null})
-        fetchData()
-            .catch(() => setDensityRequest({loading: false, data: null, state: REQUEST_STATE.ERROR}));
+        const canvas = canvasRef.current
+        const hiddenCanvas = hiddenCanvasRef.current
+        if (canvas == null || hiddenCanvas == null) {
+            setIsDrawingReady(true)
+            return
+        }
 
-    }, [selectedValue, activePopulations, selectedAtlas])
+        // Clear previous content
+        clearCanvas(canvas)
+        const background = atlas.getAnnotationImageSrc(selectedValue)
+        if (background) {
+            drawImage(canvas, background)
+        }
+        const promises = []
+        if (showProbabilityMap && probabilityData) {
+            // @ts-ignore
+            for (const pId of Object.keys(probabilityData)) {
+                // @ts-ignore
+                const data = probabilityData[pId]
+                if (data !== REQUEST_STATE.NO_CONTENT && data !== REQUEST_STATE.ERROR) {
+                    // @ts-ignore
+                    promises.push(drawColoredImage(canvas, hiddenCanvas, data, activePopulationsColorMap[pId]))
+                }
+            }
+        }
+        if (showNeuronalLocations && centroidsData) {
+            // @ts-ignore
+            for (const pId of Object.keys(centroidsData)) {
+                // @ts-ignore
+                const data = centroidsData[pId]
+                if (data !== REQUEST_STATE.NO_CONTENT && data !== REQUEST_STATE.ERROR) {
+                    // @ts-ignore
+                    promises.push(drawColoredImage(canvas, hiddenCanvas, data, activePopulationsColorMap[pId]))
+                }
+            }
+        }
+        await Promise.all(promises)
+        setIsDrawingReady(true)
+    }
+
+    useEffect(() => {
+        getProbabilityMap()
+        getCentroids();
+        setIsDrawingReady(false)
+
+    }, [selectedValue, activePopulationIds])
+
+    useEffect(() => {
+        getProbabilityMap();
+        setIsDrawingReady(false)
+    }, [showProbabilityMap])
+
+    useEffect(() => {
+        getCentroids();
+        setIsDrawingReady(false)
+    }, [showNeuronalLocations])
+
+    useEffect(() => {
+        drawContent().catch(console.error)
+    }, [centroidsData, probabilityData])
 
     const subdivisions = props.subdivisions.sort()
     const classes = useStyles();
     // @ts-ignore
     const boxStyle = {flexGrow: 1, background: canvasBg, padding: "1rem", minHeight: "100%"}
     const gridStyle = {className: `${classes.container} ${classes.border}`, container: true, columns: 2}
-    const content = selectedValue === null ? <Typography>{NO_SUBREGION}</Typography> :
-        activePopulations.length === 0 ? <Typography>{NO_POPULATIONS}</Typography> :
-            densityRequest.loading ?
-                <Loader
-                    active={densityRequest.loading}
-                /> :
-                densityRequest.state === REQUEST_STATE.SUCCESS ?
-                    <img className={classes.densityMapImage} src={densityRequest.data} alt={"Density Map"}/> :
-                    densityRequest.state === REQUEST_STATE.NO_CONTENT ?
-                        <Typography>{NO_CELLS}</Typography> : <Typography>{ERROR}</Typography>
+
+
     return (
         <Box sx={boxStyle}>
             <Grid {...gridStyle}>
@@ -193,7 +286,9 @@ const DensityMap = (props: {
                     </Box>
                 </Grid>
                 <Grid item={true} xs={8}>
-                    {content}
+                    <Loader active={!isDrawingReady}/>
+                    <canvas hidden={true} ref={hiddenCanvasRef}/>
+                    <canvas hidden={!isDrawingReady} className={classes.densityMapImage} ref={canvasRef}/>
                 </Grid>
             </Grid>
         </Box>

@@ -3,10 +3,16 @@ import {AtlasChoice} from "./utilities/constants";
 import {WidgetStatus} from "@metacell/geppetto-meta-client/common/layout/model";
 import {Population} from "./apiclient/workspaces";
 
-export const CanvasWidget = (selectedAtlas: AtlasChoice, activeSubdivisions: Set<string>, activePopulations: any,
+export const widgetIds = {
+    canvas: 'canvasWidget',
+    electrophysiologyViewer: 'epWidget',
+    densityMap: 'densWidget'
+}
+
+export const canvasWidget = (selectedAtlas: AtlasChoice, activeSubdivisions: Set<string>, activePopulations: any,
                              shouldCameraReset: boolean = false) => {
     return {
-        id: 'canvasWidget',
+        id: widgetIds.canvas,
         name: "Spinal Cord Atlas",
         component: "experimentViewer",
         panelName: "topLeftPanel",
@@ -22,7 +28,7 @@ export const CanvasWidget = (selectedAtlas: AtlasChoice, activeSubdivisions: Set
 };
 
 export const ElectrophysiologyWidget = {
-    id: 'epWidget',
+    id: widgetIds.electrophysiologyViewer,
     name: "Electrophysiology",
     component: "electrophysiologyViewer",
     panelName: "rightPanel",
@@ -30,22 +36,21 @@ export const ElectrophysiologyWidget = {
     status: WidgetStatus.ACTIVE,
 };
 
-export const DensityWidget = (experimentId: string, subdivisions: string[], activePopulations: Population[], selectedAtlas: AtlasChoice,
-                              selectedValue: string, handleDensityMapChange: (value: string) => void) => {
+export const densityWidget = (subdivisions: string[], activePopulations: Population[], selectedAtlas: AtlasChoice,
+                              showProbabilityMap: boolean, showNeuronalLocations: boolean) => {
     return {
-        id: 'densWidget',
+        id: widgetIds.densityMap,
         name: "Density Map",
         component: "densityMap",
         panelName: "bottomLeftPanel",
         enableClose: false,
         status: WidgetStatus.ACTIVE,
         config: {
-            experimentId,
             subdivisions,
             activePopulations,
             selectedAtlas,
-            selectedValue,
-            onChange: handleDensityMapChange
+            showProbabilityMap,
+            showNeuronalLocations,
         }
     }
 };

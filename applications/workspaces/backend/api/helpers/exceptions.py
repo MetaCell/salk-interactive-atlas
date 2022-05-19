@@ -12,7 +12,3 @@ class InvalidInputError(Exception):
 
 class DensityMapIncorrectSubdivisionError(Exception):
     pass
-
-
-class DensityMapMultipleAtlasesFoundError(Exception):
-    pass

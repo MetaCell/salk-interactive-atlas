@@ -13,15 +13,6 @@ class IntegerListField(serializers.ListField):
     child = serializers.IntegerField()
 
 
-class DensityMapSerializer(serializers.Serializer):
-    subdivision = serializers.CharField()
-    populations = IntegerListField()
-
-    class Meta:
-        model = Experiment
-        fields = ()
-
-
 class ExperimentFileUploadSerializer(serializers.Serializer):
     population_name = serializers.CharField()
     file = serializers.FileField()
