@@ -1,6 +1,6 @@
 from django.core.management.base import BaseCommand
 
-from api.models import Population
+from api.models import Population, PopulationStatus
 
 
 class Command(BaseCommand):
@@ -16,9 +16,14 @@ class Command(BaseCommand):
             except Population.DoesNotExist:
                 self.stdout.write(self.style.WARNING(f'{pop_id}  does not exist. Skipping'))
                 continue
+            p.status = PopulationStatus.RUNNING
+            p.save()
             try:
                 p.generate_images()
+                p.status = PopulationStatus.READY
             except Exception as e:
                 self.stdout.write(self.style.WARNING(f'{pop_id}: {e}. Skipped'))
+                p.status = PopulationStatus.ERROR
+            p.save()
 
         self.stdout.write(self.style.SUCCESS('Generate population images finished'))

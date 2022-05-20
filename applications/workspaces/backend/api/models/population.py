@@ -9,7 +9,14 @@ from .experiment import Experiment
 from ..constants import PopulationPersistentFiles
 from ..helpers.filesystem import create_dir, remove_dir
 from ..services.population_service import split_cells_per_segment, generate_images
+from ..services.workflows_service import execute_generate_population_images_workflow
 from ..utils import is_valid_hex_str
+
+
+class PopulationStatus(models.IntegerChoices):
+    ERROR = -1
+    RUNNING = 0
+    READY = 1
 
 
 class Population(models.Model):
@@ -24,6 +31,7 @@ class Population(models.Model):
         validators=[MinValueValidator(0.0), MaxValueValidator(1.0)], default=1.0
     )
     cells = models.FileField(upload_to="populations")
+    status = models.IntegerField(choices=PopulationStatus.choices)
 
     @property
     def save_dir_path(self):
@@ -44,7 +52,7 @@ class Population(models.Model):
         self.update_color()
         super(Population, self).save(force_insert, force_update, using, update_fields)
         split_cells_per_segment(self)
-        # TODO: also needs to generate new images
+        execute_generate_population_images_workflow(self.id)
 
     def generate_images(self):
         # TODO: Add error handling
