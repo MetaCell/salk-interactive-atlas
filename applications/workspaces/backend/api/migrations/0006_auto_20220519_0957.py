@@ -8,7 +8,8 @@ from api.models import Population
 
 def generate_images(apps, schema_editor):
     ids =[str(pop.id) for pop in Population.objects.all()]
-    call_command('generate_population_images', *ids)
+    if ids:
+        call_command('generate_population_images', *ids)
 
 
 class Migration(migrations.Migration):
