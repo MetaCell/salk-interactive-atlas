@@ -51,6 +51,8 @@ export const densityWidget = (subdivisions: string[], activePopulations: Populat
             selectedAtlas,
             showProbabilityMap,
             showNeuronalLocations,
+            // TODO: Add population ids that got the cells updated
+            invalidCachePopulations: new Set([])
         }
     }
 };

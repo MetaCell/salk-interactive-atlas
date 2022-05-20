@@ -74,6 +74,7 @@ const useStyles = makeStyles({
 });
 
 const RADIO_GROUP_NAME = "segments-radio-buttons-group"
+const SEPARATOR = '_'
 
 // @ts-ignore
 const RadioButton = ({onChange, isChecked, label}) => {
@@ -98,20 +99,23 @@ const RadioButton = ({onChange, isChecked, label}) => {
 const DensityMap = (props: {
     subdivisions: string[], activePopulations: Population[],
     selectedAtlas: AtlasChoice,
-    showProbabilityMap: boolean, showNeuronalLocations: boolean,
+    showProbabilityMap: boolean,
+    showNeuronalLocations: boolean,
+    invalidCachePopulations: Set<string>
 }) => {
     const api = workspaceService.getApi()
-    const {activePopulations, selectedAtlas, showProbabilityMap, showNeuronalLocations} = props
-    const activePopulationsMap = activePopulations.reduce((acc, pop) => {
-        return {...acc, [pop.id.toString()]: pop}
+    const {activePopulations, selectedAtlas, showProbabilityMap, showNeuronalLocations, invalidCachePopulations} = props
+    const activePopulationsColorMap = activePopulations.reduce((acc, pop) => {
+        return {...acc, [pop.id.toString()]: pop.color}
     }, {})
+    const activePopulationsHash = activePopulations.map(pop => `${pop.id}+${pop.color}`).join('')
     const atlas = getAtlas(props.selectedAtlas)
     const canvasRef = useRef(null)
     const hiddenCanvasRef = useRef(null)
     const [selectedValue, setSelectedValue] = useState('');
     const [content, setContent] = useState({})
     const [isLoading, setIsLoading] = useState(false)
-    const _data = useRef({});
+    const cache = useRef({});
 
     const handleChange = (value: string) => {
         setSelectedValue(value);
@@ -128,12 +132,11 @@ const DensityMap = (props: {
         return {'id': population.id, 'data': RequestState.ERROR}
     }
 
-    function updateCentroids(forceFetch = false) {
+    function updateCentroids() {
         if (selectedValue) {
             if (activePopulations.length > 0) {
                 if (showNeuronalLocations) {
-                    const fetchFilter = forceFetch ? (_: Population) => true : (p: Population) => needsFetch(p, DensityMapTypes.CENTROIDS_DATA)
-                    return Promise.all(activePopulations.filter(fetchFilter).map(p =>
+                    return Promise.all(activePopulations.filter((p: Population) => !isInCache(p, DensityMapTypes.CENTROIDS_DATA)).map(p =>
                         fetchData(p, (id, subdivision, options) => api.centroidsPopulation(id, subdivision, options))))
                         .then(centroidsResponses => {
                             const cData = centroidsResponses.reduce((acc, res) => {
@@ -147,12 +150,11 @@ const DensityMap = (props: {
         }
     }
 
-    function updateProbabilityMap(forceFetch = false) {
+    function updateProbabilityMap() {
         if (selectedValue) {
             if (activePopulations.length > 0) {
                 if (showProbabilityMap) {
-                    const fetchFilter = forceFetch ? (_: Population) => true : (p: Population) => needsFetch(p, DensityMapTypes.PROBABILITY_DATA)
-                    return Promise.all(activePopulations.filter(fetchFilter).map(p =>
+                    return Promise.all(activePopulations.filter((p: Population) => !isInCache(p, DensityMapTypes.PROBABILITY_DATA)).map(p =>
                         fetchData(p, (id, subdivision, options) => api.probabilityMapPopulation(id, subdivision, options))))
                         .then(probabilityMapResponses => {
                             const probData = probabilityMapResponses.reduce((acc, res) => {
@@ -169,27 +171,21 @@ const DensityMap = (props: {
     const updateData = (newData: { [x: string]: any; }, type: DensityMapTypes) => {
         Object.keys(newData).forEach(id => {
             // @ts-ignore
-            const pop = activePopulationsMap[id]
-            // @ts-ignore
-            _data.current[id] = {..._data.current[id], population: pop, [type]: newData[id]}
+            cache.current[`${id}${SEPARATOR}${selectedValue}`] = {...cache.current[`${id}${SEPARATOR}${selectedValue}`], [type]: newData[id]}
         })
     }
 
-    const removeInactivePopulations = () => {
-        const previous = new Set(Object.keys(content))
-        const current = new Set(activePopulations.map(pop => pop.id.toString()))
-        const toRemove = differenceSet(previous, current)
+    const getActiveContent = () => {
+        const activeContent = {}
         // @ts-ignore
-        toRemove.forEach(id => delete _data.current[id])
+        activePopulations.forEach(pop => activeContent[pop.id.toString()] = cache.current[`${pop.id}${SEPARATOR}${selectedValue}`])
+        return activeContent
     }
 
-    const needsFetch = (pop: Population, type: DensityMapTypes) => {
+    const isInCache = (pop: Population, type: DensityMapTypes) => {
         const id = pop.id.toString()
-        if (Object.keys(_data.current).includes(id)) {
-            // @ts-ignore
-            return _data.current[id][type] == null || !areEqual(_data.current[id].population, pop)
-        }
-        return true
+        // @ts-ignore
+        return Object.keys(cache.current).includes(`${id}${SEPARATOR}${selectedValue}`) && cache.current[`${id}${SEPARATOR}${selectedValue}`][type] != null
     }
 
     const hasSomethingToDraw = () => {
@@ -204,14 +200,13 @@ const DensityMap = (props: {
 
     function getDrawColoredImagePromise(data: string | RequestState, canvas: null, hiddenCanvas: null, pId: string) {
         if (data != null && data !== RequestState.NO_CONTENT && data !== RequestState.ERROR) {
-            // TODO: Also consider population opacity for the color?
             // @ts-ignore
-            return drawColoredImage(canvas, hiddenCanvas, data, activePopulationsMap[pId].color)
+            return drawColoredImage(canvas, hiddenCanvas, data, activePopulationsColorMap[pId])
         }
     }
 
     const drawContent = async () => {
-        if (!isLoading){
+        if (!isLoading) {
             return
         }
 
@@ -255,37 +250,34 @@ const DensityMap = (props: {
 
     useEffect(() => {
         setIsLoading(true)
-        removeInactivePopulations()
-        const promise1 = updateProbabilityMap(true)
-        const promise2 = updateCentroids(true);
+        const promise1 = updateProbabilityMap()
+        const promise2 = updateCentroids();
         if (promise1 || promise2) {
-            Promise.all([promise1, promise2].filter(p => p != null)).then(() => setContent({..._data.current}))
+            Promise.all([promise1, promise2].filter(p => p != null)).then(() => setContent(getActiveContent()))
         } else {
-            setContent({..._data.current})
+            setContent(getActiveContent())
         }
     }, [selectedValue])
 
     useEffect(() => {
         setIsLoading(true)
-        removeInactivePopulations()
         const promise1 = updateProbabilityMap()
         const promise2 = updateCentroids();
         if (promise1 || promise2) {
-            Promise.all([promise1, promise2].filter(p => p != null)).then(() => setContent({..._data.current}))
+            Promise.all([promise1, promise2].filter(p => p != null)).then(() => setContent(getActiveContent()))
         } else {
             setContent({})
         }
-    }, [activePopulations])
+    }, [activePopulationsHash])
 
     useEffect(() => {
         setIsLoading(true)
         const promise = updateProbabilityMap();
         if (promise) {
-            promise.then(() => setContent({..._data.current}))
+            promise.then(() => setContent(getActiveContent()))
         } else {
             // @ts-ignore
-            Object.keys(_data.current).forEach(id => delete _data.current[id][DensityMapTypes.PROBABILITY_DATA])
-            setContent({..._data.current})
+            setContent(getActiveContent())
         }
     }, [showProbabilityMap])
 
@@ -293,13 +285,22 @@ const DensityMap = (props: {
         setIsLoading(true)
         const promise = updateCentroids()
         if (promise) {
-            promise.then(() => setContent({..._data.current}))
+            promise.then(() => setContent(getActiveContent()))
         } else {
             // @ts-ignore
-            Object.keys(_data.current).forEach(id => delete _data.current[id][DensityMapTypes.CENTROIDS_DATA])
-            setContent({..._data.current})
+            setContent(getActiveContent())
         }
     }, [showNeuronalLocations])
+
+    useEffect(() => {
+        Object.keys(cache).forEach(idSegment => {
+            const id = idSegment.split(SEPARATOR)[0]
+            if (invalidCachePopulations.has(id)){
+                // @ts-ignore
+                delete cache[idSegment]
+            }
+        })
+    }, [invalidCachePopulations])
 
     useEffect(() => {
         drawContent().catch(console.error)
