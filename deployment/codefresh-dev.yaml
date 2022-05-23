@@ -60,6 +60,7 @@ steps:
         - DOMAIN=${{DOMAIN}}
         - NOCACHE=${{CF_BUILD_ID}}
         - REGISTRY=${{REGISTRY}}/salk/
+        - WORKSPACES_GENERATE_POPULATION_IMAGES=${{REGISTRY}}/salk/workspaces-generate_population_images:${{CF_BUILD_ID}}
         - CLOUDHARNESS_BASE_DEBIAN=${{REGISTRY}}/salk/cloudharness-base-debian:${{CF_BUILD_ID}}
         image_name: salk/cloudharness-base-debian
         title: Cloudharness base debian
@@ -133,6 +134,24 @@ steps:
         image_name: salk/workspaces
         title: Workspaces
         working_directory: ./applications/workspaces
+      workspaces-generate_population_images:
+        type: build
+        stage: build
+        tag: '${{CF_BUILD_ID}}'
+        dockerfile: Dockerfile
+        registry: '${{CODEFRESH_REGISTRY}}'
+        buildkit: true
+        build_arguments:
+        - TAG=${{CF_BUILD_ID}}
+        - NAMESPACE=${{NAMESPACE}}
+        - DOMAIN=${{DOMAIN}}
+        - NOCACHE=${{CF_BUILD_ID}}
+        - REGISTRY=${{REGISTRY}}/salk/
+        - WORKSPACES_GENERATE_POPULATION_IMAGES=${{REGISTRY}}/salk/workspaces-generate_population_images:${{CF_BUILD_ID}}
+        - CLOUDHARNESS_BASE_DEBIAN=${{REGISTRY}}/salk/cloudharness-base-debian:${{CF_BUILD_ID}}
+        image_name: salk/workspaces-generate_population_images
+        title: Workspaces generate_population_images
+        working_directory: ./applications/workspaces/tasks/generate_population_images
   deployment:
     stage: deploy
     image: codefresh/cfstep-helm:3.6.2
@@ -188,6 +207,14 @@ steps:
         type: push
         title: Workspaces
         candidate: '${{REGISTRY}}/salk/workspaces:${{CF_BUILD_ID}}'
+        tags:
+        - '${{DEPLOYMENT_PUBLISH_TAG}}'
+        registry: '${{REGISTRY_PUBLISH_URL}}'
+      publish_workspaces-generate_population_images:
+        stage: publish
+        type: push
+        title: Workspaces generate_population_images
+        candidate: '${{REGISTRY}}/salk/workspaces-generate_population_images:${{CF_BUILD_ID}}'
         tags:
         - '${{DEPLOYMENT_PUBLISH_TAG}}'
         registry: '${{REGISTRY_PUBLISH_URL}}'
