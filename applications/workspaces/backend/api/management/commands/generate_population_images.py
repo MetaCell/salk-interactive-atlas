@@ -4,26 +4,22 @@ from api.models import Population, PopulationStatus
 
 
 class Command(BaseCommand):
-    help = 'Generates density map images (heatmap and centroids) for each population provided'
+    help = "Generates density map images (heatmap and centroids) for each population provided"
 
     def add_arguments(self, parser):
-        parser.add_argument('population_ids', nargs='+', type=int)
+        parser.add_argument("population_ids", nargs="+", type=int)
 
     def handle(self, *args, **options):
-        for pop_id in options['population_ids']:
+        for pop_id in options["population_ids"]:
             try:
                 p = Population.objects.get(pk=pop_id)
             except Population.DoesNotExist:
-                self.stdout.write(self.style.WARNING(f'{pop_id}  does not exist. Skipping'))
+                self.stdout.write(
+                    self.style.WARNING(f"{pop_id}  does not exist. Skipping")
+                )
                 continue
-            p.status = PopulationStatus.RUNNING
-            p.save()
             try:
                 p.generate_images()
-                p.status = PopulationStatus.READY
             except Exception as e:
-                self.stdout.write(self.style.WARNING(f'{pop_id}: {e}. Skipped'))
-                p.status = PopulationStatus.ERROR
-            p.save()
-
-        self.stdout.write(self.style.SUCCESS('Generate population images finished'))
+                self.stdout.write(self.style.WARNING(f"{pop_id}: {e}. Skipped"))
+        self.stdout.write(self.style.SUCCESS("Generate population images finished"))

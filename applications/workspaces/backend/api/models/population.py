@@ -4,19 +4,20 @@ from django.conf import settings
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 
-from .atlas import AtlasesChoice
-from .experiment import Experiment
 from ..constants import PopulationPersistentFiles
 from ..helpers.filesystem import create_dir, remove_dir
-from ..services.population_service import split_cells_per_segment, generate_images
+from ..services.population_service import generate_images, split_cells_per_segment
 from ..services.workflows_service import execute_generate_population_images_workflow
 from ..utils import is_valid_hex_str
+from .atlas import AtlasesChoice
+from .experiment import Experiment
 
 
 class PopulationStatus(models.IntegerChoices):
     ERROR = -1
-    RUNNING = 0
-    READY = 1
+    IDLE = 0
+    RUNNING = 1
+    READY = 2
 
 
 class Population(models.Model):
@@ -31,7 +32,9 @@ class Population(models.Model):
         validators=[MinValueValidator(0.0), MaxValueValidator(1.0)], default=1.0
     )
     cells = models.FileField(upload_to="populations")
-    status = models.IntegerField(choices=PopulationStatus.choices)
+    status = models.IntegerField(
+        choices=PopulationStatus.choices, editable=False, default=PopulationStatus.IDLE
+    )
 
     @property
     def save_dir_path(self):
@@ -47,16 +50,23 @@ class Population(models.Model):
         create_dir(self.save_dir_path)
 
     def save(
-            self, force_insert=False, force_update=False, using=None, update_fields=None
+            self, force_insert=False, force_update=False, using=None, update_fields=None, skip_workflow=False
     ):
         self.update_color()
         super(Population, self).save(force_insert, force_update, using, update_fields)
         split_cells_per_segment(self)
-        execute_generate_population_images_workflow(self.id)
+        if not skip_workflow:  # Do not recall the workflow on status changes
+            execute_generate_population_images_workflow(self.id)
 
     def generate_images(self):
-        # TODO: Add error handling
-        generate_images(self)
+        self.status = PopulationStatus.RUNNING
+        self.save(skip_workflow=True)
+        try:
+            generate_images(self)
+            self.status = PopulationStatus.READY
+        except Exception as e:
+            self.status = PopulationStatus.ERROR
+        self.save(skip_workflow=True)
 
     @staticmethod
     def has_read_permission(request):
