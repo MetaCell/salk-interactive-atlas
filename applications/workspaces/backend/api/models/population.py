@@ -2,6 +2,7 @@ import filecmp
 import hashlib
 import os
 
+from PIL import Image
 from django.conf import settings
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
@@ -88,6 +89,9 @@ class Population(models.Model):
         except Exception as e:
             self.status = PopulationStatus.ERROR
         self.save()
+
+    def get_image(self, subdivision: str, content: PopulationPersistentFiles) -> Image:
+        return Image.open(self.get_subdivision_path(subdivision, content))
 
     @staticmethod
     def has_read_permission(request):

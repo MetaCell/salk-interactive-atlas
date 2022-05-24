@@ -12,7 +12,7 @@ from api.helpers.image_manipulation import fig_to_img
 
 class CentroidsCreator(IImageCreator):
 
-    def get_image(self, bg_atlas: BrainGlobeAtlas, subdivision: str, points: np.array) -> Image:
+    def create(self, bg_atlas: BrainGlobeAtlas, subdivision: str, points: np.array) -> Image:
         return _generate_centroids(bg_atlas, subdivision, points)
 
 

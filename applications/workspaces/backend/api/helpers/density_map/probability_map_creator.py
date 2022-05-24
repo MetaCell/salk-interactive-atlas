@@ -9,7 +9,7 @@ from api.helpers.image_manipulation import get_image_from_array, apply_greyscale
 
 class ProbabilityMapCreator(IImageCreator):
 
-    def get_image(self, bg_atlas: BrainGlobeAtlas, subdivision: str, points: np.array) -> Image:
+    def create(self, bg_atlas: BrainGlobeAtlas, subdivision: str, points: np.array) -> Image:
         return _generate_probability_map(bg_atlas, subdivision, points)
 
 
