@@ -3,11 +3,12 @@
 from django.db import migrations
 
 from api.models import Population
+from api.services.population_service import split_cells_per_segment
 
 
 def split_cells(apps, schema_editor):
     for pop in Population.objects.all():
-        pop.save()
+        split_cells_per_segment(pop)
 
 
 class Migration(migrations.Migration):
