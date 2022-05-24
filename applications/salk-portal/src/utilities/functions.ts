@@ -13,6 +13,10 @@ export function eqSet(set1: Set<any>, set2: Set<any>) : boolean {
    return true;
 }
 
+export function differenceSet(set1: Set<any>, set2: Set<any>) : Set<any> {
+   return new Set([...set1].filter(x => !set2.has(x)));
+}
+
 export const getAllowedRanges = (selectedAtlas: AtlasChoice, activeSubdivisions: Set<string>) : Range[] => {
    const ranges : Range[] = []
    const atlas = getAtlas(selectedAtlas)
@@ -39,4 +43,9 @@ export function getRGBAFromHexAlpha(hex: string, opacity: number){
 
 export function getRGBAString(rgba: { r: number; g: number; b: number; a: number; }){
    return `rgba(${rgba.r},${rgba.g},${rgba.b},${rgba.a})`
+}
+
+export function areEqual(obj1: any, obj2: any){
+   return  JSON.stringify(obj1) === JSON.stringify(obj2)
+
 }
