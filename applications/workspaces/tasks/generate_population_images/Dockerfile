@@ -1,4 +1,5 @@
-FROM salk/workspaces
+ARG WORKSPACES
+FROM $WORKSPACES
 
 ENV population_id 0
 
