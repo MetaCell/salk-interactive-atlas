@@ -20,7 +20,10 @@ class AutomaticLoginUserMiddleware:
             self.ac = None
 
     def __call__(self, request):
-        if self.ac and get_authentication_token():
+        if getattr(getattr(request, "user", {}), "is_anonymous", True) and \
+           self.ac and \
+           get_authentication_token():
+            # no django user --> get the current user from the jwt token and keycloak
             try:
                 kc_user = self.ac.get_current_user()
                 try:
@@ -35,7 +38,7 @@ class AutomaticLoginUserMiddleware:
                 pass
 
         if hasattr(request, "user"):
-            if not request.user.is_anonymous:
+            if not request.user.is_anonymous and not request.user.is_authenticated:
                 # auto login for non anonymous users
                 login(request, request.user)
 
