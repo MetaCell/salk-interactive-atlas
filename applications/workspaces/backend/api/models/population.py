@@ -23,16 +23,6 @@ class PopulationStatus(models.TextChoices):
     FINISHED = "finished"
 
 
-def _get_file_hash(file):
-    ctx = hashlib.sha256()
-    if file.multiple_chunks():
-        for data in file.chunks():
-            ctx.update(data)
-    else:
-        ctx.update(file.read())
-    return ctx.hexdigest()
-
-
 class Population(models.Model):
     DEFAULT_COLOR = "#000000"
     experiment = models.ForeignKey(Experiment, on_delete=models.DO_NOTHING)
@@ -78,7 +68,7 @@ class Population(models.Model):
         except Population.DoesNotExist:
             return True
 
-        return _get_file_hash(self.cells.file) != _get_file_hash(current.cells.file)
+        return self.cells.file.name != current.cells.file.name
 
     def generate_images(self):
         self.status = PopulationStatus.RUNNING

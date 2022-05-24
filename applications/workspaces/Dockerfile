@@ -35,4 +35,4 @@ RUN python3 manage.py collectstatic --noinput
 
 RUN mkdir -p ${APP_DIR}/static/www
 
-ENTRYPOINT gunicorn --workers=$WORKERS --bind=0.0.0.0:${PORT} $MODULE_NAME.wsgi:application
+CMD gunicorn --workers=$WORKERS --bind=0.0.0.0:${PORT} $MODULE_NAME.wsgi:application
