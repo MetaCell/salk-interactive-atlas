@@ -1,6 +1,8 @@
 import csv
 
 from api.models import Experiment, Population, Tag
+from api.services.population_service import split_cells_per_segment
+from api.services.workflows_service import execute_generate_population_images_workflow
 
 
 def add_tag(experiment: Experiment, tag_name: str):
@@ -31,5 +33,7 @@ def upload_file(experiment: Experiment, population_name: str, file):
     if not created:
         population.remove_split_cells_csv()
     population.cells = file
+    execute_generate_population_images_workflow(population.id)
+    split_cells_per_segment(population)
     population.save()
     return created

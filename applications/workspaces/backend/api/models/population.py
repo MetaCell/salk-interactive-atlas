@@ -4,20 +4,19 @@ from django.conf import settings
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 
-from ..constants import PopulationPersistentFiles
-from ..helpers.filesystem import create_dir, remove_dir
-from ..services.population_service import generate_images, split_cells_per_segment
-from ..services.workflows_service import execute_generate_population_images_workflow
-from ..utils import is_valid_hex_str
 from .atlas import AtlasesChoice
 from .experiment import Experiment
+from ..constants import PopulationPersistentFiles
+from ..helpers.filesystem import create_dir, remove_dir
+from ..services.population_service import generate_images
+from ..utils import is_valid_hex_str
 
 
-class PopulationStatus(models.IntegerChoices):
-    ERROR = -1
-    IDLE = 0
-    RUNNING = 1
-    READY = 2
+class PopulationStatus(models.TextChoices):
+    ERROR = "error"
+    PENDING = "pending"
+    RUNNING = "running"
+    FINISHED = "finished"
 
 
 class Population(models.Model):
@@ -32,8 +31,8 @@ class Population(models.Model):
         validators=[MinValueValidator(0.0), MaxValueValidator(1.0)], default=1.0
     )
     cells = models.FileField(upload_to="populations")
-    status = models.IntegerField(
-        choices=PopulationStatus.choices, editable=False, default=PopulationStatus.IDLE
+    status = models.CharField(
+        choices=PopulationStatus.choices, editable=False, default=PopulationStatus.PENDING, max_length=8
     )
 
     @property
@@ -50,23 +49,20 @@ class Population(models.Model):
         create_dir(self.save_dir_path)
 
     def save(
-            self, force_insert=False, force_update=False, using=None, update_fields=None, skip_workflow=False
+            self, force_insert=False, force_update=False, using=None, update_fields=None
     ):
         self.update_color()
         super(Population, self).save(force_insert, force_update, using, update_fields)
-        split_cells_per_segment(self)
-        if not skip_workflow:  # Do not recall the workflow on status changes
-            execute_generate_population_images_workflow(self.id)
 
     def generate_images(self):
         self.status = PopulationStatus.RUNNING
-        self.save(skip_workflow=True)
+        self.save()
         try:
             generate_images(self)
-            self.status = PopulationStatus.READY
+            self.status = PopulationStatus.FINISHED
         except Exception as e:
             self.status = PopulationStatus.ERROR
-        self.save(skip_workflow=True)
+        self.save()
 
     @staticmethod
     def has_read_permission(request):
