@@ -1,3 +1,5 @@
+import filecmp
+import hashlib
 import os
 
 from django.conf import settings
@@ -8,7 +10,8 @@ from .atlas import AtlasesChoice
 from .experiment import Experiment
 from ..constants import PopulationPersistentFiles
 from ..helpers.filesystem import create_dir, remove_dir
-from ..services.population_service import generate_images
+from ..services.population_service import generate_images, split_cells_per_segment
+from ..services.workflows_service import execute_generate_population_images_workflow
 from ..utils import is_valid_hex_str
 
 
@@ -17,6 +20,16 @@ class PopulationStatus(models.TextChoices):
     PENDING = "pending"
     RUNNING = "running"
     FINISHED = "finished"
+
+
+def _get_file_hash(file):
+    ctx = hashlib.sha256()
+    if file.multiple_chunks():
+        for data in file.chunks():
+            ctx.update(data)
+    else:
+        ctx.update(file.read())
+    return ctx.hexdigest()
 
 
 class Population(models.Model):
@@ -52,7 +65,19 @@ class Population(models.Model):
             self, force_insert=False, force_update=False, using=None, update_fields=None
     ):
         self.update_color()
+        has_file_changed = self._has_file_changed()
         super(Population, self).save(force_insert, force_update, using, update_fields)
+        if has_file_changed:  # Do not recall the workflow on status changes
+            execute_generate_population_images_workflow(self.id)
+            split_cells_per_segment(self)
+
+    def _has_file_changed(self):
+        try:
+            current = Population.objects.get(id=self.id)
+        except Population.DoesNotExist:
+            return True
+
+        return _get_file_hash(self.cells.file) != _get_file_hash(current.cells.file)
 
     def generate_images(self):
         self.status = PopulationStatus.RUNNING

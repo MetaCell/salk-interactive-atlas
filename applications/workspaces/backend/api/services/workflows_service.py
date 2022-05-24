@@ -15,6 +15,6 @@ def _create_generate_population_images_task(population_id: int):
 def execute_generate_population_images_workflow(population_id: int):
     from cloudharness.workflows import operations
     operations.PipelineOperation(
-        name=f"salk-generate-population-images-tasks-job",
-        tasks=(_create_generate_population_images_task(population_id)),
+        basename=f"salk-generate-population-images-tasks-job",
+        tasks=(_create_generate_population_images_task(population_id), ),
     ).execute()
