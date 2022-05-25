@@ -8,6 +8,7 @@ from api.models import Collaborator, Experiment, Population, Tag, UserDetail
 class PopulationInline(admin.TabularInline):
     model = Population
     show_change_link = True
+    readonly_fields = ("status",)
     extra = 1
 
 
