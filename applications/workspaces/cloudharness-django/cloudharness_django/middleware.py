@@ -1,3 +1,5 @@
+import jwt
+
 from django.contrib.auth import login, authenticate
 from django.contrib.auth.models import User
 
@@ -7,65 +9,48 @@ from keycloak.exceptions import KeycloakGetError
 
 from cloudharness.auth.keycloak import AuthClient
 from cloudharness.middleware import get_authentication_token
-from cloudharness_django.services import get_user_service
+from cloudharness_django.services import get_user_service, get_auth_service
 
 
-class AutomaticLoginUserMiddleware:
-    def __init__(self, get_response):
+def _get_user():
+    bearer = get_authentication_token()
+    if bearer:
+        # found bearer token get the Django user
+        try:
+            token = bearer.split(" ")[1]
+            payload = jwt.decode(token, algorithms=["RS256"], options={"verify_signature": False}, audience="web-client")
+            kc_id = payload["sub"]
+            try:
+                user = User.objects.get(member__kc_id=kc_id)
+            except User.DoesNotExist:
+                user = get_user_service().sync_kc_user(get_auth_service().get_auth_client().get_current_user())
+            return user
+        except KeycloakGetError:
+            # KC user not found
+            return None
+    return None
+
+
+class BearerTokenMiddleware:
+    def __init__(self, get_response = None):
         # One-time configuration and initialization.
         self.get_response = get_response
-        try:
-            self.ac = AuthClient()
-        except:
-            self.ac = None
 
     def __call__(self, request):
-        if getattr(getattr(request, "user", {}), "is_anonymous", True) and \
-           self.ac and \
-           get_authentication_token():
-            # no django user --> get the current user from the jwt token and keycloak
-            try:
-                kc_user = self.ac.get_current_user()
-                try:
-                    user = User.objects.get(member__kc_id=kc_user["id"])
-                except User.DoesNotExist:
-                    user = get_user_service().sync_kc_user(kc_user)
-                if user:
-                    # auto login, set the user
-                    request.user = user
-            except KeycloakGetError:
-                # KC user not found
-                pass
+        if getattr(getattr(request, "user", {}), "is_anonymous", True):
+            user = _get_user()
+            if user:
+                # auto login, set the user
+                request.user = user
+                request._cached_user = user
 
-        if hasattr(request, "user"):
-            if not request.user.is_anonymous and not request.user.is_authenticated:
-                # auto login for non anonymous users
-                login(request, request.user)
+        return self.get_response(request)
 
-        response = self.get_response(request)
 
-        # Code to be executed for each request/response after
-        # the view is called.
-
-        return response
-
-class AutomaticLoginUserMiddlewareOIDC(authentication.BaseAuthentication):
+class BearerTokenAuthentication:
     def authenticate(self, request):
-
+        # Django Rest Framework keycloak authentication
         user = getattr(request._request, 'user', None)
-        if user:
-            return user, None
-        if get_authentication_token():
-            try:
-                kc_user = self.ac.get_current_user()
-                user = User.objects.get(member__kc_id=kc_user["id"])
-                if user:
-                    # auto login
-                    request.user = user
-                    login(request, request.user)
-                    return user
-            except KeycloakGetError:
-                # KC user not found
-                pass
-
-        return None
+        if user and user.is_authenticated:
+            return (user, None)
+        return (_get_user(), None)
