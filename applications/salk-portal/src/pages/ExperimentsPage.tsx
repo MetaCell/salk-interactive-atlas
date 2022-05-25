@@ -51,7 +51,7 @@ const useStyles = makeStyles({
     }
 });
 
-const MOCKED_ID = "3"
+const MOCKED_ID = "1"
 
 const getDefaultAtlas = () => AtlasChoice.slk10
 const getSubdivisions = (sa: AtlasChoice) => {
