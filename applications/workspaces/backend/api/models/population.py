@@ -60,6 +60,7 @@ class Population(models.Model):
         super(Population, self).save(force_insert, force_update, using, update_fields)
         if has_file_changed:  # Do not recall the workflow on status changes
             execute_generate_population_images_workflow(self.id)
+            # TODO: also add the following to argo workflows
             split_cells_per_segment(self)
 
     def _has_file_changed(self):
@@ -76,9 +77,11 @@ class Population(models.Model):
         try:
             generate_images(self)
             self.status = PopulationStatus.FINISHED
+            self.save()
         except Exception as e:
             self.status = PopulationStatus.ERROR
-        self.save()
+            self.save()
+            raise e
 
     def get_image(self, subdivision: str, content: PopulationPersistentFiles) -> Image:
         return Image.open(self.get_subdivision_path(subdivision, content))
