@@ -16,7 +16,9 @@ def _create_generate_population_images_task(population_id: int):
 
 def execute_generate_population_images_workflow(population_id: int):
     from cloudharness.workflows import operations
+    shared_directory = "salk-files:/usr/src/app/persistent"
     operations.PipelineOperation(
         basename=GENERATE_IMAGES_OP,
-        tasks=(_create_generate_population_images_task(population_id), ),
+        tasks=(_create_generate_population_images_task(population_id),),
+        shared_directory=shared_directory
     ).execute()
