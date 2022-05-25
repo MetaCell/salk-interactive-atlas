@@ -60,6 +60,7 @@ steps:
         - DOMAIN=${{DOMAIN}}
         - NOCACHE=${{CF_BUILD_ID}}
         - REGISTRY=${{REGISTRY}}/salk/
+        - WORKSPACES_GENERATE_POPULATION_IMAGES=${{REGISTRY}}/salk/workspaces-generate-population-images:${{CF_BUILD_ID}}
         - WORKSPACES_GENERATE_POPULATION_IMAGES=${{REGISTRY}}/salk/workspaces-generate_population_images:${{CF_BUILD_ID}}
         - CLOUDHARNESS_BASE_DEBIAN=${{REGISTRY}}/salk/cloudharness-base-debian:${{CF_BUILD_ID}}
         image_name: salk/cloudharness-base-debian
@@ -134,6 +135,25 @@ steps:
         image_name: salk/workspaces
         title: Workspaces
         working_directory: ./applications/workspaces
+      workspaces-generate-population-images:
+        type: build
+        stage: build
+        tag: '${{CF_BUILD_ID}}'
+        dockerfile: Dockerfile
+        registry: '${{CODEFRESH_REGISTRY}}'
+        buildkit: true
+        build_arguments:
+        - TAG=${{CF_BUILD_ID}}
+        - NAMESPACE=${{NAMESPACE}}
+        - DOMAIN=${{DOMAIN}}
+        - NOCACHE=${{CF_BUILD_ID}}
+        - REGISTRY=${{REGISTRY}}/salk/
+        - WORKSPACES_GENERATE_POPULATION_IMAGES=${{REGISTRY}}/salk/workspaces-generate-population-images:${{CF_BUILD_ID}}
+        - WORKSPACES_GENERATE_POPULATION_IMAGES=${{REGISTRY}}/salk/workspaces-generate_population_images:${{CF_BUILD_ID}}
+        - CLOUDHARNESS_BASE_DEBIAN=${{REGISTRY}}/salk/cloudharness-base-debian:${{CF_BUILD_ID}}
+        image_name: salk/workspaces-generate-population-images
+        title: Workspaces generate population images
+        working_directory: ./applications/workspaces/tasks/generate-population-images
       workspaces-generate_population_images:
         type: build
         stage: build
@@ -147,6 +167,7 @@ steps:
         - DOMAIN=${{DOMAIN}}
         - NOCACHE=${{CF_BUILD_ID}}
         - REGISTRY=${{REGISTRY}}/salk/
+        - WORKSPACES_GENERATE_POPULATION_IMAGES=${{REGISTRY}}/salk/workspaces-generate-population-images:${{CF_BUILD_ID}}
         - WORKSPACES_GENERATE_POPULATION_IMAGES=${{REGISTRY}}/salk/workspaces-generate_population_images:${{CF_BUILD_ID}}
         - CLOUDHARNESS_BASE_DEBIAN=${{REGISTRY}}/salk/cloudharness-base-debian:${{CF_BUILD_ID}}
         image_name: salk/workspaces-generate_population_images
@@ -207,6 +228,14 @@ steps:
         type: push
         title: Workspaces
         candidate: '${{REGISTRY}}/salk/workspaces:${{CF_BUILD_ID}}'
+        tags:
+        - '${{DEPLOYMENT_PUBLISH_TAG}}'
+        registry: '${{REGISTRY_PUBLISH_URL}}'
+      publish_workspaces-generate-population-images:
+        stage: publish
+        type: push
+        title: Workspaces generate population images
+        candidate: '${{REGISTRY}}/salk/workspaces-generate-population-images:${{CF_BUILD_ID}}'
         tags:
         - '${{DEPLOYMENT_PUBLISH_TAG}}'
         registry: '${{REGISTRY_PUBLISH_URL}}'
