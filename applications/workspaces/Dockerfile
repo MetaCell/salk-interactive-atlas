@@ -14,12 +14,12 @@ RUN mkdir -p ${BASE_DIR}
 WORKDIR ${BASE_DIR}
 RUN apt update -y && apt install libjpeg-dev zlib1g-dev git -y
 
+COPY cordmap ./cordmap
+RUN python3 -m pip install -e cordmap --no-cache-dir --upgrade
+
 COPY cloudharness-django ./cloudharness-django
 RUN python3 -m pip install --upgrade pip && \
     python3 -m pip install -e cloudharness-django --no-cache-dir --upgrade
-
-COPY cordmap ./cordmap
-RUN python3 -m pip install -e cordmap --no-cache-dir --upgrade
 
 ADD local-atlas/salk_cord_10um_v1.0.tar.gz /root/.brainglobe/
 
@@ -35,4 +35,4 @@ RUN python3 manage.py collectstatic --noinput
 
 RUN mkdir -p ${APP_DIR}/static/www
 
-CMD gunicorn --workers=$WORKERS --bind=0.0.0.0:${PORT} $MODULE_NAME.wsgi:application
+CMD uvicorn --workers $WORKERS --host 0.0.0.0 --port ${PORT} main:app

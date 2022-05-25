@@ -23,7 +23,7 @@ MIDDLEWARE = getattr(
             'MIDDLEWARE',
             []
     ) + [
-        'cloudharness_django.middleware.AutomaticLoginUserMiddleware',
+        'cloudharness_django.middleware.BearerTokenMiddleware',
     ]
 
 REST_FRAMEWORK = {
@@ -32,17 +32,15 @@ REST_FRAMEWORK = {
         'rest_framework.permissions.IsAuthenticated',
     ],
     'DEFAULT_AUTHENTICATION_CLASSES': [
-        'cloudharness_django.middleware.AutomaticLoginUserMiddlewareOIDC',
+        'cloudharness_django.middleware.BearerTokenAuthentication',
         'rest_framework.authentication.BasicAuthentication',
         'rest_framework.authentication.SessionAuthentication',
     ]
 }
 
-# from rest_framework.authentication import SessionAuthentication
-
 # test if the kubernetes CH all values exists, if so then set up specific k8s stuff
 # IMPROTANT NOTE:
-#   when testing/debugging with KAfka then copy the deployment/helm/values.yaml to the ALLVALUES_PATH
+#   when testing/debugging with Kafka then copy the deployment/helm/values.yaml to the ALLVALUES_PATH
 #   see also the README.md
 
 # get the application CH config
