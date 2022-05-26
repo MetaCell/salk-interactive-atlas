@@ -19,8 +19,8 @@ import workspaceService from "../service/WorkspaceService";
 import CordImageMapper from "./CordImageMapper";
 import {getAtlas} from "../service/AtlasService";
 import {clearCanvas, drawColoredImage, drawImage} from "../service/CanvasService";
-import {areEqual, differenceSet} from "../utilities/functions";
 
+const HEIGHT = "calc(100% - 55px)"
 
 const useStyles = makeStyles({
     placeholder: {
@@ -70,6 +70,10 @@ const useStyles = makeStyles({
     },
     fontSize: {
         fontSize: "0.75rem"
+    },
+    subdivisionsContainer: {
+        height: HEIGHT,
+        overflow: "auto"
     }
 });
 
@@ -310,12 +314,13 @@ const DensityMap = (props: {
 
     const classes = useStyles();
     // @ts-ignore
-    const boxStyle = {flexGrow: 1, background: canvasBg, padding: "1rem", minHeight: "100%"}
-    const gridStyle = {className: `${classes.container} ${classes.border}`, container: true, columns: 2}
+    const boxStyle = {flexGrow: 1, background: canvasBg, padding: "1rem", minHeight: "100%", height: HEIGHT}
+    const gridStyle = {className: `${classes.container} ${classes.border}`, container: true, columns: 2, height: HEIGHT}
+    const subdivisionsGridStyle = {height: HEIGHT}
     return (
         <Box sx={boxStyle}>
             <Grid {...gridStyle}>
-                <Grid item={true} xs={4}>
+                <Grid item={true} xs={4} style={{...subdivisionsGridStyle}}>
                     <Box className={`${classes.cordImageContainer}`}>
                         <CordImageMapper
                             segments={subdivisions.flatMap((s) => [`${s}-${ROSTRAL}`, `${s}-${CAUDAL}`])}
@@ -323,7 +328,7 @@ const DensityMap = (props: {
                             onChange={handleChange}
                         />
                     </Box>
-                    <Box>
+                    <Box className={`scrollbarStyle ${classes.subdivisionsContainer}`}>
                         <FormControl className={classes.fullWidth}>
                             <RadioGroup
                                 aria-labelledby="segments-radio-buttons-group-label"
