@@ -19,6 +19,7 @@ import workspaceService from "../service/WorkspaceService";
 import CordImageMapper from "./CordImageMapper";
 import {getAtlas} from "../service/AtlasService";
 import {clearCanvas, drawColoredImage, drawImage} from "../service/CanvasService";
+import {mod} from "../utilities/functions";
 
 const HEIGHT = "calc(100% - 55px)"
 
@@ -126,6 +127,12 @@ const DensityMap = (props: {
     const handleChange = (value: number) => {
         setSelectedValueIndex(value);
     };
+
+    const handleWheel = (event: any) => {
+        const direction = Math.sign(event.deltaY) * -1
+        setSelectedValueIndex(s => mod(s + direction, segments.length))
+    };
+
 
     const fetchData = async (population: Population, apiMethod: (id: string, subdivision: string, options: any) => Promise<any>) => {
         const response = await apiMethod(population.id.toString(), segments[selectedValueIndex], {responseType: 'blob'})
@@ -326,6 +333,7 @@ const DensityMap = (props: {
                             segments={segments}
                             selected={selectedValueIndex}
                             onChange={handleChange}
+                            onWheel={handleWheel}
                         />
                     </Box>
                     <Box className={`scrollbarStyle ${classes.subdivisionsContainer}`}>
