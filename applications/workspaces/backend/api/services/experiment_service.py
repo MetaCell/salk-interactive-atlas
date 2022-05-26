@@ -1,8 +1,4 @@
-import csv
-
 from api.models import Experiment, Population, Tag
-from api.services.population_service import split_cells_per_segment
-from api.services.workflows_service import execute_generate_population_images_workflow
 
 
 def add_tag(experiment: Experiment, tag_name: str):

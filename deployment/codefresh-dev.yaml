@@ -60,7 +60,7 @@ steps:
         - DOMAIN=${{DOMAIN}}
         - NOCACHE=${{CF_BUILD_ID}}
         - REGISTRY=${{REGISTRY}}/salk/
-        - WORKSPACES_GENERATE_POPULATION_IMAGES=${{REGISTRY}}/salk/workspaces-generate-population-images:${{CF_BUILD_ID}}
+        - WORKSPACES_GENERATE_POPULATION_STATIC_FILES=${{REGISTRY}}/salk/workspaces-generate-population-static-files:${{CF_BUILD_ID}}
         - CLOUDHARNESS_BASE_DEBIAN=${{REGISTRY}}/salk/cloudharness-base-debian:${{CF_BUILD_ID}}
         image_name: salk/cloudharness-base-debian
         title: Cloudharness base debian
@@ -134,7 +134,7 @@ steps:
         image_name: salk/workspaces
         title: Workspaces
         working_directory: ./applications/workspaces
-      workspaces-generate-population-images:
+      workspaces-generate-population-static-files:
         type: build
         stage: build
         tag: '${{CF_BUILD_ID}}'
@@ -147,11 +147,11 @@ steps:
         - DOMAIN=${{DOMAIN}}
         - NOCACHE=${{CF_BUILD_ID}}
         - REGISTRY=${{REGISTRY}}/salk/
-        - WORKSPACES_GENERATE_POPULATION_IMAGES=${{REGISTRY}}/salk/workspaces-generate-population-images:${{CF_BUILD_ID}}
+        - WORKSPACES_GENERATE_POPULATION_STATIC_FILES=${{REGISTRY}}/salk/workspaces-generate-population-static-files:${{CF_BUILD_ID}}
         - CLOUDHARNESS_BASE_DEBIAN=${{REGISTRY}}/salk/cloudharness-base-debian:${{CF_BUILD_ID}}
-        image_name: salk/workspaces-generate-population-images
-        title: Workspaces generate population images
-        working_directory: ./applications/workspaces/tasks/generate-population-images
+        image_name: salk/workspaces-generate-population-static-files
+        title: Workspaces generate population static files
+        working_directory: ./applications/workspaces/tasks/generate-population-static-files
   deployment:
     stage: deploy
     image: codefresh/cfstep-helm:3.6.2
@@ -210,11 +210,11 @@ steps:
         tags:
         - '${{DEPLOYMENT_PUBLISH_TAG}}'
         registry: '${{REGISTRY_PUBLISH_URL}}'
-      publish_workspaces-generate-population-images:
+      publish_workspaces-generate-population-static-files:
         stage: publish
         type: push
-        title: Workspaces generate population images
-        candidate: '${{REGISTRY}}/salk/workspaces-generate-population-images:${{CF_BUILD_ID}}'
+        title: Workspaces generate population static files
+        candidate: '${{REGISTRY}}/salk/workspaces-generate-population-static-files:${{CF_BUILD_ID}}'
         tags:
         - '${{DEPLOYMENT_PUBLISH_TAG}}'
         registry: '${{REGISTRY_PUBLISH_URL}}'

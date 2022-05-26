@@ -1,5 +1,3 @@
-import filecmp
-import hashlib
 import os
 
 from PIL import Image
@@ -12,7 +10,7 @@ from .experiment import Experiment
 from ..constants import PopulationPersistentFiles
 from ..helpers.filesystem import create_dir, remove_dir
 from ..services.population_service import generate_images, split_cells_per_segment
-from ..services.workflows_service import execute_generate_population_images_workflow
+from ..services.workflows_service import execute_generate_population_static_files_workflow
 from ..utils import is_valid_hex_str
 
 
@@ -58,30 +56,34 @@ class Population(models.Model):
         self.update_color()
         has_file_changed = self._has_file_changed()
         super(Population, self).save(force_insert, force_update, using, update_fields)
-        if has_file_changed:  # Do not recall the workflow on status changes
-            execute_generate_population_images_workflow(self.id)
-            # TODO: also add the following to argo workflows
-            split_cells_per_segment(self)
+        if has_file_changed:  # Only trigger workflow on cells changes
+            execute_generate_population_static_files_workflow(self.id)
 
     def _has_file_changed(self):
         try:
             current = Population.objects.get(id=self.id)
         except Population.DoesNotExist:
             return True
-
         return self.cells.file.name != current.cells.file.name
 
-    def generate_images(self):
+    def generate_static_files(self):
         self.status = PopulationStatus.RUNNING
         self.save()
         try:
-            generate_images(self)
-            self.status = PopulationStatus.FINISHED
-            self.save()
+            split_cells_per_segment(self)
         except Exception as e:
-            self.status = PopulationStatus.ERROR
-            self.save()
-            raise e
+            self._process_error(e)
+        try:
+            generate_images(self)
+        except Exception as e:
+            self._process_error(e)
+        self.status = PopulationStatus.FINISHED
+        self.save()
+
+    def _process_error(self, e):
+        self.status = PopulationStatus.ERROR
+        self.save()
+        raise e
 
     def get_image(self, subdivision: str, content: PopulationPersistentFiles) -> Image:
         return Image.open(self.get_subdivision_path(subdivision, content))

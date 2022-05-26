@@ -1,10 +1,10 @@
 from django.core.management.base import BaseCommand
 
-from api.models import Population, PopulationStatus
+from api.models import Population
 
 
 class Command(BaseCommand):
-    help = "Generates density map images (heatmap and centroids) for each population provided"
+    help = "Generates density map images (heatmap and centroids) and splits csv for each population provided"
 
     def add_arguments(self, parser):
         parser.add_argument("population_ids", nargs="+", type=int)
@@ -19,7 +19,7 @@ class Command(BaseCommand):
                 )
                 continue
             try:
-                p.generate_images()
+                p.generate_static_files()
             except Exception as e:
                 self.stdout.write(self.style.WARNING(f"{pop_id}: {e}. Skipped"))
-        self.stdout.write(self.style.SUCCESS("Generate population images finished"))
+        self.stdout.write(self.style.SUCCESS("Generate population static files finished"))
