@@ -19,8 +19,9 @@ const CordImageMapper = (props) => {
     const generateArea = (index) => {
         return {
                 left: `${index * widthPercentage}%`,
-                height: '100%',
+                height: '10%',
                 width: `${widthPercentage}%`,
+                top: "100%",
                 style: segments[index] === selected ? {background: "rgba(123,97,255,0.8)"} : null
             }
 
