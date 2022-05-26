@@ -112,7 +112,8 @@ const DensityMap = (props: {
     const atlas = getAtlas(props.selectedAtlas)
     const canvasRef = useRef(null)
     const hiddenCanvasRef = useRef(null)
-    const [selectedValue, setSelectedValue] = useState('');
+    const subdivisions = props.subdivisions.sort()
+    const [selectedValue, setSelectedValue] = useState(`${subdivisions[0]}-${ROSTRAL}`);
     const [content, setContent] = useState({})
     const [isLoading, setIsLoading] = useState(false)
     const cache = useRef({});
@@ -306,7 +307,7 @@ const DensityMap = (props: {
         drawContent().catch(console.error)
     }, [content])
 
-    const subdivisions = props.subdivisions.sort()
+
     const classes = useStyles();
     // @ts-ignore
     const boxStyle = {flexGrow: 1, background: canvasBg, padding: "1rem", minHeight: "100%"}
