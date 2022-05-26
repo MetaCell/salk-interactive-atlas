@@ -74,6 +74,5 @@ def generate_images(population):
 
 
 def _store_image(creator: IImageCreator, extension: PopulationPersistentFiles, bg_atlas, cells, population, s, ):
-    img = creator.get_image(bg_atlas=bg_atlas, subdivision=s, points=cells)
+    img = creator.create(bg_atlas=bg_atlas, subdivision=s, points=cells)
     img.save(population.get_subdivision_path(s, extension))
-

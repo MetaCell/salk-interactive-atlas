@@ -35,4 +35,4 @@ RUN python3 manage.py collectstatic --noinput
 
 RUN mkdir -p ${APP_DIR}/static/www
 
-ENTRYPOINT uvicorn --workers $WORKERS --host 0.0.0.0 --port ${PORT} main:app
+CMD uvicorn --workers $WORKERS --host 0.0.0.0 --port ${PORT} main:app

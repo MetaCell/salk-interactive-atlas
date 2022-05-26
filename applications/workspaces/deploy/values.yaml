@@ -32,6 +32,7 @@ harness:
     hard:
     - accounts
     - events
+    - argo
   uri_role_mapping:
     - uri: /api/*
       roles:

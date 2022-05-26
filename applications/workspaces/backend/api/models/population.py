@@ -1,5 +1,6 @@
 import os
 
+from PIL import Image
 from django.conf import settings
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
@@ -8,8 +9,16 @@ from .atlas import AtlasesChoice
 from .experiment import Experiment
 from ..constants import PopulationPersistentFiles
 from ..helpers.filesystem import create_dir, remove_dir
-from ..services.population_service import split_cells_per_segment, generate_images
+from ..services.population_service import generate_images, split_cells_per_segment
+from ..services.workflows_service import execute_generate_population_static_files_workflow
 from ..utils import is_valid_hex_str
+
+
+class PopulationStatus(models.TextChoices):
+    ERROR = "error"
+    PENDING = "pending"
+    RUNNING = "running"
+    FINISHED = "finished"
 
 
 class Population(models.Model):
@@ -24,6 +33,9 @@ class Population(models.Model):
         validators=[MinValueValidator(0.0), MaxValueValidator(1.0)], default=1.0
     )
     cells = models.FileField(upload_to="populations")
+    status = models.CharField(
+        choices=PopulationStatus.choices, editable=False, default=PopulationStatus.PENDING, max_length=8
+    )
 
     @property
     def save_dir_path(self):
@@ -42,13 +54,39 @@ class Population(models.Model):
             self, force_insert=False, force_update=False, using=None, update_fields=None
     ):
         self.update_color()
+        has_file_changed = self._has_file_changed()
         super(Population, self).save(force_insert, force_update, using, update_fields)
-        split_cells_per_segment(self)
-        # TODO: also needs to generate new images
+        if has_file_changed:  # Only trigger workflow on cells changes
+            execute_generate_population_static_files_workflow(self.id)
 
-    def generate_images(self):
-        # TODO: Add error handling
-        generate_images(self)
+    def _has_file_changed(self):
+        try:
+            current = Population.objects.get(id=self.id)
+        except Population.DoesNotExist:
+            return True
+        return self.cells.file.name != current.cells.file.name
+
+    def generate_static_files(self):
+        self.status = PopulationStatus.RUNNING
+        self.save()
+        try:
+            split_cells_per_segment(self)
+        except Exception as e:
+            self._process_error(e)
+        try:
+            generate_images(self)
+        except Exception as e:
+            self._process_error(e)
+        self.status = PopulationStatus.FINISHED
+        self.save()
+
+    def _process_error(self, e):
+        self.status = PopulationStatus.ERROR
+        self.save()
+        raise e
+
+    def get_image(self, subdivision: str, content: PopulationPersistentFiles) -> Image:
+        return Image.open(self.get_subdivision_path(subdivision, content))
 
     @staticmethod
     def has_read_permission(request):
