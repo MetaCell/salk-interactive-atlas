@@ -12,7 +12,7 @@ import {
     FormControl,
     RadioGroup,
     Radio,
-    Button, Popover
+    Button, Popover, Tooltip
 } from '@material-ui/core';
 import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown';
 import {canvasIconColor, headerBg, headerBorderColor, teal, blue, brown, skyBlue, purple} from "../theme";
@@ -23,7 +23,7 @@ import OVERLAYS_ICON from "../assets/images/icons/overlays.svg";
 import ADD from "../assets/images/icons/add.svg";
 import UP_ICON from "../assets/images/icons/up.svg";
 import POPULATION from "../assets/images/icons/population.svg";
-import {atlasMap, OVERLAYS} from "../utilities/constants";
+import {atlasMap, MAX_STR_LENGTH_SIDEBAR, OVERLAYS} from "../utilities/constants";
 import {areAllSelected, getRGBAFromHexAlpha, getRGBAString} from "../utilities/functions";
 import ColorPicker from "./ColorPicker";
 
@@ -178,7 +178,7 @@ const ExperimentSidebar = ({
     const [selectedPopoverId, setSelectedPopoverId] = React.useState(null);
 
     const handlePopoverClick = (event, id) => {
-        if(!hasEditPermission){
+        if (!hasEditPermission) {
             return
         }
         setPopoverAnchorEl(event.currentTarget);
@@ -202,11 +202,19 @@ const ExperimentSidebar = ({
 
     const sidebarClass = `${classes.sidebar} scrollbar ${shrink ? `${classes.shrink}` : ``}`;
     const PopulationLabel = ({labelText}) => {
-        return (
+        const hasBigName = labelText.length > MAX_STR_LENGTH_SIDEBAR
+        return hasBigName ? (
+            <Tooltip title={labelText} placement="top">
+                <Typography className='population-label'>
+                    {labelText.substr(0, MAX_STR_LENGTH_SIDEBAR)}
+                </Typography>
+            </Tooltip>
+        ) : (
             <Typography className='population-label'>
                 {labelText}
             </Typography>
         )
+
     }
     const populationTextStyle = hasEditPermission ? {} : {marginLeft: "8px"}
 
@@ -307,10 +315,11 @@ const ExperimentSidebar = ({
                                 <span className='population-entry'>
                                     <span className='population-color'
                                           onClick={(event) => handlePopoverClick(event, pId)}>
-                                        <Box style={{backgroundColor: getRGBAString(getRGBAColor(pId))}} component="span"
+                                        <Box style={{backgroundColor: getRGBAString(getRGBAColor(pId))}}
+                                             component="span"
                                              className='square'/>
                                         {hasEditPermission && <ArrowDropDownIcon fontSize='small'
-                                                           style={{opacity: POPULATION_ICONS_OPACITY}}/>}
+                                                                                 style={{opacity: POPULATION_ICONS_OPACITY}}/>}
                                     </span>
                                     {hasEditPermission && <Popover
                                         open={pId === selectedPopoverId}

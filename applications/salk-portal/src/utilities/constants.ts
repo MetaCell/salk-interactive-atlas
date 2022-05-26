@@ -41,3 +41,5 @@ export enum DensityMapTypes {
     PROBABILITY_DATA = "probabilityData",
     CENTROIDS_DATA = "centroidsData"
 }
+
+export const MAX_STR_LENGTH_SIDEBAR = 15
