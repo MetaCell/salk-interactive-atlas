@@ -29,6 +29,7 @@ harness:
   dependencies:
     build:
     - cloudharness-base-debian
+    - workspaces-base
     hard:
     - accounts
     - events
