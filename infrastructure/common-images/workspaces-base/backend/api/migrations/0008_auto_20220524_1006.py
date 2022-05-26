@@ -3,15 +3,12 @@
 from django.db import migrations
 
 from api.models import Population, PopulationStatus
-from api.services.population_service import split_cells_per_segment
+from api.services.workflows_service import execute_generate_population_static_files_workflow
 
 
 def update_existent_populations(apps, schema_editor):
     for pop in Population.objects.all():
-        split_cells_per_segment(pop)
-        pop.generate_images()
-        pop.status = PopulationStatus.FINISHED
-        pop.save()
+        execute_generate_population_static_files_workflow(pop.id)
 
 
 class Migration(migrations.Migration):
