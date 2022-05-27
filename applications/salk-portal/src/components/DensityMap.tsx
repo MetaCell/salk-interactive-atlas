@@ -128,12 +128,6 @@ const DensityMap = (props: {
         setSelectedValueIndex(value);
     };
 
-    const handleWheel = (event: any) => {
-        const direction = Math.sign(event.deltaY) * -1
-        setSelectedValueIndex(s => mod(s + direction, segments.length))
-    };
-
-
     const fetchData = async (population: Population, apiMethod: (id: string, subdivision: string, options: any) => Promise<any>) => {
         const response = await apiMethod(population.id.toString(), segments[selectedValueIndex], {responseType: 'blob'})
         if (response.status === 200) {
@@ -339,7 +333,6 @@ const DensityMap = (props: {
                             segments={segments}
                             selected={selectedValueIndex}
                             onChange={handleChange}
-                            onWheel={handleWheel}
                         />
                     </Box>
                     <Box className={`scrollbarStyle ${classes.subdivisionsContainer}`}>
