@@ -1,5 +1,3 @@
-import csv
-
 from api.models import Experiment, Population, Tag
 
 

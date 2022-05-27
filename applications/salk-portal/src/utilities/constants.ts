@@ -42,4 +42,6 @@ export enum DensityMapTypes {
     CENTROIDS_DATA = "centroidsData"
 }
 
+export const PULL_TIME_MS = 30 * 1000
+export const POPULATION_FINISHED_STATE = "finished"
 export const MAX_STR_LENGTH_SIDEBAR = 15

@@ -1259,6 +1259,9 @@ components:
                 type: number
                 maximum: 1.0
                 minimum: 0.0
+              status:
+                type: string
+                readOnly: true
             required:
             - name
             - color
@@ -1311,6 +1314,9 @@ components:
           type: number
           maximum: 1.0
           minimum: 0.0
+        status:
+          type: string
+          readOnly: true
       required:
       - name
       - color

@@ -14,13 +14,21 @@ import {Box} from "@material-ui/core";
 import {bodyBgColor, font} from "../theme";
 import Sidebar from "../components/ExperimentSidebar";
 // @ts-ignore
-import {AtlasChoice, NEURONAL_LOCATIONS_ID, OVERLAYS, PROBABILITY_MAP_ID} from "../utilities/constants"
+import {
+    AtlasChoice,
+    NEURONAL_LOCATIONS_ID,
+    OVERLAYS,
+    POPULATION_FINISHED_STATE,
+    PROBABILITY_MAP_ID,
+    PULL_TIME_MS
+} from "../utilities/constants"
 import {getAtlas} from "../service/AtlasService";
 import {Experiment, ExperimentPopulations} from "../apiclient/workspaces";
 import {areAllSelected} from "../utilities/functions";
 import workspaceService from "../service/WorkspaceService";
 import Cell from "../models/Cell";
 import {canvasWidget, densityWidget, ElectrophysiologyWidget, widgetIds} from "../widgets";
+import {useInterval} from "../utilities/hooks/useInterval";
 
 const useStyles = makeStyles({
     layoutContainer: {
@@ -52,15 +60,9 @@ const getSubdivisions = (sa: AtlasChoice) => {
     segments.forEach(sd => subdivisions[sd.id] = {selected: true})
     return subdivisions
 }
-const getPopulations = (e: Experiment, sa: AtlasChoice) => {
-    const populations: any = {}
-    const filteredPopulations = e.populations.filter((p: ExperimentPopulations) => p.atlas === sa)
-    filteredPopulations.forEach(p => populations[p.id] = {...p, selected: false})
-    return populations
-}
 
 const getDefaultOverlays = () => {
-    const overlaysSwitchState : { [key: string]: boolean } = {}
+    const overlaysSwitchState: { [key: string]: boolean } = {}
     // @ts-ignore
     Object.keys(OVERLAYS).forEach(k => overlaysSwitchState[k] = false)
     return overlaysSwitchState
@@ -78,12 +80,25 @@ const ExperimentsPage = () => {
     const [experiment, setExperiment] = useState(null)
     const [selectedAtlas, setSelectedAtlas] = useState(getDefaultAtlas());
     const [subdivisions, setSubdivisions] = useState(getSubdivisions(selectedAtlas));
-    const [populations, setPopulations] = useState({});
+    const [populations, setPopulations] = useState({} as any);
+    const [sidebarPopulations, setSidebarPopulations] = useState({} as any);
     const [overlaysSwitchState, setOverlaysSwitchState] = useState(getDefaultOverlays())
 
 
     const dispatch = useDispatch();
     const [LayoutComponent, setLayoutManager] = useState(undefined);
+
+    const getPopulations = (e: Experiment, sa: AtlasChoice) => {
+        const nextPopulations: any = {}
+        const filteredPopulations = e.populations.filter((p: ExperimentPopulations) => p.atlas === sa)
+        // @ts-ignore
+        filteredPopulations.forEach(p => nextPopulations[p.id] = {
+            ...p,
+            status: p.status,
+            selected: populations[p.id]?.selected || false
+        })
+        return nextPopulations
+    }
 
     const handleAtlasChange = (atlasId: AtlasChoice) => {
         setSelectedAtlas(atlasId)
@@ -104,11 +119,14 @@ const ExperimentsPage = () => {
     }
 
     const handleShowAllPopulations = () => {
-        const areAllPopulationsActive = areAllSelected(populations)
+        const areAllPopulationsActive = areAllSelected(sidebarPopulations)
         const nextPopulations: any = {}
         Object.keys(populations)
-            // @ts-ignore
-            .forEach(pId => nextPopulations[pId] = {...populations[pId], selected: !areAllPopulationsActive})
+            .forEach(pId => nextPopulations[pId] = {
+                ...sidebarPopulations[pId],
+                selected: sidebarPopulations[pId].status !== POPULATION_FINISHED_STATE ? false : !areAllPopulationsActive
+            })
+        setSidebarPopulations(nextPopulations)
         setPopulations(nextPopulations)
     }
 
@@ -122,29 +140,29 @@ const ExperimentsPage = () => {
     const handleWidgets = () => {
         const switchableWidgets = new Set()
         // if the widget is not active
-        for (const overlay of Object.keys(overlaysSwitchState)){
+        for (const overlay of Object.keys(overlaysSwitchState)) {
             // @ts-ignore
             const widgetId = OVERLAYS[overlay].widgetId
             // if switch is active but widget is not added
-            if (overlaysSwitchState[overlay] && !(widgetId in store.getState().widgets)){
+            if (overlaysSwitchState[overlay] && !(widgetId in store.getState().widgets)) {
                 dispatch(addWidget(getOverlayWidget(widgetId)))
             }
             switchableWidgets.add(widgetId)
         }
 
-        for (const wId of Object.keys(store.getState().widgets)){
+        for (const wId of Object.keys(store.getState().widgets)) {
             // if widget is visible but no switch is on
-            if (switchableWidgets.has(wId) && !hasActiveSwitch(wId)){
+            if (switchableWidgets.has(wId) && !hasActiveSwitch(wId)) {
                 dispatch(deleteWidget(wId))
             }
         }
     }
 
     const hasActiveSwitch = (widgetId: string) => {
-        for (const overlayId of Object.keys(overlaysSwitchState)){
+        for (const overlayId of Object.keys(overlaysSwitchState)) {
             // @ts-ignore
-            if (OVERLAYS[overlayId].widgetId === widgetId){
-                if (overlaysSwitchState[overlayId]){
+            if (OVERLAYS[overlayId].widgetId === widgetId) {
+                if (overlaysSwitchState[overlayId]) {
                     return true
                 }
             }
@@ -190,6 +208,17 @@ const ExperimentsPage = () => {
         return new Set(Object.keys(subdivisions).filter(sId => subdivisions[sId].selected));
     }
 
+    useInterval(() => {
+        const fetchData = async () => {
+            const response = await api.retrieveExperiment(MOCKED_ID)
+            const fetchedExperiment = response.data;
+            setSidebarPopulations(getPopulations(fetchedExperiment, selectedAtlas))
+            // TODO: Handle error status on populations
+        }
+        fetchData()
+            .catch(console.error);
+    }, PULL_TIME_MS);
+
 
     useEffect(() => {
         const fetchData = async () => {
@@ -212,7 +241,9 @@ const ExperimentsPage = () => {
 
     useEffect(() => {
         if (experiment != null) {
-            setPopulations(getPopulations(experiment, selectedAtlas))
+            const experimentPopulations = getPopulations(experiment, selectedAtlas)
+            setPopulations(experimentPopulations)
+            setSidebarPopulations(experimentPopulations)
             dispatch(addWidget(canvasWidget(selectedAtlas, new Set(), {})));
             dispatch(addWidget(ElectrophysiologyWidget));
         }
@@ -257,7 +288,7 @@ const ExperimentsPage = () => {
     return experiment != null ? (
         <Box display="flex">
             <Sidebar selectedAtlas={selectedAtlas} subdivisions={subdivisions}
-                     populations={populations} overlays={Object.keys(overlaysSwitchState)}
+                     populations={sidebarPopulations} overlays={Object.keys(overlaysSwitchState)}
                      handleAtlasChange={handleAtlasChange}
                      handleSubdivisionSwitch={handleSubdivisionSwitch}
                      handlePopulationSwitch={handlePopulationSwitch}

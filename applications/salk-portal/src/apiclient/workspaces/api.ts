@@ -319,6 +319,12 @@ export interface ExperimentPopulations {
      * @memberof ExperimentPopulations
      */
     'opacity'?: number;
+    /**
+     * 
+     * @type {string}
+     * @memberof ExperimentPopulations
+     */
+    'status'?: string;
 }
 
 export const ExperimentPopulationsAtlasEnum = {
@@ -439,6 +445,12 @@ export interface Population {
      * @memberof Population
      */
     'opacity'?: number;
+    /**
+     * 
+     * @type {string}
+     * @memberof Population
+     */
+    'status'?: string;
 }
 
 export const PopulationAtlasEnum = {

@@ -1,10 +1,12 @@
 import {getAtlas} from "../service/AtlasService";
-import {AtlasChoice} from "./constants";
+import {AtlasChoice, POPULATION_FINISHED_STATE} from "./constants";
 import Range from "../models/Range";
 
-export const areAllSelected = (obj: { [x: string]: { selected: any } }) : boolean => {
-   return Object.keys(obj)
-        .reduce((acc, sId) => obj[sId].selected && acc, true)
+export const areAllSelected = (obj: { [x: string]: {
+      status: string;
+      selected: any } }) : boolean => {
+   return Object.keys(obj).filter(pId => obj[pId].status === POPULATION_FINISHED_STATE)
+        .reduce((acc, pId) => obj[pId].selected && acc, true)
 }
 
 export function eqSet(set1: Set<any>, set2: Set<any>) : boolean {

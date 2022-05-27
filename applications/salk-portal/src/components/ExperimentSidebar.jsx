@@ -23,7 +23,7 @@ import OVERLAYS_ICON from "../assets/images/icons/overlays.svg";
 import ADD from "../assets/images/icons/add.svg";
 import UP_ICON from "../assets/images/icons/up.svg";
 import POPULATION from "../assets/images/icons/population.svg";
-import {atlasMap, MAX_STR_LENGTH_SIDEBAR, OVERLAYS} from "../utilities/constants";
+import {atlasMap, OVERLAYS, MAX_STR_LENGTH_SIDEBAR, POPULATION_FINISHED_STATE} from "../utilities/constants";
 import {areAllSelected, getRGBAFromHexAlpha, getRGBAString} from "../utilities/functions";
 import ColorPicker from "./ColorPicker";
 
@@ -318,10 +318,10 @@ const ExperimentSidebar = ({
                                         <Box style={{backgroundColor: getRGBAString(getRGBAColor(pId))}}
                                              component="span"
                                              className='square'/>
-                                        {hasEditPermission && <ArrowDropDownIcon fontSize='small'
-                                                                                 style={{opacity: POPULATION_ICONS_OPACITY}}/>}
+                                        {hasEditPermission && populations[pId].status === POPULATION_FINISHED_STATE && <ArrowDropDownIcon fontSize='small'
+                                                                                                                                          style={{opacity: POPULATION_ICONS_OPACITY}}/>}
                                     </span>
-                                    {hasEditPermission && <Popover
+                                    {hasEditPermission && populations[pId].status === POPULATION_FINISHED_STATE && <Popover
                                         open={pId === selectedPopoverId}
                                         anchorEl={popoverAnchorEl}
                                         onClose={handlePopoverClose}
@@ -343,6 +343,7 @@ const ExperimentSidebar = ({
                                         onChange={() => handlePopulationSwitch(pId)}
                                         checked={populations[pId].selected}
                                         style={populationTextStyle}
+                                        disabled={populations[pId].status !== POPULATION_FINISHED_STATE}
                                     />
                                 </span>
                             )}

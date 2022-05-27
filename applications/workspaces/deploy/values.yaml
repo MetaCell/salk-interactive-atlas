@@ -29,9 +29,11 @@ harness:
   dependencies:
     build:
     - cloudharness-base-debian
+    - workspaces-base
     hard:
     - accounts
     - events
+    - argo
   uri_role_mapping:
     - uri: /api/*
       roles:

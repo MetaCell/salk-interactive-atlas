@@ -7,5 +7,5 @@ from bg_atlasapi import BrainGlobeAtlas
 
 class IImageCreator(ABC):
     @abstractmethod
-    def get_image(self, bg_atlas: BrainGlobeAtlas, subdivision: str, points: np.array) -> Image:
+    def create(self, bg_atlas: BrainGlobeAtlas, subdivision: str, points: np.array) -> Image:
         pass
