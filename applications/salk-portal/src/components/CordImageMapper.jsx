@@ -65,9 +65,13 @@ const CordImageMapper = (props) => {
     }
 
     useEffect(() => {
-        // @ts-ignore
         scrollStop(ref.current,(e) => onChange(e) )
     }, [ref])
+
+    useEffect(() => {
+        setCursor(selected)
+        cursorRef.current = selected
+    }, [selected])
 
 
     return (
