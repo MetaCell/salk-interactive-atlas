@@ -20,6 +20,7 @@ import CordImageMapper from "./CordImageMapper";
 import {getAtlas} from "../service/AtlasService";
 import {clearCanvas, drawColoredImage, drawImage} from "../service/CanvasService";
 import {mod} from "../utilities/functions";
+import {useDidUpdateEffect} from "../utilities/hooks/useDidUpdateEffect";
 
 const HEIGHT = "calc(100% - 55px)"
 
@@ -122,6 +123,7 @@ const DensityMap = (props: {
     const [selectedValueIndex, setSelectedValueIndex] = useState(0);
     const [content, setContent] = useState({})
     const [isLoading, setIsLoading] = useState(false)
+    const [isReady, setIsReady] = useState(false)
     const cache = useRef({} as any);
 
     const handleChange = (value: number) => {
@@ -254,53 +256,46 @@ const DensityMap = (props: {
     }
 
 
-    useEffect(() => {
+    useDidUpdateEffect(() => {
         setIsLoading(true)
         const promise1 = updateProbabilityMap()
         const promise2 = updateCentroids();
         if (promise1 || promise2) {
             Promise.all([promise1, promise2].filter(p => p != null)).then(() => setContent(getActiveContent()))
         } else {
-            if (Object.keys(cache.current).length > 0){
-                setContent(getActiveContent())
-            }
+            setContent(getActiveContent())
         }
-    }, [selectedValueIndex])
+    }, [selectedValueIndex, isReady])
 
-    useEffect(() => {
+    useDidUpdateEffect(() => {
         setIsLoading(true)
         const promise1 = updateProbabilityMap()
         const promise2 = updateCentroids();
         if (promise1 || promise2) {
             Promise.all([promise1, promise2].filter(p => p != null)).then(() => setContent(getActiveContent()))
         } else {
-            if (Object.keys(cache.current).length > 0){
-                setContent(getActiveContent())
-            }
+            setContent(getActiveContent())
+
         }
     }, [activePopulationsHash])
 
-    useEffect(() => {
+    useDidUpdateEffect(() => {
         setIsLoading(true)
         const promise = updateProbabilityMap();
         if (promise) {
             promise.then(() => setContent(getActiveContent()))
         } else {
-            if (Object.keys(cache.current).length > 0){
-                setContent(getActiveContent())
-            }
+            setContent(getActiveContent())
         }
     }, [showProbabilityMap])
 
-    useEffect(() => {
+    useDidUpdateEffect(() => {
         setIsLoading(true)
         const promise = updateCentroids()
         if (promise) {
             promise.then(() => setContent(getActiveContent()))
         } else {
-            if (Object.keys(cache.current).length > 0){
-                setContent(getActiveContent())
-            }
+            setContent(getActiveContent())
         }
     }, [showNeuronalLocations])
 
@@ -318,6 +313,9 @@ const DensityMap = (props: {
         drawContent().catch(console.error)
     }, [content])
 
+    useEffect(() => {
+        setIsReady(true)
+    }, [])
 
     const classes = useStyles();
     // @ts-ignore
