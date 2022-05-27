@@ -267,7 +267,9 @@ const DensityMap = (props: {
         if (promise1 || promise2) {
             Promise.all([promise1, promise2].filter(p => p != null)).then(() => setContent(getActiveContent()))
         } else {
-            setContent(getActiveContent())
+            if (Object.keys(cache.current).length > 0){
+                setContent(getActiveContent())
+            }
         }
     }, [selectedValueIndex])
 
@@ -278,7 +280,9 @@ const DensityMap = (props: {
         if (promise1 || promise2) {
             Promise.all([promise1, promise2].filter(p => p != null)).then(() => setContent(getActiveContent()))
         } else {
-            setContent({})
+            if (Object.keys(cache.current).length > 0){
+                setContent(getActiveContent())
+            }
         }
     }, [activePopulationsHash])
 
@@ -288,8 +292,9 @@ const DensityMap = (props: {
         if (promise) {
             promise.then(() => setContent(getActiveContent()))
         } else {
-            // @ts-ignore
-            setContent(getActiveContent())
+            if (Object.keys(cache.current).length > 0){
+                setContent(getActiveContent())
+            }
         }
     }, [showProbabilityMap])
 
@@ -299,8 +304,9 @@ const DensityMap = (props: {
         if (promise) {
             promise.then(() => setContent(getActiveContent()))
         } else {
-            // @ts-ignore
-            setContent(getActiveContent())
+            if (Object.keys(cache.current).length > 0){
+                setContent(getActiveContent())
+            }
         }
     }, [showNeuronalLocations])
 
