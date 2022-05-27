@@ -216,7 +216,7 @@ const ExperimentSidebar = ({
         )
 
     }
-    const populationTextStyle = hasEditPermission ? {} : {marginLeft: "8px"}
+    const populationTextStyle = (disabled) => hasEditPermission && !disabled? {} : {marginLeft: "8px"}
 
     return (
         <Box className={sidebarClass}>
@@ -342,7 +342,7 @@ const ExperimentSidebar = ({
                                         labelPlacement="start"
                                         onChange={() => handlePopulationSwitch(pId)}
                                         checked={populations[pId].selected}
-                                        style={populationTextStyle}
+                                        style={populationTextStyle(populations[pId].status !== POPULATION_FINISHED_STATE)}
                                         disabled={populations[pId].status !== POPULATION_FINISHED_STATE}
                                     />
                                 </span>
