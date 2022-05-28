@@ -206,6 +206,8 @@ class ExperimentViewer extends Component {
 
     onMount(scene: any) {
         this.scene = scene;
+        const light = new THREE.AmbientLight(0x404040);
+        scene.add(light);
     }
 
     onUpdateEnd() {
