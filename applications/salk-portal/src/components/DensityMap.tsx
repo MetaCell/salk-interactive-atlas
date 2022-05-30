@@ -19,8 +19,10 @@ import workspaceService from "../service/WorkspaceService";
 import CordImageMapper from "./CordImageMapper";
 import {getAtlas} from "../service/AtlasService";
 import {clearCanvas, drawColoredImage, drawImage} from "../service/CanvasService";
-import {areEqual, differenceSet} from "../utilities/functions";
+import {mod} from "../utilities/functions";
+import {useDidUpdateEffect} from "../utilities/hooks/useDidUpdateEffect";
 
+const HEIGHT = "calc(100% - 55px)"
 
 const useStyles = makeStyles({
     placeholder: {
@@ -70,6 +72,10 @@ const useStyles = makeStyles({
     },
     fontSize: {
         fontSize: "0.75rem"
+    },
+    subdivisionsContainer: {
+        height: HEIGHT,
+        overflow: "auto"
     }
 });
 
@@ -112,17 +118,20 @@ const DensityMap = (props: {
     const atlas = getAtlas(props.selectedAtlas)
     const canvasRef = useRef(null)
     const hiddenCanvasRef = useRef(null)
-    const [selectedValue, setSelectedValue] = useState('');
+    const subdivisions = props.subdivisions.sort()
+    const segments = subdivisions.flatMap((s) => [`${s}-${ROSTRAL}`, `${s}-${CAUDAL}`])
+    const [selectedValueIndex, setSelectedValueIndex] = useState(0);
     const [content, setContent] = useState({})
     const [isLoading, setIsLoading] = useState(false)
-    const cache = useRef({});
+    const [isReady, setIsReady] = useState(false)
+    const cache = useRef({} as any);
 
-    const handleChange = (value: string) => {
-        setSelectedValue(value);
+    const handleChange = (value: number) => {
+        setSelectedValueIndex(value);
     };
 
     const fetchData = async (population: Population, apiMethod: (id: string, subdivision: string, options: any) => Promise<any>) => {
-        const response = await apiMethod(population.id.toString(), selectedValue, {responseType: 'blob'})
+        const response = await apiMethod(population.id.toString(), segments[selectedValueIndex], {responseType: 'blob'})
         if (response.status === 200) {
             // @ts-ignore
             return {'id': population.id, 'data': URL.createObjectURL(response.data)}
@@ -133,37 +142,33 @@ const DensityMap = (props: {
     }
 
     function updateCentroids() {
-        if (selectedValue) {
-            if (activePopulations.length > 0) {
-                if (showNeuronalLocations) {
-                    return Promise.all(activePopulations.filter((p: Population) => !isInCache(p, DensityMapTypes.CENTROIDS_DATA)).map(p =>
-                        fetchData(p, (id, subdivision, options) => api.centroidsPopulation(id, subdivision, options))))
-                        .then(centroidsResponses => {
-                            const cData = centroidsResponses.reduce((acc, res) => {
-                                const {id, data} = res;
-                                return {...acc, [id]: data};
-                            }, {});
-                            updateData(cData, DensityMapTypes.CENTROIDS_DATA)
-                        })
-                }
+        if (activePopulations.length > 0) {
+            if (showNeuronalLocations) {
+                return Promise.all(activePopulations.filter((p: Population) => !isInCache(p, DensityMapTypes.CENTROIDS_DATA)).map(p =>
+                    fetchData(p, (id, subdivision, options) => api.centroidsPopulation(id, subdivision, options))))
+                    .then(centroidsResponses => {
+                        const cData = centroidsResponses.reduce((acc, res) => {
+                            const {id, data} = res;
+                            return {...acc, [id]: data};
+                        }, {});
+                        updateData(cData, DensityMapTypes.CENTROIDS_DATA)
+                    })
             }
         }
     }
 
     function updateProbabilityMap() {
-        if (selectedValue) {
-            if (activePopulations.length > 0) {
-                if (showProbabilityMap) {
-                    return Promise.all(activePopulations.filter((p: Population) => !isInCache(p, DensityMapTypes.PROBABILITY_DATA)).map(p =>
-                        fetchData(p, (id, subdivision, options) => api.probabilityMapPopulation(id, subdivision, options))))
-                        .then(probabilityMapResponses => {
-                            const probData = probabilityMapResponses.reduce((acc, res) => {
-                                const {id, data} = res;
-                                return {...acc, [id]: data};
-                            }, {});
-                            updateData(probData, DensityMapTypes.PROBABILITY_DATA)
-                        })
-                }
+        if (activePopulations.length > 0) {
+            if (showProbabilityMap) {
+                return Promise.all(activePopulations.filter((p: Population) => !isInCache(p, DensityMapTypes.PROBABILITY_DATA)).map(p =>
+                    fetchData(p, (id, subdivision, options) => api.probabilityMapPopulation(id, subdivision, options))))
+                    .then(probabilityMapResponses => {
+                        const probData = probabilityMapResponses.reduce((acc, res) => {
+                            const {id, data} = res;
+                            return {...acc, [id]: data};
+                        }, {});
+                        updateData(probData, DensityMapTypes.PROBABILITY_DATA)
+                    })
             }
         }
     }
@@ -171,25 +176,28 @@ const DensityMap = (props: {
     const updateData = (newData: { [x: string]: any; }, type: DensityMapTypes) => {
         Object.keys(newData).forEach(id => {
             // @ts-ignore
-            cache.current[`${id}${SEPARATOR}${selectedValue}`] = {...cache.current[`${id}${SEPARATOR}${selectedValue}`], [type]: newData[id]}
+            cache.current[`${id}${SEPARATOR}${segments[selectedValueIndex]}`] = {
+                ...cache.current[`${id}${SEPARATOR}${segments[selectedValueIndex]}`],
+                [type]: newData[id]
+            }
         })
     }
 
     const getActiveContent = () => {
         const activeContent = {}
         // @ts-ignore
-        activePopulations.forEach(pop => activeContent[pop.id.toString()] = cache.current[`${pop.id}${SEPARATOR}${selectedValue}`])
+        activePopulations.forEach(pop => activeContent[pop.id.toString()] = cache.current[`${pop.id}${SEPARATOR}${segments[selectedValueIndex]}`])
         return activeContent
     }
 
     const isInCache = (pop: Population, type: DensityMapTypes) => {
         const id = pop.id.toString()
         // @ts-ignore
-        return Object.keys(cache.current).includes(`${id}${SEPARATOR}${selectedValue}`) && cache.current[`${id}${SEPARATOR}${selectedValue}`][type] != null
+        return Object.keys(cache.current).includes(`${id}${SEPARATOR}${segments[selectedValueIndex]}`) && cache.current[`${id}${SEPARATOR}${segments[selectedValueIndex]}`][type] != null
     }
 
     const hasSomethingToDraw = () => {
-        return selectedValue && (showNeuronalLocations || showProbabilityMap)
+        return showNeuronalLocations || showProbabilityMap
     }
 
     const isCanvasReady = () => {
@@ -220,7 +228,7 @@ const DensityMap = (props: {
 
         // Clear previous content
         clearCanvas(canvas)
-        const background = atlas.getAnnotationImageSrc(selectedValue)
+        const background = atlas.getAnnotationImageSrc(segments[selectedValueIndex])
         if (background) {
             drawImage(canvas, background)
         }
@@ -248,7 +256,7 @@ const DensityMap = (props: {
     }
 
 
-    useEffect(() => {
+    useDidUpdateEffect(() => {
         setIsLoading(true)
         const promise1 = updateProbabilityMap()
         const promise2 = updateCentroids();
@@ -257,37 +265,36 @@ const DensityMap = (props: {
         } else {
             setContent(getActiveContent())
         }
-    }, [selectedValue])
+    }, [selectedValueIndex, isReady])
 
-    useEffect(() => {
+    useDidUpdateEffect(() => {
         setIsLoading(true)
         const promise1 = updateProbabilityMap()
         const promise2 = updateCentroids();
         if (promise1 || promise2) {
             Promise.all([promise1, promise2].filter(p => p != null)).then(() => setContent(getActiveContent()))
         } else {
-            setContent({})
+            setContent(getActiveContent())
+
         }
     }, [activePopulationsHash])
 
-    useEffect(() => {
+    useDidUpdateEffect(() => {
         setIsLoading(true)
         const promise = updateProbabilityMap();
         if (promise) {
             promise.then(() => setContent(getActiveContent()))
         } else {
-            // @ts-ignore
             setContent(getActiveContent())
         }
     }, [showProbabilityMap])
 
-    useEffect(() => {
+    useDidUpdateEffect(() => {
         setIsLoading(true)
         const promise = updateCentroids()
         if (promise) {
             promise.then(() => setContent(getActiveContent()))
         } else {
-            // @ts-ignore
             setContent(getActiveContent())
         }
     }, [showNeuronalLocations])
@@ -295,7 +302,7 @@ const DensityMap = (props: {
     useEffect(() => {
         Object.keys(cache).forEach(idSegment => {
             const id = idSegment.split(SEPARATOR)[0]
-            if (invalidCachePopulations.has(id)){
+            if (invalidCachePopulations.has(id)) {
                 // @ts-ignore
                 delete cache[idSegment]
             }
@@ -306,38 +313,42 @@ const DensityMap = (props: {
         drawContent().catch(console.error)
     }, [content])
 
-    const subdivisions = props.subdivisions.sort()
+    useEffect(() => {
+        setIsReady(true)
+    }, [])
+
     const classes = useStyles();
     // @ts-ignore
-    const boxStyle = {flexGrow: 1, background: canvasBg, padding: "1rem", minHeight: "100%"}
-    const gridStyle = {className: `${classes.container} ${classes.border}`, container: true, columns: 2}
+    const boxStyle = {flexGrow: 1, background: canvasBg, padding: "1rem", minHeight: "100%", height: HEIGHT}
+    const gridStyle = {className: `${classes.container} ${classes.border}`, container: true, columns: 2, height: HEIGHT}
+    const subdivisionsGridStyle = {height: HEIGHT}
     return (
         <Box sx={boxStyle}>
             <Grid {...gridStyle}>
-                <Grid item={true} xs={4}>
+                <Grid item={true} xs={4} style={{...subdivisionsGridStyle}}>
                     <Box className={`${classes.cordImageContainer}`}>
                         <CordImageMapper
-                            segments={subdivisions.flatMap((s) => [`${s}-${ROSTRAL}`, `${s}-${CAUDAL}`])}
-                            selected={selectedValue}
+                            segments={segments}
+                            selected={selectedValueIndex}
                             onChange={handleChange}
                         />
                     </Box>
-                    <Box>
+                    <Box className={`scrollbarStyle ${classes.subdivisionsContainer}`}>
                         <FormControl className={classes.fullWidth}>
                             <RadioGroup
                                 aria-labelledby="segments-radio-buttons-group-label"
                                 name={RADIO_GROUP_NAME}
                             >
-                                {subdivisions.map(sId => (
+                                {subdivisions.map((sId, idx) => (
                                         <Box key={sId} className={classes.subsectionBorder}>
                                             <RadioButton
-                                                onChange={handleChange}
-                                                isChecked={selectedValue === `${sId}-${ROSTRAL}`}
+                                                onChange={() => handleChange(idx * 2)}
+                                                isChecked={segments[selectedValueIndex] === `${sId}-${ROSTRAL}`}
                                                 label={`${sId}-${ROSTRAL}`}
                                             />
                                             <RadioButton
-                                                onChange={handleChange}
-                                                isChecked={selectedValue === `${sId}-${CAUDAL}`}
+                                                onChange={() => handleChange(idx * 2 + 1)}
+                                                isChecked={segments[selectedValueIndex] === `${sId}-${CAUDAL}`}
                                                 label={`${sId}-${CAUDAL}`}
                                             />
                                         </Box>

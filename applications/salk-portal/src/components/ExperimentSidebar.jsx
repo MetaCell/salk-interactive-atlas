@@ -12,7 +12,7 @@ import {
     FormControl,
     RadioGroup,
     Radio,
-    Button, Popover
+    Button, Popover, Tooltip
 } from '@material-ui/core';
 import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown';
 import {canvasIconColor, headerBg, headerBorderColor, teal, blue, brown, skyBlue, purple} from "../theme";
@@ -23,7 +23,7 @@ import OVERLAYS_ICON from "../assets/images/icons/overlays.svg";
 import ADD from "../assets/images/icons/add.svg";
 import UP_ICON from "../assets/images/icons/up.svg";
 import POPULATION from "../assets/images/icons/population.svg";
-import {atlasMap, OVERLAYS, POPULATION_FINISHED_STATE} from "../utilities/constants";
+import {atlasMap, OVERLAYS, MAX_STR_LENGTH_SIDEBAR, POPULATION_FINISHED_STATE} from "../utilities/constants";
 import {areAllSelected, getRGBAFromHexAlpha, getRGBAString} from "../utilities/functions";
 import ColorPicker from "./ColorPicker";
 
@@ -178,7 +178,7 @@ const ExperimentSidebar = ({
     const [selectedPopoverId, setSelectedPopoverId] = React.useState(null);
 
     const handlePopoverClick = (event, id) => {
-        if(!hasEditPermission){
+        if (!hasEditPermission) {
             return
         }
         setPopoverAnchorEl(event.currentTarget);
@@ -202,13 +202,21 @@ const ExperimentSidebar = ({
 
     const sidebarClass = `${classes.sidebar} scrollbar ${shrink ? `${classes.shrink}` : ``}`;
     const PopulationLabel = ({labelText}) => {
-        return (
+        const hasBigName = labelText.length > MAX_STR_LENGTH_SIDEBAR
+        return hasBigName ? (
+            <Tooltip title={labelText} placement="top">
+                <Typography className='population-label'>
+                    {labelText.substr(0, MAX_STR_LENGTH_SIDEBAR)}
+                </Typography>
+            </Tooltip>
+        ) : (
             <Typography className='population-label'>
                 {labelText}
             </Typography>
         )
+
     }
-    const populationTextStyle = hasEditPermission ? {} : {marginLeft: "8px"}
+    const populationTextStyle = (disabled) => hasEditPermission && !disabled? {} : {marginLeft: "8px"}
 
     return (
         <Box className={sidebarClass}>
@@ -307,10 +315,11 @@ const ExperimentSidebar = ({
                                 <span className='population-entry'>
                                     <span className='population-color'
                                           onClick={(event) => handlePopoverClick(event, pId)}>
-                                        <Box style={{backgroundColor: getRGBAString(getRGBAColor(pId))}} component="span"
+                                        <Box style={{backgroundColor: getRGBAString(getRGBAColor(pId))}}
+                                             component="span"
                                              className='square'/>
                                         {hasEditPermission && populations[pId].status === POPULATION_FINISHED_STATE && <ArrowDropDownIcon fontSize='small'
-                                                           style={{opacity: POPULATION_ICONS_OPACITY}}/>}
+                                                                                                                                          style={{opacity: POPULATION_ICONS_OPACITY}}/>}
                                     </span>
                                     {hasEditPermission && populations[pId].status === POPULATION_FINISHED_STATE && <Popover
                                         open={pId === selectedPopoverId}
@@ -333,7 +342,7 @@ const ExperimentSidebar = ({
                                         labelPlacement="start"
                                         onChange={() => handlePopulationSwitch(pId)}
                                         checked={populations[pId].selected}
-                                        style={populationTextStyle}
+                                        style={populationTextStyle(populations[pId].status !== POPULATION_FINISHED_STATE)}
                                         disabled={populations[pId].status !== POPULATION_FINISHED_STATE}
                                     />
                                 </span>

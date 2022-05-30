@@ -49,5 +49,8 @@ export function getRGBAString(rgba: { r: number; g: number; b: number; a: number
 
 export function areEqual(obj1: any, obj2: any){
    return  JSON.stringify(obj1) === JSON.stringify(obj2)
+}
 
+export function mod(n: number, m: number) : number {
+   return ((n % m) + m) % m;
 }
