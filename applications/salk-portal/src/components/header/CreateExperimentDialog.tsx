@@ -1,5 +1,5 @@
 import * as React from "react";
-import {Box, Button, Grid, makeStyles, TextField, Typography,} from "@material-ui/core";
+import {Box, Button, Grid, makeStyles, TextField, Typography, } from "@material-ui/core";
 import {filesBg, headerBorderColor, headerButtonBorderColor, switchActiveColor} from "../../theme";
 import Modal from "../common/BaseDialog";
 import {DropzoneArea} from 'material-ui-dropzone';
@@ -11,8 +11,9 @@ import {ExperimentTags} from "../../apiclient/workspaces";
 import UPLOAD from "../../assets/images/icons/upload.svg";
 // @ts-ignore
 import CHECK_FILLED from "../../assets/images/icons/check_filled.svg";
+import workspaceService from "../../service/WorkspaceService";
 
-const tags: ExperimentTags[] = [
+const tagOptions: ExperimentTags[] = [
     {name: 'Project A', id: 1},
     {name: 'Label B', id: 2},
     {name: 'Label XYZ', id: 3},
@@ -30,7 +31,7 @@ const useStyles = makeStyles(() => ({
     },
 
     formGroup: {
-        '&:not(:first-child)': {marginTop: '0.75rem',},
+        '&:not(:first-child)': {marginTop: '0.75rem', },
 
         '& label': {
             fontWeight: 600,
@@ -133,10 +134,14 @@ const UPLOAD_ICON = () => <img src={UPLOAD} alt="upload"/>
 
 export const CreateExperimentDialog = (props: any) => {
     const classes = useStyles();
+    const api = workspaceService.getApi()
     const {open, handleClose, user} = props;
     const [dataFiles, setDataFile] = React.useState<any>([]);
     const [keyFiles, setKeyFile] = React.useState<any>([]);
     const [pairsLength, setPairsLength] = React.useState<any>(1);
+    const [name, setName] = React.useState<string>(null);
+    const [description, setDescription] = React.useState<string>(null);
+    const [tags, setTags] = React.useState<ExperimentTags[]>([]);
 
     const handleFileUpload = (files: any, index: number, state: any, setState: (value: any) => void) => {
         if (files.length > 0) {
@@ -152,6 +157,16 @@ export const CreateExperimentDialog = (props: any) => {
             nextState[index] = null
             setState(nextState)
         }
+    }
+
+    const handleTagsChange = (_: any, value: any) => {
+        setTags(value)
+    }
+
+    const handleAction = async () => {
+        await api.createExperiment(name, description, null, true, null, null, user, null, null, null, tags)
+        // const promises = []
+        // for (let i = 0; i < pairsLength ; i++){}
     }
     // const [progress, setProgress] = React.useState(0);
 
@@ -180,6 +195,7 @@ export const CreateExperimentDialog = (props: any) => {
             disableGutter={true}
             open={open}
             handleClose={handleClose}
+            handleAction={handleAction}
             title="Create a new experiment"
         >
             <Box display={'flex'} alignItems="center" justifyContent={'center'} className={classes.fileDrop}>
@@ -254,17 +270,20 @@ export const CreateExperimentDialog = (props: any) => {
             <Box p={2} pb={5}>
                 <Box display="flex" alignItems={"center"} className={classes.formGroup}>
                     <Typography component="label">Name</Typography>
-                    <TextField placeholder="Name" variant="outlined"/>
+                    <TextField placeholder="Name" variant="outlined" onChange={(e) => setName(e.target.value)}/>
                 </Box>
 
                 <Box display="flex" alignItems={"center"} className={classes.formGroup}>
                     <Typography component="label">Description</Typography>
-                    <TextEditor/>
+                    {
+                        // FIXME: Unclear why we use TextEditor if we only store the text
+                    }
+                    <TextEditor onChange={(editorState: any) => setDescription(editorState.getCurrentContent().getPlainText())}/>
                 </Box>
 
                 <Box display="flex" alignItems={"center"} className={classes.formGroup}>
                     <Typography component="label">Tags</Typography>
-                    <TagsAutocomplete tags={tags}/>
+                    <TagsAutocomplete tags={tagOptions} onChange={handleTagsChange}/>
                 </Box>
 
                 <Box display="flex" alignItems={"center"} className={classes.formGroup}>

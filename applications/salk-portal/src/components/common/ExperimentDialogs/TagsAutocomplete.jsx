@@ -25,7 +25,7 @@ const useStyles = makeStyles(() => ({
 
 export const TagsAutocomplete = (props) => {
   const classes = useStyles();
-  const { tags } = props;
+  const { tags, onChange } = props;
 
   return (
     <Autocomplete
@@ -34,25 +34,27 @@ export const TagsAutocomplete = (props) => {
       popupIcon={false}
       fullWidth
       id="tags-filled"
-      options={tags.map((option) => option?.name)}
-      defaultValue={[tags[2]?.name]}
+      options={tags}
+      defaultValue={[tags[2]]}
+      getOptionLabel={option => option.name}
       freeSolo
       limitTags={3}
       renderTags={(value, getTagProps) =>
         value.map((option, index) => (
-          <Chip key={index} style={{...tagsColorOptions[index]}} onDelete={() => console.log(option)} label={option} {...getTagProps({ index })} />
+          <Chip key={index} style={{...tagsColorOptions[index]}} onDelete={() => console.log(option)} label={option.name} {...getTagProps({ index })} />
         ))
       }
       renderOption={(option, { selected }) => (
         <>
           <Box className={classes.icon} style={{backgroundColor: secondaryChipBg}}/>
-          {option}
+          {option.name}
           {selected && <img src={CHECK} className={classes.mlAuto} alt="check" />}
         </>
       )}
       renderInput={(params) => (
         <TextField {...params} variant="outlined" placeholder="Search or Create a new tag" />
       )}
+      onChange={onChange}
     />
 
   );
