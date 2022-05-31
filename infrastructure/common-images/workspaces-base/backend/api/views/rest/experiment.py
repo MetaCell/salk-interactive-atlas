@@ -6,13 +6,14 @@ from rest_framework.decorators import action
 from rest_framework.parsers import MultiPartParser
 from rest_framework.response import Response
 
+from api.helpers.exceptions import InvalidInputError
 from api.models import Experiment
 from api.serializers import (
     ExperimentFileUploadSerializer,
     ExperimentSerializer,
     TagSerializer,
 )
-from api.services.experiment_service import add_tag, delete_tag, upload_file
+from api.services.experiment_service import add_tag, delete_tag, upload_files
 
 log = logging.getLogger("__name__")
 
@@ -102,10 +103,14 @@ class ExperimentViewSet(viewsets.ModelViewSet):
     )
     def upload_file(self, request, **kwargs):
         instance = self.get_object()
-        file = request.FILES.get("file")
+        key_file = request.FILES.get("key_file")
+        data_file = request.FILES.get("data_file")
         population_name = request.data.get("population_name")
-        created = upload_file(instance, population_name, file)
-        response_status = status.HTTP_201_CREATED if created else status.HTTP_200_OK
+        try:
+            created = upload_files(instance, population_name, key_file, data_file)
+            response_status = status.HTTP_201_CREATED if created else status.HTTP_200_OK
+        except InvalidInputError:
+            response_status = status.HTTP_400_BAD_REQUEST
         return Response(status=response_status)
 
     def perform_create(self, serializer):

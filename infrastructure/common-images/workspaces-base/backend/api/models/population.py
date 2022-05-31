@@ -9,6 +9,7 @@ from .atlas import AtlasesChoice
 from .experiment import Experiment
 from ..constants import PopulationPersistentFiles
 from ..helpers.filesystem import create_dir, remove_dir
+from ..helpers.generate_population_cells import get_cells_file
 from ..services.population_service import generate_images, split_cells_per_segment
 from ..services.workflows_service import execute_generate_population_static_files_workflow
 from ..utils import is_valid_hex_str
@@ -64,12 +65,21 @@ class Population(models.Model):
             current = Population.objects.get(id=self.id)
         except Population.DoesNotExist:
             return True
-        return self.cells.file.name != current.cells.file.name
+        return (not hasattr(current.cells, 'files') and hasattr(self.cells, 'files')) \
+               or (hasattr(self.cells, 'files') and self.cells.file.name != current.cells.file.name)
+
+    def generate_cells(self, key_filename: str):
+        try:
+            self.cells = get_cells_file(key_filename)
+        except Exception:
+            self.status = PopulationStatus.ERROR
+        self.save()
 
     def generate_static_files(self):
         self.status = PopulationStatus.RUNNING
         self.save()
         try:
+            self.remove_split_cells_csv()
             split_cells_per_segment(self)
         except Exception as e:
             self._process_error(e)

@@ -1430,12 +1430,16 @@ components:
       properties:
         population_name:
           type: string
-        file:
+        key_file:
+          type: string
+          format: binary
+        data_file:
           type: string
           format: binary
       required:
       - population_name
-      - file
+      - key_file
+      - data_file
     Member:
       type: object
       properties:

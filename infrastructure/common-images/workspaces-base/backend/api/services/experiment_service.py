@@ -1,4 +1,6 @@
+from api.helpers.exceptions import InvalidInputError
 from api.models import Experiment, Population, Tag
+from api.services.workflows_service import execute_generate_population_cells_workflow
 
 
 def add_tag(experiment: Experiment, tag_name: str):
@@ -22,12 +24,10 @@ def delete_tag(experiment: Experiment, tag_name: str):
     return True
 
 
-def upload_file(experiment: Experiment, population_name: str, file):
+def upload_files(experiment: Experiment, population_name: str, key_file, data_file):
+    if not key_file or not data_file:
+        raise InvalidInputError
     population, created = Population.objects.get_or_create(
-        experiment_id=experiment.id, name=population_name
-    )
-    if not created:
-        population.remove_split_cells_csv()
-    population.cells = file
-    population.save()
+        experiment_id=experiment.id, name=population_name)
+    execute_generate_population_cells_workflow(population.id, key_file.file.name, data_file.file.name)
     return created
