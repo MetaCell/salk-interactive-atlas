@@ -24,10 +24,8 @@ def delete_tag(experiment: Experiment, tag_name: str):
     return True
 
 
-def upload_files(experiment: Experiment, population_name: str, key_file, data_file):
-    if not key_file or not data_file:
-        raise InvalidInputError
+def upload_files(experiment: Experiment, population_name: str, data_filepath):
     population, created = Population.objects.get_or_create(
         experiment_id=experiment.id, name=population_name)
-    execute_generate_population_cells_workflow(population.id, key_file.file.name, data_file.file.name)
+    execute_generate_population_cells_workflow(population.id, data_filepath)
     return created

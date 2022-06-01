@@ -6,7 +6,9 @@ from rest_framework.decorators import action
 from rest_framework.parsers import MultiPartParser
 from rest_framework.response import Response
 
+from api.constants import CORDMAP_DATA
 from api.helpers.exceptions import InvalidInputError
+from api.helpers.filesystem import create_temp_dir, move_files
 from api.models import Experiment
 from api.serializers import (
     ExperimentFileUploadSerializer,
@@ -17,6 +19,7 @@ from api.services.experiment_service import add_tag, delete_tag, upload_files
 
 log = logging.getLogger("__name__")
 
+DATA_INDEX = 1
 
 class ExperimentViewSet(viewsets.ModelViewSet):
     """
@@ -28,7 +31,7 @@ class ExperimentViewSet(viewsets.ModelViewSet):
     queryset = Experiment.objects.all()
     parser_classes = (MultiPartParser,)
     custom_serializer_map = {
-        "upload_file": ExperimentFileUploadSerializer,
+        "upload_files": ExperimentFileUploadSerializer,
         "add_tag": TagSerializer,
     }
 
@@ -99,15 +102,20 @@ class ExperimentViewSet(viewsets.ModelViewSet):
         methods=["post"],
         parser_classes=(MultiPartParser,),
         name="experiment-upload-file",
-        url_path="upload-file",
+        url_path="upload-files",
     )
-    def upload_file(self, request, **kwargs):
+    def upload_files(self, request, **kwargs):
         instance = self.get_object()
         key_file = request.FILES.get("key_file")
         data_file = request.FILES.get("data_file")
         population_name = request.data.get("population_name")
         try:
-            created = upload_files(instance, population_name, key_file, data_file)
+            dir_path = create_temp_dir(CORDMAP_DATA)
+            filepaths = move_files([key_file, data_file], dir_path)
+        except Exception as e:
+            return Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        try:
+            created = upload_files(instance, population_name, filepaths[DATA_INDEX])
             response_status = status.HTTP_201_CREATED if created else status.HTTP_200_OK
         except InvalidInputError:
             response_status = status.HTTP_400_BAD_REQUEST

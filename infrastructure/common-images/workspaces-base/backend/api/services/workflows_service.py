@@ -29,10 +29,9 @@ def execute_generate_population_static_files_workflow(population_id: int):
     ).execute()
 
 
-def execute_generate_population_cells_workflow(population_id: int, key_filepath: str, data_filepath: str):
+def execute_generate_population_cells_workflow(population_id: int, data_filepath: str):
     from cloudharness.workflows import operations
     operations.PipelineOperation(
         basename=GENERATE_CELLS_OP,
-        tasks=(_create_task(GENERATE_CELLS_IMAGE, population_id=population_id, key_filepath=key_filepath,
-                            data_filepath=data_filepath),),
+        tasks=(_create_task(GENERATE_CELLS_IMAGE, population_id=population_id, data_filepath=data_filepath,),),
     ).execute()

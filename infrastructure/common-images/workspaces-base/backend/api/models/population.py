@@ -1,4 +1,5 @@
 import os
+import logging
 
 from PIL import Image
 from django.conf import settings
@@ -7,9 +8,9 @@ from django.db import models
 
 from .atlas import AtlasesChoice
 from .experiment import Experiment
-from ..constants import PopulationPersistentFiles
+from ..constants import PopulationPersistentFiles, POPULATIONS_DATA, POPULATIONS_SPLIT_DATA
 from ..helpers.filesystem import create_dir, remove_dir
-from ..helpers.generate_population_cells import get_cells_file
+from ..helpers.generate_population_cells import get_cells_filepath
 from ..services.population_service import generate_images, split_cells_per_segment
 from ..services.workflows_service import execute_generate_population_static_files_workflow
 from ..utils import is_valid_hex_str
@@ -33,23 +34,27 @@ class Population(models.Model):
     opacity = models.FloatField(
         validators=[MinValueValidator(0.0), MaxValueValidator(1.0)], default=1.0
     )
-    cells = models.FileField(upload_to="populations")
+    cells = models.FileField(upload_to=POPULATIONS_DATA)
     status = models.CharField(
         choices=PopulationStatus.choices, editable=False, default=PopulationStatus.PENDING, max_length=8
     )
 
     @property
-    def save_dir_path(self):
-        return os.path.join(settings.PERSISTENT_ROOT, "populations", str(self.id))
+    def storage_path(self) -> str:
+        return os.path.join(settings.PERSISTENT_ROOT, POPULATIONS_DATA)
 
-    def get_subdivision_path(self, subdivision, content: PopulationPersistentFiles):
-        return os.path.join(self.save_dir_path, subdivision + content.value)
+    @property
+    def split_storage_path(self) -> str:
+        return os.path.join(self.storage_path, POPULATIONS_SPLIT_DATA)
+
+    def get_subdivision_storage_path(self, subdivision, content: PopulationPersistentFiles) -> str:
+        return os.path.join(self.split_storage_path, subdivision + content.value)
 
     def remove_split_cells_csv(self):
-        remove_dir(self.save_dir_path)
+        remove_dir(self.split_storage_path)
 
-    def create_dir(self):
-        create_dir(self.save_dir_path)
+    def create_split_storage(self):
+        create_dir(self.split_storage_path)
 
     def save(
             self, force_insert=False, force_update=False, using=None, update_fields=None
@@ -64,14 +69,15 @@ class Population(models.Model):
         try:
             current = Population.objects.get(id=self.id)
         except Population.DoesNotExist:
-            return True
+            return hasattr(self.cells, 'files')
         return (not hasattr(current.cells, 'files') and hasattr(self.cells, 'files')) \
                or (hasattr(self.cells, 'files') and self.cells.file.name != current.cells.file.name)
 
-    def generate_cells(self, key_filename: str):
+    def generate_cells(self, data_filepath: str):
         try:
-            self.cells = get_cells_file(key_filename)
-        except Exception:
+            self.cells.name = get_cells_filepath(data_filepath, self.storage_path)
+        except Exception as e:
+            logging.exception(e)
             self.status = PopulationStatus.ERROR
         self.save()
 
@@ -91,12 +97,13 @@ class Population(models.Model):
         self.save()
 
     def _process_error(self, e):
+        logging.exception(e)
         self.status = PopulationStatus.ERROR
         self.save()
         raise e
 
     def get_image(self, subdivision: str, content: PopulationPersistentFiles) -> Image:
-        return Image.open(self.get_subdivision_path(subdivision, content))
+        return Image.open(self.get_subdivision_storage_path(subdivision, content))
 
     @staticmethod
     def has_read_permission(request):
