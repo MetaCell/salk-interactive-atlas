@@ -3,6 +3,8 @@ import re
 
 from django.http import FileResponse
 
+from workspaces.settings import PERSISTENT_ROOT
+
 
 def send_file(file):
     """
@@ -35,3 +37,7 @@ def flat_map(f, lst):
     for e in lst:
         ys.extend(f(e))
     return ys
+
+
+def get_persistence_path(path: str) -> str:
+    return path.split(PERSISTENT_ROOT + '/')[1]

@@ -31,7 +31,10 @@ def execute_generate_population_static_files_workflow(population_id: int):
 
 def execute_generate_population_cells_workflow(population_id: int, data_filepath: str):
     from cloudharness.workflows import operations
+    current_app = get_current_configuration()
+    shared_directory = f"{current_app.harness.deployment.volume.name}:{VOLUME_FOLDER}"
     operations.PipelineOperation(
         basename=GENERATE_CELLS_OP,
         tasks=(_create_task(GENERATE_CELLS_IMAGE, population_id=population_id, data_filepath=data_filepath,),),
+        shared_directory=shared_directory
     ).execute()

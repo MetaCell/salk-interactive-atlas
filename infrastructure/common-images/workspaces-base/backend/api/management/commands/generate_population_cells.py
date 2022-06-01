@@ -4,6 +4,7 @@ from django.core.management.base import BaseCommand
 
 from api.helpers.filesystem import remove_dir
 from api.models import Population
+from workspaces.settings import PERSISTENT_ROOT
 
 
 class Command(BaseCommand):
@@ -16,7 +17,7 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         try:
             p = Population.objects.get(pk=options["population_id"])
-            p.generate_cells(options["data_filepath"])
+            p.generate_cells(os.path.join(PERSISTENT_ROOT, options['data_filepath']))
         except Population.DoesNotExist:
             self.stdout.write(
                 self.style.WARNING(f"{options['population_id']}  does not exist")
