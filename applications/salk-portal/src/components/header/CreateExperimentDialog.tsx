@@ -135,7 +135,7 @@ const UPLOAD_ICON = () => <img src={UPLOAD} alt="upload"/>
 export const CreateExperimentDialog = (props: any) => {
     const classes = useStyles();
     const api = workspaceService.getApi()
-    const {open, handleClose, user} = props;
+    const {open, handleClose, user, onExperimentCreation} = props;
     const [dataFiles, setDataFile] = React.useState<any>([]);
     const [keyFiles, setKeyFile] = React.useState<any>([]);
     const [pairsLength, setPairsLength] = React.useState<any>(1);
@@ -164,9 +164,14 @@ export const CreateExperimentDialog = (props: any) => {
     }
 
     const handleAction = async () => {
-        await api.createExperiment(name, description, null, true, null, null, user, null, null, null, tags)
-        // const promises = []
-        // for (let i = 0; i < pairsLength ; i++){}
+        const res = await api.createExperiment(name, description, null, true, null, null, user, null, null, null, tags)
+        const experiment = res.data
+        const promises = []
+        for (let i = 0; i < pairsLength ; i++){
+            promises.push(api.uploadFilesExperiment(experiment.id.toString(), name, keyFiles[i], dataFiles[i]))
+        }
+        await Promise.all(promises)
+        onExperimentCreation(experiment.id)
     }
     // const [progress, setProgress] = React.useState(0);
 

@@ -7,6 +7,7 @@ import HomePage from "./pages/HomePage";
 import theme from "./theme";
 import { Header, ProtectedRoute, } from "./components";
 import ExperimentsPage from "./pages/ExperimentsPage";
+import {useState} from "react";
 
 const GEPPETTO = {};
 // @ts-ignore
@@ -37,6 +38,7 @@ const useStyles = makeStyles(() => ({
 
 export const App = (props: any) => {
   const classes = useStyles();
+  const [latestExperimentId, setLatestExperimentId] = useState(null)
 
   return (
       <ThemeProvider theme={theme}>
@@ -44,11 +46,11 @@ export const App = (props: any) => {
         {!props.error &&
           <Router>
             <div className={classes.mainContainer}>
-              <Header />
+              <Header onExperimentCreation={setLatestExperimentId}/>
 
               <Switch>
                 <ProtectedRoute exact={true} path="/">
-                  <HomePage />
+                  <HomePage latestExperimentId={latestExperimentId} />
                 </ProtectedRoute>
                 <ProtectedRoute exact={true} path="/experiments/:id">
                   <ExperimentsPage />

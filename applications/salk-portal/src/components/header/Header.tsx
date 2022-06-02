@@ -11,7 +11,9 @@ import {
   Avatar,
 } from "@material-ui/core";
 import { headerBorderColor, headerButtonBorderColor, headerBg } from "../../theme";
+// @ts-ignore
 import LOGO from "../../assets/images/logo.svg";
+// @ts-ignore
 import USER from "../../assets/images/icons/user.svg";
 import { UserAccountDialog } from "./UserAccountDialog";
 import { CreateExperimentDialog } from "./CreateExperimentDialog";
@@ -78,6 +80,7 @@ export const Header = (props: any) => {
   const classes = useStyles();
   const location = useLocation();
   const onExperimentsPage = location.pathname === '/experiments';
+  const {onExperimentCreation} = props;
   const [dialogOpen, setDialogOpen] = React.useState(false);
   const menuAnchorRef = React.useRef(null);
   const [experimentDialogOpen, setExperimentDialogOpen] = React.useState(false);
@@ -191,7 +194,8 @@ export const Header = (props: any) => {
       </Toolbar>
 
       <UserAccountDialog open={dialogOpen} handleClose={handleDialogToggle} user={user} />
-      <CreateExperimentDialog open={experimentDialogOpen} handleClose={handleExperimentDialogToggle} user={user}/>
+      <CreateExperimentDialog open={experimentDialogOpen} handleClose={handleExperimentDialogToggle} user={user}
+                              onExperimentCreation={onExperimentCreation}/>
     </>
   );
 };

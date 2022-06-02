@@ -169,6 +169,7 @@ function ListItemLink(props) {
 
 const Sidebar = (props) => {
   const classes = useStyles();
+  const {experiments} = props;
   const [open, setOpen] = React.useState(true);
 
   const handleClick = () => {
@@ -199,7 +200,7 @@ const Sidebar = (props) => {
             <img src={EXP} alt="experiments" />
           </ListItemIcon>
           <ListItemText primary="My experiments" />
-          <Badge badgeContent={1} />
+          <Badge badgeContent={experiments.length} />
         </ListItemLink>
 
         <ListItemLink href="#shared" onClick={() => props.executeScroll(SHARED_HASH)} selected={hash === `#${SHARED_HASH}`}>
