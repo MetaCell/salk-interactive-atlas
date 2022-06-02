@@ -1,4 +1,4 @@
-import * as React from "react";
+import React, {useState} from "react";
 import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 import { ThemeProvider } from "@material-ui/core/styles";
 import { CssBaseline, makeStyles } from "@material-ui/core";
@@ -7,7 +7,6 @@ import HomePage from "./pages/HomePage";
 import theme from "./theme";
 import { Header, ProtectedRoute, } from "./components";
 import ExperimentsPage from "./pages/ExperimentsPage";
-import {useState} from "react";
 
 const GEPPETTO = {};
 // @ts-ignore
