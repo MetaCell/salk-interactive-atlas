@@ -42,3 +42,8 @@ def move_file(filepath, target_dir, filename=None) -> str:
     dst_path = os.path.join(target_dir, filename)
     shutil.move(filepath, dst_path)
     return get_persistence_path(dst_path)
+
+
+def remove_file(path: str):
+    if os.path.exists(path):
+        os.remove(path)

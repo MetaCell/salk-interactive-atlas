@@ -8,7 +8,7 @@ from rest_framework.response import Response
 
 from api.constants import CORDMAP_DATA
 from api.helpers.exceptions import InvalidInputError
-from api.helpers.filesystem import create_temp_dir, move_files
+from api.services.filesystem_service import create_temp_dir, move_files
 from api.models import Experiment
 from api.serializers import (
     ExperimentFileUploadSerializer,

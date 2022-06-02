@@ -3,7 +3,7 @@ import uuid
 
 from cordmap.main import register_sections_3D
 
-from api.helpers.filesystem import move_file
+from api.services.filesystem_service import move_file
 from api.utils import get_persistence_path
 
 OUTPUT_DIRECTORY = './out'

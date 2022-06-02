@@ -9,11 +9,11 @@ from django.db import models
 from .atlas import AtlasesChoice
 from .experiment import Experiment
 from ..constants import PopulationPersistentFiles, POPULATIONS_DATA, POPULATIONS_SPLIT_DATA
-from ..helpers.filesystem import create_dir, remove_dir
+from ..services.filesystem_service import create_dir, remove_dir, remove_file
 from ..helpers.generate_population_cells import get_cells_filepath
 from ..services.population_service import generate_images, split_cells_per_segment
 from ..services.workflows_service import execute_generate_population_static_files_workflow
-from ..utils import is_valid_hex_str
+from ..utils import is_valid_hex_str, has_property
 
 
 class PopulationStatus(models.TextChoices):
@@ -65,13 +65,17 @@ class Population(models.Model):
         if has_file_changed:  # Only trigger workflow on cells changes
             execute_generate_population_static_files_workflow(self.id)
 
+    def delete(self, using=None, keep_parents=False):
+        remove_file(self.cells.path)
+        super(Population, self).delete(using, keep_parents)
+
     def _has_file_changed(self):
         try:
             current = Population.objects.get(id=self.id)
         except Population.DoesNotExist:
-            return hasattr(self.cells, 'files')
-        return (not hasattr(current.cells, 'files') and hasattr(self.cells, 'files')) \
-               or (hasattr(self.cells, 'files') and self.cells.file.name != current.cells.file.name)
+            return has_property(self.cells, 'file')
+        return (not has_property(current.cells, 'file') and has_property(self.cells, 'file')) \
+               or (has_property(self.cells, 'file') and self.cells.file.name != current.cells.file.name)
 
     def generate_cells(self, data_filepath: str):
         try:

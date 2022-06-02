@@ -2510,16 +2510,16 @@ export const ApiApiAxiosParamCreator = function (configuration?: Configuration) 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        uploadFileExperiment: async (id: string, populationName: string, keyFile: any, dataFile: any, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+        uploadFilesExperiment: async (id: string, populationName: string, keyFile: any, dataFile: any, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'id' is not null or undefined
-            assertParamExists('uploadFileExperiment', 'id', id)
+            assertParamExists('uploadFilesExperiment', 'id', id)
             // verify required parameter 'populationName' is not null or undefined
-            assertParamExists('uploadFileExperiment', 'populationName', populationName)
+            assertParamExists('uploadFilesExperiment', 'populationName', populationName)
             // verify required parameter 'keyFile' is not null or undefined
-            assertParamExists('uploadFileExperiment', 'keyFile', keyFile)
+            assertParamExists('uploadFilesExperiment', 'keyFile', keyFile)
             // verify required parameter 'dataFile' is not null or undefined
-            assertParamExists('uploadFileExperiment', 'dataFile', dataFile)
-            const localVarPath = `/api/experiments/{id}/upload-file/`
+            assertParamExists('uploadFilesExperiment', 'dataFile', dataFile)
+            const localVarPath = `/api/experiments/{id}/upload-files/`
                 .replace(`{${"id"}}`, encodeURIComponent(String(id)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -3060,8 +3060,8 @@ export const ApiApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async uploadFileExperiment(id: string, populationName: string, keyFile: any, dataFile: any, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ExperimentFileUpload>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.uploadFileExperiment(id, populationName, keyFile, dataFile, options);
+        async uploadFilesExperiment(id: string, populationName: string, keyFile: any, dataFile: any, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ExperimentFileUpload>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.uploadFilesExperiment(id, populationName, keyFile, dataFile, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
     }
@@ -3517,8 +3517,8 @@ export const ApiApiFactory = function (configuration?: Configuration, basePath?:
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        uploadFileExperiment(id: string, populationName: string, keyFile: any, dataFile: any, options?: any): AxiosPromise<ExperimentFileUpload> {
-            return localVarFp.uploadFileExperiment(id, populationName, keyFile, dataFile, options).then((request) => request(axios, basePath));
+        uploadFilesExperiment(id: string, populationName: string, keyFile: any, dataFile: any, options?: any): AxiosPromise<ExperimentFileUpload> {
+            return localVarFp.uploadFilesExperiment(id, populationName, keyFile, dataFile, options).then((request) => request(axios, basePath));
         },
     };
 };
@@ -4062,8 +4062,8 @@ export class ApiApi extends BaseAPI {
      * @throws {RequiredError}
      * @memberof ApiApi
      */
-    public uploadFileExperiment(id: string, populationName: string, keyFile: any, dataFile: any, options?: AxiosRequestConfig) {
-        return ApiApiFp(this.configuration).uploadFileExperiment(id, populationName, keyFile, dataFile, options).then((request) => request(this.axios, this.basePath));
+    public uploadFilesExperiment(id: string, populationName: string, keyFile: any, dataFile: any, options?: AxiosRequestConfig) {
+        return ApiApiFp(this.configuration).uploadFilesExperiment(id, populationName, keyFile, dataFile, options).then((request) => request(this.axios, this.basePath));
     }
 }
 

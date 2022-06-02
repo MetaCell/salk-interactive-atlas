@@ -977,9 +977,9 @@ paths:
           description: ''
       tags:
       - api
-  /api/experiments/{id}/upload-file/:
+  /api/experiments/{id}/upload-files/:
     post:
-      operationId: uploadFileExperiment
+      operationId: uploadFilesExperiment
       description: 'This viewset automatically provides `list`, `create`, `retrieve`,
 
         `update` and `destroy` actions.'
