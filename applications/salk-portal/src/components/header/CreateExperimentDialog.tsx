@@ -172,6 +172,7 @@ export const CreateExperimentDialog = (props: any) => {
         }
         await Promise.all(promises)
         onExperimentCreation(experiment.id)
+        handleClose()
     }
     // const [progress, setProgress] = React.useState(0);
 

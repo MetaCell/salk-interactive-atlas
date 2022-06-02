@@ -44,6 +44,12 @@ const commonStyle = {
     borderRadius: '0.375rem',
 };
 
+const imageStyles = {
+    height: '10.3125rem',
+    transform: 'scale(1)',
+    transition: 'all ease-in-out .3s',
+}
+
 const useStyles = makeStyles(() => ({
     card: {
         background: headerBg,
@@ -99,11 +105,7 @@ const useStyles = makeStyles(() => ({
             },
         },
 
-        '& .MuiCardMedia-root': {
-            height: '10.3125rem',
-            transform: 'scale(1)',
-            transition: 'all ease-in-out .3s',
-        },
+        '& .MuiCardMedia-root': {...imageStyles},
 
         '& .MuiCardContent-root': {
             boxShadow: `inset 0 0.03125rem 0 ${headerBorderColor}`,
@@ -216,6 +218,13 @@ const useStyles = makeStyles(() => ({
         },
     },
 
+    cardImage: {
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        ...imageStyles
+    }
+
 }));
 
 const ExperimentCard = ({
@@ -256,8 +265,10 @@ const ExperimentCard = ({
                                 alt={experiment.name}
                                 image={PLACEHOLDER}
                                 title={experiment.name}
-                            /> :
-                            <CircularProgress color="secondary"/>
+                            /> : (<div className={classes.cardImage}>
+                                    <CircularProgress color="secondary"/>
+                                </div>
+                            )
                     }
 
                 </CardActionArea>
