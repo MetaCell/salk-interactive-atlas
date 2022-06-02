@@ -163,6 +163,7 @@ export const CreateExperimentDialog = (props: any) => {
         setTags(value)
     }
 
+
     const handleAction = async () => {
         const res = await api.createExperiment(name, description, null, true, null, null, user, null, null, null, tags)
         const experiment = res.data
@@ -171,8 +172,8 @@ export const CreateExperimentDialog = (props: any) => {
             promises.push(api.uploadFilesExperiment(experiment.id.toString(), name, keyFiles[i], dataFiles[i]))
         }
         await Promise.all(promises)
-        onExperimentCreation(experiment.id)
         handleClose()
+        onExperimentCreation(experiment.id)
     }
     // const [progress, setProgress] = React.useState(0);
 

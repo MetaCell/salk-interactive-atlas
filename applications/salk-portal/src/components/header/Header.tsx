@@ -84,6 +84,7 @@ export const Header = (props: any) => {
   const [dialogOpen, setDialogOpen] = React.useState(false);
   const menuAnchorRef = React.useRef(null);
   const [experimentDialogOpen, setExperimentDialogOpen] = React.useState(false);
+  const [modalKey, setModalKey] = React.useState(0)
 
   const handleExperimentDialogToggle = () => {
     setExperimentDialogOpen((prevOpen) => !prevOpen);
@@ -168,6 +169,11 @@ export const Header = (props: any) => {
     }
   };
 
+  const handleCreation = () => {
+    setModalKey(modalKey + 1)
+    onExperimentCreation()
+  }
+
   return (
     <>
       <Toolbar className={classes.toolbar}>
@@ -195,7 +201,7 @@ export const Header = (props: any) => {
 
       <UserAccountDialog open={dialogOpen} handleClose={handleDialogToggle} user={user} />
       <CreateExperimentDialog open={experimentDialogOpen} handleClose={handleExperimentDialogToggle} user={user}
-                              onExperimentCreation={onExperimentCreation}/>
+                              onExperimentCreation={() => handleCreation()} key={modalKey}/>
     </>
   );
 };
