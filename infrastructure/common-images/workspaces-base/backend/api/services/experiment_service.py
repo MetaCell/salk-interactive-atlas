@@ -28,7 +28,7 @@ def delete_tag(experiment: Experiment, tag_name: str):
 
 def upload_files(experiment: Experiment, data_filepath: str, population_id: int):
     try:
-        population_name = os.path.basename(data_filepath.split('_Data')[0])
+        population_name = os.path.basename(data_filepath).split('_Data')[0]
     except Exception:
         raise InvalidInputError
 
