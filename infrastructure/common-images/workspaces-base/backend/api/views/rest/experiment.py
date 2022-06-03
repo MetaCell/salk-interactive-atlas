@@ -48,6 +48,7 @@ class ExperimentViewSet(viewsets.ModelViewSet):
 
     def list(self, request, **kwargs):
         queryset = Experiment.objects.list(request.user)
+        queryset = self.get_serializer_class().setup_eager_loading(queryset)
         serializer = self.get_serializer(
             queryset, many=True, context={"request": request}
         )
@@ -56,24 +57,28 @@ class ExperimentViewSet(viewsets.ModelViewSet):
     @action(detail=False)
     def mine(self, request):
         queryset = Experiment.objects.my_experiments(request.user)
+        queryset = self.get_serializer_class().setup_eager_loading(queryset)
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
 
     @action(detail=False)
     def public(self, request):
         queryset = Experiment.objects.public_experiments()
+        queryset = self.get_serializer_class().setup_eager_loading(queryset)
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
 
     @action(detail=False)
     def myteams(self, request):
         queryset = Experiment.objects.team_experiments(request.user)
+        queryset = self.get_serializer_class().setup_eager_loading(queryset)
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
 
     @action(detail=False)
     def sharedwithme(self, request):
         queryset = Experiment.objects.collaborate_experiments(request.user)
+        queryset = self.get_serializer_class().setup_eager_loading(queryset)
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
 
