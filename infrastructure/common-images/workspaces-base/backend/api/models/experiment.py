@@ -7,6 +7,9 @@ from .tag import Tag
 
 # Create your models here.
 class ExperimentsObjectsManager(models.Manager):
+    def get_queryset(self):
+        return super(ExperimentsObjectsManager, self).get_queryset().select_related("owner",).prefetch_related("teams", "tags", "population_set")
+
     def my_experiments(self, user):
         return self.get_queryset().filter(owner=user)
 

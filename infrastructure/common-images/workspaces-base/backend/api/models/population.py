@@ -16,6 +16,11 @@ from ..services.workflows_service import execute_generate_population_static_file
 from ..utils import is_valid_hex_str, has_property
 
 
+class PopulationObjectsManager(models.Manager):
+    def get_queryset(self):
+        return super(PopulationObjectsManager, self).get_queryset().select_related("experiment",)
+
+
 class PopulationStatus(models.TextChoices):
     ERROR = "error"
     PENDING = "pending"
@@ -38,6 +43,9 @@ class Population(models.Model):
     status = models.CharField(
         choices=PopulationStatus.choices, editable=False, default=PopulationStatus.PENDING, max_length=8
     )
+
+    # objects = models.Manager()
+    objects = PopulationObjectsManager()
 
     @property
     def storage_path(self) -> str:
