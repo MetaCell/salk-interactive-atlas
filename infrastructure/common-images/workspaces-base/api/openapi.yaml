@@ -1428,8 +1428,8 @@ components:
     ExperimentFileUpload:
       type: object
       properties:
-        population_name:
-          type: string
+        population_id:
+          type: integer
         key_file:
           type: string
           format: binary
@@ -1437,7 +1437,6 @@ components:
           type: string
           format: binary
       required:
-      - population_name
       - key_file
       - data_file
     Member:

@@ -29,7 +29,7 @@ class Population(models.Model):
     atlas = models.CharField(
         max_length=100, choices=AtlasesChoice.choices, default=AtlasesChoice.SLK10
     )
-    name = models.CharField(max_length=100, unique=True)
+    name = models.CharField(max_length=100)
     color = models.CharField(max_length=7)  # hex color
     opacity = models.FloatField(
         validators=[MinValueValidator(0.0), MaxValueValidator(1.0)], default=1.0

@@ -14,7 +14,7 @@ class IntegerListField(serializers.ListField):
 
 
 class ExperimentFileUploadSerializer(serializers.Serializer):
-    population_name = serializers.CharField()
+    population_id = serializers.IntegerField(required=False, default=None)
     key_file = serializers.FileField()
     data_file = serializers.FileField()
 

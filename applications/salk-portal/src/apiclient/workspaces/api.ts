@@ -192,10 +192,10 @@ export type ExperimentCollaboratorsRoleEnum = typeof ExperimentCollaboratorsRole
 export interface ExperimentFileUpload {
     /**
      * 
-     * @type {string}
+     * @type {number}
      * @memberof ExperimentFileUpload
      */
-    'population_name': string;
+    'population_id'?: number;
     /**
      * 
      * @type {any}
@@ -2504,17 +2504,15 @@ export const ApiApiAxiosParamCreator = function (configuration?: Configuration) 
         /**
          * This viewset automatically provides `list`, `create`, `retrieve`, `update` and `destroy` actions.
          * @param {string} id A unique integer value identifying this experiment.
-         * @param {string} populationName 
          * @param {any} keyFile 
          * @param {any} dataFile 
+         * @param {number} [populationId] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        uploadFilesExperiment: async (id: string, populationName: string, keyFile: any, dataFile: any, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+        uploadFilesExperiment: async (id: string, keyFile: any, dataFile: any, populationId?: number, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'id' is not null or undefined
             assertParamExists('uploadFilesExperiment', 'id', id)
-            // verify required parameter 'populationName' is not null or undefined
-            assertParamExists('uploadFilesExperiment', 'populationName', populationName)
             // verify required parameter 'keyFile' is not null or undefined
             assertParamExists('uploadFilesExperiment', 'keyFile', keyFile)
             // verify required parameter 'dataFile' is not null or undefined
@@ -2538,8 +2536,8 @@ export const ApiApiAxiosParamCreator = function (configuration?: Configuration) 
             await setBearerAuthToObject(localVarHeaderParameter, configuration)
 
 
-            if (populationName !== undefined) { 
-                localVarFormParams.append('population_name', populationName as any);
+            if (populationId !== undefined) { 
+                localVarFormParams.append('population_id', populationId as any);
             }
     
             if (keyFile !== undefined) { 
@@ -3054,14 +3052,14 @@ export const ApiApiFp = function(configuration?: Configuration) {
         /**
          * This viewset automatically provides `list`, `create`, `retrieve`, `update` and `destroy` actions.
          * @param {string} id A unique integer value identifying this experiment.
-         * @param {string} populationName 
          * @param {any} keyFile 
          * @param {any} dataFile 
+         * @param {number} [populationId] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async uploadFilesExperiment(id: string, populationName: string, keyFile: any, dataFile: any, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ExperimentFileUpload>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.uploadFilesExperiment(id, populationName, keyFile, dataFile, options);
+        async uploadFilesExperiment(id: string, keyFile: any, dataFile: any, populationId?: number, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ExperimentFileUpload>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.uploadFilesExperiment(id, keyFile, dataFile, populationId, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
     }
@@ -3511,14 +3509,14 @@ export const ApiApiFactory = function (configuration?: Configuration, basePath?:
         /**
          * This viewset automatically provides `list`, `create`, `retrieve`, `update` and `destroy` actions.
          * @param {string} id A unique integer value identifying this experiment.
-         * @param {string} populationName 
          * @param {any} keyFile 
          * @param {any} dataFile 
+         * @param {number} [populationId] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        uploadFilesExperiment(id: string, populationName: string, keyFile: any, dataFile: any, options?: any): AxiosPromise<ExperimentFileUpload> {
-            return localVarFp.uploadFilesExperiment(id, populationName, keyFile, dataFile, options).then((request) => request(axios, basePath));
+        uploadFilesExperiment(id: string, keyFile: any, dataFile: any, populationId?: number, options?: any): AxiosPromise<ExperimentFileUpload> {
+            return localVarFp.uploadFilesExperiment(id, keyFile, dataFile, populationId, options).then((request) => request(axios, basePath));
         },
     };
 };
@@ -4055,15 +4053,15 @@ export class ApiApi extends BaseAPI {
     /**
      * This viewset automatically provides `list`, `create`, `retrieve`, `update` and `destroy` actions.
      * @param {string} id A unique integer value identifying this experiment.
-     * @param {string} populationName 
      * @param {any} keyFile 
      * @param {any} dataFile 
+     * @param {number} [populationId] 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof ApiApi
      */
-    public uploadFilesExperiment(id: string, populationName: string, keyFile: any, dataFile: any, options?: AxiosRequestConfig) {
-        return ApiApiFp(this.configuration).uploadFilesExperiment(id, populationName, keyFile, dataFile, options).then((request) => request(this.axios, this.basePath));
+    public uploadFilesExperiment(id: string, keyFile: any, dataFile: any, populationId?: number, options?: AxiosRequestConfig) {
+        return ApiApiFp(this.configuration).uploadFilesExperiment(id, keyFile, dataFile, populationId, options).then((request) => request(this.axios, this.basePath));
     }
 }
 

@@ -21,6 +21,7 @@ log = logging.getLogger("__name__")
 
 DATA_INDEX = 1
 
+
 class ExperimentViewSet(viewsets.ModelViewSet):
     """
     This viewset automatically provides `list`, `create`, `retrieve`,
@@ -108,14 +109,14 @@ class ExperimentViewSet(viewsets.ModelViewSet):
         instance = self.get_object()
         key_file = request.FILES.get("key_file")
         data_file = request.FILES.get("data_file")
-        population_name = request.data.get("population_name")
+        population_id = request.FILES.get("population_id", None)
         try:
             dir_path = create_temp_dir(CORDMAP_DATA)
             filepaths = move_files([key_file, data_file], dir_path)
         except Exception as e:
             return Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR)
         try:
-            created = upload_files(instance, population_name, filepaths[DATA_INDEX])
+            created = upload_files(instance, filepaths[DATA_INDEX], population_id)
             response_status = status.HTTP_201_CREATED if created else status.HTTP_200_OK
         except InvalidInputError:
             response_status = status.HTTP_400_BAD_REQUEST
