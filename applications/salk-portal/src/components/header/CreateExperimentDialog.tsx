@@ -169,7 +169,7 @@ export const CreateExperimentDialog = (props: any) => {
         const experiment = res.data
         const promises = []
         for (let i = 0; i < pairsLength ; i++){
-            promises.push(api.uploadFilesExperiment(experiment.id.toString(), name, keyFiles[i], dataFiles[i]))
+            promises.push(api.uploadFilesExperiment(experiment.id.toString(), keyFiles[i], dataFiles[i]))
         }
         await Promise.all(promises)
         handleClose()
@@ -208,7 +208,7 @@ export const CreateExperimentDialog = (props: any) => {
             <Box display={'flex'} alignItems="center" justifyContent={'center'} className={classes.fileDrop}>
                 <Grid container={true} item={true} spacing={3}>
                     {[...Array(pairsLength)].map((n, i) =>
-                        <>
+                        <React.Fragment key={i}>
                             {!keyFiles[i] ? (
                                 <Grid item={true} xs={12} sm={6}>
                                     <Typography className={classes.fileLabel}>Key file</Typography>
@@ -264,7 +264,7 @@ export const CreateExperimentDialog = (props: any) => {
                                     </Box>
                                 </Grid>
                             )}
-                        </>
+                        </React.Fragment>
                     )}
                 </Grid>
             </Box>

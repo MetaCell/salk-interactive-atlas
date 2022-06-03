@@ -256,7 +256,7 @@ const ExperimentCard = ({
     return (
         <Grid item xs={12} md={3} key={`${experiment.name}experiment_${experiment.id}`}>
             <Card className={classes.card} elevation={0}>
-                <CardActionArea onClick={handleCardActions}>
+                <CardActionArea onClick={isReady ? handleCardActions : () => {}}>
                     {
                         isReady ?
                             /*{type === COMMUNITY_HASH && <img src={POPULAR} alt="POPULAR"/>}*/
@@ -317,7 +317,7 @@ const ExperimentCard = ({
                                             color={i == 1 ? 'primary' : i === 2 ? 'secondary' : 'default'}/>)
                                     }
                                 </Box>}
-                            <Typography component="h3" onClick={handleClick}>
+                            <Typography component="h3" onClick={isReady ? handleClick : () => {}}>
                                 {experiment.name || 'fff'}
                             </Typography>
                             <Typography component="p">
