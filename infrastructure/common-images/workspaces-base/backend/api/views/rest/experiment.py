@@ -16,6 +16,7 @@ from api.serializers import (
     TagSerializer,
 )
 from api.services.experiment_service import add_tag, delete_tag, upload_files
+from api.validators.upload_files import validate_input_files
 
 log = logging.getLogger("__name__")
 
@@ -114,6 +115,11 @@ class ExperimentViewSet(viewsets.ModelViewSet):
         instance = self.get_object()
         key_file = request.FILES.get("key_file")
         data_file = request.FILES.get("data_file")
+        try:
+            validate_input_files(key_file, data_file)
+        except InvalidInputError:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+
         population_id = request.FILES.get("population_id", None)
         try:
             dir_path = create_temp_dir(CORDMAP_DATA)

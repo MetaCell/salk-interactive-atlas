@@ -12,6 +12,7 @@ import UPLOAD from "../../assets/images/icons/upload.svg";
 // @ts-ignore
 import CHECK_FILLED from "../../assets/images/icons/check_filled.svg";
 import workspaceService from "../../service/WorkspaceService";
+import * as Yup from 'yup'
 
 const tagOptions: ExperimentTags[] = [
     {name: 'Project A', id: 1},
@@ -127,10 +128,17 @@ const useStyles = makeStyles(() => ({
             },
         },
     },
+    errorBorder: {
+        borderColor: "#f44336"
+    }
 
 }));
 
 const UPLOAD_ICON = () => <img src={UPLOAD} alt="upload"/>
+const nameKey = "name"
+const descriptionKey = "description"
+const keyFilesKey = "keyFiles"
+const dataFilesKey = "dataFiles"
 
 export const CreateExperimentDialog = (props: any) => {
     const classes = useStyles();
@@ -142,12 +150,28 @@ export const CreateExperimentDialog = (props: any) => {
     const [name, setName] = React.useState<string>(null);
     const [description, setDescription] = React.useState<string>(null);
     const [tags, setTags] = React.useState<ExperimentTags[]>([]);
+    const [errors, setErrors] = React.useState(new Set([]));
+    const validationSchema = Yup.object().shape({
+        [nameKey]: Yup.string().required(),
+        [descriptionKey]: Yup.string().required(),
+        [keyFilesKey]: Yup.array().min(1).required(),
+        [dataFilesKey]: Yup.array().min(1).required()
+    })
 
-    const handleFileUpload = (files: any, index: number, state: any, setState: (value: any) => void) => {
+
+    const handleFormChange = (newValue: any, setState: any, errorKey: string) => {
+        setState(newValue)
+        errors.delete(errorKey)
+        setErrors(errors)
+    }
+
+    const handleFileUpload = (files: any, key: string, index: number, state: any, setState: (value: any) => void) => {
         if (files.length > 0) {
             const nextState = [...state]
             nextState[index] = files[0]
             setState(nextState)
+            errors.delete(getFileErrorKey(key, index))
+            setErrors(errors)
         }
     }
 
@@ -163,13 +187,60 @@ export const CreateExperimentDialog = (props: any) => {
         setTags(value)
     }
 
+    const getCurrentFormDataObject = () => {
+        return {
+            name,
+            description,
+            keyFiles,
+            dataFiles,
+            tags
+        }
+    }
+
+    const getFileErrorKey = (fileKey: string, index: number) => `${fileKey}.${index}`
+
+
+    const getValidationErrors = async () => {
+        const errorsSet = new Set()
+        try{
+            await validationSchema.validate(getCurrentFormDataObject(), {strict: true, abortEarly: false})
+        }catch (exception){
+            for (const e of exception.inner) {
+                if (e.path === keyFilesKey || e.path === dataFilesKey) {
+                    errorsSet.add(getFileErrorKey(e.path, 0))
+                } else {
+                    errorsSet.add(e.path)
+                }
+            }
+        }
+
+        for (let i = 0; i < pairsLength; i++){
+            if (keyFiles[i] && !dataFiles[i]){
+                errorsSet.add(getFileErrorKey(dataFilesKey, i))
+            }
+            if (!keyFiles[i] && dataFiles[i]){
+                errorsSet.add(getFileErrorKey(keyFilesKey, i))
+            }
+        }
+
+        return errorsSet
+    }
+
 
     const handleAction = async () => {
-        const res = await api.createExperiment(name, description, null, true, null, null, user, null, null, null, tags)
+        const errorsSet = await getValidationErrors()
+        if (errorsSet.size > 0){
+            setErrors(errorsSet)
+            return
+        }
+        const res = await api.createExperiment(name, description, null, true,
+            null, null, user, null, null, null, tags)
         const experiment = res.data
         const promises = []
-        for (let i = 0; i < pairsLength ; i++){
-            promises.push(api.uploadFilesExperiment(experiment.id.toString(), keyFiles[i], dataFiles[i]))
+        for (let i = 0; i < pairsLength; i++) {
+            if (keyFiles[i] && dataFiles[i]){
+                promises.push(api.uploadFilesExperiment(experiment.id.toString(), keyFiles[i], dataFiles[i]))
+            }
         }
         await Promise.all(promises)
         handleClose()
@@ -213,7 +284,9 @@ export const CreateExperimentDialog = (props: any) => {
                                 <Grid item={true} xs={12} sm={6}>
                                     <Typography className={classes.fileLabel}>Key file</Typography>
                                     <DropzoneArea
-                                        onChange={(files: any) => handleFileUpload(files, i, keyFiles, (value) => setKeyFile(value))}
+                                        dropzoneClass={`${errors.has(getFileErrorKey(keyFilesKey, i)) ? classes.errorBorder : ""}`}
+                                        onChange={(files: any) => handleFileUpload(files, keyFilesKey, i, keyFiles,
+                                            (value) => setKeyFile(value))}
                                         dropzoneText="Select your key file or drop it here"
                                         Icon={UPLOAD_ICON}
                                         showPreviews={false}
@@ -221,6 +294,7 @@ export const CreateExperimentDialog = (props: any) => {
                                         filesLimit={1}
                                         showAlerts={['error']}
                                         classes={{icon: "MuiButton-outlined primary"}}
+                                        required={true}
                                     />
                                 </Grid>
                             ) : (
@@ -232,7 +306,8 @@ export const CreateExperimentDialog = (props: any) => {
                                             {keyFiles[i].name}
                                         </Typography>
                                         <Button disableRipple={true}
-                                                onClick={() => handleRemoveFile(i, keyFiles, (value) => setKeyFile(value))}>Remove</Button>
+                                                onClick={() => handleRemoveFile(i, keyFiles,
+                                                    (value) => setKeyFile(value))}>Remove</Button>
                                     </Box>
                                 </Grid>)
                             }
@@ -240,7 +315,9 @@ export const CreateExperimentDialog = (props: any) => {
                                 <Grid item={true} xs={12} sm={6}>
                                     <Typography className={classes.fileLabel}>Data file</Typography>
                                     <DropzoneArea
-                                        onChange={(files: any) => handleFileUpload(files, i, dataFiles, (value) => setDataFile(value))}
+                                        dropzoneClass={`${errors.has(getFileErrorKey(dataFilesKey, i)) ? classes.errorBorder : ""}`}
+                                        onChange={(files: any) => handleFileUpload(files, dataFilesKey, i, dataFiles,
+                                            (value) => setDataFile(value))}
                                         dropzoneText="Select your data file or drop it here"
                                         Icon={UPLOAD_ICON}
                                         showPreviews={false}
@@ -249,6 +326,7 @@ export const CreateExperimentDialog = (props: any) => {
                                         showAlerts={['error']}
                                         classes={{icon: "MuiButton-outlined primary"}}
                                         maxFileSize={300000000}
+                                        required={true}
                                     />
                                 </Grid>
                             ) : (
@@ -260,7 +338,8 @@ export const CreateExperimentDialog = (props: any) => {
                                             {dataFiles[i].name}
                                         </Typography>
                                         <Button disableRipple={true}
-                                                onClick={() => handleRemoveFile(i, keyFiles, (value) => setDataFile(value))}>Remove</Button>
+                                                onClick={() => handleRemoveFile(i, keyFiles, (value) =>
+                                                    setDataFile(value))}>Remove</Button>
                                     </Box>
                                 </Grid>
                             )}
@@ -277,15 +356,26 @@ export const CreateExperimentDialog = (props: any) => {
             <Box p={2} pb={5}>
                 <Box display="flex" alignItems={"center"} className={classes.formGroup}>
                     <Typography component="label">Name</Typography>
-                    <TextField placeholder="Name" variant="outlined" onChange={(e) => setName(e.target.value)}/>
+                    <TextField placeholder="Name" variant="outlined"
+                               onChange={(e) =>
+                                   handleFormChange(e.target.value, setName, nameKey)}
+                               required={true}
+                               error={errors.has(nameKey)}
+                    />
                 </Box>
 
                 <Box display="flex" alignItems={"center"} className={classes.formGroup}>
                     <Typography component="label">Description</Typography>
                     {
                         // FIXME: Unclear why we use TextEditor if we only store the text
+                        // TODO: Missing on hover and selected styles
                     }
-                    <TextEditor onChange={(editorState: any) => setDescription(editorState.getCurrentContent().getPlainText())}/>
+                    <TextEditor
+                        className={`${errors.has(descriptionKey) ? classes.errorBorder : ""}`}
+                        onChange={(editorState: any) =>
+                            handleFormChange(editorState.getCurrentContent().getPlainText(), setDescription, descriptionKey)}
+                        required={true}
+                    />
                 </Box>
 
                 <Box display="flex" alignItems={"center"} className={classes.formGroup}>
