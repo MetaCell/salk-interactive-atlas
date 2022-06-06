@@ -1,5 +1,5 @@
 import * as React from "react";
-import {Box, Button, Grid, makeStyles, TextField, Typography, } from "@material-ui/core";
+import {Box, Button, Grid, makeStyles, TextField, Typography,} from "@material-ui/core";
 import {filesBg, headerBorderColor, headerButtonBorderColor, switchActiveColor} from "../../theme";
 import Modal from "../common/BaseDialog";
 import {DropzoneArea} from 'material-ui-dropzone';
@@ -32,7 +32,7 @@ const useStyles = makeStyles(() => ({
     },
 
     formGroup: {
-        '&:not(:first-child)': {marginTop: '0.75rem', },
+        '&:not(:first-child)': {marginTop: '0.75rem',},
 
         '& label': {
             fontWeight: 600,
@@ -129,8 +129,19 @@ const useStyles = makeStyles(() => ({
         },
     },
     errorBorder: {
-        borderColor: "#f44336"
-    }
+        borderColor: "#f44336",
+        '&:focus-within': {
+            borderColor: '#7b61ff'
+        },
+    },
+    editor: {
+        '&:hover': {
+            borderColor: '#fff'
+        },
+        '&:focus-within': {
+            borderColor: '#7b61ff'
+        },
+    },
 
 }));
 
@@ -202,9 +213,9 @@ export const CreateExperimentDialog = (props: any) => {
 
     const getValidationErrors = async () => {
         const errorsSet = new Set()
-        try{
+        try {
             await validationSchema.validate(getCurrentFormDataObject(), {strict: true, abortEarly: false})
-        }catch (exception){
+        } catch (exception) {
             for (const e of exception.inner) {
                 if (e.path === keyFilesKey || e.path === dataFilesKey) {
                     errorsSet.add(getFileErrorKey(e.path, 0))
@@ -214,11 +225,11 @@ export const CreateExperimentDialog = (props: any) => {
             }
         }
 
-        for (let i = 0; i < pairsLength; i++){
-            if (keyFiles[i] && !dataFiles[i]){
+        for (let i = 0; i < pairsLength; i++) {
+            if (keyFiles[i] && !dataFiles[i]) {
                 errorsSet.add(getFileErrorKey(dataFilesKey, i))
             }
-            if (!keyFiles[i] && dataFiles[i]){
+            if (!keyFiles[i] && dataFiles[i]) {
                 errorsSet.add(getFileErrorKey(keyFilesKey, i))
             }
         }
@@ -229,7 +240,7 @@ export const CreateExperimentDialog = (props: any) => {
 
     const handleAction = async () => {
         const errorsSet = await getValidationErrors()
-        if (errorsSet.size > 0){
+        if (errorsSet.size > 0) {
             setErrors(errorsSet)
             return
         }
@@ -238,7 +249,7 @@ export const CreateExperimentDialog = (props: any) => {
         const experiment = res.data
         const promises = []
         for (let i = 0; i < pairsLength; i++) {
-            if (keyFiles[i] && dataFiles[i]){
+            if (keyFiles[i] && dataFiles[i]) {
                 promises.push(api.uploadFilesExperiment(experiment.id.toString(), keyFiles[i], dataFiles[i]))
             }
         }
@@ -371,7 +382,7 @@ export const CreateExperimentDialog = (props: any) => {
                         // TODO: Missing on hover and selected styles
                     }
                     <TextEditor
-                        className={`${errors.has(descriptionKey) ? classes.errorBorder : ""}`}
+                        className={`${errors.has(descriptionKey) ? classes.errorBorder : classes.editor}`}
                         onChange={(editorState: any) =>
                             handleFormChange(editorState.getCurrentContent().getPlainText(), setDescription, descriptionKey)}
                         required={true}
