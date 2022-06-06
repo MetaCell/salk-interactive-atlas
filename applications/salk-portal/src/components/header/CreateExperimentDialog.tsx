@@ -134,7 +134,7 @@ const useStyles = makeStyles(() => ({
             borderColor: '#7b61ff'
         },
     },
-    editor: {
+    editorWrapper: {
         '&:hover': {
             borderColor: '#fff'
         },
@@ -379,10 +379,9 @@ export const CreateExperimentDialog = (props: any) => {
                     <Typography component="label">Description</Typography>
                     {
                         // FIXME: Unclear why we use TextEditor if we only store the text
-                        // TODO: Missing on hover and selected styles
                     }
                     <TextEditor
-                        className={`${errors.has(descriptionKey) ? classes.errorBorder : classes.editor}`}
+                        wrapperClassName={`${errors.has(descriptionKey) ? classes.errorBorder : classes.editorWrapper}`}
                         onChange={(editorState: any) =>
                             handleFormChange(editorState.getCurrentContent().getPlainText(), setDescription, descriptionKey)}
                         required={true}

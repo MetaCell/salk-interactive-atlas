@@ -11,7 +11,7 @@ import {EditorState} from 'draft-js';
 
 export const TextEditor = (props) => {
     const [editorState, setEditorState] = React.useState(EditorState.createEmpty())
-    const {onChange, className} = props;
+    const {onChange, wrapperClassName} = props;
 
 
     const onEditorStateChange = (updatedEditorState) => {
@@ -21,7 +21,7 @@ export const TextEditor = (props) => {
 
     return (
         <Editor
-            wrapperClassName={className}
+            wrapperClassName={wrapperClassName}
             editorState={editorState}
             onEditorStateChange={onEditorStateChange}
             toolbar={{
