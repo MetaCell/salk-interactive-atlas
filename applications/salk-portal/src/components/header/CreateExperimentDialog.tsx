@@ -1,5 +1,5 @@
 import * as React from "react";
-import {Box, Button, Grid, makeStyles, TextField, Typography,} from "@material-ui/core";
+import {Box, Button, Grid, makeStyles, TextField, Typography} from "@material-ui/core";
 import {filesBg, headerBorderColor, headerButtonBorderColor, switchActiveColor} from "../../theme";
 import Modal from "../common/BaseDialog";
 import {DropzoneArea} from 'material-ui-dropzone';
@@ -32,7 +32,7 @@ const useStyles = makeStyles(() => ({
     },
 
     formGroup: {
-        '&:not(:first-child)': {marginTop: '0.75rem',},
+        '&:not(:first-child)': {marginTop: '0.75rem'},
 
         '& label': {
             fontWeight: 600,
