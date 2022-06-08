@@ -8,14 +8,14 @@ from rest_framework.response import Response
 
 from api.constants import CORDMAP_DATA
 from api.helpers.exceptions import InvalidInputError
-from api.services.filesystem_service import create_temp_dir, move_files
 from api.models import Experiment
 from api.serializers import (
     ExperimentFileUploadSerializer,
     ExperimentSerializer,
-    TagSerializer,
+    TagSerializer, TagsSerializer,
 )
 from api.services.experiment_service import add_tag, delete_tag, upload_files
+from api.services.filesystem_service import create_temp_dir, move_files
 from api.validators.upload_files import validate_input_files
 
 log = logging.getLogger("__name__")
@@ -34,7 +34,7 @@ class ExperimentViewSet(viewsets.ModelViewSet):
     parser_classes = (MultiPartParser,)
     custom_serializer_map = {
         "upload_files": ExperimentFileUploadSerializer,
-        "add_tag": TagSerializer,
+        "add_tags": TagsSerializer,
     }
 
     def get_serializer_class(self):
@@ -84,12 +84,14 @@ class ExperimentViewSet(viewsets.ModelViewSet):
         return Response(serializer.data)
 
     @action(detail=True, methods=["post"], url_path="tag", url_name="tag_add")
-    def add_tag(self, request, pk):
+    def add_tags(self, request, pk):
         instance = self.get_object()
-        tag_name = request.data.get("name")
-        tag = add_tag(instance, tag_name)
-
-        serializer = self.get_serializer(tag)
+        tags_names = request.data.get("tags").split(',')
+        tags = []
+        for name in tags_names:
+            tags.append(add_tag(instance, name, save=False))
+        instance.save()
+        serializer = TagSerializer(tags, many=True)
         return Response(serializer.data)
 
     @action(
@@ -135,5 +137,5 @@ class ExperimentViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         experiment = serializer.save(
-            owner=self.request.user,
+            owner=self.request.user
         )

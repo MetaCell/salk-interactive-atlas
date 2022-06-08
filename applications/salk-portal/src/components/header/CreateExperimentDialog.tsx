@@ -245,8 +245,9 @@ export const CreateExperimentDialog = (props: any) => {
             return
         }
         const res = await api.createExperiment(name, description, null, true,
-            null, null, user, null, null, null, tags)
+            null, null, user, null, null, null, null)
         const experiment = res.data
+        await api.addTagsExperiment(experiment.id.toString(), tags.map(t => t.name))
         const promises = []
         for (let i = 0; i < pairsLength; i++) {
             if (keyFiles[i] && dataFiles[i]) {

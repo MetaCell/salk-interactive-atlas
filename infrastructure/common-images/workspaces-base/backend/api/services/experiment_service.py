@@ -5,13 +5,14 @@ from api.models import Experiment, Population, Tag
 from api.services.workflows_service import execute_generate_population_cells_workflow
 
 
-def add_tag(experiment: Experiment, tag_name: str):
+def add_tag(experiment: Experiment, tag_name: str, save=True):
     try:
         tag = experiment.tags.get(name=tag_name)
     except Tag.DoesNotExist:
         tag, created = Tag.objects.get_or_create(name=tag_name)
         experiment.tags.add(tag)
-        experiment.save()
+        if save:
+            experiment.save()
 
     return tag
 
