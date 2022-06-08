@@ -1,4 +1,4 @@
-import * as React from "react";
+import React, {useEffect, useState, Fragment} from 'react';
 import {Box, Button, Grid, makeStyles, TextField, Typography} from "@material-ui/core";
 import {filesBg, headerBorderColor, headerButtonBorderColor, switchActiveColor} from "../../theme";
 import Modal from "../common/BaseDialog";
@@ -6,24 +6,14 @@ import {DropzoneArea} from 'material-ui-dropzone';
 import {TagsAutocomplete} from "../common/ExperimentDialogs/TagsAutocomplete";
 import {TextEditor} from "../common/ExperimentDialogs/TextEditor";
 import {OwnerInfo} from "../common/ExperimentDialogs/OwnerInfo";
-import {ExperimentTags} from "../../apiclient/workspaces";
 // @ts-ignore
 import UPLOAD from "../../assets/images/icons/upload.svg";
 // @ts-ignore
 import CHECK_FILLED from "../../assets/images/icons/check_filled.svg";
 import workspaceService from "../../service/WorkspaceService";
 import * as Yup from 'yup'
+import {ExperimentTagsInner} from "../../apiclient/workspaces";
 
-const tagOptions: ExperimentTags[] = [
-    {name: 'Project A', id: 1},
-    {name: 'Label B', id: 2},
-    {name: 'Label XYZ', id: 3},
-    {name: 'Project C', id: 4},
-    {name: 'Project d', id: 5},
-    {name: 'Label e', id: 6},
-    {name: 'Label XeYZ', id: 7},
-    {name: 'Project Ce', id: 8},
-];
 
 const useStyles = makeStyles(() => ({
     fileDrop: {
@@ -155,19 +145,21 @@ export const CreateExperimentDialog = (props: any) => {
     const classes = useStyles();
     const api = workspaceService.getApi()
     const {open, handleClose, user, onExperimentCreation} = props;
-    const [dataFiles, setDataFile] = React.useState<any>([]);
-    const [keyFiles, setKeyFile] = React.useState<any>([]);
-    const [pairsLength, setPairsLength] = React.useState<any>(1);
-    const [name, setName] = React.useState<string>(null);
-    const [description, setDescription] = React.useState<string>(null);
-    const [tags, setTags] = React.useState<ExperimentTags[]>([]);
-    const [errors, setErrors] = React.useState(new Set([]));
+    const [dataFiles, setDataFile] = useState<any>([]);
+    const [keyFiles, setKeyFile] = useState<any>([]);
+    const [pairsLength, setPairsLength] = useState<any>(1);
+    const [name, setName] = useState<string>(null);
+    const [description, setDescription] = useState<string>(null);
+    const [tags, setTags] = useState<string[]>([]);
+    const [tagsOptions, setTagsOptions] = useState<ExperimentTagsInner[]>([]);
+    const [errors, setErrors] = useState(new Set([]));
     const validationSchema = Yup.object().shape({
         [nameKey]: Yup.string().required(),
         [descriptionKey]: Yup.string().required(),
         [keyFilesKey]: Yup.array().min(1).required(),
         [dataFilesKey]: Yup.array().min(1).required()
     })
+
 
 
     const handleFormChange = (newValue: any, setState: any, errorKey: string) => {
@@ -247,7 +239,7 @@ export const CreateExperimentDialog = (props: any) => {
         const res = await api.createExperiment(name, description, null, true,
             null, null, user, null, null, null, null)
         const experiment = res.data
-        await api.addTagsExperiment(experiment.id.toString(), tags.map(t => t.name))
+        await api.addTagsExperiment(experiment.id.toString(), tags)
         const promises = []
         for (let i = 0; i < pairsLength; i++) {
             if (keyFiles[i] && dataFiles[i]) {
@@ -258,9 +250,18 @@ export const CreateExperimentDialog = (props: any) => {
         handleClose()
         onExperimentCreation(experiment.id)
     }
-    // const [progress, setProgress] = React.useState(0);
 
-    // React.useEffect(() => {
+    useEffect(() => {
+        const fetchTagOptions = async () => {
+            const res = await api.listTags()
+            setTagsOptions(res.data)
+        }
+
+        fetchTagOptions().catch(console.error)
+    }, []);
+    // const [progress, setProgress] = useState(0);
+
+    // useEffect(() => {
     //   const timer = setInterval(() => {
     //     setProgress((oldProgress) => {
     //       if (oldProgress === 100) {
@@ -291,7 +292,7 @@ export const CreateExperimentDialog = (props: any) => {
             <Box display={'flex'} alignItems="center" justifyContent={'center'} className={classes.fileDrop}>
                 <Grid container={true} item={true} spacing={3}>
                     {[...Array(pairsLength)].map((n, i) =>
-                        <React.Fragment key={i}>
+                        <Fragment key={i}>
                             {!keyFiles[i] ? (
                                 <Grid item={true} xs={12} sm={6}>
                                     <Typography className={classes.fileLabel}>Key file</Typography>
@@ -355,7 +356,7 @@ export const CreateExperimentDialog = (props: any) => {
                                     </Box>
                                 </Grid>
                             )}
-                        </React.Fragment>
+                        </Fragment>
                     )}
                 </Grid>
             </Box>
@@ -391,7 +392,7 @@ export const CreateExperimentDialog = (props: any) => {
 
                 <Box display="flex" alignItems={"center"} className={classes.formGroup}>
                     <Typography component="label">Tags</Typography>
-                    <TagsAutocomplete tags={tagOptions} onChange={handleTagsChange}/>
+                    <TagsAutocomplete tags={tagsOptions.map(t => t.name)} onChange={handleTagsChange}/>
                 </Box>
 
                 <Box display="flex" alignItems={"center"} className={classes.formGroup}>

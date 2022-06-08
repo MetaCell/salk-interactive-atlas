@@ -35,19 +35,18 @@ export const TagsAutocomplete = (props) => {
       fullWidth
       id="tags-filled"
       options={tags}
-      defaultValue={[tags[2]]}
-      getOptionLabel={option => option.name}
+      defaultValue={[]}
       freeSolo
       limitTags={3}
       renderTags={(value, getTagProps) =>
         value.map((option, index) => (
-          <Chip key={index} style={{...tagsColorOptions[index]}} onDelete={() => console.log(option)} label={option.name} {...getTagProps({ index })} />
+          <Chip key={index} style={{...tagsColorOptions[index]}} onDelete={() => console.log(option)} label={option} {...getTagProps({ index })} />
         ))
       }
       renderOption={(option, { selected }) => (
         <>
           <Box className={classes.icon} style={{backgroundColor: secondaryChipBg}}/>
-          {option.name}
+          {option}
           {selected && <img src={CHECK} className={classes.mlAuto} alt="check" />}
         </>
       )}
