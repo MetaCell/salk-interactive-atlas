@@ -17,7 +17,6 @@ import Sidebar from "../components/ExperimentSidebar";
 import {
     AtlasChoice,
     NEURONAL_LOCATIONS_ID,
-    OVERLAYS,
     POPULATION_FINISHED_STATE,
     PROBABILITY_MAP_ID,
     PULL_TIME_MS
@@ -27,8 +26,9 @@ import {Experiment, ExperimentPopulations} from "../apiclient/workspaces";
 import {areAllSelected} from "../utilities/functions";
 import workspaceService from "../service/WorkspaceService";
 import Cell from "../models/Cell";
-import {canvasWidget, densityWidget, ElectrophysiologyWidget, widgetIds} from "../widgets";
+import {threeDViewerWidget, densityWidget, ElectrophysiologyWidget, widgetIds, twoDViewerWidget} from "../widgets";
 import {useInterval} from "../utilities/hooks/useInterval";
+import twoDViewer from "../components/TwoDViewer";
 
 const useStyles = makeStyles({
     layoutContainer: {
@@ -61,13 +61,6 @@ const getSubdivisions = (sa: AtlasChoice) => {
     return subdivisions
 }
 
-const getDefaultOverlays = () => {
-    const overlaysSwitchState: { [key: string]: boolean } = {}
-    // @ts-ignore
-    Object.keys(OVERLAYS).forEach(k => overlaysSwitchState[k] = false)
-    return overlaysSwitchState
-}
-
 
 /**
  * The component that renders the FlexLayout component of the LayoutManager.
@@ -82,7 +75,6 @@ const ExperimentsPage = () => {
     const [subdivisions, setSubdivisions] = useState(getSubdivisions(selectedAtlas));
     const [populations, setPopulations] = useState({} as any);
     const [sidebarPopulations, setSidebarPopulations] = useState({} as any);
-    const [overlaysSwitchState, setOverlaysSwitchState] = useState(getDefaultOverlays())
 
 
     const dispatch = useDispatch();
@@ -137,43 +129,6 @@ const ExperimentsPage = () => {
         setPopulations(nextPopulations)
     };
 
-    const handleWidgets = () => {
-        const switchableWidgets = new Set()
-        // if the widget is not active
-        for (const overlay of Object.keys(overlaysSwitchState)) {
-            // @ts-ignore
-            const widgetId = OVERLAYS[overlay].widgetId
-            // if switch is active but widget is not added
-            if (overlaysSwitchState[overlay] && !(widgetId in store.getState().widgets)) {
-                dispatch(addWidget(getOverlayWidget(widgetId)))
-            }
-            switchableWidgets.add(widgetId)
-        }
-
-        for (const wId of Object.keys(store.getState().widgets)) {
-            // if widget is visible but no switch is on
-            if (switchableWidgets.has(wId) && !hasActiveSwitch(wId)) {
-                dispatch(deleteWidget(wId))
-            }
-        }
-    }
-
-    const hasActiveSwitch = (widgetId: string) => {
-        for (const overlayId of Object.keys(overlaysSwitchState)) {
-            // @ts-ignore
-            if (OVERLAYS[overlayId].widgetId === widgetId) {
-                if (overlaysSwitchState[overlayId]) {
-                    return true
-                }
-            }
-        }
-        return false
-    }
-
-    const handleOverlaySwitch = (overlayId: string) => {
-        setOverlaysSwitchState({...overlaysSwitchState, [overlayId]: !overlaysSwitchState[overlayId]})
-    };
-
     const handlePopulationColorChange = async (id: string, color: string, opacity: string) => {
         // @ts-ignore
         await api.partialUpdatePopulation(id, {color, opacity})
@@ -184,15 +139,6 @@ const ExperimentsPage = () => {
         setPopulations(nextPopulations)
     }
 
-    const getOverlayWidget = (widgetId: string) => {
-        switch (widgetId) {
-            case widgetIds.densityMap:
-                return densityWidget(Object.keys(subdivisions), Object.values(getActivePopulations()),
-                    selectedAtlas, overlaysSwitchState[PROBABILITY_MAP_ID], overlaysSwitchState[NEURONAL_LOCATIONS_ID])
-            default:
-                return null
-        }
-    }
 
     const getActivePopulations = () => Object.keys(populations)
         // @ts-ignore
@@ -244,35 +190,25 @@ const ExperimentsPage = () => {
             const experimentPopulations = getPopulations(experiment, selectedAtlas)
             setPopulations(experimentPopulations)
             setSidebarPopulations(experimentPopulations)
-            dispatch(addWidget(canvasWidget(selectedAtlas, new Set(), {})));
+            dispatch(addWidget(threeDViewerWidget(selectedAtlas, new Set(), {})));
+            dispatch(addWidget(twoDViewerWidget(Object.keys(subdivisions), [], selectedAtlas, true, false));
             dispatch(addWidget(ElectrophysiologyWidget));
         }
     }, [experiment])
-
-
-    useEffect(() => {
-        handleWidgets()
-        if (widgetIds.densityMap in store.getState().widgets) {
-            dispatch(updateWidget(getOverlayWidget(widgetIds.densityMap)))
-        }
-    }, [overlaysSwitchState])
 
     // TODO: Handle selectedAtlas changes
 
     useEffect(() => {
         const subdivisionsSet = getSelectedSubdivisionsSet()
-        if (widgetIds.canvas in store.getState().widgets) {
-            dispatch(updateWidget(canvasWidget(selectedAtlas, subdivisionsSet, getActivePopulations(), true)))
+        if (widgetIds.threeDViewer in store.getState().widgets) {
+            dispatch(updateWidget(threeDViewerWidget(selectedAtlas, subdivisionsSet, getActivePopulations(), true)))
         }
     }, [subdivisions])
 
     useEffect(() => {
         const subdivisionsSet = getSelectedSubdivisionsSet();
-        if (widgetIds.canvas in store.getState().widgets) {
-            dispatch(updateWidget(canvasWidget(selectedAtlas, subdivisionsSet, getActivePopulations(), false)))
-        }
-        if (widgetIds.densityMap in store.getState().widgets) {
-            dispatch(updateWidget(getOverlayWidget(widgetIds.densityMap)))
+        if (widgetIds.threeDViewer in store.getState().widgets) {
+            dispatch(updateWidget(threeDViewerWidget(selectedAtlas, subdivisionsSet, getActivePopulations(), false)))
         }
     }, [populations])
 
@@ -288,14 +224,13 @@ const ExperimentsPage = () => {
     return experiment != null ? (
         <Box display="flex">
             <Sidebar selectedAtlas={selectedAtlas} subdivisions={subdivisions}
-                     populations={sidebarPopulations} overlays={Object.keys(overlaysSwitchState)}
+                     populations={sidebarPopulations}
                      handleAtlasChange={handleAtlasChange}
                      handleSubdivisionSwitch={handleSubdivisionSwitch}
                      handlePopulationSwitch={handlePopulationSwitch}
                      handleShowAllSubdivisions={handleShowAllSubdivisions}
                      handleShowAllPopulations={handleShowAllPopulations}
                      handlePopulationColorChange={handlePopulationColorChange}
-                     handleOverlaySwitch={handleOverlaySwitch}
                      hasEditPermission={experiment.has_edit_permission}
             />
             <Box className={classes.layoutContainer}>

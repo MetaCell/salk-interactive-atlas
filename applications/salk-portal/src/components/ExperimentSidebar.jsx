@@ -19,11 +19,10 @@ import {canvasIconColor, headerBg, headerBorderColor, teal, blue, brown, skyBlue
 import TOGGLE from "../assets/images/icons/toggle.svg";
 import ATLAS from "../assets/images/icons/atlas.svg";
 import SUBDIVISIONS from "../assets/images/icons/subdivisions.svg";
-import OVERLAYS_ICON from "../assets/images/icons/overlays.svg";
 import ADD from "../assets/images/icons/add.svg";
 import UP_ICON from "../assets/images/icons/up.svg";
 import POPULATION from "../assets/images/icons/population.svg";
-import {atlasMap, OVERLAYS, MAX_STR_LENGTH_SIDEBAR, POPULATION_FINISHED_STATE} from "../utilities/constants";
+import {atlasMap, MAX_STR_LENGTH_SIDEBAR, POPULATION_FINISHED_STATE} from "../utilities/constants";
 import {areAllSelected, getRGBAFromHexAlpha, getRGBAString} from "../utilities/functions";
 import ColorPicker from "./ColorPicker";
 
@@ -162,14 +161,12 @@ const ExperimentSidebar = ({
                                selectedAtlas,
                                subdivisions,
                                populations,
-                               overlays,
                                handleAtlasChange,
                                handleSubdivisionSwitch,
                                handlePopulationSwitch,
                                handleShowAllSubdivisions,
                                handleShowAllPopulations,
                                handlePopulationColorChange,
-                               handleOverlaySwitch,
                                hasEditPermission
                            }) => {
     const classes = useStyles();
@@ -346,25 +343,6 @@ const ExperimentSidebar = ({
                                         disabled={populations[pId].status !== POPULATION_FINISHED_STATE}
                                     />
                                 </span>
-                            )}
-                        </AccordionDetails>
-                    </Accordion>
-
-                    <Accordion elevation={0} square>
-                        <AccordionSummary
-                            expandIcon={<img src={UP_ICON} alt=""/>}
-                        >
-                            <Typography>
-                                <img src={OVERLAYS_ICON} alt=""/>
-                                Overlays
-                            </Typography>
-                        </AccordionSummary>
-                        <AccordionDetails>
-                            {overlays.map(oId =>
-                                <FormControlLabel key={oId} control={<Switch/>} label={OVERLAYS[oId].name}
-                                                  labelPlacement="start"
-                                                  onChange={(event) => handleOverlaySwitch(oId)}
-                                />
                             )}
                         </AccordionDetails>
                     </Accordion>

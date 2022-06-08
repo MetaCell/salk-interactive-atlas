@@ -4,17 +4,17 @@ import {WidgetStatus} from "@metacell/geppetto-meta-client/common/layout/model";
 import {Population} from "./apiclient/workspaces";
 
 export const widgetIds = {
-    canvas: 'canvasWidget',
-    electrophysiologyViewer: 'epWidget',
-    densityMap: 'densWidget'
+    threeDViewer: 'threeDViewer',
+    twoDViewer: 'twoDViewer',
+    electrophysiologyViewer: 'epWidget'
 }
 
-export const canvasWidget = (selectedAtlas: AtlasChoice, activeSubdivisions: Set<string>, activePopulations: any,
-                             shouldCameraReset: boolean = false) => {
+export const threeDViewerWidget = (selectedAtlas: AtlasChoice, activeSubdivisions: Set<string>, activePopulations: any,
+                                   shouldCameraReset: boolean = false) => {
     return {
-        id: widgetIds.canvas,
-        name: "Spinal Cord Atlas",
-        component: "experimentViewer",
+        id: widgetIds.threeDViewer,
+        name: "3D Viewer",
+        component: widgetIds.threeDViewer,
         panelName: "topLeftPanel",
         enableClose: false,
         status: WidgetStatus.ACTIVE,
@@ -36,12 +36,12 @@ export const ElectrophysiologyWidget = {
     status: WidgetStatus.ACTIVE,
 };
 
-export const densityWidget = (subdivisions: string[], activePopulations: Population[], selectedAtlas: AtlasChoice,
-                              showProbabilityMap: boolean, showNeuronalLocations: boolean) => {
+export const twoDViewerWidget = (subdivisions: string[], activePopulations: Population[], selectedAtlas: AtlasChoice,
+                                 showProbabilityMap: boolean, showNeuronalLocations: boolean) => {
     return {
-        id: widgetIds.densityMap,
-        name: "Density Map",
-        component: "densityMap",
+        id: widgetIds.twoDViewer,
+        name: "2D Viewer",
+        component: widgetIds.twoDViewer,
         panelName: "bottomLeftPanel",
         enableClose: false,
         status: WidgetStatus.ACTIVE,

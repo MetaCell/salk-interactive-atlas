@@ -1,12 +1,13 @@
-import ExperimentViewer from "../ExperimentViewer";
+import ThreeDViewer from "../ThreeDViewer";
+import TwoDViewer from "../TwoDViewer";
 import ElectrophysiologyViewer from "../ElectrophysiologyViewer";
-import DensityMap from "../DensityMap";
+import {widgetIds} from "../../widgets";
 
 
 const componentMap = {
-    'experimentViewer': ExperimentViewer,
-    'electrophysiologyViewer': ElectrophysiologyViewer,
-    'densityMap': DensityMap
+    [widgetIds.threeDViewer]: ThreeDViewer,
+    [widgetIds.twoDViewer]: TwoDViewer,
+    'electrophysiologyViewer': ElectrophysiologyViewer
 };
 
 export default componentMap;

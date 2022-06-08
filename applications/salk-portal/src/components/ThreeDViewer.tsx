@@ -85,7 +85,7 @@ const getColorOpacityPair = (color: string, opacity: number) => {
     return `${color}-${opacity}`
 }
 
-class ExperimentViewer extends Component {
+class ThreeDViewer extends Component {
     private scene: THREE.Scene;
     private readonly populationsMap: {};
     // @ts-ignore
@@ -251,4 +251,4 @@ class ExperimentViewer extends Component {
     }
 }
 
-export default withStyles(styles)(ExperimentViewer);
+export default withStyles(styles)(ThreeDViewer);

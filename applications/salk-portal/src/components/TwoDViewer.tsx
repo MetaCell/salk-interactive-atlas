@@ -102,7 +102,7 @@ const RadioButton = ({onChange, isChecked, label}) => {
     );
 }
 
-const DensityMap = (props: {
+const TwoDViewer = (props: {
     subdivisions: string[], activePopulations: Population[],
     selectedAtlas: AtlasChoice,
     showProbabilityMap: boolean,
@@ -368,4 +368,4 @@ const DensityMap = (props: {
     );
 };
 
-export default DensityMap
+export default TwoDViewer
