@@ -4,7 +4,7 @@ import {
     Accordion,
     AccordionDetails,
     AccordionSummary,
-    Box,
+    Box, FormControlLabel, Switch,
     Typography,
     withStyles
 } from '@material-ui/core';
@@ -17,7 +17,7 @@ import CaptureControls from "@metacell/geppetto-meta-ui/capture-controls/Capture
 import {canvasBg} from "../theme";
 import {getAtlas} from "../service/AtlasService"
 import {getInstancesIds} from "../utilities/instancesHelper";
-import {eqSet, getAllowedRanges} from "../utilities/functions";
+import {areAllSelected, eqSet, getAllowedRanges} from "../utilities/functions";
 import {Population} from "../apiclient/workspaces";
 import {AtlasChoice} from "../utilities/constants";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
@@ -95,6 +95,12 @@ const styles = () => ({
     accordion: {
         width: '15%',
         backgroundColor: "rgba(255, 255, 255, 0.05)",
+    },
+    accordionDetails: {
+        padding: "16px 16px 0px 16px"
+    },
+    accordionDetailsText: {
+        paddingBottom: "16px"
     },
 });
 
@@ -279,11 +285,29 @@ class ThreeDViewer extends Component {
         }
     }
 
+    handleSubdivisionSwitch(subdivisionId: string) {
+        // @ts-ignore
+        const {subdivisions} = this.state
+        const nextSubdivisions: any = {...subdivisions}
+        nextSubdivisions[subdivisionId].selected = !nextSubdivisions[subdivisionId].selected
+        this.setState({subdivisions: nextSubdivisions})
+    };
+
+    handleShowAllSubdivisions() {
+        // @ts-ignore
+        const {subdivisions} = this.state
+        const areAllSubdivisionsActive = areAllSelected(subdivisions)
+        const nextSubdivisions: any = {}
+        Object.keys(subdivisions)
+            .forEach(sId => nextSubdivisions[sId] = {...subdivisions[sId], selected: !areAllSubdivisionsActive})
+        this.setState({subdivisions: nextSubdivisions})
+    }
+
     render() {
         // @ts-ignore
         const {classes} = this.props
         // @ts-ignore
-        const {anchorEl} = this.state
+        const {subdivisions} = this.state
         // tslint:disable-next-line:prefer-const
         let {cameraOptions, captureOptions} = getDefaultOptions()
         // @ts-ignore
@@ -302,11 +326,26 @@ class ThreeDViewer extends Component {
                                 Subdivisions
                             </Typography>
                         </AccordionSummary>
-                        <AccordionDetails>
-                            <Typography>
-                                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse
-                                malesuada lacus ex, sit amet blandit leo lobortis eget.
-                            </Typography>
+                        <AccordionDetails className={classes.accordionDetails}>
+                            <FormControlLabel
+                                className={classes.accordionDetailsText}
+                                control={
+                                    <Switch/>
+                                }
+                                label="All subdivisions"
+                                labelPlacement="start"
+                                onChange={() => this.handleShowAllSubdivisions()}
+                                checked={areAllSelected(subdivisions)}
+                            />
+                            {Object.keys(subdivisions).sort().map(sId =>
+                                <FormControlLabel key={sId} control={<Switch/>}
+                                                  className={classes.accordionDetailsText}
+                                                  label={sId}
+                                                  labelPlacement="start"
+                                                  onChange={() => this.handleSubdivisionSwitch(sId)}
+                                                  checked={subdivisions[sId].selected}
+                                />
+                            )}
                         </AccordionDetails>
                     </Accordion>
                 </Box>
