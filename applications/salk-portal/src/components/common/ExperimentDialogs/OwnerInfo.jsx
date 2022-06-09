@@ -33,7 +33,7 @@ export const OwnerInfo = (props) => {
 
   return (
     <Box display="flex" alignItems={"center"} className={classes.ownerInfo}>
-      <Avatar title={user?.username} src={USER} />
+      <Avatar title={user?.username} src={user.avatarUrl ? user.avatarUrl : USER} />
       <Typography>
         {`${user?.firstName} ${user?.lastName}`} <Typography component="span">(You)</Typography>
       </Typography>

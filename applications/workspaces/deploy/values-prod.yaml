@@ -1,9 +1,0 @@
-harness:
-  deployment:
-    resources:
-      requests:
-        memory: "1024Mi" # for cordmap density map we need at least 800Mi memory
-        cpu: "1000m"
-      limits:
-        memory: "2048Mi"
-        cpu: "1500m"

@@ -165,7 +165,7 @@ LOGGING = {
             "handlers": [
                 "console",
             ],
-            "level": "INFO" if DEBUG else "INFO",
+            "level": "DEBUG" if DEBUG else "INFO",
             "propagate": True,
         },
     },

@@ -43,5 +43,6 @@ init_services()
 # start the kafka event listener
 import cloudharness_django.services.events
 
-app.mount("/static", StaticFiles(directory="static"), name="static")
+app.mount("/static", StaticFiles(directory=settings.STATIC_ROOT), name="static")
+# app.mount("/media", StaticFiles(directory=settings.MEDIA_ROOT), name="media") # For testing purposes we can enable it
 app.mount("/", get_asgi_application())

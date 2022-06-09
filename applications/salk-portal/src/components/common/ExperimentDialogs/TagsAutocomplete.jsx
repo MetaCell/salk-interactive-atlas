@@ -25,7 +25,7 @@ const useStyles = makeStyles(() => ({
 
 export const TagsAutocomplete = (props) => {
   const classes = useStyles();
-  const { tags } = props;
+  const { tags, onChange } = props;
 
   return (
     <Autocomplete
@@ -34,8 +34,8 @@ export const TagsAutocomplete = (props) => {
       popupIcon={false}
       fullWidth
       id="tags-filled"
-      options={tags.map((option) => option?.name)}
-      defaultValue={[tags[2]?.name]}
+      options={tags}
+      defaultValue={[]}
       freeSolo
       limitTags={3}
       renderTags={(value, getTagProps) =>
@@ -53,6 +53,7 @@ export const TagsAutocomplete = (props) => {
       renderInput={(params) => (
         <TextField {...params} variant="outlined" placeholder="Search or Create a new tag" />
       )}
+      onChange={onChange}
     />
 
   );

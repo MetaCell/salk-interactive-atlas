@@ -952,7 +952,7 @@ paths:
       - api
   /api/experiments/{id}/tag/:
     post:
-      operationId: addTagExperiment
+      operationId: addTagsExperiment
       description: 'This viewset automatically provides `list`, `create`, `retrieve`,
 
         `update` and `destroy` actions.'
@@ -967,19 +967,19 @@ paths:
         content:
           multipart/form-data:
             schema:
-              $ref: '#/components/schemas/Tag'
+              $ref: '#/components/schemas/Tags'
       responses:
         '201':
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Tag'
+                $ref: '#/components/schemas/Tags'
           description: ''
       tags:
       - api
-  /api/experiments/{id}/upload-file/:
+  /api/experiments/{id}/upload-files/:
     post:
-      operationId: uploadFileExperiment
+      operationId: uploadFilesExperiment
       description: 'This viewset automatically provides `list`, `create`, `retrieve`,
 
         `update` and `destroy` actions.'
@@ -1273,9 +1273,6 @@ components:
           items:
             type: object
             properties:
-              id:
-                type: integer
-                readOnly: true
               name:
                 type: string
                 maxLength: 40
@@ -1325,9 +1322,6 @@ components:
     Tag:
       type: object
       properties:
-        id:
-          type: integer
-          readOnly: true
         name:
           type: string
           maxLength: 40
@@ -1425,17 +1419,29 @@ components:
           format: binary
       required:
       - avatar
+    Tags:
+      type: object
+      properties:
+        tags:
+          type: array
+          items:
+            type: string
+      required:
+      - tags
     ExperimentFileUpload:
       type: object
       properties:
-        population_name:
+        population_id:
+          type: integer
+        key_file:
           type: string
-        file:
+          format: binary
+        data_file:
           type: string
           format: binary
       required:
-      - population_name
-      - file
+      - key_file
+      - data_file
     Member:
       type: object
       properties:

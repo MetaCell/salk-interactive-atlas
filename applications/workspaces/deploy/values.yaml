@@ -14,11 +14,11 @@ harness:
       size: 5Gi
     resources:
       requests:
-        memory: "1024Mi" # for cordmap density map we need at least 800Mi memory
-        cpu: "1000m"
+        memory: 256Mi
+        cpu: 250m
       limits:
-        memory: "2048Mi"
-        cpu: "1000m"
+        memory: 256Mi
+        cpu: 250m
   database:
     auto: true
     type: postgres

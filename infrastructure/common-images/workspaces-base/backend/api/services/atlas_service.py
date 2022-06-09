@@ -1,7 +1,7 @@
 import os
 from django.conf import settings
 
-from api.helpers.filesystem import create_dir
+from api.services.filesystem_service import create_dir
 
 ANNOTATIONS_PATH = os.path.join(settings.PERSISTENT_ROOT, "annotations")
 

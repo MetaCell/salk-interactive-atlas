@@ -9,20 +9,37 @@ from .tag import TagSerializer
 from .user import UserTeamSerializer
 
 
+class EagerLoadingMixin:
+    @classmethod
+    def setup_eager_loading(cls, queryset):
+        """
+        This function allow dynamic addition of the related objects to
+        the provided query.
+        @parameter param1: queryset
+        """
+
+        if hasattr(cls, "select_related_fields"):
+            queryset = queryset.select_related(*cls.select_related_fields)
+        if hasattr(cls, "prefetch_related_fields"):
+            queryset = queryset.prefetch_related(*cls.prefetch_related_fields)
+        return queryset
+
+
 class IntegerListField(serializers.ListField):
     child = serializers.IntegerField()
 
 
 class ExperimentFileUploadSerializer(serializers.Serializer):
-    population_name = serializers.CharField()
-    file = serializers.FileField()
+    population_id = serializers.IntegerField(required=False, default=None)
+    key_file = serializers.FileField()
+    data_file = serializers.FileField()
 
     class Meta:
         model = Experiment
         fields = ()
 
 
-class ExperimentSerializer(serializers.ModelSerializer):
+class ExperimentSerializer(serializers.ModelSerializer, EagerLoadingMixin):
     teams = GroupSerializer(many=True, read_only=True)
     collaborators = CollaboratorInfoSerializer(
         source="collaborator_set", many=True, read_only=True
@@ -34,6 +51,9 @@ class ExperimentSerializer(serializers.ModelSerializer):
     tags = TagSerializer(many=True, read_only=True)
     date_created = serializers.CharField(read_only=True)
     has_edit_permission = serializers.SerializerMethodField()
+    
+    select_related_fields = ("owner", "owner__userdetail",)
+    prefetch_related_fields = ("teams", "collaborator_set", "population_set", "tags", "owner__groups")
 
     class Meta:
         model = Experiment
