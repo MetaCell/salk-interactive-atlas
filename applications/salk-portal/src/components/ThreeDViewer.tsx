@@ -1,10 +1,7 @@
 import React, {Component} from 'react';
 import * as THREE from 'three';
 import {
-    Accordion,
-    AccordionDetails,
-    AccordionSummary,
-    Box, FormControlLabel, Switch,
+    Box, Button, FormControlLabel, Popover, Switch,
     Typography,
     withStyles
 } from '@material-ui/core';
@@ -74,7 +71,7 @@ function getDefaultOptions() {
     }
 }
 
-const styles = () => ({
+const styles = (theme) => ({
     container: {
         width: '100%',
         height: '100%',
@@ -85,23 +82,24 @@ const styles = () => ({
         width: '100%',
         height: '100%',
     },
-    accordionContainer: {
-        width: '100%',
-        position: "absolute",
-        top: "16px",
-        left: "calc(85% - 16px)",
-        backgroundColor: canvasBg,
+    buttonContainer: {
+        position: 'absolute',
+        top: theme.spacing(1),
+        right: theme.spacing(1),
     },
-    accordion: {
-        width: '15%',
+    button: {
         backgroundColor: "rgba(255, 255, 255, 0.05)",
     },
-    accordionDetails: {
-        padding: "16px 16px 0px 16px"
+    innerButtonContainer: {
+        display: 'flex',
+        flex: '1',
+        justifyContent: 'center',
+        alignItems: "center",
+        gap: theme.spacing(1)
     },
-    accordionDetailsText: {
-        paddingBottom: "16px"
-    },
+    buttonLabel: {
+        fontSize: "0.75rem"
+    }
 });
 
 function mapToCanvasData(data: Set<string>[]) {
@@ -146,7 +144,8 @@ class ThreeDViewer extends Component {
         const {selectedAtlas} = this.props
         this.state = {
             subdivisions: getSubdivisions(selectedAtlas),
-            needsReset: false
+            needsReset: false,
+            anchorEl: null
         }
     }
 
@@ -313,51 +312,63 @@ class ThreeDViewer extends Component {
         })
     }
 
+    handleClick(event: React.MouseEvent<HTMLButtonElement>) {
+        this.setState({anchorEl: event.currentTarget})
+    }
+
+    handleClose() {
+        this.setState({anchorEl: null})
+    }
+
     render() {
         // @ts-ignore
         const {classes} = this.props
         // @ts-ignore
-        const {subdivisions, needsReset} = this.state
+        const {subdivisions, needsReset, anchorEl} = this.state
         // tslint:disable-next-line:prefer-const
         let {cameraOptions, captureOptions} = getDefaultOptions()
         // @ts-ignore
         cameraOptions = {...cameraOptions, reset: needsReset}
         // @ts-ignore
         const canvasData: any = mapToCanvasData(this.getInstancesToShow())
+        const open = Boolean(anchorEl);
         return (
             <Box className={classes.container}>
-                <Box className={classes.accordionContainer}>
-                    <Accordion elevation={0} className={classes.accordion}>
-                        <AccordionSummary
-                            expandIcon={<ExpandMoreIcon />}
-                        >
-                            <Typography>
-                                <img src={SWITCH_ICON} alt=""/>
-                                Subdivisions
-                            </Typography>
-                        </AccordionSummary>
-                        <AccordionDetails className={classes.accordionDetails}>
-                            <FormControlLabel
-                                className={classes.accordionDetailsText}
-                                control={
-                                    <Switch/>
-                                }
-                                label="All subdivisions"
-                                labelPlacement="start"
-                                onChange={() => this.handleShowAllSubdivisions()}
-                                checked={areAllSelected(subdivisions)}
+                <Box className={classes.buttonContainer}>
+                    <Button className={classes.button}
+                            onClick={(event) => this.handleClick(event)}>
+                        <Box className={classes.innerButtonContainer}>
+                            <img src={SWITCH_ICON} alt=""/>
+                            <Typography className={classes.buttonLabel}>Subdivisions</Typography>
+                            <ExpandMoreIcon/>
+                        </Box>
+                    </Button>
+                    <Popover
+                        open={open}
+                        anchorEl={anchorEl}
+                        onClose={() => this.handleClose()}
+                        anchorOrigin={{
+                            vertical: 'bottom',
+                            horizontal: 'left',
+                        }}>
+                        <FormControlLabel
+                            control={
+                                <Switch/>
+                            }
+                            label="All subdivisions"
+                            labelPlacement="start"
+                            onChange={() => this.handleShowAllSubdivisions()}
+                            checked={areAllSelected(subdivisions)}
+                        />
+                        {Object.keys(subdivisions).sort().map(sId =>
+                            <FormControlLabel key={sId} control={<Switch/>}
+                                              label={sId}
+                                              labelPlacement="start"
+                                              onChange={() => this.handleSubdivisionSwitch(sId)}
+                                              checked={subdivisions[sId].selected}
                             />
-                            {Object.keys(subdivisions).sort().map(sId =>
-                                <FormControlLabel key={sId} control={<Switch/>}
-                                                  className={classes.accordionDetailsText}
-                                                  label={sId}
-                                                  labelPlacement="start"
-                                                  onChange={() => this.handleSubdivisionSwitch(sId)}
-                                                  checked={subdivisions[sId].selected}
-                                />
-                            )}
-                        </AccordionDetails>
-                    </Accordion>
+                        )}
+                    </Popover>
                 </Box>
                 <Box className={classes.canvasContainer}>
                     <Canvas
