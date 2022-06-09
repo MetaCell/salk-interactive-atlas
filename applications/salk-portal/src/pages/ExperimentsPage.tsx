@@ -22,7 +22,7 @@ import {
     PULL_TIME_MS
 } from "../utilities/constants"
 import {getAtlas} from "../service/AtlasService";
-import {Experiment, ExperimentPopulations} from "../apiclient/workspaces";
+import {Experiment, Population} from "../apiclient/workspaces";
 import {areAllSelected} from "../utilities/functions";
 import workspaceService from "../service/WorkspaceService";
 import Cell from "../models/Cell";
@@ -81,7 +81,7 @@ const ExperimentsPage = () => {
 
     const getPopulations = (e: Experiment, sa: AtlasChoice) => {
         const nextPopulations: any = {}
-        const filteredPopulations = e.populations.filter((p: ExperimentPopulations) => p.atlas === sa)
+        const filteredPopulations = e.populations.filter((p: Population) => p.atlas === sa)
         // @ts-ignore
         filteredPopulations.forEach(p => nextPopulations[p.id] = {
             ...p,
@@ -223,12 +223,10 @@ const ExperimentsPage = () => {
 
     return experiment != null ? (
         <Box display="flex">
-            <Sidebar selectedAtlas={selectedAtlas} subdivisions={subdivisions}
+            <Sidebar selectedAtlas={selectedAtlas}
                      populations={sidebarPopulations}
                      handleAtlasChange={handleAtlasChange}
-                     handleSubdivisionSwitch={handleSubdivisionSwitch}
                      handlePopulationSwitch={handlePopulationSwitch}
-                     handleShowAllSubdivisions={handleShowAllSubdivisions}
                      handleShowAllPopulations={handleShowAllPopulations}
                      handlePopulationColorChange={handlePopulationColorChange}
                      hasEditPermission={experiment.has_edit_permission}

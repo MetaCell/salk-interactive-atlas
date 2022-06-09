@@ -159,12 +159,9 @@ const POPULATION_ICONS_OPACITY = 0.4
 
 const ExperimentSidebar = ({
                                selectedAtlas,
-                               subdivisions,
                                populations,
                                handleAtlasChange,
-                               handleSubdivisionSwitch,
                                handlePopulationSwitch,
-                               handleShowAllSubdivisions,
                                handleShowAllPopulations,
                                handlePopulationColorChange,
                                hasEditPermission
@@ -254,37 +251,6 @@ const ExperimentSidebar = ({
                                     }
                                 </RadioGroup>
                             </FormControl>
-                        </AccordionDetails>
-                    </Accordion>
-
-                    <Accordion elevation={0} square defaultExpanded={true}>
-                        <AccordionSummary
-                            expandIcon={<img src={UP_ICON} alt=""/>}
-                        >
-                            <Typography>
-                                <img src={SUBDIVISIONS} alt=""/>
-                                Subdivisions
-                            </Typography>
-                        </AccordionSummary>
-                        <AccordionDetails>
-                            <FormControlLabel
-                                className='bold'
-                                control={
-                                    <Switch/>
-                                }
-                                label="All subdivisions"
-                                labelPlacement="start"
-                                onChange={handleShowAllSubdivisions}
-                                checked={areAllSelected(subdivisions)}
-                            />
-                            {Object.keys(subdivisions).sort().map(sId =>
-                                <FormControlLabel key={sId} control={<Switch/>}
-                                                  label={sId}
-                                                  labelPlacement="start"
-                                                  onChange={() => handleSubdivisionSwitch(sId)}
-                                                  checked={subdivisions[sId].selected}
-                                />
-                            )}
                         </AccordionDetails>
                     </Accordion>
 
