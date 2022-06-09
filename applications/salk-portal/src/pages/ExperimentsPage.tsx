@@ -26,9 +26,8 @@ import {Experiment, ExperimentPopulations} from "../apiclient/workspaces";
 import {areAllSelected} from "../utilities/functions";
 import workspaceService from "../service/WorkspaceService";
 import Cell from "../models/Cell";
-import {threeDViewerWidget, densityWidget, ElectrophysiologyWidget, widgetIds, twoDViewerWidget} from "../widgets";
+import {threeDViewerWidget, ElectrophysiologyWidget, widgetIds, twoDViewerWidget} from "../widgets";
 import {useInterval} from "../utilities/hooks/useInterval";
-import twoDViewer from "../components/TwoDViewer";
 
 const useStyles = makeStyles({
     layoutContainer: {
@@ -191,7 +190,7 @@ const ExperimentsPage = () => {
             setPopulations(experimentPopulations)
             setSidebarPopulations(experimentPopulations)
             dispatch(addWidget(threeDViewerWidget(selectedAtlas, new Set(), {})));
-            dispatch(addWidget(twoDViewerWidget(Object.keys(subdivisions), [], selectedAtlas, true, false));
+            dispatch(addWidget(twoDViewerWidget(Object.keys(subdivisions), [], selectedAtlas, true, false)));
             dispatch(addWidget(ElectrophysiologyWidget));
         }
     }, [experiment])
