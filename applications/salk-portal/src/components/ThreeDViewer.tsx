@@ -11,7 +11,7 @@ import Canvas from "@metacell/geppetto-meta-ui/3d-canvas/Canvas";
 import CameraControls from "@metacell/geppetto-meta-ui/camera-controls/CameraControls";
 // @ts-ignore
 import CaptureControls from "@metacell/geppetto-meta-ui/capture-controls/CaptureControls";
-import {canvasBg} from "../theme";
+import theme, {canvasBg, headerBorderColor} from "../theme";
 import {getAtlas} from "../service/AtlasService"
 import {getInstancesIds} from "../utilities/instancesHelper";
 import {areAllSelected, eqSet, getAllowedRanges} from "../utilities/functions";
@@ -88,7 +88,7 @@ const styles = (theme) => ({
         right: theme.spacing(1),
     },
     button: {
-        backgroundColor: "rgba(255, 255, 255, 0.05)",
+        backgroundColor: headerBorderColor,
     },
     innerButtonContainer: {
         display: 'flex',
@@ -99,6 +99,9 @@ const styles = (theme) => ({
     },
     buttonLabel: {
         fontSize: "0.75rem"
+    }    ,
+    popoverContent: {
+        paddingBottom: theme.spacing(1)
     }
 });
 
@@ -350,8 +353,16 @@ class ThreeDViewer extends Component {
                         anchorOrigin={{
                             vertical: 'bottom',
                             horizontal: 'left',
+                        }}
+                        PaperProps={{
+                            style: {
+                                width: anchorEl?.offsetWidth,
+                                background: headerBorderColor,
+                                padding: `${theme.spacing(1)}px ${theme.spacing(1)}px 0px ${theme.spacing(1)}px`
+                            },
                         }}>
                         <FormControlLabel
+                            className={classes.popoverContent}
                             control={
                                 <Switch/>
                             }
@@ -361,11 +372,14 @@ class ThreeDViewer extends Component {
                             checked={areAllSelected(subdivisions)}
                         />
                         {Object.keys(subdivisions).sort().map(sId =>
-                            <FormControlLabel key={sId} control={<Switch/>}
-                                              label={sId}
-                                              labelPlacement="start"
-                                              onChange={() => this.handleSubdivisionSwitch(sId)}
-                                              checked={subdivisions[sId].selected}
+                            <FormControlLabel
+                                className={classes.popoverContent}
+                                key={sId}
+                                control={<Switch/>}
+                                label={sId}
+                                labelPlacement="start"
+                                onChange={() => this.handleSubdivisionSwitch(sId)}
+                                checked={subdivisions[sId].selected}
                             />
                         )}
                     </Popover>

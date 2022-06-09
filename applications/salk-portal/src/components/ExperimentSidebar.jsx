@@ -193,6 +193,12 @@ const ExperimentSidebar = ({
         return getRGBAFromHexAlpha(color, opacity)
     }
 
+    const areAllPopulationsSelected = () => {
+        return Object.keys(populations)
+            .filter(pId => populations[pId].status === POPULATION_FINISHED_STATE)
+            .reduce((acc, pId) => populations[pId].selected && acc, true)
+    }
+
 
     const sidebarClass = `${classes.sidebar} scrollbar ${shrink ? `${classes.shrink}` : ``}`;
     const PopulationLabel = ({labelText}) => {
@@ -272,7 +278,7 @@ const ExperimentSidebar = ({
                                 label="Show all"
                                 labelPlacement="start"
                                 onChange={handleShowAllPopulations}
-                                checked={areAllSelected(populations)}
+                                checked={areAllPopulationsSelected()}
                             />
                             {Object.keys(populations).map(pId =>
                                 <span className='population-entry'>
