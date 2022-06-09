@@ -146,17 +146,13 @@ class ThreeDViewer extends Component {
         const {selectedAtlas} = this.props
         this.state = {
             subdivisions: getSubdivisions(selectedAtlas),
+            needsReset: false
         }
     }
 
-    getInstancesToShow() {
+    shouldComponentUpdate(nextProps: Readonly<{}>, nextState: Readonly<{}>, nextContext: any): boolean {
         // @ts-ignore
-        const {selectedAtlas} = this.props
-        // @ts-ignore
-        const {subdivisions} = this.state
-        const activeSubdivisions = getActiveSubdivisionsSet(subdivisions)
-        const atlas = getAtlas(selectedAtlas)
-        return getInstancesIds(atlas, activeSubdivisions)
+        return this.state !== nextState && !(this.state.needsReset && !nextState.needsReset) || this.props !== nextProps
     }
 
     componentDidUpdate(prevProps: Readonly<{}>, prevState: Readonly<{}>, snapshot?: any) {
@@ -181,6 +177,16 @@ class ThreeDViewer extends Component {
                         this.props.activePopulations[pId].opacity)
                     ))
             ))
+    }
+
+    getInstancesToShow() {
+        // @ts-ignore
+        const {selectedAtlas} = this.props
+        // @ts-ignore
+        const {subdivisions} = this.state
+        const activeSubdivisions = getActiveSubdivisionsSet(subdivisions)
+        const atlas = getAtlas(selectedAtlas)
+        return getInstancesIds(atlas, activeSubdivisions)
     }
 
     updatePopulations(performCleanUpdate = false) {
@@ -290,7 +296,9 @@ class ThreeDViewer extends Component {
         const {subdivisions} = this.state
         const nextSubdivisions: any = {...subdivisions}
         nextSubdivisions[subdivisionId].selected = !nextSubdivisions[subdivisionId].selected
-        this.setState({subdivisions: nextSubdivisions})
+        this.setState({subdivisions: nextSubdivisions, needsReset: true}, () => {
+            this.setState({needsReset: false})
+        })
     };
 
     handleShowAllSubdivisions() {
@@ -300,18 +308,20 @@ class ThreeDViewer extends Component {
         const nextSubdivisions: any = {}
         Object.keys(subdivisions)
             .forEach(sId => nextSubdivisions[sId] = {...subdivisions[sId], selected: !areAllSubdivisionsActive})
-        this.setState({subdivisions: nextSubdivisions})
+        this.setState({subdivisions: nextSubdivisions, needsReset: true}, () => {
+            this.setState({needsReset: false})
+        })
     }
 
     render() {
         // @ts-ignore
         const {classes} = this.props
         // @ts-ignore
-        const {subdivisions} = this.state
+        const {subdivisions, needsReset} = this.state
         // tslint:disable-next-line:prefer-const
         let {cameraOptions, captureOptions} = getDefaultOptions()
         // @ts-ignore
-        cameraOptions = {...cameraOptions, reset: this.props.shouldCameraReset}
+        cameraOptions = {...cameraOptions, reset: needsReset}
         // @ts-ignore
         const canvasData: any = mapToCanvasData(this.getInstancesToShow())
         return (
