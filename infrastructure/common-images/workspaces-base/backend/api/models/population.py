@@ -1,4 +1,5 @@
 import os
+import logging
 
 from PIL import Image
 from django.conf import settings
@@ -7,11 +8,17 @@ from django.db import models
 
 from .atlas import AtlasesChoice
 from .experiment import Experiment
-from ..constants import PopulationPersistentFiles
-from ..helpers.filesystem import create_dir, remove_dir
+from ..constants import PopulationPersistentFiles, POPULATIONS_DATA, POPULATIONS_SPLIT_DATA
+from ..services.filesystem_service import create_dir, remove_dir, remove_file
+from ..helpers.generate_population_cells import get_cells_filepath
 from ..services.population_service import generate_images, split_cells_per_segment
 from ..services.workflows_service import execute_generate_population_static_files_workflow
-from ..utils import is_valid_hex_str
+from ..utils import is_valid_hex_str, has_property
+
+
+class PopulationObjectsManager(models.Manager):
+    def get_queryset(self):
+        return super(PopulationObjectsManager, self).get_queryset().select_related("experiment",)
 
 
 class PopulationStatus(models.TextChoices):
@@ -27,28 +34,35 @@ class Population(models.Model):
     atlas = models.CharField(
         max_length=100, choices=AtlasesChoice.choices, default=AtlasesChoice.SLK10
     )
-    name = models.CharField(max_length=100, unique=True)
+    name = models.CharField(max_length=100)
     color = models.CharField(max_length=7)  # hex color
     opacity = models.FloatField(
         validators=[MinValueValidator(0.0), MaxValueValidator(1.0)], default=1.0
     )
-    cells = models.FileField(upload_to="populations")
+    cells = models.FileField(upload_to=POPULATIONS_DATA)
     status = models.CharField(
         choices=PopulationStatus.choices, editable=False, default=PopulationStatus.PENDING, max_length=8
     )
 
-    @property
-    def save_dir_path(self):
-        return os.path.join(settings.PERSISTENT_ROOT, "populations", str(self.id))
+    # objects = models.Manager()
+    objects = PopulationObjectsManager()
 
-    def get_subdivision_path(self, subdivision, content: PopulationPersistentFiles):
-        return os.path.join(self.save_dir_path, subdivision + content.value)
+    @property
+    def storage_path(self) -> str:
+        return os.path.join(settings.PERSISTENT_ROOT, POPULATIONS_DATA)
+
+    @property
+    def split_storage_path(self) -> str:
+        return os.path.join(self.storage_path, str(self.id), POPULATIONS_SPLIT_DATA)
+
+    def get_subdivision_storage_path(self, subdivision, content: PopulationPersistentFiles) -> str:
+        return os.path.join(self.split_storage_path, subdivision + content.value)
 
     def remove_split_cells_csv(self):
-        remove_dir(self.save_dir_path)
+        remove_dir(self.split_storage_path)
 
-    def create_dir(self):
-        create_dir(self.save_dir_path)
+    def create_split_storage(self):
+        create_dir(self.split_storage_path)
 
     def save(
             self, force_insert=False, force_update=False, using=None, update_fields=None
@@ -59,17 +73,31 @@ class Population(models.Model):
         if has_file_changed:  # Only trigger workflow on cells changes
             execute_generate_population_static_files_workflow(self.id)
 
+    def delete(self, using=None, keep_parents=False):
+        remove_file(self.cells.path)
+        super(Population, self).delete(using, keep_parents)
+
     def _has_file_changed(self):
         try:
             current = Population.objects.get(id=self.id)
         except Population.DoesNotExist:
-            return True
-        return self.cells.file.name != current.cells.file.name
+            return has_property(self.cells, 'file')
+        return (not has_property(current.cells, 'file') and has_property(self.cells, 'file')) \
+               or (has_property(self.cells, 'file') and self.cells.file.name != current.cells.file.name)
+
+    def generate_cells(self, data_filepath: str):
+        try:
+            self.cells.name = get_cells_filepath(data_filepath, self.storage_path)
+        except Exception as e:
+            logging.exception(e)
+            self.status = PopulationStatus.ERROR
+        self.save()
 
     def generate_static_files(self):
         self.status = PopulationStatus.RUNNING
         self.save()
         try:
+            self.remove_split_cells_csv()
             split_cells_per_segment(self)
         except Exception as e:
             self._process_error(e)
@@ -81,12 +109,13 @@ class Population(models.Model):
         self.save()
 
     def _process_error(self, e):
+        logging.exception(e)
         self.status = PopulationStatus.ERROR
         self.save()
         raise e
 
     def get_image(self, subdivision: str, content: PopulationPersistentFiles) -> Image:
-        return Image.open(self.get_subdivision_path(subdivision, content))
+        return Image.open(self.get_subdivision_storage_path(subdivision, content))
 
     @staticmethod
     def has_read_permission(request):

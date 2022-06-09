@@ -7,34 +7,39 @@ from .tag import Tag
 
 # Create your models here.
 class ExperimentsObjectsManager(models.Manager):
-    def my_experiments(self, user):
-        return self.get_queryset().filter(owner=user)
+    def get_queryset(self, prefetch=True):
+        if prefetch:
+            return super(ExperimentsObjectsManager, self).get_queryset().select_related("owner", ).prefetch_related("teams", "tags", "collaborators", "collaborators")
+        return super(ExperimentsObjectsManager, self).get_queryset()
 
-    def team_experiments(self, user):
+    def my_experiments(self, user, prefetch=True):
+        return self.get_queryset(prefetch).filter(owner=user)
+
+    def team_experiments(self, user, prefetch=True):
         return (
-            self.get_queryset()
+            self.get_queryset(prefetch)
             .filter(teams__user=user)  # my teams experiments
             .distinct()
         )
 
-    def collaborate_experiments(self, user):
-        return self.get_queryset().filter(
+    def collaborate_experiments(self, user, prefetch=True):
+        return self.get_queryset(prefetch).filter(
             collaborators__collaborator__user=user  # my teams experiments
         )
 
-    def public_experiments(self):
-        return self.get_queryset().filter(is_private=False)  # all public experiments
+    def public_experiments(self, prefetch=True):
+        return self.get_queryset(prefetch).filter(is_private=False)  # all public experiments
 
-    def list(self, user):
-        return self.get_queryset().filter(id__in=self.list_ids(user))
+    def list(self, user, prefetch=True):
+        return self.get_queryset(prefetch).filter(id__in=self.list_ids(user))
 
     def list_ids(self, user):
         return (
-            self.my_experiments(user)
+            self.my_experiments(user, False)
             .only("id")
-            .union(self.team_experiments(user).only("id"))
-            .union(self.collaborate_experiments(user).only("id"))
-            .union(self.public_experiments().only("id"))
+            .union(self.team_experiments(user, False).only("id"))
+            .union(self.collaborate_experiments(user, False).only("id"))
+            .union(self.public_experiments(False).only("id"))
         )
 
 

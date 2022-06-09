@@ -6,15 +6,21 @@ from rest_framework.decorators import action
 from rest_framework.parsers import MultiPartParser
 from rest_framework.response import Response
 
+from api.constants import CORDMAP_DATA
+from api.helpers.exceptions import InvalidInputError
 from api.models import Experiment
 from api.serializers import (
     ExperimentFileUploadSerializer,
     ExperimentSerializer,
-    TagSerializer,
+    TagSerializer, TagsSerializer,
 )
-from api.services.experiment_service import add_tag, delete_tag, upload_file
+from api.services.experiment_service import add_tag, delete_tag, upload_files
+from api.services.filesystem_service import create_temp_dir, move_files
+from api.validators.upload_files import validate_input_files
 
 log = logging.getLogger("__name__")
+
+DATA_INDEX = 1
 
 
 class ExperimentViewSet(viewsets.ModelViewSet):
@@ -27,8 +33,8 @@ class ExperimentViewSet(viewsets.ModelViewSet):
     queryset = Experiment.objects.all()
     parser_classes = (MultiPartParser,)
     custom_serializer_map = {
-        "upload_file": ExperimentFileUploadSerializer,
-        "add_tag": TagSerializer,
+        "upload_files": ExperimentFileUploadSerializer,
+        "add_tags": TagsSerializer,
     }
 
     def get_serializer_class(self):
@@ -43,6 +49,7 @@ class ExperimentViewSet(viewsets.ModelViewSet):
 
     def list(self, request, **kwargs):
         queryset = Experiment.objects.list(request.user)
+        queryset = self.get_serializer_class().setup_eager_loading(queryset)
         serializer = self.get_serializer(
             queryset, many=True, context={"request": request}
         )
@@ -51,34 +58,40 @@ class ExperimentViewSet(viewsets.ModelViewSet):
     @action(detail=False)
     def mine(self, request):
         queryset = Experiment.objects.my_experiments(request.user)
+        queryset = self.get_serializer_class().setup_eager_loading(queryset)
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
 
     @action(detail=False)
     def public(self, request):
         queryset = Experiment.objects.public_experiments()
+        queryset = self.get_serializer_class().setup_eager_loading(queryset)
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
 
     @action(detail=False)
     def myteams(self, request):
         queryset = Experiment.objects.team_experiments(request.user)
+        queryset = self.get_serializer_class().setup_eager_loading(queryset)
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
 
     @action(detail=False)
     def sharedwithme(self, request):
         queryset = Experiment.objects.collaborate_experiments(request.user)
+        queryset = self.get_serializer_class().setup_eager_loading(queryset)
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
 
     @action(detail=True, methods=["post"], url_path="tag", url_name="tag_add")
-    def add_tag(self, request, pk):
+    def add_tags(self, request, pk):
         instance = self.get_object()
-        tag_name = request.data.get("name")
-        tag = add_tag(instance, tag_name)
-
-        serializer = self.get_serializer(tag)
+        tags_names = request.data.get("tags").split(',')
+        tags = []
+        for name in tags_names:
+            tags.append(add_tag(instance, name, save=False))
+        instance.save()
+        serializer = TagSerializer(tags, many=True)
         return Response(serializer.data)
 
     @action(
@@ -98,17 +111,31 @@ class ExperimentViewSet(viewsets.ModelViewSet):
         methods=["post"],
         parser_classes=(MultiPartParser,),
         name="experiment-upload-file",
-        url_path="upload-file",
+        url_path="upload-files",
     )
-    def upload_file(self, request, **kwargs):
+    def upload_files(self, request, **kwargs):
         instance = self.get_object()
-        file = request.FILES.get("file")
-        population_name = request.data.get("population_name")
-        created = upload_file(instance, population_name, file)
-        response_status = status.HTTP_201_CREATED if created else status.HTTP_200_OK
+        key_file = request.FILES.get("key_file")
+        data_file = request.FILES.get("data_file")
+        try:
+            validate_input_files(key_file, data_file)
+        except InvalidInputError:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+
+        population_id = request.FILES.get("population_id", None)
+        try:
+            dir_path = create_temp_dir(CORDMAP_DATA)
+            filepaths = move_files([key_file, data_file], dir_path)
+        except Exception as e:
+            return Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        try:
+            created = upload_files(instance, filepaths[DATA_INDEX], population_id)
+            response_status = status.HTTP_201_CREATED if created else status.HTTP_200_OK
+        except InvalidInputError:
+            response_status = status.HTTP_400_BAD_REQUEST
         return Response(status=response_status)
 
     def perform_create(self, serializer):
         experiment = serializer.save(
-            owner=self.request.user,
+            owner=self.request.user
         )

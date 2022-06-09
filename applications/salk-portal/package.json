@@ -61,7 +61,8 @@
     "remark": "^13.0.0",
     "remark-gfm": "^1.0.0",
     "sass": "^1.32.12",
-    "three": "0.111.0"
+    "three": "0.111.0",
+    "yup": "^0.32.11"
   },
   "devDependencies": {
     "@babel/core": "^7.8.4",

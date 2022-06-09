@@ -28,6 +28,7 @@ import workspaceService from "../service/WorkspaceService";
 import Cell from "../models/Cell";
 import {threeDViewerWidget, ElectrophysiologyWidget, widgetIds, twoDViewerWidget} from "../widgets";
 import {useInterval} from "../utilities/hooks/useInterval";
+import {useParams} from "react-router";
 
 const useStyles = makeStyles({
     layoutContainer: {
@@ -50,8 +51,6 @@ const useStyles = makeStyles({
     }
 });
 
-const MOCKED_ID = "1"
-
 const getDefaultAtlas = () => AtlasChoice.slk10
 const getSubdivisions = (sa: AtlasChoice) => {
     const subdivisions: any = {}
@@ -69,6 +68,7 @@ const ExperimentsPage = () => {
     const api = workspaceService.getApi()
     const classes = useStyles();
     const store = useStore();
+    const params = useParams();
     const [experiment, setExperiment] = useState(null)
     const [selectedAtlas, setSelectedAtlas] = useState(getDefaultAtlas());
     const [subdivisions, setSubdivisions] = useState(getSubdivisions(selectedAtlas));
@@ -126,6 +126,7 @@ const ExperimentsPage = () => {
         const nextPopulations: any = {...populations}
         nextPopulations[populationId].selected = !nextPopulations[populationId].selected
         setPopulations(nextPopulations)
+        setSidebarPopulations(nextPopulations)
     };
 
     const handlePopulationColorChange = async (id: string, color: string, opacity: string) => {
@@ -155,7 +156,7 @@ const ExperimentsPage = () => {
 
     useInterval(() => {
         const fetchData = async () => {
-            const response = await api.retrieveExperiment(MOCKED_ID)
+            const response = await api.retrieveExperiment(params.id)
             const fetchedExperiment = response.data;
             setSidebarPopulations(getPopulations(fetchedExperiment, selectedAtlas))
             // TODO: Handle error status on populations
@@ -167,7 +168,7 @@ const ExperimentsPage = () => {
 
     useEffect(() => {
         const fetchData = async () => {
-            const response = await api.retrieveExperiment(MOCKED_ID)
+            const response = await api.retrieveExperiment(params.id)
             const data = response.data;
             const cells = await Promise.all(data.populations.map(async (p) => {
                 const cellsFile = await api.cellsPopulation(`${p.id}`);
