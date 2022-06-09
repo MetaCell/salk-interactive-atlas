@@ -1,6 +1,13 @@
 import React, {Component} from 'react';
 import * as THREE from 'three';
-import {withStyles} from '@material-ui/core';
+import {
+    Accordion,
+    AccordionDetails,
+    AccordionSummary,
+    Box,
+    Typography,
+    withStyles
+} from '@material-ui/core';
 // @ts-ignore
 import Canvas from "@metacell/geppetto-meta-ui/3d-canvas/Canvas";
 // @ts-ignore
@@ -11,7 +18,11 @@ import {canvasBg} from "../theme";
 import {getAtlas} from "../service/AtlasService"
 import {getInstancesIds} from "../utilities/instancesHelper";
 import {eqSet, getAllowedRanges} from "../utilities/functions";
-import {ExperimentPopulations} from "../apiclient/workspaces";
+import {Population} from "../apiclient/workspaces";
+import {AtlasChoice} from "../utilities/constants";
+import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
+// @ts-ignore
+import SWITCH_ICON from "../assets/images/icons/switch_icon.svg";
 
 const MOCKED_GREY_MATTER = 'GM'
 const MOCKED_WHITE_MATTER = 'WM'
@@ -64,10 +75,26 @@ function getDefaultOptions() {
 }
 
 const styles = () => ({
+    container: {
+        width: '100%',
+        height: '100%',
+        overflow: 'hidden',
+        backgroundColor: canvasBg,
+    },
     canvasContainer: {
         width: '100%',
         height: '100%',
-        overflow: 'hidden'
+    },
+    accordionContainer: {
+        width: '100%',
+        position: "absolute",
+        top: "16px",
+        left: "calc(85% - 16px)",
+        backgroundColor: canvasBg,
+    },
+    accordion: {
+        width: '15%',
+        backgroundColor: "rgba(255, 255, 255, 0.05)",
     },
 });
 
@@ -85,9 +112,22 @@ const getColorOpacityPair = (color: string, opacity: number) => {
     return `${color}-${opacity}`
 }
 
+const getSubdivisions = (sa: AtlasChoice) => {
+    const subdivisions: any = {}
+    const segments = getAtlas(sa).segments
+    segments.forEach(sd => subdivisions[sd.id] = {selected: true})
+    return subdivisions
+}
+
+const getActiveSubdivisionsSet = (subdivisions: any) => {
+    return new Set(Object.keys(subdivisions).filter(sId => subdivisions[sId].selected));
+}
+
+
 class ThreeDViewer extends Component {
     private scene: THREE.Scene;
     private readonly populationsMap: {};
+
     // @ts-ignore
     constructor(props) {
         super(props);
@@ -95,11 +135,20 @@ class ThreeDViewer extends Component {
         this.populationsMap = {}
         this.onMount = this.onMount.bind(this)
         this.onUpdateEnd = this.onUpdateEnd.bind(this)
+
+        // @ts-ignore
+        const {selectedAtlas} = this.props
+        this.state = {
+            subdivisions: getSubdivisions(selectedAtlas),
+        }
     }
 
     getInstancesToShow() {
         // @ts-ignore
-        const {selectedAtlas, activeSubdivisions} = this.props
+        const {selectedAtlas} = this.props
+        // @ts-ignore
+        const {subdivisions} = this.state
+        const activeSubdivisions = getActiveSubdivisionsSet(subdivisions)
         const atlas = getAtlas(selectedAtlas)
         return getInstancesIds(atlas, activeSubdivisions)
     }
@@ -107,7 +156,8 @@ class ThreeDViewer extends Component {
     componentDidUpdate(prevProps: Readonly<{}>, prevState: Readonly<{}>, snapshot?: any) {
         this.updatePopulations(
             // @ts-ignore
-            !eqSet(prevProps.activeSubdivisions, this.props.activeSubdivisions) || !eqSet(
+            !eqSet(getActiveSubdivisionsSet(prevState.subdivisions), getActiveSubdivisionsSet(this.state.subdivisions))
+            || !eqSet(
                 // @ts-ignore
                 new Set(Object.keys(prevProps.activePopulations)
                     .map(pId => getColorOpacityPair(
@@ -168,7 +218,7 @@ class ThreeDViewer extends Component {
     }
 
 
-    addPopulation(population: ExperimentPopulations) {
+    addPopulation(population: Population) {
         // @ts-ignore
         const {selectedAtlas, activeSubdivisions} = this.props
         const ranges = getAllowedRanges(selectedAtlas, activeSubdivisions)
@@ -211,6 +261,7 @@ class ThreeDViewer extends Component {
     }
 
     onUpdateEnd() {
+        // TODO: This is being called before the onMount
         if (this.scene) {
             if (this.scene.children.length > 3) {
                 for (let i = 3; i < this.scene.children.length; i++) {
@@ -228,26 +279,48 @@ class ThreeDViewer extends Component {
         }
     }
 
-
     render() {
         // @ts-ignore
         const {classes} = this.props
+        // @ts-ignore
+        const {anchorEl} = this.state
         // tslint:disable-next-line:prefer-const
         let {cameraOptions, captureOptions} = getDefaultOptions()
         // @ts-ignore
         cameraOptions = {...cameraOptions, reset: this.props.shouldCameraReset}
         // @ts-ignore
         const canvasData: any = mapToCanvasData(this.getInstancesToShow())
-        return (<div className={classes.canvasContainer}>
-            <Canvas
-                data={canvasData}
-                cameraOptions={cameraOptions}
-                captureOptions={captureOptions}
-                backgroundColor={canvasBg}
-                onMount={this.onMount}
-                onUpdateEnd={this.onUpdateEnd}
-            />
-        </div>)
+        return (
+            <Box className={classes.container}>
+                <Box className={classes.accordionContainer}>
+                    <Accordion elevation={0} className={classes.accordion}>
+                        <AccordionSummary
+                            expandIcon={<ExpandMoreIcon />}
+                        >
+                            <Typography>
+                                <img src={SWITCH_ICON} alt=""/>
+                                Subdivisions
+                            </Typography>
+                        </AccordionSummary>
+                        <AccordionDetails>
+                            <Typography>
+                                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse
+                                malesuada lacus ex, sit amet blandit leo lobortis eget.
+                            </Typography>
+                        </AccordionDetails>
+                    </Accordion>
+                </Box>
+                <Box className={classes.canvasContainer}>
+                    <Canvas
+                        data={canvasData}
+                        cameraOptions={cameraOptions}
+                        captureOptions={captureOptions}
+                        backgroundColor={canvasBg}
+                        onMount={this.onMount}
+                        onUpdateEnd={this.onUpdateEnd}
+                    />
+                </Box>
+            </Box>)
     }
 }
 

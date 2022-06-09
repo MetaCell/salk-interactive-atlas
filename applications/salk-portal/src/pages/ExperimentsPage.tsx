@@ -190,7 +190,7 @@ const ExperimentsPage = () => {
             const experimentPopulations = getPopulations(experiment, selectedAtlas)
             setPopulations(experimentPopulations)
             setSidebarPopulations(experimentPopulations)
-            dispatch(addWidget(threeDViewerWidget(selectedAtlas, new Set(), {})));
+            dispatch(addWidget(threeDViewerWidget(selectedAtlas, {})));
             dispatch(addWidget(twoDViewerWidget(Object.keys(subdivisions), [], selectedAtlas, true, false)));
             dispatch(addWidget(ElectrophysiologyWidget));
         }
@@ -199,16 +199,8 @@ const ExperimentsPage = () => {
     // TODO: Handle selectedAtlas changes
 
     useEffect(() => {
-        const subdivisionsSet = getSelectedSubdivisionsSet()
         if (widgetIds.threeDViewer in store.getState().widgets) {
-            dispatch(updateWidget(threeDViewerWidget(selectedAtlas, subdivisionsSet, getActivePopulations(), true)))
-        }
-    }, [subdivisions])
-
-    useEffect(() => {
-        const subdivisionsSet = getSelectedSubdivisionsSet();
-        if (widgetIds.threeDViewer in store.getState().widgets) {
-            dispatch(updateWidget(threeDViewerWidget(selectedAtlas, subdivisionsSet, getActivePopulations(), false)))
+            dispatch(updateWidget(threeDViewerWidget(selectedAtlas, getActivePopulations())))
         }
     }, [populations])
 

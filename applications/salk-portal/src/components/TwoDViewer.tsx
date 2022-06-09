@@ -25,82 +25,38 @@ import {useDidUpdateEffect} from "../utilities/hooks/useDidUpdateEffect";
 const HEIGHT = "calc(100% - 55px)"
 
 const useStyles = makeStyles({
-    placeholder: {
-        height: "100%",
-        margin: 0,
-    },
     densityMapImage: {
-        width: "100%",
-        objectFit: "contain",
-        margin: 0,
-        position: "sticky",
-        top: 0
+        width: "80%"
     },
-    container: {
-        background: "#323436",
-        height: "100%"
-    },
-    buttonContainer: {
+    densityMapImageContainer: {
         display: 'flex',
         flex: '1',
-        justifyContent: 'space-between'
+        justifyContent: 'center'
     },
-    radioContainer: {
-        display: 'flex',
-        flex: '1',
-        justifyContent: 'flex-start'
-    },
-    radio: {
-        marginRight: "1rem"
-    },
-    fullWidth: {
-        width: "100%"
-    },
-    border: {
-        border: `1px solid rgba(255, 255, 255, 0.05)`,
-        borderRadius: "4px 4px 4px 4px"
-    },
-    subsectionBorder: {
-        borderTop: `1px solid rgba(255, 255, 255, 0.05)`,
-        borderRight: `1px solid rgba(255, 255, 255, 0.05)`,
-    },
-    cordImageContainer: {
-        display: 'flex',
-        flex: '1',
-        justifyContent: 'center',
-        borderRight: `1px solid rgba(255, 255, 255, 0.05)`
-    },
-    fontSize: {
-        fontSize: "0.75rem"
-    },
-    subdivisionsContainer: {
-        height: HEIGHT,
-        overflow: "auto"
-    }
 });
 
 const RADIO_GROUP_NAME = "segments-radio-buttons-group"
 const SEPARATOR = '_'
 
-// @ts-ignore
-const RadioButton = ({onChange, isChecked, label}) => {
-    const classes = useStyles();
-
-    return (
-        <Button className={`${classes.buttonContainer} ${classes.fullWidth}`} onClick={() => onChange(label)}>
-            <span className={classes.radioContainer}>
-                <Radio
-                    checked={isChecked}
-                    value={label}
-                    name={RADIO_GROUP_NAME}
-                    className={classes.radio}
-                />
-                <Typography className={classes.fontSize}>{label}</Typography>
-            </span>
-            <ArrowForwardIosIcon className={classes.fontSize}/>
-        </Button>
-    );
-}
+// // @ts-ignore
+// const RadioButton = ({onChange, isChecked, label}) => {
+//     const classes = useStyles();
+//
+//     return (
+//         <Button className={`${classes.buttonContainer} ${classes.fullWidth}`} onClick={() => onChange(label)}>
+//             <span className={classes.radioContainer}>
+//                 <Radio
+//                     checked={isChecked}
+//                     value={label}
+//                     name={RADIO_GROUP_NAME}
+//                     className={classes.radio}
+//                 />
+//                 <Typography className={classes.fontSize}>{label}</Typography>
+//             </span>
+//             <ArrowForwardIosIcon className={classes.fontSize}/>
+//         </Button>
+//     );
+// }
 
 const TwoDViewer = (props: {
     subdivisions: string[], activePopulations: Population[],
@@ -125,10 +81,6 @@ const TwoDViewer = (props: {
     const [isLoading, setIsLoading] = useState(false)
     const [isReady, setIsReady] = useState(false)
     const cache = useRef({} as any);
-
-    const handleChange = (value: number) => {
-        setSelectedValueIndex(value);
-    };
 
     const fetchData = async (population: Population, apiMethod: (id: string, subdivision: string, options: any) => Promise<any>) => {
         const response = await apiMethod(population.id.toString(), segments[selectedValueIndex], {responseType: 'blob'})
@@ -320,50 +272,13 @@ const TwoDViewer = (props: {
     const classes = useStyles();
     // @ts-ignore
     const boxStyle = {flexGrow: 1, background: canvasBg, padding: "1rem", minHeight: "100%", height: HEIGHT}
-    const gridStyle = {className: `${classes.container} ${classes.border}`, container: true, columns: 2, height: HEIGHT}
-    const subdivisionsGridStyle = {height: HEIGHT}
     return (
+
         <Box sx={boxStyle}>
-            <Grid {...gridStyle}>
-                <Grid item={true} xs={4} style={{...subdivisionsGridStyle}}>
-                    <Box className={`${classes.cordImageContainer}`}>
-                        <CordImageMapper
-                            segments={segments}
-                            selected={selectedValueIndex}
-                            onChange={handleChange}
-                        />
-                    </Box>
-                    <Box className={`scrollbarStyle ${classes.subdivisionsContainer}`}>
-                        <FormControl className={classes.fullWidth}>
-                            <RadioGroup
-                                aria-labelledby="segments-radio-buttons-group-label"
-                                name={RADIO_GROUP_NAME}
-                            >
-                                {subdivisions.map((sId, idx) => (
-                                        <Box key={sId} className={classes.subsectionBorder}>
-                                            <RadioButton
-                                                onChange={() => handleChange(idx * 2)}
-                                                isChecked={segments[selectedValueIndex] === `${sId}-${ROSTRAL}`}
-                                                label={`${sId}-${ROSTRAL}`}
-                                            />
-                                            <RadioButton
-                                                onChange={() => handleChange(idx * 2 + 1)}
-                                                isChecked={segments[selectedValueIndex] === `${sId}-${CAUDAL}`}
-                                                label={`${sId}-${CAUDAL}`}
-                                            />
-                                        </Box>
-                                    )
-                                )}
-                            </RadioGroup>
-                        </FormControl>
-                    </Box>
-                </Grid>
-                <Grid item={true} xs={8}>
-                    <Loader active={isLoading}/>
-                    <canvas hidden={true} ref={hiddenCanvasRef}/>
-                    <canvas hidden={isLoading} className={classes.densityMapImage} ref={canvasRef}/>
-                </Grid>
-            </Grid>
+            <Box className={classes.densityMapImageContainer}>
+                <canvas hidden={true} ref={hiddenCanvasRef}/>
+                <canvas hidden={isLoading} className={classes.densityMapImage} ref={canvasRef}/>
+            </Box>
         </Box>
     );
 };

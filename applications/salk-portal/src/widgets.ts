@@ -9,8 +9,7 @@ export const widgetIds = {
     electrophysiologyViewer: 'epWidget'
 }
 
-export const threeDViewerWidget = (selectedAtlas: AtlasChoice, activeSubdivisions: Set<string>, activePopulations: any,
-                                   shouldCameraReset: boolean = false) => {
+export const threeDViewerWidget = (selectedAtlas: AtlasChoice, activePopulations: any) => {
     return {
         id: widgetIds.threeDViewer,
         name: "3D Viewer",
@@ -20,9 +19,7 @@ export const threeDViewerWidget = (selectedAtlas: AtlasChoice, activeSubdivision
         status: WidgetStatus.ACTIVE,
         config: {
             selectedAtlas,
-            activeSubdivisions,
             activePopulations,
-            shouldCameraReset
         }
     }
 };
