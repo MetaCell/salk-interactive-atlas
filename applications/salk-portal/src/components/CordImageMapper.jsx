@@ -7,8 +7,7 @@ import {mod} from "../utilities/functions";
 
 const useStyles = makeStyles({
     imageMap: {
-        margin: "2rem",
-        width: "60%!important",
+        margin: "1rem",
         cursor: "pointer"
     },
 });

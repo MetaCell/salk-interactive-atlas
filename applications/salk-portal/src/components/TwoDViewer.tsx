@@ -1,30 +1,33 @@
 import React, {useEffect, useRef, useState} from 'react';
 import {makeStyles} from "@material-ui/core/styles";
-import {canvasBg} from "../theme";
+import theme, {bodyBgColor, canvasBg, headerBorderColor} from "../theme";
 import {
-    Box, Button,
-    FormControl,
-    Grid,
-    Radio,
-    RadioGroup,
+    Box, Button, FormControl, FormControlLabel, InputLabel, MenuItem,
+    Popover, Select, Switch,
     Typography
 } from "@material-ui/core";
-import ArrowForwardIosIcon from '@material-ui/icons/ArrowForwardIos';
-// @ts-ignore
-import Loader from "@metacell/geppetto-meta-ui/loader/Loader";
-// @ts-ignore
 import {Population} from "../apiclient/workspaces";
-import {AtlasChoice, CAUDAL, DensityMapTypes, RequestState, ROSTRAL} from "../utilities/constants";
+import {
+    AtlasChoice,
+    CAUDAL,
+    DensityMapTypes,
+    NEURONAL_LOCATIONS_ID,
+    OVERLAYS, PROBABILITY_MAP_ID,
+    RequestState,
+    ROSTRAL
+} from "../utilities/constants";
 import workspaceService from "../service/WorkspaceService";
-import CordImageMapper from "./CordImageMapper";
 import {getAtlas} from "../service/AtlasService";
 import {clearCanvas, drawColoredImage, drawImage} from "../service/CanvasService";
-import {mod} from "../utilities/functions";
 import {useDidUpdateEffect} from "../utilities/hooks/useDidUpdateEffect";
+// @ts-ignore
+import SWITCH_ICON from "../assets/images/icons/switch_icon.svg";
+import ExpandLessIcon from "@material-ui/icons/ExpandLess";
+import CordImageMapper from "./CordImageMapper";
 
 const HEIGHT = "calc(100% - 55px)"
 
-const useStyles = makeStyles({
+const useStyles = makeStyles(t => ({
     densityMapImage: {
         width: "80%"
     },
@@ -33,7 +36,37 @@ const useStyles = makeStyles({
         flex: '1',
         justifyContent: 'center'
     },
-});
+    buttonContainer: {
+        position: 'absolute',
+        bottom: t.spacing(1),
+        left: t.spacing(1),
+    },
+    button: {
+        backgroundColor: headerBorderColor,
+        width: 200
+    },
+    innerButtonContainer: {
+        display: 'flex',
+        flex: '1',
+        justifyContent: 'space-between',
+        alignItems: "center",
+        gap: t.spacing(1)
+    },
+    buttonLabel: {
+        fontSize: "0.75rem"
+    },
+    popoverContent: {
+        paddingBottom: t.spacing(1)
+    },
+    cordImageContainer: {
+        display: 'flex',
+        flex: '1',
+        justifyContent: 'center',
+    },
+    dropdownContainer: {
+        width: "100%"
+    },
+}))
 
 const RADIO_GROUP_NAME = "segments-radio-buttons-group"
 const SEPARATOR = '_'
@@ -58,15 +91,20 @@ const SEPARATOR = '_'
 //     );
 // }
 
+const getDefaultOverlays = () => {
+    const overlaysSwitchState: { [key: string]: boolean } = {}
+    // @ts-ignore
+    Object.keys(OVERLAYS).forEach(k => overlaysSwitchState[k] = false)
+    return overlaysSwitchState
+}
+
 const TwoDViewer = (props: {
     subdivisions: string[], activePopulations: Population[],
     selectedAtlas: AtlasChoice,
-    showProbabilityMap: boolean,
-    showNeuronalLocations: boolean,
     invalidCachePopulations: Set<string>
 }) => {
     const api = workspaceService.getApi()
-    const {activePopulations, selectedAtlas, showProbabilityMap, showNeuronalLocations, invalidCachePopulations} = props
+    const {activePopulations, selectedAtlas, invalidCachePopulations} = props
     const activePopulationsColorMap = activePopulations.reduce((acc, pop) => {
         return {...acc, [pop.id.toString()]: pop.color}
     }, {})
@@ -81,6 +119,9 @@ const TwoDViewer = (props: {
     const [isLoading, setIsLoading] = useState(false)
     const [isReady, setIsReady] = useState(false)
     const cache = useRef({} as any);
+    const [anchorEl, setAnchorEl] = React.useState<HTMLButtonElement | null>(null);
+    const [overlaysSwitchState, setOverlaysSwitchState] = useState(getDefaultOverlays())
+
 
     const fetchData = async (population: Population, apiMethod: (id: string, subdivision: string, options: any) => Promise<any>) => {
         const response = await apiMethod(population.id.toString(), segments[selectedValueIndex], {responseType: 'blob'})
@@ -95,7 +136,7 @@ const TwoDViewer = (props: {
 
     function updateCentroids() {
         if (activePopulations.length > 0) {
-            if (showNeuronalLocations) {
+            if (overlaysSwitchState[NEURONAL_LOCATIONS_ID]) {
                 return Promise.all(activePopulations.filter((p: Population) => !isInCache(p, DensityMapTypes.CENTROIDS_DATA)).map(p =>
                     fetchData(p, (id, subdivision, options) => api.centroidsPopulation(id, subdivision, options))))
                     .then(centroidsResponses => {
@@ -111,7 +152,7 @@ const TwoDViewer = (props: {
 
     function updateProbabilityMap() {
         if (activePopulations.length > 0) {
-            if (showProbabilityMap) {
+            if (overlaysSwitchState[PROBABILITY_MAP_ID]) {
                 return Promise.all(activePopulations.filter((p: Population) => !isInCache(p, DensityMapTypes.PROBABILITY_DATA)).map(p =>
                     fetchData(p, (id, subdivision, options) => api.probabilityMapPopulation(id, subdivision, options))))
                     .then(probabilityMapResponses => {
@@ -149,7 +190,7 @@ const TwoDViewer = (props: {
     }
 
     const hasSomethingToDraw = () => {
-        return showNeuronalLocations || showProbabilityMap
+        return overlaysSwitchState[PROBABILITY_MAP_ID] || overlaysSwitchState[NEURONAL_LOCATIONS_ID]
     }
 
     const isCanvasReady = () => {
@@ -186,7 +227,7 @@ const TwoDViewer = (props: {
         }
         const promises = []
         for (const pId of Object.keys(content)) {
-            if (showProbabilityMap) {
+            if (overlaysSwitchState[PROBABILITY_MAP_ID]) {
                 // @ts-ignore
                 const pData = content[pId][DensityMapTypes.PROBABILITY_DATA]
                 const promise = getDrawColoredImagePromise(pData, canvas, hiddenCanvas, pId);
@@ -194,7 +235,7 @@ const TwoDViewer = (props: {
                     promises.push(promise)
                 }
             }
-            if (showNeuronalLocations) {
+            if (overlaysSwitchState[NEURONAL_LOCATIONS_ID]) {
                 // @ts-ignore
                 const cData = content[pId][DensityMapTypes.CENTROIDS_DATA]
                 const promise = getDrawColoredImagePromise(cData, canvas, hiddenCanvas, pId);
@@ -239,7 +280,7 @@ const TwoDViewer = (props: {
         } else {
             setContent(getActiveContent())
         }
-    }, [showProbabilityMap])
+    }, [overlaysSwitchState[PROBABILITY_MAP_ID]])
 
     useDidUpdateEffect(() => {
         setIsLoading(true)
@@ -249,7 +290,7 @@ const TwoDViewer = (props: {
         } else {
             setContent(getActiveContent())
         }
-    }, [showNeuronalLocations])
+    }, [overlaysSwitchState[NEURONAL_LOCATIONS_ID]])
 
     useEffect(() => {
         Object.keys(cache).forEach(idSegment => {
@@ -269,12 +310,90 @@ const TwoDViewer = (props: {
         setIsReady(true)
     }, [])
 
+
+    const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+        setAnchorEl(event.currentTarget);
+    };
+
+    const handleClose = () => {
+        setAnchorEl(null);
+    };
+
+    const handleOverlaySwitch = (overlayId: string) => {
+        setOverlaysSwitchState({...overlaysSwitchState, [overlayId]: !overlaysSwitchState[overlayId]})
+    };
+
+    const handleSegmentChange = (value: number) => {
+        setSelectedValueIndex(value);
+    };
+
     const classes = useStyles();
     // @ts-ignore
     const boxStyle = {flexGrow: 1, background: canvasBg, padding: "1rem", minHeight: "100%", height: HEIGHT}
+    const open = Boolean(anchorEl);
     return (
 
         <Box sx={boxStyle}>
+            <Box className={classes.buttonContainer}>
+                <Button className={classes.button}
+                        onClick={(event) => handleClick(event)}>
+                    <Box className={classes.innerButtonContainer}>
+                        <Typography className={classes.buttonLabel}>Custom View</Typography>
+                        <ExpandLessIcon/>
+                    </Box>
+                </Button>
+                {
+                    // TODO: Remove Transition
+                }
+                <Popover
+                    open={open}
+                    anchorEl={anchorEl}
+                    onClose={() => handleClose()}
+                    anchorOrigin={{
+                        vertical: 'top',
+                        horizontal: 'left',
+                    }}
+                    PaperProps={{
+                        style: {
+                            width: anchorEl?.offsetWidth,
+                            height: anchorEl?.parentNode?.parentNode?.clientHeight - theme.spacing(1),
+                            background: bodyBgColor,
+                            padding: `${theme.spacing(1)}px ${theme.spacing(1)}px 0px ${theme.spacing(1)}px`
+                        },
+                    }}>
+
+                    <Box className={`${classes.cordImageContainer}`}>
+                        <CordImageMapper
+                            segments={segments}
+                            selected={selectedValueIndex}
+                            onChange={handleSegmentChange}
+                        />
+                    </Box>
+
+                    <FormControl className={`${classes.dropdownContainer}`}>
+                        <Select
+                            value={selectedValueIndex}
+                            onChange={(event) => handleSegmentChange(event.target.value)}
+                        >
+                            {segments.map((segment, idx) =>
+                                <MenuItem key={segment} value={idx}> {segment} </MenuItem>
+                            )}
+                        </Select>
+                    </FormControl>
+
+                    {Object.keys(OVERLAYS).map(oId =>
+                        <FormControlLabel
+                            className={classes.popoverContent}
+                            key={oId}
+                            control={<Switch/>}
+                            label={OVERLAYS[oId].name}
+                            labelPlacement="start"
+                            onChange={() => handleOverlaySwitch(oId)}
+                            checked={overlaysSwitchState[oId]}
+                        />
+                    )}
+                </Popover>
+            </Box>
             <Box className={classes.densityMapImageContainer}>
                 <canvas hidden={true} ref={hiddenCanvasRef}/>
                 <canvas hidden={isLoading} className={classes.densityMapImage} ref={canvasRef}/>

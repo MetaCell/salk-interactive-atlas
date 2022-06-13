@@ -71,7 +71,7 @@ function getDefaultOptions() {
     }
 }
 
-const styles = (theme) => ({
+const styles = (t: any) => ({
     container: {
         width: '100%',
         height: '100%',
@@ -84,8 +84,8 @@ const styles = (theme) => ({
     },
     buttonContainer: {
         position: 'absolute',
-        top: theme.spacing(1),
-        right: theme.spacing(1),
+        top: t.spacing(1),
+        right: t.spacing(1),
     },
     button: {
         backgroundColor: headerBorderColor,
@@ -95,13 +95,13 @@ const styles = (theme) => ({
         flex: '1',
         justifyContent: 'center',
         alignItems: "center",
-        gap: theme.spacing(1)
+        gap: t.spacing(1)
     },
     buttonLabel: {
         fontSize: "0.75rem"
     }    ,
     popoverContent: {
-        paddingBottom: theme.spacing(1)
+        paddingBottom: t.spacing(1)
     }
 });
 
@@ -234,7 +234,10 @@ class ThreeDViewer extends Component {
 
     addPopulation(population: Population) {
         // @ts-ignore
-        const {selectedAtlas, activeSubdivisions} = this.props
+        const {selectedAtlas} = this.props
+        // @ts-ignore
+        const {subdivisions} = this.state
+        const activeSubdivisions = getActiveSubdivisionsSet(subdivisions)
         const ranges = getAllowedRanges(selectedAtlas, activeSubdivisions)
         // @ts-ignore
         const geometry = new THREE.SphereGeometry(1, 32, 16);
