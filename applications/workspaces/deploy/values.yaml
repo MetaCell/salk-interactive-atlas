@@ -11,6 +11,7 @@ harness:
       name: salk-files
       mountpath: /usr/src/app/persistent
       auto: true
+      readonly: true
       size: 5Gi
     resources:
       requests:
