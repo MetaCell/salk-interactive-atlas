@@ -13,6 +13,7 @@ import CHECK_FILLED from "../../assets/images/icons/check_filled.svg";
 import workspaceService from "../../service/WorkspaceService";
 import * as Yup from 'yup'
 import {ExperimentTagsInner} from "../../apiclient/workspaces";
+import Loader from "@metacell/geppetto-meta-ui/loader/Loader";
 
 
 const useStyles = makeStyles(() => ({
@@ -153,6 +154,7 @@ export const CreateExperimentDialog = (props: any) => {
     const [tags, setTags] = useState<string[]>([]);
     const [tagsOptions, setTagsOptions] = useState<ExperimentTagsInner[]>([]);
     const [errors, setErrors] = useState(new Set([]));
+    const [isLoading, setIsLoading] = useState(false);
     const validationSchema = Yup.object().shape({
         [nameKey]: Yup.string().required(),
         [descriptionKey]: Yup.string().required(),
@@ -231,9 +233,11 @@ export const CreateExperimentDialog = (props: any) => {
 
 
     const handleAction = async () => {
+        setIsLoading(true)
         const errorsSet = await getValidationErrors()
         if (errorsSet.size > 0) {
             setErrors(errorsSet)
+            setIsLoading(false)
             return
         }
         const res = await api.createExperiment(name, description, null, true,
@@ -247,8 +251,8 @@ export const CreateExperimentDialog = (props: any) => {
             }
         }
         await Promise.all(promises)
-        handleClose()
         onExperimentCreation(experiment.id)
+        handleClose()
     }
 
     useEffect(() => {
@@ -279,7 +283,7 @@ export const CreateExperimentDialog = (props: any) => {
 
     // @ts-ignore
 
-    return (
+    return !isLoading ? (
         <Modal
             dialogActions={true}
             actionText="Create"
@@ -400,6 +404,5 @@ export const CreateExperimentDialog = (props: any) => {
                     <OwnerInfo user={user}/>
                 </Box>
             </Box>
-        </Modal>
-    );
+        </Modal>) : <Loader/>
 };
