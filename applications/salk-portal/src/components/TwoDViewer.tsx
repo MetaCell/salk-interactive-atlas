@@ -66,6 +66,14 @@ const useStyles = makeStyles(t => ({
     dropdownContainer: {
         width: "100%"
     },
+    select: {
+        fontSize: 12
+    },
+    popover: {
+        "&.MuiPopover-paper": {
+            width: "200px!important"
+        }
+    },
 }))
 
 const RADIO_GROUP_NAME = "segments-radio-buttons-group"
@@ -360,7 +368,11 @@ const TwoDViewer = (props: {
                             background: bodyBgColor,
                             padding: `${theme.spacing(1)}px ${theme.spacing(1)}px 0px ${theme.spacing(1)}px`
                         },
-                    }}>
+                    }}
+                    classes={{
+                        paper: classes.popover
+                    }}
+                >
 
                     <Box className={`${classes.cordImageContainer}`}>
                         <CordImageMapper
@@ -372,6 +384,8 @@ const TwoDViewer = (props: {
 
                     <FormControl className={`${classes.dropdownContainer}`}>
                         <Select
+                            className={`${classes.select}`}
+                            disableUnderline={true}
                             value={selectedValueIndex}
                             onChange={(event) => handleSegmentChange(event.target.value)}
                         >
