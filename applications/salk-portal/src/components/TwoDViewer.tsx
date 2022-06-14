@@ -79,28 +79,7 @@ const useStyles = makeStyles(t => ({
     },
 }))
 
-const RADIO_GROUP_NAME = "segments-radio-buttons-group"
 const SEPARATOR = '_'
-
-// // @ts-ignore
-// const RadioButton = ({onChange, isChecked, label}) => {
-//     const classes = useStyles();
-//
-//     return (
-//         <Button className={`${classes.buttonContainer} ${classes.fullWidth}`} onClick={() => onChange(label)}>
-//             <span className={classes.radioContainer}>
-//                 <Radio
-//                     checked={isChecked}
-//                     value={label}
-//                     name={RADIO_GROUP_NAME}
-//                     className={classes.radio}
-//                 />
-//                 <Typography className={classes.fontSize}>{label}</Typography>
-//             </span>
-//             <ArrowForwardIosIcon className={classes.fontSize}/>
-//         </Button>
-//     );
-// }
 
 const getDefaultOverlays = () => {
     const overlaysSwitchState: { [key: string]: boolean } = {}
