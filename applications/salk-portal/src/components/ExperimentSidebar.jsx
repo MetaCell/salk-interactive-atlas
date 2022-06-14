@@ -281,7 +281,7 @@ const ExperimentSidebar = ({
                                 checked={areAllPopulationsSelected()}
                             />
                             {Object.keys(populations).map(pId =>
-                                <span className='population-entry'>
+                                <span className='population-entry' key={pId}>
                                     <span className='population-color'
                                           onClick={(event) => handlePopoverClick(event, pId)}>
                                         <Box style={{backgroundColor: getRGBAString(getRGBAColor(pId))}}
