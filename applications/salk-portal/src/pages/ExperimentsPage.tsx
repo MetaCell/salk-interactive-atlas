@@ -205,7 +205,10 @@ const ExperimentsPage = () => {
 
     useEffect(() => {
         for (const widgetId of Object.keys(store.getState().widgets)) {
-            dispatch(updateWidget(getWidget(widgetId)))
+            const widget = getWidget(widgetId)
+            if (widget) {
+                dispatch(updateWidget(widget))
+            }
         }
     }, [populations])
 
