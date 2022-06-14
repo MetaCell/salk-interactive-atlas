@@ -338,8 +338,10 @@ const TwoDViewer = (props: {
     // @ts-ignore
     const boxStyle = {flexGrow: 1, background: canvasBg, padding: "1rem", minHeight: "100%", height: HEIGHT}
     const open = Boolean(anchorEl);
+    const popoverHeight = anchorEl?.parentNode?.parentNode?.clientHeight ?
+        anchorEl.parentNode.parentNode.clientHeight - theme.spacing(1) :
+        0
     return (
-
         <Box sx={boxStyle}>
             <Box className={classes.buttonContainer}>
                 <Button className={classes.button}
@@ -360,7 +362,7 @@ const TwoDViewer = (props: {
                     PaperProps={{
                         style: {
                             width: anchorEl?.offsetWidth,
-                            height: anchorEl?.parentNode?.parentNode?.clientHeight - theme.spacing(1),
+                            height: popoverHeight,
                             background: bodyBgColor,
                             padding: `${theme.spacing(1)}px ${theme.spacing(1)}px 0px ${theme.spacing(1)}px`
                         },
