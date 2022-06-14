@@ -154,7 +154,7 @@ class ThreeDViewer extends Component {
 
     shouldComponentUpdate(nextProps: Readonly<{}>, nextState: Readonly<{}>, nextContext: any): boolean {
         // @ts-ignore
-        return this.state !== nextState && !(this.state.needsReset && !nextState.needsReset) || this.props !== nextProps
+        return this.scene && (this.state !== nextState && !(this.state.needsReset && !nextState.needsReset) || this.props !== nextProps)
     }
 
     componentDidUpdate(prevProps: Readonly<{}>, prevState: Readonly<{}>, snapshot?: any) {
@@ -275,10 +275,12 @@ class ThreeDViewer extends Component {
         this.scene = scene;
         const light = new THREE.AmbientLight(0x404040);
         scene.add(light);
+        this.onUpdateEnd()
     }
 
     onUpdateEnd() {
-        // TODO: This is being called before the onMount
+        // Makes the material of the meshes double side.
+        // Workaround until https://github.com/MetaCell/geppetto-meta/issues/297 is available
         if (this.scene) {
             if (this.scene.children.length > 3) {
                 for (let i = 3; i < this.scene.children.length; i++) {
