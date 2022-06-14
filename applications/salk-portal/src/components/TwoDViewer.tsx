@@ -69,6 +69,9 @@ const useStyles = makeStyles(t => ({
     select: {
         fontSize: 12
     },
+    selectMenu: {
+        marginTop: -50
+    },
     popover: {
         "&.MuiPopover-paper": {
             width: "200px!important"
@@ -350,9 +353,6 @@ const TwoDViewer = (props: {
                         <ExpandLessIcon/>
                     </Box>
                 </Button>
-                {
-                    // TODO: Remove Transition
-                }
                 <Popover
                     open={open}
                     anchorEl={anchorEl}
@@ -388,6 +388,7 @@ const TwoDViewer = (props: {
                             disableUnderline={true}
                             value={selectedValueIndex}
                             onChange={(event) => handleSegmentChange(event.target.value)}
+                            MenuProps={{ classes: { paper: classes.selectMenu }}}
                         >
                             {segments.map((segment, idx) =>
                                 <MenuItem key={segment} value={idx}> {segment} </MenuItem>
