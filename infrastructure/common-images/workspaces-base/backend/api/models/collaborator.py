@@ -7,7 +7,7 @@ from .experiment import Experiment
 
 class Collaborator(models.Model):
     user = models.ForeignKey(User, on_delete=models.DO_NOTHING)
-    experiment = models.ForeignKey(Experiment, on_delete=models.DO_NOTHING)
+    experiment = models.ForeignKey(Experiment, on_delete=models.CASCADE)
     role = models.CharField(
         max_length=1, choices=CollaboratorRole.choices, default=CollaboratorRole.VIEWER
     )
