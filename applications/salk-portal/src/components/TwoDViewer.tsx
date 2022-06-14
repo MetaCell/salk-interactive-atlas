@@ -200,10 +200,6 @@ const TwoDViewer = (props: {
         return Object.keys(cache.current).includes(`${id}${SEPARATOR}${segments[selectedValueIndex]}`) && cache.current[`${id}${SEPARATOR}${segments[selectedValueIndex]}`][type] != null
     }
 
-    const hasSomethingToDraw = () => {
-        return overlaysSwitchState[PROBABILITY_MAP_ID] || overlaysSwitchState[NEURONAL_LOCATIONS_ID]
-    }
-
     const isCanvasReady = () => {
         const canvas = canvasRef.current
         const hiddenCanvas = hiddenCanvasRef.current
@@ -222,7 +218,7 @@ const TwoDViewer = (props: {
             return
         }
 
-        if (!hasSomethingToDraw() || !isCanvasReady()) {
+        if (!isCanvasReady()) {
             setIsLoading(false)
             return
         }

@@ -149,11 +149,6 @@ const ExperimentsPage = () => {
             return obj;
         }, {});
 
-
-    const getSelectedSubdivisionsSet = () => {
-        return new Set(Object.keys(subdivisions).filter(sId => subdivisions[sId].selected));
-    }
-
     useInterval(() => {
         const fetchData = async () => {
             const response = await api.retrieveExperiment(params.id)
@@ -191,16 +186,26 @@ const ExperimentsPage = () => {
             setPopulations(experimentPopulations)
             setSidebarPopulations(experimentPopulations)
             dispatch(addWidget(threeDViewerWidget(selectedAtlas, {})));
-            dispatch(addWidget(twoDViewerWidget(Object.keys(subdivisions), [], selectedAtlas, true, false)));
+            dispatch(addWidget(twoDViewerWidget(Object.keys(subdivisions), [], selectedAtlas)));
             dispatch(addWidget(ElectrophysiologyWidget));
         }
     }, [experiment])
 
     // TODO: Handle selectedAtlas changes
 
+    function getWidget(widgetId: string) {
+        switch (widgetId){
+            case widgetIds.threeDViewer:
+                return threeDViewerWidget(selectedAtlas, getActivePopulations())
+            case widgetIds.twoDViewer:
+                return twoDViewerWidget(Object.keys(subdivisions), Object.values(getActivePopulations()), selectedAtlas))
+        }
+
+    }
+
     useEffect(() => {
-        if (widgetIds.threeDViewer in store.getState().widgets) {
-            dispatch(updateWidget(threeDViewerWidget(selectedAtlas, getActivePopulations())))
+        for (const widgetId of Object.keys(store.getState().widgets)) {
+            dispatch(updateWidget(getWidget(widgetId)))
         }
     }, [populations])
 

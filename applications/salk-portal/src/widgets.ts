@@ -33,8 +33,7 @@ export const ElectrophysiologyWidget = {
     status: WidgetStatus.ACTIVE,
 };
 
-export const twoDViewerWidget = (subdivisions: string[], activePopulations: Population[], selectedAtlas: AtlasChoice,
-                                 showProbabilityMap: boolean, showNeuronalLocations: boolean) => {
+export const twoDViewerWidget = (subdivisions: string[], activePopulations: Population[], selectedAtlas: AtlasChoice,) => {
     return {
         id: widgetIds.twoDViewer,
         name: "2D Viewer",
@@ -46,8 +45,6 @@ export const twoDViewerWidget = (subdivisions: string[], activePopulations: Popu
             subdivisions,
             activePopulations,
             selectedAtlas,
-            showProbabilityMap,
-            showNeuronalLocations,
             // TODO: Add population ids that got the cells updated
             invalidCachePopulations: new Set([])
         }
