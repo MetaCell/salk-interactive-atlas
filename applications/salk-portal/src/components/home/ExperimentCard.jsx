@@ -251,32 +251,22 @@ const ExperimentCard = ({
         setExperimentMenuEl(null);
     };
 
-    const isReady = experiment.populations.some(p => p.status === "finished")
-
     return (
         <Grid item xs={12} md={3} key={`${experiment.name}experiment_${experiment.id}`}>
             <Card className={classes.card} elevation={0}>
-                <CardActionArea onClick={isReady ? handleCardActions : () => {}}>
-                    {
-                        isReady ?
-                            /*{type === COMMUNITY_HASH && <img src={POPULAR} alt="POPULAR"/>}*/
-                            <CardMedia
-                                component="img"
-                                alt={experiment.name}
-                                image={PLACEHOLDER}
-                                title={experiment.name}
-                            /> : (<div className={classes.cardImage}>
-                                    <CircularProgress color="secondary"/>
-                                </div>
-                            )
-                    }
-
+                <CardActionArea onClick={handleCardActions}>
+                    <CardMedia
+                        component="img"
+                        alt={experiment.name}
+                        image={PLACEHOLDER}
+                        title={experiment.name}
+                    />
                 </CardActionArea>
                 <Menu
                     className={classes.cardMenu}
                     anchorEl={experimentMenuEl}
                     keepMounted
-                    open={Boolean(experimentMenuEl) && isReady}
+                    open={Boolean(experimentMenuEl)}
                     onClose={closeFilter}
                 >
                     <ListItem button onClick={handleClick}>
@@ -317,7 +307,7 @@ const ExperimentCard = ({
                                             color={i == 1 ? 'primary' : i === 2 ? 'secondary' : 'default'}/>)
                                     }
                                 </Box>}
-                            <Typography component="h3" onClick={isReady ? handleClick : () => {}}>
+                            <Typography component="h3" onClick={handleClick}>
                                 {experiment.name || 'fff'}
                             </Typography>
                             <Typography component="p">
@@ -331,7 +321,7 @@ const ExperimentCard = ({
                                 {experiment.owner.username}
                             </Typography>
                         } placement="top">
-                            <Avatar src={USER} alt={experiment.owner.username}/>
+                            <Avatar src={experiment.owner.avatar? experiment.owner.avatar : USER} alt={experiment.owner.username}/>
                         </Tooltip>
                     </CardContent>
                 </CardActionArea>

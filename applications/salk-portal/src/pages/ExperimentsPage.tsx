@@ -225,14 +225,17 @@ const ExperimentsPage = () => {
         const fetchData = async () => {
             const response = await api.retrieveExperiment(params.id)
             const data = response.data;
-            const cells = await Promise.all(data.populations.map(async (p) => {
-                const cellsFile = await api.cellsPopulation(`${p.id}`);
-                // @ts-ignore
-                return cellsFile.data.split('\r\n').map(csv => new Cell(csv));
-            }));
-            data.populations.forEach((p, i) => {
-                data.populations[i].cells = cells[i]
+            data.populations.forEach(async(p, i) => {
+                data.populations[i].cells = await api.cellsPopulation(`${p.id}`).catch();
             });
+            // const cells = await Promise.all(data.populations.map(async (p) => {
+            //     const cellsFile = await api.cellsPopulation(`${p.id}`);
+            //     // @ts-ignore
+            //     return cellsFile.data.split('\r\n').map(csv => new Cell(csv));
+            // }));
+            // data.populations.forEach((p, i) => {
+            //     data.populations[i].cells = cells[i]
+            // });
             setExperiment(data)
         }
 

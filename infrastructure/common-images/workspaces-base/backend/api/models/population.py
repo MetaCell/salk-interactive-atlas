@@ -30,7 +30,7 @@ class PopulationStatus(models.TextChoices):
 
 class Population(models.Model):
     DEFAULT_COLOR = "#000000"
-    experiment = models.ForeignKey(Experiment, on_delete=models.DO_NOTHING)
+    experiment = models.ForeignKey(Experiment, on_delete=models.CASCADE)
     atlas = models.CharField(
         max_length=100, choices=AtlasesChoice.choices, default=AtlasesChoice.SLK10
     )
@@ -86,6 +86,8 @@ class Population(models.Model):
                or (has_property(self.cells, 'file') and self.cells.file.name != current.cells.file.name)
 
     def generate_cells(self, data_filepath: str):
+        self.status = PopulationStatus.RUNNING
+        self.save()
         try:
             self.cells.name = get_cells_filepath(data_filepath, self.storage_path)
         except Exception as e:
