@@ -33,7 +33,7 @@ export const ElectrophysiologyWidget = {
     status: WidgetStatus.ACTIVE,
 };
 
-export const twoDViewerWidget = (subdivisions: string[], activePopulations: Population[], selectedAtlas: AtlasChoice,) => {
+export const twoDViewerWidget = (subdivisions: string[], activePopulations: Population[], selectedAtlas: AtlasChoice) => {
     return {
         id: widgetIds.twoDViewer,
         name: "2D Viewer",
