@@ -1,4 +1,6 @@
 import numpy as np
+
+from cordmap.register.constants import segments_df
 from cordmap.utils.misc import check_set_intersections
 
 
@@ -26,6 +28,26 @@ def get_segment_from_z_position(data_z_coordinate, segment_z_values):
     for segment in segment_z_values:
         if data_z_coordinate in segment_z_values[segment]:
             return segment
+
+
+def get_atlas_z_position_from_segment(data_z_coordinate, segment_z_values):
+    segment = get_segment_from_z_position(data_z_coordinate, segment_z_values)
+    segment_lower = min(segment_z_values[segment])
+    segment_upper = max(segment_z_values[segment])
+    segment_position = 1 - (segment_upper - data_z_coordinate) / (
+        segment_upper - segment_lower
+    )
+    segment_slice_index = (
+        segments_df[segments_df["Segment"] == segment].values[0][1]
+        * segment_position
+    )
+    cum_atlas_cord_length = cumulative_cord_length(segment)
+    return cum_atlas_cord_length + segment_slice_index
+
+
+def cumulative_cord_length(segment_label):
+    idx = segments_df.index[segments_df["Segment"] == segment_label].values[0]
+    return segments_df.iloc[:idx].sum().values[1]
 
 
 def interpolate_atlas_section(
@@ -77,7 +99,7 @@ def create_single_section(
     data_by_type,
     slice,
     max_y,
-    cell_type_name: str = "OpenUpTriangle",
+    cell_type_names,
     cord_exterior_type_name: str = "Contour Name 1",
     grey_matter_type_name: str = "Grey",
     initial_pad=10,
@@ -89,10 +111,16 @@ def create_single_section(
     offset_1 = (
         min(data_by_type[cord_exterior_type_name][:, 2]) + initial_pad // 2
     )
+    cells_slice_all_pops = []
+    cell_pop_labels = []
 
-    cells_slice = extract_slice_2d(
-        data_by_type[cell_type_name], slice, (offset_0, offset_1)
-    )
+    for cell_type_name in cell_type_names:
+        cell_pop = extract_slice_2d(
+            data_by_type[cell_type_name], slice, (offset_0, offset_1)
+        )
+        cells_slice_all_pops.extend(cell_pop)
+        cell_pop_labels.extend([cell_type_name] * len(cell_pop))
+
     cord_slice = extract_slice_2d(
         data_by_type[cord_exterior_type_name], slice, (offset_0, offset_1)
     )
@@ -102,4 +130,34 @@ def create_single_section(
 
     centroid = np.array((max_y - offset_0, -offset_1))
 
-    return cells_slice, cord_slice, gm_slice, centroid
+    return (
+        np.array(cells_slice_all_pops),
+        cord_slice,
+        gm_slice,
+        centroid,
+        cell_pop_labels,
+    )
+
+
+def slice_loading_error_detected(composite_image):
+    if len(np.unique(composite_image)) != 3:
+        print(
+            f"not enough labels found in image, expected 3, "
+            f"got {len(np.unique(composite_image))}, "
+            f"skipping slice..."
+        )
+        return True
+    if np.count_nonzero(composite_image) < 18000:
+        print(
+            f"outlier image detected, "
+            f"too few labeled pixels {np.count_nonzero(composite_image)}, "
+            f"skipping slice..."
+        )
+        return True
+    if np.count_nonzero(composite_image == 2) < 4000:
+        print(
+            f"outlier image detected, "
+            f"too few grey matter pixels {np.count_nonzero(composite_image)}, "
+            f"skipping slice..."
+        )
+        return True

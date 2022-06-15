@@ -14,8 +14,8 @@ def get_single_data_section(
     data_by_type,
     section_to_load,
     max_y,
+    cell_type_names: list,
     atlas_pixel_size=10,
-    cell_type_name: str = "OpenUpTriangle",
     cord_exterior_type_name: str = "Contour Name 1",
     grey_matter_type_name: str = "Grey",
     padding=10,
@@ -24,15 +24,23 @@ def get_single_data_section(
     use_gm_for_reg=True,
     image_size=None,
 ):
-    cells_slice, cord_slice, gm_slice, centroid = create_single_section(
+    (
+        cells_slice,
+        cord_slice,
+        gm_slice,
+        centroid,
+        cell_pop_labels,
+    ) = create_single_section(
         data_by_type,
         section_to_load,
         max_y,
-        cell_type_name=cell_type_name,
+        cell_type_names=cell_type_names,
         cord_exterior_type_name=cord_exterior_type_name,
         grey_matter_type_name=grey_matter_type_name,
         initial_pad=padding,
     )
+    if len(cord_slice) == 0:
+        return None
     cord_gm_data_slice_image = create_cord_gm_image(
         cord_slice,
         gm_slice,
@@ -57,6 +65,7 @@ def get_single_data_section(
         cord_slice,
         cord_gm_data_slice_image,
         centroid,
+        cell_pop_labels,
     )
 
 

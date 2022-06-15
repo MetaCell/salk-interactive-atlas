@@ -6,13 +6,12 @@ def register_cord_section_3D(
     csv_file: str,
     output_directory: str,
     atlas: str = "salk_cord_10um",
-    cell_type_name: str = "OpenUpTriangle",
     cord_exterior_type_name: str = "Contour Name 1",
     grey_matter_type_name: str = "Grey",
     debug: bool = False,
     visualise: bool = False,
     save: bool = True,
-    save_csv: bool = False,
+    save_csv: bool = True,
     save_npy: bool = True,
     parallel: bool = True,
     n_free_cpus: int = 2,
@@ -40,8 +39,6 @@ def register_cord_section_3D(
     a list of available atlases.
     :param cell_type_name: Name of the cell feature type in the corresponding
     Key.csv file.
-    :param cell_type_name: Name of the cell feature type
-    in the corresponding Key.csv
     :param cord_exterior_type_name: Name of the cord exterior feature type
     in the corresponding Key.csv
     :param grey_matter_type_name: Name of the grey matter boundary feature type
@@ -81,7 +78,6 @@ def register_cord_section_3D(
         csv_file,
         output_directory,
         atlas_name=atlas,
-        cell_type_name=cell_type_name,
         cord_exterior_type_name=cord_exterior_type_name,
         grey_matter_type_name=grey_matter_type_name,
         debug=debug,
