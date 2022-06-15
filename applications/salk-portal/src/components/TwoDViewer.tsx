@@ -1,116 +1,100 @@
 import React, {useEffect, useRef, useState} from 'react';
 import {makeStyles} from "@material-ui/core/styles";
-import {canvasBg} from "../theme";
+import theme, {bodyBgColor, canvasBg, headerBorderColor} from "../theme";
 import {
-    Box, Button,
-    FormControl,
-    Grid,
-    Radio,
-    RadioGroup,
+    Box, Button, FormControl, FormControlLabel, InputLabel, MenuItem,
+    Popover, Select, Switch,
     Typography
 } from "@material-ui/core";
-import ArrowForwardIosIcon from '@material-ui/icons/ArrowForwardIos';
-// @ts-ignore
-import Loader from "@metacell/geppetto-meta-ui/loader/Loader";
-// @ts-ignore
 import {Population} from "../apiclient/workspaces";
-import {AtlasChoice, CAUDAL, DensityMapTypes, RequestState, ROSTRAL} from "../utilities/constants";
+import {
+    AtlasChoice,
+    CAUDAL,
+    DensityMapTypes,
+    NEURONAL_LOCATIONS_ID,
+    OVERLAYS, PROBABILITY_MAP_ID,
+    RequestState,
+    ROSTRAL
+} from "../utilities/constants";
 import workspaceService from "../service/WorkspaceService";
-import CordImageMapper from "./CordImageMapper";
 import {getAtlas} from "../service/AtlasService";
 import {clearCanvas, drawColoredImage, drawImage} from "../service/CanvasService";
-import {mod} from "../utilities/functions";
 import {useDidUpdateEffect} from "../utilities/hooks/useDidUpdateEffect";
+// @ts-ignore
+import SWITCH_ICON from "../assets/images/icons/switch_icon.svg";
+import ExpandLessIcon from "@material-ui/icons/ExpandLess";
+import CordImageMapper from "./CordImageMapper";
 
 const HEIGHT = "calc(100% - 55px)"
 
-const useStyles = makeStyles({
-    placeholder: {
-        height: "100%",
-        margin: 0,
-    },
+const useStyles = makeStyles(t => ({
     densityMapImage: {
-        width: "100%",
-        objectFit: "contain",
-        margin: 0,
-        position: "sticky",
-        top: 0
+        width: "80%"
     },
-    container: {
-        background: "#323436",
-        height: "100%"
+    densityMapImageContainer: {
+        display: 'flex',
+        flex: '1',
+        justifyContent: 'center'
     },
     buttonContainer: {
+        position: 'absolute',
+        bottom: t.spacing(1),
+        left: t.spacing(1),
+    },
+    button: {
+        backgroundColor: headerBorderColor,
+        width: 200
+    },
+    innerButtonContainer: {
         display: 'flex',
         flex: '1',
-        justifyContent: 'space-between'
+        justifyContent: 'space-between',
+        alignItems: "center",
+        gap: t.spacing(1)
     },
-    radioContainer: {
-        display: 'flex',
-        flex: '1',
-        justifyContent: 'flex-start'
+    buttonLabel: {
+        fontSize: "0.75rem"
     },
-    radio: {
-        marginRight: "1rem"
-    },
-    fullWidth: {
-        width: "100%"
-    },
-    border: {
-        border: `1px solid rgba(255, 255, 255, 0.05)`,
-        borderRadius: "4px 4px 4px 4px"
-    },
-    subsectionBorder: {
-        borderTop: `1px solid rgba(255, 255, 255, 0.05)`,
-        borderRight: `1px solid rgba(255, 255, 255, 0.05)`,
+    popoverContent: {
+        paddingBottom: t.spacing(1)
     },
     cordImageContainer: {
         display: 'flex',
         flex: '1',
         justifyContent: 'center',
-        borderRight: `1px solid rgba(255, 255, 255, 0.05)`
     },
-    fontSize: {
-        fontSize: "0.75rem"
+    dropdownContainer: {
+        width: "100%"
     },
-    subdivisionsContainer: {
-        height: HEIGHT,
-        overflow: "auto"
-    }
-});
+    select: {
+        fontSize: 12
+    },
+    selectMenu: {
+        marginTop: -50
+    },
+    popover: {
+        "&.MuiPopover-paper": {
+            width: "200px!important"
+        }
+    },
+}))
 
-const RADIO_GROUP_NAME = "segments-radio-buttons-group"
 const SEPARATOR = '_'
 
-// @ts-ignore
-const RadioButton = ({onChange, isChecked, label}) => {
-    const classes = useStyles();
-
-    return (
-        <Button className={`${classes.buttonContainer} ${classes.fullWidth}`} onClick={() => onChange(label)}>
-            <span className={classes.radioContainer}>
-                <Radio
-                    checked={isChecked}
-                    value={label}
-                    name={RADIO_GROUP_NAME}
-                    className={classes.radio}
-                />
-                <Typography className={classes.fontSize}>{label}</Typography>
-            </span>
-            <ArrowForwardIosIcon className={classes.fontSize}/>
-        </Button>
-    );
+const getDefaultOverlays = () => {
+    const overlaysSwitchState: { [key: string]: boolean } = {}
+    // @ts-ignore
+    Object.keys(OVERLAYS).forEach(k => overlaysSwitchState[k] = false)
+    return overlaysSwitchState
 }
 
-const DensityMap = (props: {
+const TwoDViewer = (props: {
     subdivisions: string[], activePopulations: Population[],
     selectedAtlas: AtlasChoice,
-    showProbabilityMap: boolean,
-    showNeuronalLocations: boolean,
     invalidCachePopulations: Set<string>
 }) => {
     const api = workspaceService.getApi()
-    const {activePopulations, selectedAtlas, showProbabilityMap, showNeuronalLocations, invalidCachePopulations} = props
+    const {activePopulations, selectedAtlas, invalidCachePopulations} = props
     const activePopulationsColorMap = activePopulations.reduce((acc, pop) => {
         return {...acc, [pop.id.toString()]: pop.color}
     }, {})
@@ -125,10 +109,9 @@ const DensityMap = (props: {
     const [isLoading, setIsLoading] = useState(false)
     const [isReady, setIsReady] = useState(false)
     const cache = useRef({} as any);
+    const [anchorEl, setAnchorEl] = React.useState<HTMLButtonElement | null>(null);
+    const [overlaysSwitchState, setOverlaysSwitchState] = useState(getDefaultOverlays())
 
-    const handleChange = (value: number) => {
-        setSelectedValueIndex(value);
-    };
 
     const fetchData = async (population: Population, apiMethod: (id: string, subdivision: string, options: any) => Promise<any>) => {
         const response = await apiMethod(population.id.toString(), segments[selectedValueIndex], {responseType: 'blob'})
@@ -143,7 +126,7 @@ const DensityMap = (props: {
 
     function updateCentroids() {
         if (activePopulations.length > 0) {
-            if (showNeuronalLocations) {
+            if (overlaysSwitchState[NEURONAL_LOCATIONS_ID]) {
                 return Promise.all(activePopulations.filter((p: Population) => !isInCache(p, DensityMapTypes.CENTROIDS_DATA)).map(p =>
                     fetchData(p, (id, subdivision, options) => api.centroidsPopulation(id, subdivision, options))))
                     .then(centroidsResponses => {
@@ -159,7 +142,7 @@ const DensityMap = (props: {
 
     function updateProbabilityMap() {
         if (activePopulations.length > 0) {
-            if (showProbabilityMap) {
+            if (overlaysSwitchState[PROBABILITY_MAP_ID]) {
                 return Promise.all(activePopulations.filter((p: Population) => !isInCache(p, DensityMapTypes.PROBABILITY_DATA)).map(p =>
                     fetchData(p, (id, subdivision, options) => api.probabilityMapPopulation(id, subdivision, options))))
                     .then(probabilityMapResponses => {
@@ -196,10 +179,6 @@ const DensityMap = (props: {
         return Object.keys(cache.current).includes(`${id}${SEPARATOR}${segments[selectedValueIndex]}`) && cache.current[`${id}${SEPARATOR}${segments[selectedValueIndex]}`][type] != null
     }
 
-    const hasSomethingToDraw = () => {
-        return showNeuronalLocations || showProbabilityMap
-    }
-
     const isCanvasReady = () => {
         const canvas = canvasRef.current
         const hiddenCanvas = hiddenCanvasRef.current
@@ -218,7 +197,7 @@ const DensityMap = (props: {
             return
         }
 
-        if (!hasSomethingToDraw() || !isCanvasReady()) {
+        if (!isCanvasReady()) {
             setIsLoading(false)
             return
         }
@@ -234,7 +213,7 @@ const DensityMap = (props: {
         }
         const promises = []
         for (const pId of Object.keys(content)) {
-            if (showProbabilityMap) {
+            if (overlaysSwitchState[PROBABILITY_MAP_ID]) {
                 // @ts-ignore
                 const pData = content[pId][DensityMapTypes.PROBABILITY_DATA]
                 const promise = getDrawColoredImagePromise(pData, canvas, hiddenCanvas, pId);
@@ -242,7 +221,7 @@ const DensityMap = (props: {
                     promises.push(promise)
                 }
             }
-            if (showNeuronalLocations) {
+            if (overlaysSwitchState[NEURONAL_LOCATIONS_ID]) {
                 // @ts-ignore
                 const cData = content[pId][DensityMapTypes.CENTROIDS_DATA]
                 const promise = getDrawColoredImagePromise(cData, canvas, hiddenCanvas, pId);
@@ -287,7 +266,7 @@ const DensityMap = (props: {
         } else {
             setContent(getActiveContent())
         }
-    }, [showProbabilityMap])
+    }, [overlaysSwitchState[PROBABILITY_MAP_ID]])
 
     useDidUpdateEffect(() => {
         setIsLoading(true)
@@ -297,7 +276,7 @@ const DensityMap = (props: {
         } else {
             setContent(getActiveContent())
         }
-    }, [showNeuronalLocations])
+    }, [overlaysSwitchState[NEURONAL_LOCATIONS_ID]])
 
     useEffect(() => {
         Object.keys(cache).forEach(idSegment => {
@@ -317,55 +296,102 @@ const DensityMap = (props: {
         setIsReady(true)
     }, [])
 
+
+    const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+        setAnchorEl(event.currentTarget);
+    };
+
+    const handleClose = () => {
+        setAnchorEl(null);
+    };
+
+    const handleOverlaySwitch = (overlayId: string) => {
+        setOverlaysSwitchState({...overlaysSwitchState, [overlayId]: !overlaysSwitchState[overlayId]})
+    };
+
+    const handleSegmentChange = (value: number) => {
+        setSelectedValueIndex(value);
+    };
+
     const classes = useStyles();
     // @ts-ignore
     const boxStyle = {flexGrow: 1, background: canvasBg, padding: "1rem", minHeight: "100%", height: HEIGHT}
-    const gridStyle = {className: `${classes.container} ${classes.border}`, container: true, columns: 2, height: HEIGHT}
-    const subdivisionsGridStyle = {height: HEIGHT}
+    const open = Boolean(anchorEl);
+    const popoverHeight = anchorEl?.parentNode?.parentNode?.clientHeight ?
+        anchorEl.parentNode.parentNode.clientHeight - theme.spacing(1) :
+        0
     return (
         <Box sx={boxStyle}>
-            <Grid {...gridStyle}>
-                <Grid item={true} xs={4} style={{...subdivisionsGridStyle}}>
+            <Box className={classes.buttonContainer}>
+                <Button className={classes.button}
+                        onClick={(event) => handleClick(event)}>
+                    <Box className={classes.innerButtonContainer}>
+                        <Typography className={classes.buttonLabel}>Custom View</Typography>
+                        <ExpandLessIcon/>
+                    </Box>
+                </Button>
+                <Popover
+                    open={open}
+                    anchorEl={anchorEl}
+                    onClose={() => handleClose()}
+                    anchorOrigin={{
+                        vertical: 'top',
+                        horizontal: 'left',
+                    }}
+                    PaperProps={{
+                        style: {
+                            width: anchorEl?.offsetWidth,
+                            height: popoverHeight,
+                            background: bodyBgColor,
+                            padding: `${theme.spacing(1)}px ${theme.spacing(1)}px 0px ${theme.spacing(1)}px`
+                        },
+                    }}
+                    classes={{
+                        paper: classes.popover
+                    }}
+                >
+
                     <Box className={`${classes.cordImageContainer}`}>
                         <CordImageMapper
                             segments={segments}
                             selected={selectedValueIndex}
-                            onChange={handleChange}
+                            onChange={handleSegmentChange}
                         />
                     </Box>
-                    <Box className={`scrollbarStyle ${classes.subdivisionsContainer}`}>
-                        <FormControl className={classes.fullWidth}>
-                            <RadioGroup
-                                aria-labelledby="segments-radio-buttons-group-label"
-                                name={RADIO_GROUP_NAME}
-                            >
-                                {subdivisions.map((sId, idx) => (
-                                        <Box key={sId} className={classes.subsectionBorder}>
-                                            <RadioButton
-                                                onChange={() => handleChange(idx * 2)}
-                                                isChecked={segments[selectedValueIndex] === `${sId}-${ROSTRAL}`}
-                                                label={`${sId}-${ROSTRAL}`}
-                                            />
-                                            <RadioButton
-                                                onChange={() => handleChange(idx * 2 + 1)}
-                                                isChecked={segments[selectedValueIndex] === `${sId}-${CAUDAL}`}
-                                                label={`${sId}-${CAUDAL}`}
-                                            />
-                                        </Box>
-                                    )
-                                )}
-                            </RadioGroup>
-                        </FormControl>
-                    </Box>
-                </Grid>
-                <Grid item={true} xs={8}>
-                    <Loader active={isLoading}/>
-                    <canvas hidden={true} ref={hiddenCanvasRef}/>
-                    <canvas hidden={isLoading} className={classes.densityMapImage} ref={canvasRef}/>
-                </Grid>
-            </Grid>
+
+                    <FormControl className={`${classes.dropdownContainer}`}>
+                        <Select
+                            className={`${classes.select}`}
+                            disableUnderline={true}
+                            value={selectedValueIndex}
+                            onChange={(event) => handleSegmentChange(event.target.value)}
+                            MenuProps={{ classes: { paper: classes.selectMenu }}}
+                        >
+                            {segments.map((segment, idx) =>
+                                <MenuItem key={segment} value={idx}> {segment} </MenuItem>
+                            )}
+                        </Select>
+                    </FormControl>
+
+                    {Object.keys(OVERLAYS).map(oId =>
+                        <FormControlLabel
+                            className={classes.popoverContent}
+                            key={oId}
+                            control={<Switch/>}
+                            label={OVERLAYS[oId].name}
+                            labelPlacement="start"
+                            onChange={() => handleOverlaySwitch(oId)}
+                            checked={overlaysSwitchState[oId]}
+                        />
+                    )}
+                </Popover>
+            </Box>
+            <Box className={classes.densityMapImageContainer}>
+                <canvas hidden={true} ref={hiddenCanvasRef}/>
+                <canvas hidden={isLoading} className={classes.densityMapImage} ref={canvasRef}/>
+            </Box>
         </Box>
     );
 };
 
-export default DensityMap
+export default TwoDViewer
