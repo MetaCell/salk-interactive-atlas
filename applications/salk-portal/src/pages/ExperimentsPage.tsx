@@ -198,7 +198,7 @@ const ExperimentsPage = () => {
             case widgetIds.threeDViewer:
                 return threeDViewerWidget(selectedAtlas, getActivePopulations())
             case widgetIds.twoDViewer:
-                return twoDViewerWidget(Object.keys(subdivisions), Object.values(getActivePopulations()), selectedAtlas))
+                return twoDViewerWidget(Object.keys(subdivisions), Object.values(getActivePopulations()), selectedAtlas)
         }
 
     }
