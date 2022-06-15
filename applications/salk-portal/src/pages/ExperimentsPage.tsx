@@ -17,17 +17,16 @@ import Sidebar from "../components/ExperimentSidebar";
 import {
     AtlasChoice,
     NEURONAL_LOCATIONS_ID,
-    OVERLAYS,
     POPULATION_FINISHED_STATE,
     PROBABILITY_MAP_ID,
     PULL_TIME_MS
 } from "../utilities/constants"
 import {getAtlas} from "../service/AtlasService";
-import {Experiment, ExperimentPopulations} from "../apiclient/workspaces";
+import {Experiment, Population} from "../apiclient/workspaces";
 import {areAllSelected} from "../utilities/functions";
 import workspaceService from "../service/WorkspaceService";
 import Cell from "../models/Cell";
-import {canvasWidget, densityWidget, ElectrophysiologyWidget, widgetIds} from "../widgets";
+import {threeDViewerWidget, ElectrophysiologyWidget, widgetIds, twoDViewerWidget} from "../widgets";
 import {useInterval} from "../utilities/hooks/useInterval";
 import {useParams} from "react-router";
 
@@ -60,13 +59,6 @@ const getSubdivisions = (sa: AtlasChoice) => {
     return subdivisions
 }
 
-const getDefaultOverlays = () => {
-    const overlaysSwitchState: { [key: string]: boolean } = {}
-    // @ts-ignore
-    Object.keys(OVERLAYS).forEach(k => overlaysSwitchState[k] = false)
-    return overlaysSwitchState
-}
-
 
 /**
  * The component that renders the FlexLayout component of the LayoutManager.
@@ -82,7 +74,6 @@ const ExperimentsPage = () => {
     const [subdivisions, setSubdivisions] = useState(getSubdivisions(selectedAtlas));
     const [populations, setPopulations] = useState({} as any);
     const [sidebarPopulations, setSidebarPopulations] = useState({} as any);
-    const [overlaysSwitchState, setOverlaysSwitchState] = useState(getDefaultOverlays())
 
 
     const dispatch = useDispatch();
@@ -90,7 +81,7 @@ const ExperimentsPage = () => {
 
     const getPopulations = (e: Experiment, sa: AtlasChoice) => {
         const nextPopulations: any = {}
-        const filteredPopulations = e.populations.filter((p: ExperimentPopulations) => p.atlas === sa)
+        const filteredPopulations = e.populations.filter((p: Population) => p.atlas === sa)
         // @ts-ignore
         filteredPopulations.forEach(p => nextPopulations[p.id] = {
             ...p,
@@ -138,43 +129,6 @@ const ExperimentsPage = () => {
         setSidebarPopulations(nextPopulations)
     };
 
-    const handleWidgets = () => {
-        const switchableWidgets = new Set()
-        // if the widget is not active
-        for (const overlay of Object.keys(overlaysSwitchState)) {
-            // @ts-ignore
-            const widgetId = OVERLAYS[overlay].widgetId
-            // if switch is active but widget is not added
-            if (overlaysSwitchState[overlay] && !(widgetId in store.getState().widgets)) {
-                dispatch(addWidget(getOverlayWidget(widgetId)))
-            }
-            switchableWidgets.add(widgetId)
-        }
-
-        for (const wId of Object.keys(store.getState().widgets)) {
-            // if widget is visible but no switch is on
-            if (switchableWidgets.has(wId) && !hasActiveSwitch(wId)) {
-                dispatch(deleteWidget(wId))
-            }
-        }
-    }
-
-    const hasActiveSwitch = (widgetId: string) => {
-        for (const overlayId of Object.keys(overlaysSwitchState)) {
-            // @ts-ignore
-            if (OVERLAYS[overlayId].widgetId === widgetId) {
-                if (overlaysSwitchState[overlayId]) {
-                    return true
-                }
-            }
-        }
-        return false
-    }
-
-    const handleOverlaySwitch = (overlayId: string) => {
-        setOverlaysSwitchState({...overlaysSwitchState, [overlayId]: !overlaysSwitchState[overlayId]})
-    };
-
     const handlePopulationColorChange = async (id: string, color: string, opacity: string) => {
         // @ts-ignore
         await api.partialUpdatePopulation(id, {color, opacity})
@@ -183,17 +137,9 @@ const ExperimentsPage = () => {
         // @ts-ignore
         nextPopulations[id] = {...nextPopulations[id], color, opacity}
         setPopulations(nextPopulations)
+        setSidebarPopulations(nextPopulations)
     }
 
-    const getOverlayWidget = (widgetId: string) => {
-        switch (widgetId) {
-            case widgetIds.densityMap:
-                return densityWidget(Object.keys(subdivisions), Object.values(getActivePopulations()),
-                    selectedAtlas, overlaysSwitchState[PROBABILITY_MAP_ID], overlaysSwitchState[NEURONAL_LOCATIONS_ID])
-            default:
-                return null
-        }
-    }
 
     const getActivePopulations = () => Object.keys(populations)
         // @ts-ignore
@@ -204,17 +150,38 @@ const ExperimentsPage = () => {
             return obj;
         }, {});
 
-
-    const getSelectedSubdivisionsSet = () => {
-        return new Set(Object.keys(subdivisions).filter(sId => subdivisions[sId].selected));
-    }
-
     useInterval(() => {
         const fetchData = async () => {
             const response = await api.retrieveExperiment(params.id)
             const fetchedExperiment = response.data;
-            setSidebarPopulations(getPopulations(fetchedExperiment, selectedAtlas))
-            // TODO: Handle error status on populations
+            const cells = await Promise.all(fetchedExperiment.populations.map(async (p) => {
+                if (p.status !== POPULATION_FINISHED_STATE) return [];
+                const existingPopulation = experiment.populations.find(e => e.id === p.id)
+                if (existingPopulation !== undefined && typeof existingPopulation.cells !== "string" && existingPopulation.cells.length > 0) return existingPopulation.cells
+                try {
+                    const cellsFile = await api.cellsPopulation(`${p.id}`);
+                    // @ts-ignore
+                    return cellsFile.data.split('\r\n').map(csv => new Cell(csv));
+                } catch {
+                    return [];
+                }
+            }));
+            let shouldUpdateExperiment = false;
+            fetchedExperiment.populations.forEach((p, i) => {
+                const existingPopulation = experiment.populations.find(e => e.id === p.id)
+                if (existingPopulation === undefined || typeof existingPopulation.cells === "string" || existingPopulation.cells.length === 0) {
+                    // previous population cells !== new population cells --> update the experiment data
+                    shouldUpdateExperiment = true;
+                }
+                fetchedExperiment.populations[i].cells = cells[i]
+            });
+            if (shouldUpdateExperiment) {
+                setExperiment(fetchedExperiment)
+                const experimentPopulations = getPopulations(fetchedExperiment, selectedAtlas)
+                setPopulations(experimentPopulations)
+                setSidebarPopulations(experimentPopulations)
+                // TODO: Handle error status on populations
+            }
         }
         fetchData()
             .catch(console.error);
@@ -225,17 +192,19 @@ const ExperimentsPage = () => {
         const fetchData = async () => {
             const response = await api.retrieveExperiment(params.id)
             const data = response.data;
-            data.populations.forEach(async(p, i) => {
-                data.populations[i].cells = await api.cellsPopulation(`${p.id}`).catch();
+            const cells = await Promise.all(data.populations.map(async (p) => {
+                if (p.status !== POPULATION_FINISHED_STATE) return [];
+                try {
+                    const cellsFile = await api.cellsPopulation(`${p.id}`);
+                    // @ts-ignore
+                    return cellsFile.data.split('\r\n').map(csv => new Cell(csv));
+                } catch {
+                    return [];
+                }
+            }));
+            data.populations.forEach((p, i) => {
+                data.populations[i].cells = cells[i]
             });
-            // const cells = await Promise.all(data.populations.map(async (p) => {
-            //     const cellsFile = await api.cellsPopulation(`${p.id}`);
-            //     // @ts-ignore
-            //     return cellsFile.data.split('\r\n').map(csv => new Cell(csv));
-            // }));
-            // data.populations.forEach((p, i) => {
-            //     data.populations[i].cells = cells[i]
-            // });
             setExperiment(data)
         }
 
@@ -248,35 +217,30 @@ const ExperimentsPage = () => {
             const experimentPopulations = getPopulations(experiment, selectedAtlas)
             setPopulations(experimentPopulations)
             setSidebarPopulations(experimentPopulations)
-            dispatch(addWidget(canvasWidget(selectedAtlas, new Set(), {})));
+            dispatch(addWidget(threeDViewerWidget(selectedAtlas, {})));
+            dispatch(addWidget(twoDViewerWidget(Object.keys(subdivisions), [], selectedAtlas)));
             dispatch(addWidget(ElectrophysiologyWidget));
         }
     }, [experiment])
 
-
-    useEffect(() => {
-        handleWidgets()
-        if (widgetIds.densityMap in store.getState().widgets) {
-            dispatch(updateWidget(getOverlayWidget(widgetIds.densityMap)))
-        }
-    }, [overlaysSwitchState])
-
     // TODO: Handle selectedAtlas changes
 
-    useEffect(() => {
-        const subdivisionsSet = getSelectedSubdivisionsSet()
-        if (widgetIds.canvas in store.getState().widgets) {
-            dispatch(updateWidget(canvasWidget(selectedAtlas, subdivisionsSet, getActivePopulations(), true)))
+    function getWidget(widgetId: string) {
+        switch (widgetId){
+            case widgetIds.threeDViewer:
+                return threeDViewerWidget(selectedAtlas, getActivePopulations())
+            case widgetIds.twoDViewer:
+                return twoDViewerWidget(Object.keys(subdivisions), Object.values(getActivePopulations()), selectedAtlas)
         }
-    }, [subdivisions])
+
+    }
 
     useEffect(() => {
-        const subdivisionsSet = getSelectedSubdivisionsSet();
-        if (widgetIds.canvas in store.getState().widgets) {
-            dispatch(updateWidget(canvasWidget(selectedAtlas, subdivisionsSet, getActivePopulations(), false)))
-        }
-        if (widgetIds.densityMap in store.getState().widgets) {
-            dispatch(updateWidget(getOverlayWidget(widgetIds.densityMap)))
+        for (const widgetId of Object.keys(store.getState().widgets)) {
+            const widget = getWidget(widgetId)
+            if (widget) {
+                dispatch(updateWidget(widget))
+            }
         }
     }, [populations])
 
@@ -291,15 +255,12 @@ const ExperimentsPage = () => {
 
     return experiment != null ? (
         <Box display="flex">
-            <Sidebar selectedAtlas={selectedAtlas} subdivisions={subdivisions}
-                     populations={sidebarPopulations} overlays={Object.keys(overlaysSwitchState)}
+            <Sidebar selectedAtlas={selectedAtlas}
+                     populations={sidebarPopulations}
                      handleAtlasChange={handleAtlasChange}
-                     handleSubdivisionSwitch={handleSubdivisionSwitch}
                      handlePopulationSwitch={handlePopulationSwitch}
-                     handleShowAllSubdivisions={handleShowAllSubdivisions}
                      handleShowAllPopulations={handleShowAllPopulations}
                      handlePopulationColorChange={handlePopulationColorChange}
-                     handleOverlaySwitch={handleOverlaySwitch}
                      hasEditPermission={experiment.has_edit_permission}
             />
             <Box className={classes.layoutContainer}>

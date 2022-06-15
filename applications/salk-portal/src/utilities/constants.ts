@@ -24,9 +24,9 @@ export const PROBABILITY_MAP_ID = 'probabilityMap'
 export const NEURONAL_LOCATIONS_ID = 'neuronalLocations'
 
 export const OVERLAYS = {
-    [PROBABILITY_MAP_ID]: new OverlayMetadata(PROBABILITY_MAP_ID, "Probability Map", widgetIds.densityMap),
-    [NEURONAL_LOCATIONS_ID]:  new OverlayMetadata(NEURONAL_LOCATIONS_ID, "Neuronal Locations", widgetIds.densityMap),
-}
+    [PROBABILITY_MAP_ID]: new OverlayMetadata(PROBABILITY_MAP_ID, "Probability Map"),
+    [NEURONAL_LOCATIONS_ID]:  new OverlayMetadata(NEURONAL_LOCATIONS_ID, "Neuronal Locations"),
+} as any
 
 export enum RequestState {
     NO_CONTENT ,
