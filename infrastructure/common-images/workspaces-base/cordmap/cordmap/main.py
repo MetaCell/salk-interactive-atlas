@@ -1,3 +1,5 @@
+import pathlib
+
 import numpy as np
 import pandas as pd
 
@@ -16,6 +18,8 @@ from bg_atlasapi import BrainGlobeAtlas
 from cordmap.data.io import load_data, save_output
 from cordmap.data.utils import get_data_segments
 from cordmap.atlas.utils import load_create_cord_gm_atlas_volume_image
+from cordmap.get_all_population_keys import get_populations_from_file
+from cordmap.register.constants import population_ignore_set
 
 from cordmap.utils.misc import ensure_directory_exists
 from cordmap.data.utils import filter_data_by_type
@@ -31,7 +35,6 @@ def register_sections_3D(
     filename,
     output_directory,
     atlas_name="salk_cord_10um",
-    cell_type_name: str = "OpenUpTriangle",
     cord_exterior_type_name: str = "Contour Name 1",
     grey_matter_type_name: str = "Grey",
     padding=10,
@@ -66,7 +69,9 @@ def register_sections_3D(
         log_header="CORDMAP LOG",
         multiprocessing_aware=True,
     )
-
+    cell_type_names = get_populations_from_file(
+        pathlib.Path(filename), population_ignore_set
+    )
     atlas = BrainGlobeAtlas(atlas_name)
     atlas_pixel_size_xy = int(atlas.resolution[1])
 
@@ -93,11 +98,27 @@ def register_sections_3D(
 
     segment_z_values = get_data_segments(data_by_type, atlas_segments)
 
-    transformed_cells = np.empty((0, 3))
+    transformed_cells = np.empty((0, 3))  # deprecate
+    labeled_cells = pd.DataFrame(columns=["z", "x", "y", "population_key"])
     transformed_gm = np.empty((0, 3))
     transformed_cord = np.empty((0, 3))
-
-    cell_z_coordinates = list(np.unique(data_by_type[cell_type_name][:, 0]))
+    z_export_data = pd.DataFrame(
+        columns=["sample_z", "atlas_z", "segment_key"]
+    )
+    registration_errors_export_data = pd.DataFrame(
+        columns=[
+            "sample_z",
+            "atlas_section_id",
+            "npix percentage cord outlier",
+            "npix percentage gm outlier",
+            "percent gm",
+            "percent wm",
+        ]
+    )
+    cell_z_coordinates = []
+    for cell_type_name in cell_type_names:
+        cell_z_coordinates.extend(data_by_type[cell_type_name][:, 0])
+    cell_z_coordinates = list(np.unique(cell_z_coordinates))
 
     if debug:
         logging.debug("Analysing data subset")
@@ -127,7 +148,10 @@ def register_sections_3D(
                     atlas_pixel_size_xy,
                     max_y,
                     atlas_centroids,
-                    cell_type_name,
+                    cell_type_names,
+                    z_export_data,
+                    registration_errors_export_data,
+                    labeled_cells,
                     cord_exterior_type_name,
                     grey_matter_type_name,
                     padding,
@@ -143,6 +167,7 @@ def register_sections_3D(
                 for i in range(num_processes)
             ]
         )
+
         for process in output:
             for z_position in process[1]:
                 transformed_cells = np.append(
@@ -154,13 +179,22 @@ def register_sections_3D(
                 transformed_cord = np.append(
                     transformed_cord, z_position, axis=0
                 )
-
+            z_export_data = z_export_data.append(process[4], ignore_index=True)
+            registration_errors_export_data = (
+                registration_errors_export_data.append(
+                    process[5], ignore_index=True
+                )
+            )
+            labeled_cells = labeled_cells.append(process[6], ignore_index=True)
     else:
         for data_z_coordinate in cell_z_coordinates:
             (
                 transformed_cells,
                 transformed_gm,
                 transformed_cord,
+                z_export_data,
+                registration_errors_export_data,
+                labeled_cells,
             ) = register_single_section_serial(
                 data_z_coordinate,
                 moving_image,
@@ -173,7 +207,10 @@ def register_sections_3D(
                 atlas_pixel_size_xy,
                 max_y,
                 atlas_centroids,
-                cell_type_name=cell_type_name,
+                z_export_data,
+                registration_errors_export_data,
+                labeled_cells,
+                cell_type_names=cell_type_names,
                 cord_exterior_type_name=cord_exterior_type_name,
                 grey_matter_type_name=grey_matter_type_name,
                 padding=padding,
@@ -193,9 +230,13 @@ def register_sections_3D(
             transformed_gm,
             transformed_cord,
             atlas,
+            z_export_data,
+            registration_errors_export_data,
+            labeled_cells,
             save_csv=save_csv,
             save_npy=save_npy,
         )
+
     if prob_map:
         probability_map = generate_prob_map(
             output_directory,
