@@ -25,7 +25,7 @@ class TeamSerializer(serializers.ModelSerializer):
 
 class UserTeamSerializer(serializers.ModelSerializer):
     groups = TeamSerializer(many=True, read_only=True)
-    avatar = serializers.CharField(source="userdetail.avatar.url")
+    avatar = serializers.CharField(source="userdetail.avatar")
 
     class Meta:
         model = User

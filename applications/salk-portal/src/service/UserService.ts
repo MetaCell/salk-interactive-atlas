@@ -19,7 +19,7 @@ function mapKeycloakUser(userInfo: any, userDetails: any): UserInfo {
         email: userInfo.email,
         isAdmin: isUserAdmin(),
         username: userInfo.preferred_username || userInfo.given_name,
-        avatarUrl: userDetails ? userDetails.avatar : null,
+        avatarUrl: userDetails ? `/${userDetails.avatar}` : null,
         notificationMethod: userDetails ? userDetails.notification_method : null,
         notifyNews: userDetails ? userDetails.notify_on_news : null,
         notifyNewShare: userDetails ? userDetails.notify_on_new_share : null,
