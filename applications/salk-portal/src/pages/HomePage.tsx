@@ -17,7 +17,6 @@ import { CloneExperimentDialog } from "../components/home/CloneExperimentDialog"
 import { ExplorationSpinalCordDialog } from "../components/home/ExplorationSpinalCordDialog";
 import { ShareExperimentDialog } from "../components/home/ShareExperiment";
 import { ShareMultipleExperimentDialog } from "../components/home/ShareMultipleExperiment";
-import {useInterval} from "../utilities/hooks/useInterval";
 import workspaceService from "../service/WorkspaceService";
 
 const useStyles = makeStyles(() => ({
@@ -89,12 +88,6 @@ export default (props: any) => {
   useEffect(() => {
     fetchExperiments().catch(console.error);
   }, [latestExperimentId])
-
-  useInterval(() => {
-    fetchExperiments().catch(console.error);
-  }, PULL_TIME_MS);
-
-
 
   return (
     <Box display="flex">

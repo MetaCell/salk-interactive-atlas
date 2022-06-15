@@ -1,7 +1,7 @@
 import logging
 
 import numpy as np
-from django.http import HttpResponse
+from django.http import HttpResponse, Http404
 from dry_rest_permissions.generics import DRYPermissions
 from rest_framework.decorators import action
 from rest_framework.response import Response
@@ -40,8 +40,11 @@ class PopulationViewSet(viewsets.ModelViewSet):
     @action(detail=True)
     def cells(self, request, **kwargs):
         instance = self.get_object()
-        response = send_file(instance.cells.file)
-        return response
+        try:
+            return send_file(instance.cells.file)
+        except ValueError:
+            # there is no file yet associated with the population --> return not found 404
+            raise Http404
 
     @action(detail=True, url_path='probability_map/(?P<subdivision>[^/.]+)', url_name='probability_map')
     def probability_map(self, request, **kwargs):
