@@ -14,11 +14,11 @@ harness:
       size: 5Gi
     resources:
       requests:
-        memory: 1Gi
-        cpu: 750m
+        memory: 2Gi
+        cpu: 500m
       limits:
-        memory: 1Gi
-        cpu: 750m
+        memory: 2Gi
+        cpu: 500m
   database:
     auto: true
     type: postgres

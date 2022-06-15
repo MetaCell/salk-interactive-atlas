@@ -201,20 +201,18 @@ const ExperimentSidebar = ({
 
 
     const sidebarClass = `${classes.sidebar} scrollbar ${shrink ? `${classes.shrink}` : ``}`;
-    const PopulationLabel = ({labelText}) => {
-        const hasBigName = labelText.length > MAX_STR_LENGTH_SIDEBAR
-        return hasBigName ? (
+    const PopulationLabel = ({population}) => {
+        let labelText = population.name;
+        if (population.status != POPULATION_FINISHED_STATE) {
+            labelText += `- ${population.status}`
+        }
+        return (
             <Tooltip title={labelText} placement="top">
                 <Typography className='population-label'>
                     {labelText.substr(0, MAX_STR_LENGTH_SIDEBAR)}
                 </Typography>
             </Tooltip>
-        ) : (
-            <Typography className='population-label'>
-                {labelText}
-            </Typography>
         )
-
     }
     const populationTextStyle = (disabled) => hasEditPermission && !disabled? {} : {marginLeft: "8px"}
 
@@ -307,7 +305,7 @@ const ExperimentSidebar = ({
                                     <FormControlLabel
                                         className={'population-label'}
                                         key={pId} control={<Switch/>}
-                                        label={<PopulationLabel labelText={populations[pId].name}/>}
+                                        label={<PopulationLabel population={populations[pId]}/>}
                                         labelPlacement="start"
                                         onChange={() => handlePopulationSwitch(pId)}
                                         checked={populations[pId].selected}
