@@ -137,6 +137,7 @@ const ExperimentsPage = () => {
         // @ts-ignore
         nextPopulations[id] = {...nextPopulations[id], color, opacity}
         setPopulations(nextPopulations)
+        setSidebarPopulations(nextPopulations)
     }
 
 
@@ -153,8 +154,34 @@ const ExperimentsPage = () => {
         const fetchData = async () => {
             const response = await api.retrieveExperiment(params.id)
             const fetchedExperiment = response.data;
-            setSidebarPopulations(getPopulations(fetchedExperiment, selectedAtlas))
-            // TODO: Handle error status on populations
+            const cells = await Promise.all(fetchedExperiment.populations.map(async (p) => {
+                if (p.status !== POPULATION_FINISHED_STATE) return [];
+                const existingPopulation = experiment.populations.find(e => e.id === p.id)
+                if (existingPopulation !== undefined && typeof existingPopulation.cells !== "string" && existingPopulation.cells.length > 0) return existingPopulation.cells
+                try {
+                    const cellsFile = await api.cellsPopulation(`${p.id}`);
+                    // @ts-ignore
+                    return cellsFile.data.split('\r\n').map(csv => new Cell(csv));
+                } catch {
+                    return [];
+                }
+            }));
+            let shouldUpdateExperiment = false;
+            fetchedExperiment.populations.forEach((p, i) => {
+                const existingPopulation = experiment.populations.find(e => e.id === p.id)
+                if (existingPopulation === undefined || typeof existingPopulation.cells === "string" || existingPopulation.cells.length === 0) {
+                    // previous population cells !== new population cells --> update the experiment data
+                    shouldUpdateExperiment = true;
+                }
+                fetchedExperiment.populations[i].cells = cells[i]
+            });
+            if (shouldUpdateExperiment) {
+                setExperiment(fetchedExperiment)
+                const experimentPopulations = getPopulations(fetchedExperiment, selectedAtlas)
+                setPopulations(experimentPopulations)
+                setSidebarPopulations(experimentPopulations)
+                // TODO: Handle error status on populations
+            }
         }
         fetchData()
             .catch(console.error);
@@ -166,9 +193,14 @@ const ExperimentsPage = () => {
             const response = await api.retrieveExperiment(params.id)
             const data = response.data;
             const cells = await Promise.all(data.populations.map(async (p) => {
-                const cellsFile = await api.cellsPopulation(`${p.id}`);
-                // @ts-ignore
-                return cellsFile.data.split('\r\n').map(csv => new Cell(csv));
+                if (p.status !== POPULATION_FINISHED_STATE) return [];
+                try {
+                    const cellsFile = await api.cellsPopulation(`${p.id}`);
+                    // @ts-ignore
+                    return cellsFile.data.split('\r\n').map(csv => new Cell(csv));
+                } catch {
+                    return [];
+                }
             }));
             data.populations.forEach((p, i) => {
                 data.populations[i].cells = cells[i]
