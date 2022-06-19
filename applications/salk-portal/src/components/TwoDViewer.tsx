@@ -29,11 +29,16 @@ const HEIGHT = "calc(100% - 55px)"
 
 const useStyles = makeStyles(t => ({
     densityMapImage: {
-        width: "80%"
+      maxWidth: '100%',
+      display: 'block',
+      width: '100%',
+      objectFit: 'contain',
     },
     densityMapImageContainer: {
         display: 'flex',
+        height: '100%',
         flex: '1',
+        padding: '0 0 0 200px',
         justifyContent: 'center'
     },
     buttonContainer: {
