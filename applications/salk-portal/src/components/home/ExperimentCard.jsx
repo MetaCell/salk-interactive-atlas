@@ -34,6 +34,7 @@ import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
 import ArrowRightIcon from '@material-ui/icons/ArrowRight';
 import {CircularProgress} from "@material-ui/core";
+import { getDateFromDateTime } from "../../utils";
 
 
 const commonStyle = {
@@ -111,9 +112,10 @@ const useStyles = makeStyles(() => ({
             boxShadow: `inset 0 0.03125rem 0 ${headerBorderColor}`,
             display: 'flex',
             alignItems: 'flex-end',
+            flexWrap: 'wrap',
             '& > .MuiBox-root': {
-                paddingRight: '0.75rem',
-                flexGrow: 1,
+              paddingRight: '0.75rem',
+              width: 'calc(100% - 1.5rem)',
             },
 
             '& .MuiChip-root': {
@@ -223,9 +225,50 @@ const useStyles = makeStyles(() => ({
         alignItems: "center",
         justifyContent: "center",
         ...imageStyles
-    }
+    },
 
-}));
+    tagsWrapper: {
+      width: '100% !important',
+      paddingRight: '0 !important',
+    },
+
+    ellipsesWrapper: {
+      flex: '1 1 100%',
+      minWidth: 0,
+      minHeight: '1.5625rem'
+    },
+
+    tagsEllipses: {
+      overflow: 'hidden',
+      textOverflow: 'ellipsis',
+      whiteSpace: 'nowrap',
+    },
+
+    tagsTooltip: {
+      '& .MuiChip-root': {
+          margin: 0,
+          height: '1.0625rem',
+          background: defaultChipBg,
+          marginBottom: '0.5rem',
+          borderRadius: '0.25rem',
+
+          '&:not(:last-child)': {
+              marginRight: '0.25rem',
+          },
+
+          '&.MuiChip-colorPrimary': {background: primaryChipBg,},
+          '&.MuiChip-colorSecondary': {background: secondaryChipBg,},
+
+          '& .MuiChip-label': {
+              padding: '0 0.375rem',
+              fontWeight: '600',
+              fontSize: '0.625rem',
+              lineHeight: '0.75rem',
+              color: chipTextColor,
+          },
+      },
+    },
+}))
 
 const ExperimentCard = ({
                             experiment,
@@ -298,22 +341,43 @@ const ExperimentCard = ({
                 </Menu>
                 <CardActionArea>
                     <CardContent>
+                        <Box className={classes.tagsWrapper}>
+                          <Tooltip
+                            placement="top-start"
+                            title={type != COMMUNITY_HASH ? (
+                              <Box className={classes.tagsTooltip}>
+                                {experiment.tags?.map((tag, i) => (
+                                   <Chip
+                                    key={`${experiment.name}_${i}_${tag.name}`} label={tag.name}
+                                    color={i == 1 ? 'primary' : i === 2 ? 'secondary' : 'default'}
+                                  />
+                                ))}
+                              </Box>
+                            ) : ''}
+                          >
+                            <Box className={classes.ellipsesWrapper}>
+                              {type != COMMUNITY_HASH &&
+                                <Box className={classes.tagsEllipses}>
+                                  {experiment.tags?.map((tag, i) =>(
+                                    <Chip
+                                      key={`${experiment.name}_${i}_${tag.name}`} label={tag.name}
+                                      color={i == 1 ? 'primary' : i === 2 ? 'secondary' : 'default'}
+                                    />
+                                  ))}
+                                </Box>
+                              }
+                            </Box>
+                          </Tooltip>
+                        </Box>
+
                         <Box>
-                            {type != COMMUNITY_HASH &&
-                                <Box>
-                                    {
-                                        experiment.tags?.map((tag, i) => <Chip
-                                            key={`${experiment.name}_${i}_${tag.name}`} label={tag.name}
-                                            color={i == 1 ? 'primary' : i === 2 ? 'secondary' : 'default'}/>)
-                                    }
-                                </Box>}
-                            <Typography component="h3" onClick={handleClick}>
-                                {experiment.name || 'fff'}
-                            </Typography>
-                            <Typography component="p">
-                                {type === COMMUNITY_HASH && <img src={CLONE} alt="clone"/>}
-                                {type === EXPERIMENTS_HASH ? experiment.date_created : `Shared on ${experiment.date_created}`}
-                            </Typography>
+                          <Typography component="h3" onClick={handleClick}>
+                              {experiment.name || 'fff'}
+                          </Typography>
+                          <Typography component="p">
+                              {type === COMMUNITY_HASH && <img src={CLONE} alt="clone"/>}
+                              { type !== EXPERIMENTS_HASH && 'Shared on' } {getDateFromDateTime(experiment.date_created)}
+                          </Typography>
                         </Box>
                         <Tooltip arrow title={
                             <Typography>
