@@ -34,6 +34,7 @@ import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
 import ArrowRightIcon from '@material-ui/icons/ArrowRight';
 import {CircularProgress} from "@material-ui/core";
+import { getDateFromDateTime } from "../../utils";
 
 
 const commonStyle = {
@@ -375,7 +376,7 @@ const ExperimentCard = ({
                           </Typography>
                           <Typography component="p">
                               {type === COMMUNITY_HASH && <img src={CLONE} alt="clone"/>}
-                              {type === EXPERIMENTS_HASH ? experiment.date_created : `Shared on ${experiment.date_created}`}
+                              { type !== EXPERIMENTS_HASH && 'Shared on' } {getDateFromDateTime(experiment.date_created)}
                           </Typography>
                         </Box>
                         <Tooltip arrow title={

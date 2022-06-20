@@ -8,3 +8,7 @@ export function getBaseDomain() {
   }
   return window.location.host.includes('www.') ? window.location.host.split('.').slice(1).join('.') : window.location.host  // remove the first part of the hostname
 }
+
+export function getDateFromDateTime(date: String) {
+  return date ? date?.split(' ')[0] : date;
+}
