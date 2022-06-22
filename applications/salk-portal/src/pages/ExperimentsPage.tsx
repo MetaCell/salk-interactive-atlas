@@ -22,7 +22,7 @@ import {
     PULL_TIME_MS
 } from "../utilities/constants"
 import {getAtlas} from "../service/AtlasService";
-import {Experiment, Population} from "../apiclient/workspaces";
+import {Experiment, ExperimentPopulationsInner, Population} from "../apiclient/workspaces";
 import {areAllSelected} from "../utilities/functions";
 import workspaceService from "../service/WorkspaceService";
 import Cell from "../models/Cell";
@@ -150,25 +150,30 @@ const ExperimentsPage = () => {
             return obj;
         }, {});
 
+    async function getCells(p: ExperimentPopulationsInner) {
+        const cellsFile = await api.cellsPopulation(`${p.id}`);
+        // @ts-ignore
+        return cellsFile.data.split(/\r?\n/).map(csv => new Cell(csv));
+    }
+
     useInterval(() => {
         const fetchData = async () => {
+            // @ts-ignore
             const response = await api.retrieveExperiment(params.id)
             const fetchedExperiment = response.data;
             const cells = await Promise.all(fetchedExperiment.populations.map(async (p) => {
                 if (p.status !== POPULATION_FINISHED_STATE) return [];
-                const existingPopulation = experiment.populations.find(e => e.id === p.id)
+                const existingPopulation = experiment.populations.find((e: ExperimentPopulationsInner) => e.id === p.id)
                 if (existingPopulation !== undefined && typeof existingPopulation.cells !== "string" && existingPopulation.cells.length > 0) return existingPopulation.cells
                 try {
-                    const cellsFile = await api.cellsPopulation(`${p.id}`);
-                    // @ts-ignore
-                    return cellsFile.data.split('\r\n').map(csv => new Cell(csv));
+                    return await getCells(p);
                 } catch {
                     return [];
                 }
             }));
             let shouldUpdateExperiment = false;
             fetchedExperiment.populations.forEach((p, i) => {
-                const existingPopulation = experiment.populations.find(e => e.id === p.id)
+                const existingPopulation = experiment.populations.find((e: ExperimentPopulationsInner) => e.id === p.id)
                 if (existingPopulation === undefined || typeof existingPopulation.cells === "string" || existingPopulation.cells.length === 0) {
                     // previous population cells !== new population cells --> update the experiment data
                     shouldUpdateExperiment = true;
@@ -190,14 +195,13 @@ const ExperimentsPage = () => {
 
     useEffect(() => {
         const fetchData = async () => {
+            // @ts-ignore
             const response = await api.retrieveExperiment(params.id)
             const data = response.data;
             const cells = await Promise.all(data.populations.map(async (p) => {
                 if (p.status !== POPULATION_FINISHED_STATE) return [];
                 try {
-                    const cellsFile = await api.cellsPopulation(`${p.id}`);
-                    // @ts-ignore
-                    return cellsFile.data.split('\r\n').map(csv => new Cell(csv));
+                    return await getCells(p);
                 } catch {
                     return [];
                 }
