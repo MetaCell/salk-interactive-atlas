@@ -24,6 +24,7 @@ import {useDidUpdateEffect} from "../utilities/hooks/useDidUpdateEffect";
 import SWITCH_ICON from "../assets/images/icons/switch_icon.svg";
 import ExpandLessIcon from "@material-ui/icons/ExpandLess";
 import CordImageMapper from "./CordImageMapper";
+import {mod, onWheel, scrollStop} from "../utilities/functions";
 
 const HEIGHT = "calc(100% - 55px)"
 
@@ -110,6 +111,7 @@ const TwoDViewer = (props: {
     const subdivisions = props.subdivisions.sort()
     const segments = subdivisions.flatMap((s) => [`${s}-${ROSTRAL}`, `${s}-${CAUDAL}`])
     const [selectedValueIndex, setSelectedValueIndex] = useState(0);
+    const cursorRef = useRef(selectedValueIndex);
     const [content, setContent] = useState({})
     const [isLoading, setIsLoading] = useState(false)
     const [isReady, setIsReady] = useState(false)
@@ -301,6 +303,11 @@ const TwoDViewer = (props: {
         setIsReady(true)
     }, [])
 
+    useEffect(() => {
+        scrollStop(canvasRef.current,
+            (e) => onWheel(e, cursorRef, segments.length, (n) => setSelectedValueIndex(n)),
+            () => handleSegmentChange(cursorRef.current))
+    }, [canvasRef])
 
     const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
         setAnchorEl(event.currentTarget);
@@ -317,6 +324,8 @@ const TwoDViewer = (props: {
     const handleSegmentChange = (value: number) => {
         setSelectedValueIndex(value);
     };
+
+
 
     const classes = useStyles();
     // @ts-ignore
