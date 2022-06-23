@@ -45,3 +45,6 @@ export enum DensityMapTypes {
 export const PULL_TIME_MS = 30 * 1000
 export const POPULATION_FINISHED_STATE = "finished"
 export const MAX_STR_LENGTH_SIDEBAR = 15
+
+export const ARROW_KEY_RIGHT = 39
+export const ARROW_KEY_LEFT = 37

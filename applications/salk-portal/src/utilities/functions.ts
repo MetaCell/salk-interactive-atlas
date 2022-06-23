@@ -1,5 +1,5 @@
 import {getAtlas} from "../service/AtlasService";
-import {AtlasChoice, POPULATION_FINISHED_STATE} from "./constants";
+import {ARROW_KEY_LEFT, ARROW_KEY_RIGHT, AtlasChoice} from "./constants";
 import Range from "../models/Range";
 
 export const areAllSelected = (obj: { [x: string]: {
@@ -78,6 +78,16 @@ export function scrollStop (element: any, onEvent: (arg0: any) => void, callback
 
 export const onWheel = (event: { deltaY: number; }, currentRef: { current: number; }, len: number, callback: (arg0: number) => void) => {
    const direction = Math.sign(event.deltaY) * -1
+   const nextCursor = mod(currentRef.current + direction, len)
+   callback(nextCursor)
+   currentRef.current = nextCursor
+}
+
+export const onKeyboard = (event: { keyCode: number; }, currentRef: { current: number; }, len: number, callback: (arg0: number) => void) => {
+   const direction = event.keyCode === ARROW_KEY_RIGHT ? 1 : event.keyCode === ARROW_KEY_LEFT ? -1 : null
+   if (!direction){
+      return
+   }
    const nextCursor = mod(currentRef.current + direction, len)
    callback(nextCursor)
    currentRef.current = nextCursor

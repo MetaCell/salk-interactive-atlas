@@ -24,7 +24,7 @@ import {useDidUpdateEffect} from "../utilities/hooks/useDidUpdateEffect";
 import SWITCH_ICON from "../assets/images/icons/switch_icon.svg";
 import ExpandLessIcon from "@material-ui/icons/ExpandLess";
 import CordImageMapper from "./CordImageMapper";
-import {mod, onWheel, scrollStop} from "../utilities/functions";
+import {onKeyboard, onWheel, scrollStop} from "../utilities/functions";
 
 const HEIGHT = "calc(100% - 55px)"
 
@@ -40,7 +40,8 @@ const useStyles = makeStyles(t => ({
         height: '100%',
         flex: '1',
         padding: '0 0 0 200px',
-        justifyContent: 'center'
+        justifyContent: 'center',
+        outline: "none !important"
     },
     buttonContainer: {
         position: 'absolute',
@@ -106,6 +107,7 @@ const TwoDViewer = (props: {
     }, {})
     const activePopulationsHash = activePopulations.map(pop => `${pop.id}+${pop.color}`).join('')
     const atlas = getAtlas(props.selectedAtlas)
+    const canvasContainerRef = useRef(null)
     const canvasRef = useRef(null)
     const hiddenCanvasRef = useRef(null)
     const subdivisions = props.subdivisions.sort()
@@ -309,6 +311,12 @@ const TwoDViewer = (props: {
             () => handleSegmentChange(cursorRef.current))
     }, [canvasRef])
 
+    useEffect(() => {
+        canvasContainerRef.current.addEventListener('keydown',
+            (e: { keyCode: number }) => onKeyboard(e, cursorRef, segments.length, (n) => setSelectedValueIndex(n)),
+            false);
+    }, [canvasContainerRef])
+
     const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
         setAnchorEl(event.currentTarget);
     };
@@ -400,7 +408,7 @@ const TwoDViewer = (props: {
                     )}
                 </Popover>
             </Box>
-            <Box className={classes.densityMapImageContainer}>
+            <Box className={classes.densityMapImageContainer} ref={canvasContainerRef} tabIndex="0">
                 <canvas hidden={true} ref={hiddenCanvasRef}/>
                 <canvas hidden={isLoading} className={classes.densityMapImage} ref={canvasRef}/>
             </Box>
