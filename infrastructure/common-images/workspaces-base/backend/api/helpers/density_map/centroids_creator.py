@@ -1,9 +1,9 @@
 import matplotlib.image as mimage
 import numpy as np
 from PIL import Image
-from bg_atlasapi import BrainGlobeAtlas
 from matplotlib import pyplot as plt, rcParams
 
+from api.helpers.ICustomAtlas import ICustomAtlas
 from api.helpers.density_map.annotation_image import get_annotation_array
 from api.helpers.density_map.common_density_helpers import get_subdivision_limits
 from api.helpers.density_map.iimage_creator import IImageCreator
@@ -12,11 +12,11 @@ from api.helpers.image_manipulation import fig_to_img
 
 class CentroidsCreator(IImageCreator):
 
-    def create(self, bg_atlas: BrainGlobeAtlas, subdivision: str, points: np.array) -> Image:
+    def create(self, bg_atlas: ICustomAtlas, subdivision: str, points: np.array) -> Image:
         return _generate_centroids(bg_atlas, subdivision, points)
 
 
-def _generate_centroids(bg_atlas: BrainGlobeAtlas, subdivision: str, points: np.array) -> Image:
+def _generate_centroids(bg_atlas: ICustomAtlas, subdivision: str, points: np.array) -> Image:
     subdivision_limits = get_subdivision_limits(bg_atlas, subdivision)
     points_slice = points[np.logical_and(subdivision_limits[0] <= points[:, 0], points[:, 0] <= subdivision_limits[1])]
     points_slice = points_slice[:, 1:]

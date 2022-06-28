@@ -1,12 +1,12 @@
 import numpy as np
 from PIL import Image
-from bg_atlasapi import BrainGlobeAtlas
 
+from api.helpers.ICustomAtlas import ICustomAtlas
 from api.helpers.density_map.common_density_helpers import get_subdivision_limits
 from api.helpers.image_manipulation import get_image_from_array, black_to_transparent
 
 
-def generate_annotation_image(bg_atlas: BrainGlobeAtlas, subdivision: str) -> Image:
+def generate_annotation_image(bg_atlas: ICustomAtlas, subdivision: str) -> Image:
     scaled_annot_array = get_annotation_array(bg_atlas, subdivision)
     annot_img = get_image_from_array(scaled_annot_array, 'RGB')
     return black_to_transparent(annot_img)
