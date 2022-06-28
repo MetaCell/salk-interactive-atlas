@@ -24,7 +24,7 @@ def save_lamina_image(img, lamina_name: str, subdivision: str):
 
 def save_laminas_json(bg_atlas: ICustomAtlas):
     #TODO: replace hardcoded with laminas = [lamina['acronym'] for lamina in bg_atlas.structures['laminas']]
-    laminas = ['lamina1']
+    laminas = ['Lamina 1']
     with open(os.path.join(LAMINAS_PATH, "atlas_laminas.json"), "w") as f:
         json.dump(laminas, f)
 

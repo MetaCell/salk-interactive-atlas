@@ -25,7 +25,7 @@ class Command(BaseCommand):
             subdivisions = get_subdivisions(bg_atlas)
             for s in subdivisions:
                 # TODO: Change hardcoded to for lamina in bg_atlas.structures['laminae']
-                lamina = {'id': 6, 'name': 'lamina1', 'acronym': 'L1', 'rgb_triplet': [100, 0, 100],
+                lamina = {'id': 6, 'name': 'Lamina 1', 'acronym': 'L1', 'rgb_triplet': [100, 0, 100],
                           'structure_id_path': [1, 3, 6],
                           'mesh_filename': PosixPath('/home/afonso/.brainglobe/salk_cord_10um_v1.0/meshes/6.obj'),
                           'mesh': None

@@ -7,6 +7,7 @@ import {AtlasChoice} from "../utilities/constants";
 export default class Atlas {
     instances: AtlasInstance[];
     segments: AtlasSegment[]
+    laminas: string[]
     name: string
     id: AtlasChoice;
 
@@ -15,6 +16,7 @@ export default class Atlas {
         this.id = atlasId
         this.constructInstances()
         this.constructSegments()
+        this.laminas = this._getLaminas().sort()
     }
 
     constructInstances(){
@@ -34,6 +36,10 @@ export default class Atlas {
         for (const entry of json){
             this.segments.push(new AtlasSegment(entry))
         }
+    }
+
+    _getLaminas(){
+        return require("../assets/atlas/" + this.id + '/atlas_laminas.json')
     }
 
     getAnnotationImageSrc(segment: string){

@@ -1,6 +1,5 @@
 import Atlas from "../models/Atlas";
 import OverlayMetadata from "../models/OverlayMetadata";
-import {widgetIds} from "../widgets";
 
 export enum AtlasChoice {
     slk10 = "salk_cord_10um",
