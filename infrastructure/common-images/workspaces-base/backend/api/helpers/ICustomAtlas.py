@@ -18,9 +18,5 @@ class ICustomAtlas(ABC, BrainGlobeAtlas):
         pass
 
     @abstractmethod
-    def get_arbitrary_cord_midpoint_image(self, start, end, image):
-        pass
-
-    @abstractmethod
     def get_annotation(self, structure_key_list):
         pass

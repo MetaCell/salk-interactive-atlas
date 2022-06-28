@@ -30,7 +30,3 @@ class SalkAtlas(ICustomAtlas):
             locs = np.where(img)
             new_annotation[locs] = self.structures[region_key]["id"] - 1
         return new_annotation
-
-    def get_arbitrary_cord_midpoint_image(self, start, end, image):
-        midpoint = int(end + start / 2)
-        return image[midpoint]

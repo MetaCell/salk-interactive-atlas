@@ -14,6 +14,10 @@ def generate_canal_image(bg_atlas: ICustomAtlas, subdivision: str) -> Image:
     return _generate_image(bg_atlas, subdivision, bg_atlas.canal)
 
 
+def generate_lamina_image(bg_atlas: ICustomAtlas, subdivision: str, lamina_acronym) -> Image:
+    return _generate_image(bg_atlas, subdivision, bg_atlas.get_image_volume(lamina_acronym))
+
+
 def get_annotation_array(bg_atlas: ICustomAtlas, subdivision: str):
     return _get_img_array(bg_atlas, subdivision, bg_atlas.get_annotation(['WM', 'GM']))
 
