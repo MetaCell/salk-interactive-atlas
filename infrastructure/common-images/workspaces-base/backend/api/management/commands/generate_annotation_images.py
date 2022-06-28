@@ -19,7 +19,7 @@ class Command(BaseCommand):
                 self.stdout.write(self.style.WARNING(f'{atlas_id} not recognized. Skipping'))
                 continue
             bg_atlas = get_bg_atlas(atlas_id)
-            subdivisions = get_subdivisions(atlas_id)
+            subdivisions = get_subdivisions(bg_atlas)
             for s in subdivisions:
                 save_annotation_image(generate_annotation_image(bg_atlas, s), s)
         self.stdout.write(self.style.SUCCESS('Generate annotations finished'))

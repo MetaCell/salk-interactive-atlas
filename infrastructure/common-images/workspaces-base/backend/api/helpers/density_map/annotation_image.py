@@ -15,7 +15,7 @@ def generate_annotation_image(bg_atlas: ICustomAtlas, subdivision: str) -> Image
 def get_annotation_array(bg_atlas, subdivision):
     subdivision_limits = get_subdivision_limits(bg_atlas, subdivision)
     middle_point = int((subdivision_limits[0] + subdivision_limits[1]) / 2)
-    annot_array = bg_atlas.annotation[middle_point]
+    annot_array = bg_atlas.get_annotation(['WM', 'GM'])[middle_point]
     # scale image to 'greyish' tons (max value matches with #808080 (128))
     scaled_annot_array = 128 / np.max(annot_array) * annot_array
     return scaled_annot_array
