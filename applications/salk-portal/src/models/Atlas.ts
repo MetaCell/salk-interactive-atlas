@@ -1,6 +1,6 @@
 import AtlasInstance from "./AtlasInstance"
 import AtlasSegment from "./AtlasSegment"
-import {AtlasChoice} from "../utilities/constants";
+import {AtlasChoice, DensityImages} from "../utilities/constants";
 
 
 
@@ -42,9 +42,17 @@ export default class Atlas {
         return require("../assets/atlas/" + this.id + '/atlas_laminas.json')
     }
 
-    getAnnotationImageSrc(segment: string){
+    getImageSrc(imageType: DensityImages, segment: string){
         try{
-            return require("../assets/atlas/" + this.id + '/annotations/' + segment + ".png").default
+            return require("../assets/atlas/" + this.id + '/' + imageType + '/' + segment + ".png").default
+        }catch (e){
+            return null
+        }
+    }
+
+    getLaminaSrc(laminaName: string, segment: string){
+        try{
+            return require("../assets/atlas/" + this.id + '/laminas/' + laminaName + '/' + segment + ".png").default
         }catch (e){
             return null
         }

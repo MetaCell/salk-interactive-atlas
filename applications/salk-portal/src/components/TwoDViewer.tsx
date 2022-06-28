@@ -2,17 +2,26 @@ import React, {Fragment, useEffect, useRef, useState} from 'react';
 import {makeStyles} from "@material-ui/core/styles";
 import theme, {bodyBgColor, canvasBg, headerBorderColor} from "../theme";
 import {
-    Box, Button, Collapse, FormControl, FormControlLabel, InputLabel, MenuItem,
-    Popover, Select, Switch,
+    Box,
+    Button,
+    Collapse,
+    FormControl,
+    FormControlLabel,
+    MenuItem,
+    Popover,
+    Select,
+    Switch,
     Typography
 } from "@material-ui/core";
 import {Population} from "../apiclient/workspaces";
 import {
     AtlasChoice,
     CAUDAL,
+    DensityImages,
     DensityMapTypes,
     NEURONAL_LOCATIONS_ID,
-    OVERLAYS, PROBABILITY_MAP_ID,
+    OVERLAYS,
+    PROBABILITY_MAP_ID,
     RequestState,
     ROSTRAL
 } from "../utilities/constants";
@@ -26,6 +35,7 @@ import ExpandLessIcon from "@material-ui/icons/ExpandLess";
 import CordImageMapper from "./CordImageMapper";
 import ArrowDropDownIcon from "@material-ui/icons/ArrowDropDown";
 import ArrowDropUpIcon from "@material-ui/icons/ArrowDropUp";
+import {areAllSelected} from "../utilities/functions";
 
 
 const HEIGHT = "calc(100% - 55px)"
@@ -120,8 +130,10 @@ const TwoDViewer = (props: {
     const cache = useRef({} as any);
     const [anchorEl, setAnchorEl] = React.useState<HTMLButtonElement | null>(null);
     const [overlaysSwitchState, setOverlaysSwitchState] = useState(getDefaultOverlays())
+    // TODO: Get lamina color from backend
     const [laminas, setLaminas] = useState(atlas.laminas.reduce(
-        (obj, lamina) => ({...obj, [lamina]: false}), {}) as { [key: string]: boolean; })
+        (obj, lamina) => ({...obj, [lamina]: {selected: false, color: '#0000FF'}}), {}) as
+        {[key: string] : {color: string, selected: boolean}})
 
 
     const fetchData = async (population: Population, apiMethod: (id: string, subdivision: string, options: any) => Promise<any>) => {
@@ -218,12 +230,15 @@ const TwoDViewer = (props: {
 
         // Clear previous content
         clearCanvas(canvas)
-        const background = atlas.getAnnotationImageSrc(segments[selectedValueIndex])
+
+        // Draw Annotation (Grey Matter and White Matter)
+        const background = atlas.getImageSrc(DensityImages.ANNOTATION, segments[selectedValueIndex])
         if (background) {
             drawImage(canvas, background)
         }
         const promises = []
         for (const pId of Object.keys(content)) {
+            // Draw probability map
             if (overlaysSwitchState[PROBABILITY_MAP_ID]) {
                 // @ts-ignore
                 const pData = content[pId][DensityMapTypes.PROBABILITY_DATA]
@@ -232,6 +247,7 @@ const TwoDViewer = (props: {
                     promises.push(promise)
                 }
             }
+            // Draw neuron centroids
             if (overlaysSwitchState[NEURONAL_LOCATIONS_ID]) {
                 // @ts-ignore
                 const cData = content[pId][DensityMapTypes.CENTROIDS_DATA]
@@ -241,7 +257,21 @@ const TwoDViewer = (props: {
                 }
             }
         }
+        // Draw laminas
+        for (const lId of Object.keys(laminas)) {
+            // @ts-ignore
+            if (laminas[lId].selected) {
+                const laminaData = atlas.getLaminaSrc(lId, segments[selectedValueIndex])
+                // @ts-ignore
+                promises.push(drawColoredImage(canvas, hiddenCanvas, laminaData, laminas[lId].color))
+            }
+        }
+
         await Promise.all(promises)
+        const canal = atlas.getImageSrc(DensityImages.CANAL, segments[selectedValueIndex])
+        if (canal) {
+            drawImage(canvas, canal)
+        }
         setIsLoading(false)
     }
 
@@ -301,7 +331,7 @@ const TwoDViewer = (props: {
 
     useEffect(() => {
         drawContent().catch(console.error)
-    }, [content])
+    }, [content, laminas])
 
     useEffect(() => {
         setIsReady(true)
@@ -325,16 +355,16 @@ const TwoDViewer = (props: {
     };
 
     const handleLaminaSwitch = (laminaId: string) => {
-        setLaminas({...laminas, [laminaId]: !laminas[laminaId]})
+        setLaminas({...laminas, [laminaId]: {...laminas[laminaId], selected: !laminas[laminaId].selected}})
+        setIsLoading(true)
     }
 
     const handleShowAllLaminaSwitch = () => {
-        const areAllLaminasActive = Object.values(laminas).reduce((areAllSelected, selected) =>
-                areAllSelected && selected, true)
+        const areAllLaminasActive = areAllSelected(laminas)
         const nextLaminas: any = {}
-        Object.keys(laminas)
-            .forEach(lId => nextLaminas[lId] = !areAllLaminasActive)
+        Object.keys(laminas).forEach(lId => nextLaminas[lId] = {...laminas[lId], selected: !areAllLaminasActive})
         setLaminas(nextLaminas)
+        setIsLoading(true)
     }
 
 
@@ -413,9 +443,7 @@ const TwoDViewer = (props: {
                                     label="All subregions"
                                     labelPlacement="start"
                                     onChange={() => handleShowAllLaminaSwitch()}
-                                    checked={Object.values(laminas).
-                                        reduce((areAllSelected, selected) => areAllSelected && selected,
-                                        true)}
+                                    checked={areAllSelected(laminas)}
                                 />
                                 {atlas.laminas.sort().map(lId =>
                                     <FormControlLabel
@@ -425,7 +453,7 @@ const TwoDViewer = (props: {
                                         label={lId}
                                         labelPlacement="start"
                                         onChange={() => handleLaminaSwitch(lId)}
-                                        checked={laminas[lId]}
+                                        checked={laminas[lId].selected}
                                     />
                                 )}
                             </Collapse>
