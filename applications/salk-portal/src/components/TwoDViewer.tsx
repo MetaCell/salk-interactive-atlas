@@ -1,15 +1,23 @@
-import React, {useEffect, useRef, useState} from 'react';
+import React, {Fragment, useEffect, useRef, useState} from 'react';
 import {makeStyles} from "@material-ui/core/styles";
 import theme, {bodyBgColor, canvasBg, headerBorderColor} from "../theme";
 import {
-    Box, Button, FormControl, FormControlLabel, InputLabel, MenuItem,
-    Popover, Select, Switch,
+    Box,
+    Button,
+    Collapse,
+    FormControl,
+    FormControlLabel,
+    MenuItem,
+    Popover,
+    Select,
+    Switch,
     Typography
 } from "@material-ui/core";
 import {Population} from "../apiclient/workspaces";
 import {
     AtlasChoice,
     CAUDAL,
+    DensityImages,
     DensityMapTypes,
     NEURONAL_LOCATIONS_ID,
     OVERLAYS, PROBABILITY_MAP_ID,
@@ -24,16 +32,20 @@ import {useDidUpdateEffect} from "../utilities/hooks/useDidUpdateEffect";
 import SWITCH_ICON from "../assets/images/icons/switch_icon.svg";
 import ExpandLessIcon from "@material-ui/icons/ExpandLess";
 import CordImageMapper from "./CordImageMapper";
-import {onKeyboard, onWheel, scrollStop} from "../utilities/functions";
+import ArrowDropDownIcon from "@material-ui/icons/ArrowDropDown";
+import ArrowDropUpIcon from "@material-ui/icons/ArrowDropUp";
+import {areAllSelected, getRGBAFromHexAlpha, getRGBAString, onKeyboard, onWheel, scrollStop} from "../utilities/functions";
+import ColorPicker from "./ColorPicker";
+import SwitchLabel from "./common/SwitchLabel";
 
 const HEIGHT = "calc(100% - 55px)"
 
 const useStyles = makeStyles(t => ({
     densityMapImage: {
-      maxWidth: '100%',
-      display: 'block',
-      width: '100%',
-      objectFit: 'contain',
+        maxWidth: '100%',
+        display: 'block',
+        width: '100%',
+        objectFit: 'contain',
     },
     densityMapImageContainer: {
         display: 'flex',
@@ -52,17 +64,17 @@ const useStyles = makeStyles(t => ({
         backgroundColor: headerBorderColor,
         width: 200
     },
-    innerButtonContainer: {
+    menuButtonContainer: {
         display: 'flex',
         flex: '1',
         justifyContent: 'space-between',
         alignItems: "center",
         gap: t.spacing(1)
     },
-    buttonLabel: {
+    menuFontSize: {
         fontSize: "0.75rem"
     },
-    popoverContent: {
+    entryPadding: {
         paddingBottom: t.spacing(1)
     },
     cordImageContainer: {
@@ -73,9 +85,6 @@ const useStyles = makeStyles(t => ({
     dropdownContainer: {
         width: "100%"
     },
-    select: {
-        fontSize: 12
-    },
     selectMenu: {
         marginTop: -50
     },
@@ -83,6 +92,45 @@ const useStyles = makeStyles(t => ({
         "&.MuiPopover-paper": {
             width: "200px!important"
         }
+    },
+    collapse: {
+        borderTop: 'none !important'
+    },
+
+    laminaEntry: {
+        display: 'flex',
+        alignItems: 'center',
+        lineHeight: '0.938rem',
+        fontWeight: 400,
+        fontSize: '0.75rem',
+    },
+    laminaColor: {
+        display: 'flex',
+        alignItems: 'center',
+        lineHeight: '0.938rem',
+        fontWeight: 400,
+        fontSize: '0.75rem',
+    },
+    square: {
+        width: '0.75rem',
+        height: '0.75rem',
+        borderRadius: '0.1rem',
+    },
+    laminaLabel: {
+        display: 'flex',
+        flex: '1',
+        justifyContent: 'space-between',
+        lineHeight: '0.938rem',
+        fontWeight: 400,
+        fontSize: '0.75rem',
+    },
+    label: {
+        display: 'flex',
+        flex: '1',
+        justifyContent: 'space-between',
+        lineHeight: '0.938rem',
+        fontWeight: 400,
+        fontSize: '0.75rem',
     },
 }))
 
@@ -117,9 +165,16 @@ const TwoDViewer = (props: {
     const [content, setContent] = useState({})
     const [isLoading, setIsLoading] = useState(false)
     const [isReady, setIsReady] = useState(false)
+    const [isSubRegionsOpen, setIsSubRegionsOpen] = useState(false)
     const cache = useRef({} as any);
     const [anchorEl, setAnchorEl] = React.useState<HTMLButtonElement | null>(null);
     const [overlaysSwitchState, setOverlaysSwitchState] = useState(getDefaultOverlays())
+    // TODO: Get lamina color from backend
+    const [laminas, setLaminas] = useState(atlas.laminas.reduce(
+        (obj, lamina) => ({...obj, [lamina]: {selected: false, color: '#0000FF', opacity: 1}}), {}) as
+        {[key: string] : {color: string, selected: boolean, opacity: number}})
+    const [laminaPopoverAnchorEl, setLaminaPopoverAnchorEl] = React.useState(null);
+    const [selectedLaminaPopoverId, setSelectedLaminaPopoverId] = React.useState(null);
 
 
     const fetchData = async (population: Population, apiMethod: (id: string, subdivision: string, options: any) => Promise<any>) => {
@@ -216,12 +271,15 @@ const TwoDViewer = (props: {
 
         // Clear previous content
         clearCanvas(canvas)
-        const background = atlas.getAnnotationImageSrc(segments[selectedValueIndex])
+
+        // Draw Annotation (Grey Matter and White Matter)
+        const background = atlas.getImageSrc(DensityImages.ANNOTATION, segments[selectedValueIndex])
         if (background) {
             drawImage(canvas, background)
         }
         const promises = []
         for (const pId of Object.keys(content)) {
+            // Draw probability map
             if (overlaysSwitchState[PROBABILITY_MAP_ID]) {
                 // @ts-ignore
                 const pData = content[pId][DensityMapTypes.PROBABILITY_DATA]
@@ -230,6 +288,7 @@ const TwoDViewer = (props: {
                     promises.push(promise)
                 }
             }
+            // Draw neuron centroids
             if (overlaysSwitchState[NEURONAL_LOCATIONS_ID]) {
                 // @ts-ignore
                 const cData = content[pId][DensityMapTypes.CENTROIDS_DATA]
@@ -239,7 +298,21 @@ const TwoDViewer = (props: {
                 }
             }
         }
+        // Draw laminas
+        for (const lId of Object.keys(laminas)) {
+            // @ts-ignore
+            if (laminas[lId].selected) {
+                const laminaData = atlas.getLaminaSrc(lId, segments[selectedValueIndex])
+                // @ts-ignore
+                promises.push(drawColoredImage(canvas, hiddenCanvas, laminaData, laminas[lId].color))
+            }
+        }
+
         await Promise.all(promises)
+        const canal = atlas.getImageSrc(DensityImages.CANAL, segments[selectedValueIndex])
+        if (canal) {
+            drawImage(canvas, canal)
+        }
         setIsLoading(false)
     }
 
@@ -299,7 +372,7 @@ const TwoDViewer = (props: {
 
     useEffect(() => {
         drawContent().catch(console.error)
-    }, [content])
+    }, [content, laminas])
 
     useEffect(() => {
         setIsReady(true)
@@ -333,27 +406,54 @@ const TwoDViewer = (props: {
         setSelectedValueIndex(value);
     };
 
+    const handleLaminaSwitch = (laminaId: string) => {
+        setLaminas({...laminas, [laminaId]: {...laminas[laminaId], selected: !laminas[laminaId].selected}})
+        setIsLoading(true)
+    }
+
+    const handleShowAllLaminaSwitch = () => {
+        const areAllLaminasActive = areAllSelected(laminas)
+        const nextLaminas: any = {}
+        Object.keys(laminas).forEach(lId => nextLaminas[lId] = {...laminas[lId], selected: !areAllLaminasActive})
+        setLaminas(nextLaminas)
+        setIsLoading(true)
+    }
+
+    const handleLaminaPopoverClick = (event: React.MouseEvent<HTMLSpanElement>, id: string) => {
+        setLaminaPopoverAnchorEl(event.currentTarget);
+        setSelectedLaminaPopoverId(id);
+    };
+
+    const handleLaminaPopoverClose = () => {
+        setLaminaPopoverAnchorEl(null);
+        setSelectedLaminaPopoverId(null);
+    };
+
+
+    const handleLaminaColorChange = async (id: string, color: string, opacity: number) => {
+        setLaminas({...laminas, [id]: {...laminas[id], color, opacity}})
+        setIsLoading(true)
+    }
 
 
     const classes = useStyles();
     // @ts-ignore
     const boxStyle = {flexGrow: 1, background: canvasBg, padding: "1rem", minHeight: "100%", height: HEIGHT}
-    const open = Boolean(anchorEl);
-    const popoverHeight = anchorEl?.parentNode?.parentNode?.clientHeight ?
-        anchorEl.parentNode.parentNode.clientHeight - theme.spacing(1) :
-        0
+    const isMenuOpen = Boolean(anchorEl);
+    // @ts-ignore
+    const popoverHeight = anchorEl?.parentNode?.parentNode?.clientHeight ? anchorEl.parentNode.parentNode.clientHeight - theme.spacing(1) : 0
     return (
         <Box sx={boxStyle}>
             <Box className={classes.buttonContainer}>
                 <Button className={classes.button}
                         onClick={(event) => handleClick(event)}>
-                    <Box className={classes.innerButtonContainer}>
-                        <Typography className={classes.buttonLabel}>Custom View</Typography>
+                    <Box className={classes.menuButtonContainer}>
+                        <Typography className={classes.menuFontSize}>Custom View</Typography>
                         <ExpandLessIcon/>
                     </Box>
                 </Button>
                 <Popover
-                    open={open}
+                    open={isMenuOpen}
                     anchorEl={anchorEl}
                     onClose={() => handleClose()}
                     anchorOrigin={{
@@ -372,7 +472,6 @@ const TwoDViewer = (props: {
                         paper: classes.popover
                     }}
                 >
-
                     <Box className={`${classes.cordImageContainer}`}>
                         <CordImageMapper
                             segments={segments}
@@ -383,11 +482,11 @@ const TwoDViewer = (props: {
 
                     <FormControl className={`${classes.dropdownContainer}`}>
                         <Select
-                            className={`${classes.select}`}
+                            className={`${classes.menuFontSize}`}
                             disableUnderline={true}
                             value={selectedValueIndex}
-                            onChange={(event) => handleSegmentChange(event.target.value)}
-                            MenuProps={{ classes: { paper: classes.selectMenu }}}
+                            onChange={(event) => handleSegmentChange(event.target.value as number)}
+                            MenuProps={{classes: {paper: classes.selectMenu}}}
                         >
                             {segments.map((segment, idx) =>
                                 <MenuItem key={segment} value={idx}> {segment} </MenuItem>
@@ -395,9 +494,65 @@ const TwoDViewer = (props: {
                         </Select>
                     </FormControl>
 
+                    {atlas.laminas.length > 0 &&
+                        <Fragment>
+                            <Box onClick={() => setIsSubRegionsOpen(!isSubRegionsOpen)}
+                                 className={`${classes.entryPadding} ${classes.menuButtonContainer}`}>
+                                <Typography className={classes.menuFontSize}>Subregions</Typography>
+                                {isSubRegionsOpen ? <ArrowDropUpIcon/> : <ArrowDropDownIcon/>}
+                            </Box>
+                            <Collapse in={isSubRegionsOpen} timeout="auto" unmountOnExit={true}
+                                      className={`${classes.collapse}`}>
+                                <FormControlLabel
+                                    className={classes.entryPadding}
+                                    control={
+                                        <Switch/>
+                                    }
+                                    label="All subregions"
+                                    labelPlacement="start"
+                                    onChange={() => handleShowAllLaminaSwitch()}
+                                    checked={areAllSelected(laminas)}
+                                />
+                                {atlas.laminas.sort().map(lId =>
+                                    <span key={lId} className={`${classes.entryPadding} ${classes.laminaEntry}`}>
+                                        <span className={classes.laminaColor}
+                                              onClick={(event) => handleLaminaPopoverClick(event, lId)}>
+                                            <Box style={{backgroundColor: getRGBAString(getRGBAFromHexAlpha(laminas[lId].color, laminas[lId].opacity))}}
+                                                 component="span"
+                                                 className={classes.square}/>
+                                            <ArrowDropDownIcon fontSize='small'/>
+                                        </span>
+                                        <Popover
+                                            open={lId === selectedLaminaPopoverId}
+                                            anchorEl={laminaPopoverAnchorEl}
+                                            onClose={handleLaminaPopoverClose}
+                                            anchorOrigin={{
+                                                vertical: 'bottom',
+                                                horizontal: 'left',
+                                            }}
+                                        >
+                                            <ColorPicker selectedColor={getRGBAFromHexAlpha(laminas[lId].color, laminas[lId].opacity)}
+                                                         handleColorChange={(color: string, opacity: number) =>
+                                                             handleLaminaColorChange(lId, color, opacity)
+                                            }/>
+                                        </Popover>
+                                        <FormControlLabel
+                                            className={`${classes.label}`}
+                                            key={lId}
+                                            control={<Switch/>}
+                                            label={<SwitchLabel label={lId}/>}
+                                            labelPlacement="start"
+                                            onChange={() => handleLaminaSwitch(lId)}
+                                            checked={laminas[lId].selected}
+                                        />
+                                    </span>
+                                )}
+                            </Collapse>
+                        </Fragment>
+                    }
                     {Object.keys(OVERLAYS).map(oId =>
                         <FormControlLabel
-                            className={classes.popoverContent}
+                            className={classes.entryPadding}
                             key={oId}
                             control={<Switch/>}
                             label={OVERLAYS[oId].name}

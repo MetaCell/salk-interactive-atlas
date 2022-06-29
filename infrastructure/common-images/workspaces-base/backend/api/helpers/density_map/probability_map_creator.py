@@ -1,6 +1,7 @@
 import numpy as np
 from PIL import Image
-from bg_atlasapi import BrainGlobeAtlas
+
+from api.helpers.ICustomAtlas import ICustomAtlas
 from api.helpers.density_map.common_density_helpers import get_subdivision_bin_limits, get_bins
 from api.helpers.density_map.iimage_creator import IImageCreator
 from skimage.filters import gaussian
@@ -9,11 +10,11 @@ from api.helpers.image_manipulation import get_image_from_array, apply_greyscale
 
 class ProbabilityMapCreator(IImageCreator):
 
-    def create(self, bg_atlas: BrainGlobeAtlas, subdivision: str, points: np.array) -> Image:
+    def create(self, bg_atlas: ICustomAtlas, subdivision: str, points: np.array) -> Image:
         return _generate_probability_map(bg_atlas, subdivision, points)
 
 
-def _generate_probability_map(bg_atlas: BrainGlobeAtlas, subdivision: str, points: np.array) -> Image:
+def _generate_probability_map(bg_atlas: ICustomAtlas, subdivision: str, points: np.array) -> Image:
     prob_map_smoothing = 50
     prob_map_normalise = True
     bin_limits = get_subdivision_bin_limits(bg_atlas, subdivision)
@@ -32,7 +33,7 @@ def _generate_probability_map(bg_atlas: BrainGlobeAtlas, subdivision: str, point
 
 def _generate_prob_map(
         points: np.array,
-        bg_atlas: BrainGlobeAtlas,
+        bg_atlas: ICustomAtlas,
         bin_limits: tuple = (None, None, None),
         normalise: bool = True,
         smoothing: int = None,

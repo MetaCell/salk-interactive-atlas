@@ -3,7 +3,6 @@ import {ARROW_KEY_LEFT, ARROW_KEY_RIGHT, AtlasChoice} from "./constants";
 import Range from "../models/Range";
 
 export const areAllSelected = (obj: { [x: string]: {
-      status: string;
       selected: any } }) : boolean => {
    return Object.keys(obj).reduce((acc, pId) => obj[pId].selected && acc, true)
 }
