@@ -20,8 +20,7 @@ import {
     DensityImages,
     DensityMapTypes,
     NEURONAL_LOCATIONS_ID,
-    OVERLAYS,
-    PROBABILITY_MAP_ID,
+    OVERLAYS, PROBABILITY_MAP_ID,
     RequestState,
     ROSTRAL
 } from "../utilities/constants";
@@ -35,7 +34,9 @@ import ExpandLessIcon from "@material-ui/icons/ExpandLess";
 import CordImageMapper from "./CordImageMapper";
 import ArrowDropDownIcon from "@material-ui/icons/ArrowDropDown";
 import ArrowDropUpIcon from "@material-ui/icons/ArrowDropUp";
-import {areAllSelected} from "../utilities/functions";
+import {areAllSelected, getRGBAFromHexAlpha, getRGBAString} from "../utilities/functions";
+import ColorPicker from "./ColorPicker";
+import SwitchLabel from "./common/SwitchLabel";
 
 
 const HEIGHT = "calc(100% - 55px)"
@@ -95,6 +96,42 @@ const useStyles = makeStyles(t => ({
     collapse: {
         borderTop: 'none !important'
     },
+
+    laminaEntry: {
+        display: 'flex',
+        alignItems: 'center',
+        lineHeight: '0.938rem',
+        fontWeight: 400,
+        fontSize: '0.75rem',
+    },
+    laminaColor: {
+        display: 'flex',
+        alignItems: 'center',
+        lineHeight: '0.938rem',
+        fontWeight: 400,
+        fontSize: '0.75rem',
+    },
+    square: {
+        width: '0.75rem',
+        height: '0.75rem',
+        borderRadius: '0.1rem',
+    },
+    laminaLabel: {
+        display: 'flex',
+        flex: '1',
+        justifyContent: 'space-between',
+        lineHeight: '0.938rem',
+        fontWeight: 400,
+        fontSize: '0.75rem',
+    },
+    label: {
+        display: 'flex',
+        flex: '1',
+        justifyContent: 'space-between',
+        lineHeight: '0.938rem',
+        fontWeight: 400,
+        fontSize: '0.75rem',
+    },
 }))
 
 const SEPARATOR = '_'
@@ -132,8 +169,10 @@ const TwoDViewer = (props: {
     const [overlaysSwitchState, setOverlaysSwitchState] = useState(getDefaultOverlays())
     // TODO: Get lamina color from backend
     const [laminas, setLaminas] = useState(atlas.laminas.reduce(
-        (obj, lamina) => ({...obj, [lamina]: {selected: false, color: '#0000FF'}}), {}) as
-        {[key: string] : {color: string, selected: boolean}})
+        (obj, lamina) => ({...obj, [lamina]: {selected: false, color: '#0000FF', opacity: 1}}), {}) as
+        {[key: string] : {color: string, selected: boolean, opacity: number}})
+    const [laminaPopoverAnchorEl, setLaminaPopoverAnchorEl] = React.useState(null);
+    const [selectedLaminaPopoverId, setSelectedLaminaPopoverId] = React.useState(null);
 
 
     const fetchData = async (population: Population, apiMethod: (id: string, subdivision: string, options: any) => Promise<any>) => {
@@ -367,6 +406,22 @@ const TwoDViewer = (props: {
         setIsLoading(true)
     }
 
+    const handleLaminaPopoverClick = (event: React.MouseEvent<HTMLSpanElement>, id: string) => {
+        setLaminaPopoverAnchorEl(event.currentTarget);
+        setSelectedLaminaPopoverId(id);
+    };
+
+    const handleLaminaPopoverClose = () => {
+        setLaminaPopoverAnchorEl(null);
+        setSelectedLaminaPopoverId(null);
+    };
+
+
+    const handleLaminaColorChange = async (id: string, color: string, opacity: number) => {
+        setLaminas({...laminas, [id]: {...laminas[id], color, opacity}})
+        setIsLoading(true)
+    }
+
 
     const classes = useStyles();
     // @ts-ignore
@@ -446,20 +501,42 @@ const TwoDViewer = (props: {
                                     checked={areAllSelected(laminas)}
                                 />
                                 {atlas.laminas.sort().map(lId =>
-                                    <FormControlLabel
-                                        className={classes.entryPadding}
-                                        key={lId}
-                                        control={<Switch/>}
-                                        label={lId}
-                                        labelPlacement="start"
-                                        onChange={() => handleLaminaSwitch(lId)}
-                                        checked={laminas[lId].selected}
-                                    />
+                                    <span key={lId} className={`${classes.entryPadding} ${classes.laminaEntry}`}>
+                                        <span className={classes.laminaColor}
+                                              onClick={(event) => handleLaminaPopoverClick(event, lId)}>
+                                            <Box style={{backgroundColor: getRGBAString(getRGBAFromHexAlpha(laminas[lId].color, laminas[lId].opacity))}}
+                                                 component="span"
+                                                 className={classes.square}/>
+                                            <ArrowDropDownIcon fontSize='small'/>
+                                        </span>
+                                        <Popover
+                                            open={lId === selectedLaminaPopoverId}
+                                            anchorEl={laminaPopoverAnchorEl}
+                                            onClose={handleLaminaPopoverClose}
+                                            anchorOrigin={{
+                                                vertical: 'bottom',
+                                                horizontal: 'left',
+                                            }}
+                                        >
+                                            <ColorPicker selectedColor={getRGBAFromHexAlpha(laminas[lId].color, laminas[lId].opacity)}
+                                                         handleColorChange={(color: string, opacity: number) =>
+                                                             handleLaminaColorChange(lId, color, opacity)
+                                            }/>
+                                        </Popover>
+                                        <FormControlLabel
+                                            className={`${classes.label}`}
+                                            key={lId}
+                                            control={<Switch/>}
+                                            label={<SwitchLabel label={lId}/>}
+                                            labelPlacement="start"
+                                            onChange={() => handleLaminaSwitch(lId)}
+                                            checked={laminas[lId].selected}
+                                        />
+                                    </span>
                                 )}
                             </Collapse>
                         </Fragment>
                     }
-
                     {Object.keys(OVERLAYS).map(oId =>
                         <FormControlLabel
                             className={classes.entryPadding}
