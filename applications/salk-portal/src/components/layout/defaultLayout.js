@@ -8,8 +8,7 @@ export default {
         tabEnableDrag: false
     },
     layout: {
-        type: "tabset",
-        weight: 100,
+        type: "row",
         id: "root",
         children: [
             {
@@ -18,8 +17,13 @@ export default {
                 children: [
                     {
                         type: "tabset",
-                        weight: 100,
-                        id: "leftPanel",
+                        id: "topLeftPanel",
+                        enableDeleteWhenEmpty: false,
+                        children: []
+                    },
+                    {
+                        type: "tabset",
+                        id: "bottomLeftPanel",
                         enableDeleteWhenEmpty: false,
                         children: []
                     }

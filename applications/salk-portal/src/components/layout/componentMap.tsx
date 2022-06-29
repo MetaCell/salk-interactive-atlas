@@ -1,8 +1,12 @@
-import ExperimentViewer from "../ExperimentViewer";
+import ThreeDViewer from "../ThreeDViewer";
+import TwoDViewer from "../TwoDViewer";
 import ElectrophysiologyViewer from "../ElectrophysiologyViewer";
+import {widgetIds} from "../../widgets";
+
 
 const componentMap = {
-    'experimentViewer': ExperimentViewer,
+    [widgetIds.threeDViewer]: ThreeDViewer,
+    [widgetIds.twoDViewer]: TwoDViewer,
     'electrophysiologyViewer': ElectrophysiologyViewer
 };
 

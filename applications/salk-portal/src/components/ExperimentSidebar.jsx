@@ -12,18 +12,17 @@ import {
     FormControl,
     RadioGroup,
     Radio,
-    Button, Popover
+    Button, Popover, Tooltip
 } from '@material-ui/core';
 import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown';
 import {canvasIconColor, headerBg, headerBorderColor, teal, blue, brown, skyBlue, purple} from "../theme";
 import TOGGLE from "../assets/images/icons/toggle.svg";
 import ATLAS from "../assets/images/icons/atlas.svg";
 import SUBDIVISIONS from "../assets/images/icons/subdivisions.svg";
-import OVERLAYS from "../assets/images/icons/overlays.svg";
 import ADD from "../assets/images/icons/add.svg";
 import UP_ICON from "../assets/images/icons/up.svg";
 import POPULATION from "../assets/images/icons/population.svg";
-import {atlasMap} from "../utilities/constants";
+import {atlasMap, MAX_STR_LENGTH_SIDEBAR, POPULATION_FINISHED_STATE} from "../utilities/constants";
 import {areAllSelected, getRGBAFromHexAlpha, getRGBAString} from "../utilities/functions";
 import ColorPicker from "./ColorPicker";
 
@@ -155,20 +154,17 @@ const useStyles = makeStyles({
     },
 });
 
-const overlays = ['Density Map', 'Populations Map', 'Neuronal Locations'];
 
 const POPULATION_ICONS_OPACITY = 0.4
 
 const ExperimentSidebar = ({
                                selectedAtlas,
-                               subdivisions,
                                populations,
                                handleAtlasChange,
-                               handleSubdivisionSwitch,
                                handlePopulationSwitch,
-                               handleShowAllSubdivisions,
                                handleShowAllPopulations,
-                               handlePopulationColorChange
+                               handlePopulationColorChange,
+                               hasEditPermission
                            }) => {
     const classes = useStyles();
     const [shrink, setShrink] = useState(false);
@@ -176,6 +172,9 @@ const ExperimentSidebar = ({
     const [selectedPopoverId, setSelectedPopoverId] = React.useState(null);
 
     const handlePopoverClick = (event, id) => {
+        if (!hasEditPermission) {
+            return
+        }
         setPopoverAnchorEl(event.currentTarget);
         setSelectedPopoverId(id);
     };
@@ -194,15 +193,28 @@ const ExperimentSidebar = ({
         return getRGBAFromHexAlpha(color, opacity)
     }
 
+    const areAllPopulationsSelected = () => {
+        return Object.keys(populations)
+            .filter(pId => populations[pId].status === POPULATION_FINISHED_STATE)
+            .reduce((acc, pId) => populations[pId].selected && acc, true)
+    }
+
 
     const sidebarClass = `${classes.sidebar} scrollbar ${shrink ? `${classes.shrink}` : ``}`;
-    const PopulationLabel = ({labelText}) => {
+    const PopulationLabel = ({population}) => {
+        let labelText = population.name;
+        if (population.status != POPULATION_FINISHED_STATE) {
+            labelText += `- ${population.status}`
+        }
         return (
-            <Typography className='population-label'>
-                {labelText}
-            </Typography>
+            <Tooltip title={labelText} placement="top">
+                <Typography className='population-label'>
+                    {labelText.substr(0, MAX_STR_LENGTH_SIDEBAR)}
+                </Typography>
+            </Tooltip>
         )
     }
+    const populationTextStyle = (disabled) => hasEditPermission && !disabled? {} : {marginLeft: "8px"}
 
     return (
         <Box className={sidebarClass}>
@@ -251,37 +263,6 @@ const ExperimentSidebar = ({
                             expandIcon={<img src={UP_ICON} alt=""/>}
                         >
                             <Typography>
-                                <img src={SUBDIVISIONS} alt=""/>
-                                Subdivisions
-                            </Typography>
-                        </AccordionSummary>
-                        <AccordionDetails>
-                            <FormControlLabel
-                                className='bold'
-                                control={
-                                    <Switch/>
-                                }
-                                label="All subdivisions"
-                                labelPlacement="start"
-                                onChange={handleShowAllSubdivisions}
-                                checked={areAllSelected(subdivisions)}
-                            />
-                            {Object.keys(subdivisions).sort().map(sId =>
-                                <FormControlLabel key={sId} control={<Switch/>}
-                                                  label={sId}
-                                                  labelPlacement="start"
-                                                  onChange={() => handleSubdivisionSwitch(sId)}
-                                                  checked={subdivisions[sId].selected}
-                                />
-                            )}
-                        </AccordionDetails>
-                    </Accordion>
-
-                    <Accordion elevation={0} square defaultExpanded={true}>
-                        <AccordionSummary
-                            expandIcon={<img src={UP_ICON} alt=""/>}
-                        >
-                            <Typography>
                                 <img src={POPULATION} alt=""/>
                                 Populations
                             </Typography>
@@ -295,18 +276,19 @@ const ExperimentSidebar = ({
                                 label="Show all"
                                 labelPlacement="start"
                                 onChange={handleShowAllPopulations}
-                                checked={areAllSelected(populations)}
+                                checked={areAllPopulationsSelected()}
                             />
                             {Object.keys(populations).map(pId =>
-                                <span className='population-entry'>
+                                <span className='population-entry' key={pId}>
                                     <span className='population-color'
                                           onClick={(event) => handlePopoverClick(event, pId)}>
-                                        <Box style={{backgroundColor: getRGBAString(getRGBAColor(pId))}} component="span"
+                                        <Box style={{backgroundColor: getRGBAString(getRGBAColor(pId))}}
+                                             component="span"
                                              className='square'/>
-                                        <ArrowDropDownIcon fontSize='small'
-                                                           style={{opacity: POPULATION_ICONS_OPACITY}}/>
+                                        {hasEditPermission && populations[pId].status === POPULATION_FINISHED_STATE && <ArrowDropDownIcon fontSize='small'
+                                                                                                                                          style={{opacity: POPULATION_ICONS_OPACITY}}/>}
                                     </span>
-                                    <Popover
+                                    {hasEditPermission && populations[pId].status === POPULATION_FINISHED_STATE && <Popover
                                         open={pId === selectedPopoverId}
                                         anchorEl={popoverAnchorEl}
                                         onClose={handlePopoverClose}
@@ -319,31 +301,19 @@ const ExperimentSidebar = ({
                                             (color, opacity) => handlePopulationColorChange(pId, color, opacity)
                                         }/>
                                     </Popover>
+                                    }
                                     <FormControlLabel
                                         className={'population-label'}
                                         key={pId} control={<Switch/>}
-                                        label={<PopulationLabel labelText={populations[pId].name}/>}
+                                        label={<PopulationLabel population={populations[pId]}/>}
                                         labelPlacement="start"
                                         onChange={() => handlePopulationSwitch(pId)}
                                         checked={populations[pId].selected}
+                                        style={populationTextStyle(populations[pId].status !== POPULATION_FINISHED_STATE)}
+                                        disabled={populations[pId].status !== POPULATION_FINISHED_STATE}
                                     />
                                 </span>
                             )}
-                        </AccordionDetails>
-                    </Accordion>
-
-                    <Accordion elevation={0} square>
-                        <AccordionSummary
-                            expandIcon={<img src={UP_ICON} alt=""/>}
-                        >
-                            <Typography>
-                                <img src={OVERLAYS} alt=""/>
-                                Overlays
-                            </Typography>
-                        </AccordionSummary>
-                        <AccordionDetails>
-                            {overlays.map(atlas => <FormControlLabel key={atlas} control={<Switch/>} label={atlas}
-                                                                     labelPlacement="start"/>)}
                         </AccordionDetails>
                     </Accordion>
                 </>

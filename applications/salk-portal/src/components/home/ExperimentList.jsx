@@ -23,7 +23,7 @@ import FormControl from '@material-ui/core/FormControl';
 import FormLabel from '@material-ui/core/FormLabel';
 import Checkbox from '@material-ui/core/Checkbox';
 import { SalkTeamInfo } from "./SalkTeamInfo";
-import { SALK_TEAM } from "../../constants";
+import { SALK_TEAM } from "../../utilities/constants";
 
 const useStyles = makeStyles(() => ({
   subHeader: {
@@ -169,8 +169,9 @@ const useStyles = makeStyles(() => ({
 
 const ExperimentList = (props) => {
   const classes = useStyles();
+  const {experiments} = props;
   const [anchorEl, setAnchorEl] = React.useState(null);
-  const [value, setValue] = React.useState('Alpahabetical');
+  const [value, setValue] = React.useState('Alphabetical');
   const [filterAnchorEL, setFilterAnchorEL] = React.useState(null);
   const [infoDrawer, setInfoDrawer] = React.useState(false);
   const handleChange = (event) => {
@@ -200,48 +201,6 @@ const ExperimentList = (props) => {
   const { heading, description, type, infoIcon, handleDialogToggle, handleExplorationDialogToggle, handleShareMultipleDialogToggle, handleShareDialogToggle } = props;
   const sortOptions = ["Alphabetical", "Date created", "Last viewed"];
   const orderOptions = ["Oldest first", "Newest first"];
-  const dummyExperiment = {
-    id: "id",
-    name: "Exploration of the Spinal Cord",
-    is_private: true,
-    description: "Description Experiment",
-    date_created: "Sept 2nd, 2021",
-    last_modified: "2022-03-15",
-    owner: {
-        id: 1,
-        username: "afonso",
-        first_name: "",
-        last_name: "",
-        email: "afonso@metacell.us",
-        groups: []
-    },
-    teams: [],
-    collaborators: [],
-    populations: [
-        {
-            id: 1,
-            name: "Test Population",
-            color: "#FFFF00",
-            atlas: "slk10",
-            cells: {
-            }
-        }
-    ],
-    tags: [
-        {
-            id: 1,
-            name: "Project A"
-        },
-        {
-          id: 1,
-          name: "Tag X"
-      },
-      {
-        id: 1,
-        name: "Label1"
-    },
-    ]
-  }
 
   const hash = useLocation()?.hash;
 
@@ -333,8 +292,8 @@ const ExperimentList = (props) => {
       </Box>
       <Box p={5}>
         <Grid container item spacing={3}>
-          {[1].map( i => (
-            <ExperimentCard experiment={dummyExperiment} type={type} handleDialogToggle={handleDialogToggle} handleExplorationDialogToggle={handleExplorationDialogToggle} handleShareDialogToggle={handleShareDialogToggle} handleShareMultipleDialogToggle={handleShareMultipleDialogToggle} />
+          {experiments.map( exp => (
+            <ExperimentCard key={exp.id} experiment={exp} type={type} handleDialogToggle={handleDialogToggle} handleExplorationDialogToggle={handleExplorationDialogToggle} handleShareDialogToggle={handleShareDialogToggle} handleShareMultipleDialogToggle={handleShareMultipleDialogToggle} />
             ))
           }
         </Grid>

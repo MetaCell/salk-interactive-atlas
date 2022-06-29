@@ -7,21 +7,28 @@ import {getLayoutManagerInstance} from "@metacell/geppetto-meta-client/common/la
 // @ts-ignore
 import {WidgetStatus} from "@metacell/geppetto-meta-client/common/layout/model";
 // @ts-ignore
-import {addWidget, updateWidget} from '@metacell/geppetto-meta-client/common/layout/actions';
+import {addWidget, deleteWidget, updateWidget} from '@metacell/geppetto-meta-client/common/layout/actions';
 // @ts-ignore
 import Loader from '@metacell/geppetto-meta-ui/loader/Loader'
-
 import {Box} from "@material-ui/core";
 import {bodyBgColor, font} from "../theme";
 import Sidebar from "../components/ExperimentSidebar";
 // @ts-ignore
-import {AtlasChoice} from "../utilities/constants"
+import {
+    AtlasChoice,
+    NEURONAL_LOCATIONS_ID,
+    POPULATION_FINISHED_STATE,
+    PROBABILITY_MAP_ID,
+    PULL_TIME_MS
+} from "../utilities/constants"
 import {getAtlas} from "../service/AtlasService";
-import {Experiment, ExperimentPopulations} from "../apiclient/workspaces";
+import {Experiment, ExperimentPopulationsInner, Population} from "../apiclient/workspaces";
 import {areAllSelected} from "../utilities/functions";
 import workspaceService from "../service/WorkspaceService";
 import Cell from "../models/Cell";
-
+import {threeDViewerWidget, ElectrophysiologyWidget, widgetIds, twoDViewerWidget} from "../widgets";
+import {useInterval} from "../utilities/hooks/useInterval";
+import {useParams} from "react-router";
 
 const useStyles = makeStyles({
     layoutContainer: {
@@ -44,46 +51,12 @@ const useStyles = makeStyles({
     }
 });
 
-const MOCKED_ID = "1"
-
-export const CanvasWidget = (selectedAtlas: AtlasChoice, activeSubdivisions: Set<string>, activePopulations: any) => {
-    return {
-        id: 'canvasWidget',
-        name: "Spinal Cord Atlas",
-        component: "experimentViewer",
-        panelName: "leftPanel",
-        enableClose: false,
-        status: WidgetStatus.ACTIVE,
-        config: {
-            selectedAtlas,
-            activeSubdivisions,
-            activePopulations,
-        }
-    }
-};
-
-export const ElectrophysiologyWidget = {
-    id: 'epWidget',
-    name: "Electrophysiology",
-    component: "electrophysiologyViewer",
-    panelName: "rightPanel",
-    enableClose: false,
-    status: WidgetStatus.ACTIVE,
-};
-
-
 const getDefaultAtlas = () => AtlasChoice.slk10
 const getSubdivisions = (sa: AtlasChoice) => {
     const subdivisions: any = {}
     const segments = getAtlas(sa).segments
     segments.forEach(sd => subdivisions[sd.id] = {selected: true})
     return subdivisions
-}
-const getPopulations = (e: Experiment, sa: AtlasChoice) => {
-    const populations: any = {}
-    const filteredPopulations = e.populations.filter((p: ExperimentPopulations) => p.atlas === sa)
-    filteredPopulations.forEach(p => populations[p.id] = {...p, selected: false})
-    return populations
 }
 
 
@@ -95,14 +68,28 @@ const ExperimentsPage = () => {
     const api = workspaceService.getApi()
     const classes = useStyles();
     const store = useStore();
+    const params = useParams();
     const [experiment, setExperiment] = useState(null)
     const [selectedAtlas, setSelectedAtlas] = useState(getDefaultAtlas());
     const [subdivisions, setSubdivisions] = useState(getSubdivisions(selectedAtlas));
-    const [populations, setPopulations] = useState({});
-    const [widgetsReady, setWidgetsReady] = useState(false)
+    const [populations, setPopulations] = useState({} as any);
+    const [sidebarPopulations, setSidebarPopulations] = useState({} as any);
+
 
     const dispatch = useDispatch();
     const [LayoutComponent, setLayoutManager] = useState(undefined);
+
+    const getPopulations = (e: Experiment, sa: AtlasChoice) => {
+        const nextPopulations: any = {}
+        const filteredPopulations = e.populations.filter((p: Population) => p.atlas === sa)
+        // @ts-ignore
+        filteredPopulations.forEach(p => nextPopulations[p.id] = {
+            ...p,
+            status: p.status,
+            selected: populations[p.id]?.selected || false
+        })
+        return nextPopulations
+    }
 
     const handleAtlasChange = (atlasId: AtlasChoice) => {
         setSelectedAtlas(atlasId)
@@ -123,11 +110,14 @@ const ExperimentsPage = () => {
     }
 
     const handleShowAllPopulations = () => {
-        const areAllPopulationsActive = areAllSelected(populations)
+        const areAllPopulationsActive = areAllSelected(sidebarPopulations)
         const nextPopulations: any = {}
         Object.keys(populations)
-            // @ts-ignore
-            .forEach(pId => nextPopulations[pId] = {...populations[pId], selected: !areAllPopulationsActive})
+            .forEach(pId => nextPopulations[pId] = {
+                ...sidebarPopulations[pId],
+                selected: sidebarPopulations[pId].status !== POPULATION_FINISHED_STATE ? false : !areAllPopulationsActive
+            })
+        setSidebarPopulations(nextPopulations)
         setPopulations(nextPopulations)
     }
 
@@ -136,9 +126,10 @@ const ExperimentsPage = () => {
         const nextPopulations: any = {...populations}
         nextPopulations[populationId].selected = !nextPopulations[populationId].selected
         setPopulations(nextPopulations)
+        setSidebarPopulations(nextPopulations)
     };
 
-    const handlePopulationColorChange = async (id: string, color: string, opacity: number) => {
+    const handlePopulationColorChange = async (id: string, color: string, opacity: string) => {
         // @ts-ignore
         await api.partialUpdatePopulation(id, {color, opacity})
         // @ts-ignore
@@ -146,17 +137,74 @@ const ExperimentsPage = () => {
         // @ts-ignore
         nextPopulations[id] = {...nextPopulations[id], color, opacity}
         setPopulations(nextPopulations)
+        setSidebarPopulations(nextPopulations)
     }
+
+
+    const getActivePopulations = () => Object.keys(populations)
+        // @ts-ignore
+        .filter(pId => populations[pId].selected)
+        .reduce((obj, key) => {
+            // @ts-ignore
+            obj[key] = populations[key];
+            return obj;
+        }, {});
+
+    async function getCells(p: ExperimentPopulationsInner) {
+        const cellsFile = await api.cellsPopulation(`${p.id}`);
+        // @ts-ignore
+        return cellsFile.data.split(/\r?\n/).map(csv => new Cell(csv));
+    }
+
+    useInterval(() => {
+        const fetchData = async () => {
+            // @ts-ignore
+            const response = await api.retrieveExperiment(params.id)
+            const fetchedExperiment = response.data;
+            const cells = await Promise.all(fetchedExperiment.populations.map(async (p) => {
+                if (p.status !== POPULATION_FINISHED_STATE) return [];
+                const existingPopulation = experiment.populations.find((e: ExperimentPopulationsInner) => e.id === p.id)
+                if (existingPopulation !== undefined && typeof existingPopulation.cells !== "string" && existingPopulation.cells.length > 0) return existingPopulation.cells
+                try {
+                    return await getCells(p);
+                } catch {
+                    return [];
+                }
+            }));
+            let shouldUpdateExperiment = false;
+            fetchedExperiment.populations.forEach((p, i) => {
+                const existingPopulation = experiment.populations.find((e: ExperimentPopulationsInner) => e.id === p.id)
+                if (existingPopulation === undefined || typeof existingPopulation.cells === "string" || existingPopulation.cells.length === 0) {
+                    // previous population cells !== new population cells --> update the experiment data
+                    shouldUpdateExperiment = true;
+                }
+                fetchedExperiment.populations[i].cells = cells[i]
+            });
+            if (shouldUpdateExperiment) {
+                setExperiment(fetchedExperiment)
+                const experimentPopulations = getPopulations(fetchedExperiment, selectedAtlas)
+                setPopulations(experimentPopulations)
+                setSidebarPopulations(experimentPopulations)
+                // TODO: Handle error status on populations
+            }
+        }
+        fetchData()
+            .catch(console.error);
+    }, PULL_TIME_MS);
 
 
     useEffect(() => {
         const fetchData = async () => {
-            const response = await api.retrieveExperiment(MOCKED_ID)
+            // @ts-ignore
+            const response = await api.retrieveExperiment(params.id)
             const data = response.data;
             const cells = await Promise.all(data.populations.map(async (p) => {
-                const cellsFile = await api.cellsPopulation(`${p.id}`);
-                // @ts-ignore
-                return cellsFile.data.split('\r\n').map(csv => new Cell(csv));
+                if (p.status !== POPULATION_FINISHED_STATE) return [];
+                try {
+                    return await getCells(p);
+                } catch {
+                    return [];
+                }
             }));
             data.populations.forEach((p, i) => {
                 data.populations[i].cells = cells[i]
@@ -170,29 +218,35 @@ const ExperimentsPage = () => {
 
     useEffect(() => {
         if (experiment != null) {
-            setPopulations(getPopulations(experiment, selectedAtlas))
-            dispatch(addWidget(CanvasWidget(selectedAtlas, new Set(), {})));
+            const experimentPopulations = getPopulations(experiment, selectedAtlas)
+            setPopulations(experimentPopulations)
+            setSidebarPopulations(experimentPopulations)
+            dispatch(addWidget(threeDViewerWidget(selectedAtlas, {})));
+            dispatch(addWidget(twoDViewerWidget(Object.keys(subdivisions), [], selectedAtlas)));
             dispatch(addWidget(ElectrophysiologyWidget));
-            setWidgetsReady(true)
         }
     }, [experiment])
 
-    useEffect(() => {
-        const subdivisionsSet = new Set(Object.keys(subdivisions).filter(sId => subdivisions[sId].selected))
-        // @ts-ignore
-        const activePopulations = Object.keys(populations)
-            // @ts-ignore
-            .filter(pId => populations[pId].selected)
-            .reduce((obj, key) => {
-                // @ts-ignore
-                obj[key] = populations[key];
-                return obj;
-            }, {});
+    // TODO: Handle selectedAtlas changes
 
-        if (widgetsReady) {
-            dispatch(updateWidget(CanvasWidget(selectedAtlas, subdivisionsSet, activePopulations)))
+    function getWidget(widgetId: string) {
+        switch (widgetId){
+            case widgetIds.threeDViewer:
+                return threeDViewerWidget(selectedAtlas, getActivePopulations())
+            case widgetIds.twoDViewer:
+                return twoDViewerWidget(Object.keys(subdivisions), Object.values(getActivePopulations()), selectedAtlas)
         }
-    }, [subdivisions, populations, selectedAtlas])
+
+    }
+
+    useEffect(() => {
+        for (const widgetId of Object.keys(store.getState().widgets)) {
+            const widget = getWidget(widgetId)
+            if (widget) {
+                dispatch(updateWidget(widget))
+            }
+        }
+    }, [populations])
 
     useEffect(() => {
         if (LayoutComponent === undefined) {
@@ -205,12 +259,13 @@ const ExperimentsPage = () => {
 
     return experiment != null ? (
         <Box display="flex">
-            <Sidebar selectedAtlas={selectedAtlas} subdivisions={subdivisions} populations={populations}
-                     handleAtlasChange={handleAtlasChange} handleSubdivisionSwitch={handleSubdivisionSwitch}
+            <Sidebar selectedAtlas={selectedAtlas}
+                     populations={sidebarPopulations}
+                     handleAtlasChange={handleAtlasChange}
                      handlePopulationSwitch={handlePopulationSwitch}
-                     handleShowAllSubdivisions={handleShowAllSubdivisions}
                      handleShowAllPopulations={handleShowAllPopulations}
                      handlePopulationColorChange={handlePopulationColorChange}
+                     hasEditPermission={experiment.has_edit_permission}
             />
             <Box className={classes.layoutContainer}>
                 {LayoutComponent === undefined ? <CircularProgress/> : <LayoutComponent/>}

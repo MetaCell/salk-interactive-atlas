@@ -12,6 +12,13 @@ harness:
       mountpath: /usr/src/app/persistent
       auto: true
       size: 5Gi
+    resources:
+      requests:
+        memory: 2Gi
+        cpu: 500m
+      limits:
+        memory: 2Gi
+        cpu: 500m
   database:
     auto: true
     type: postgres
@@ -21,10 +28,12 @@ harness:
     path: /k8s/ready
   dependencies:
     build:
-    - cloudharness-base
+    - cloudharness-base-debian
+    - workspaces-base
     hard:
     - accounts
     - events
+    - argo
   uri_role_mapping:
     - uri: /api/*
       roles:

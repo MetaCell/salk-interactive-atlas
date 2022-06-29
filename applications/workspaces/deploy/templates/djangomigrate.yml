@@ -38,11 +38,6 @@ spec:
           - name: cloudharness-kc-accounts
             mountPath: /opt/cloudharness/resources/auth
             readOnly: true
-          {{- if .Values.apps.workspaces.harness.deployment.volume }}
-          - name: {{ .Values.apps.workspaces.harness.deployment.volume.name }}
-            mountPath: {{ .Values.apps.workspaces.harness.deployment.volume.mountpath }}
-            readOnly: {{ .Values.apps.workspaces.harness.deployment.volume.readonly | default false }}
-          {{- end }}
       volumes:
         - name: cloudharness-allvalues
           configMap:
@@ -50,10 +45,5 @@ spec:
         - name: cloudharness-kc-accounts
           secret:
             secretName: accounts
-        {{- if .Values.apps.workspaces.harness.deployment.volume }}
-        - name: {{ .Values.apps.workspaces.harness.deployment.volume.name }}
-          persistentVolumeClaim:
-            claimName: {{ .Values.apps.workspaces.harness.deployment.volume.name }}
-        {{- end }}
       restartPolicy: OnFailure
   backoffLimit: 20

@@ -8,6 +8,7 @@ harness:
       name: salk-files
       mountpath: /usr/share/nginx/html/persistent
       auto: false
+      readonly: true
       size: 5Gi
   service:
     auto: true

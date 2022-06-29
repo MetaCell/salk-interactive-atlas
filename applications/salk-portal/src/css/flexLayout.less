@@ -1,4 +1,5 @@
 @import "variables";
+@import "main";
 
 .flexlayout {
   &__tabset {
@@ -25,6 +26,9 @@
   }
 
   &__tab {
+    .scrollbarStyle;
+    overflow: hidden;
+
     border-radius: 8px;
     border-top-left-radius: 0;
     &_button {
@@ -51,16 +55,19 @@
   }
 }
 
-.position-toolbar {
-  .MuiButtonBase-root {
-    color: @canvasIconColor;
-  }
-  .svg-inline--fa {
-    width: 12px;
-    height: 12px;
-  }
-  .squareB {
-    width: 12px!important;
-    height: 12px!important;
+body {
+  .position-toolbar {
+    position: inherit;
+    .MuiButtonBase-root {
+      color: @canvasIconColor;
+    }
+    .svg-inline--fa {
+      width: 12px;
+      height: 12px;
+    }
+    .squareB {
+      width: 12px!important;
+      height: 12px!important;
+    }
   }
 }
