@@ -34,10 +34,9 @@ import ExpandLessIcon from "@material-ui/icons/ExpandLess";
 import CordImageMapper from "./CordImageMapper";
 import ArrowDropDownIcon from "@material-ui/icons/ArrowDropDown";
 import ArrowDropUpIcon from "@material-ui/icons/ArrowDropUp";
-import {areAllSelected, getRGBAFromHexAlpha, getRGBAString} from "../utilities/functions";
+import {areAllSelected, getRGBAFromHexAlpha, getRGBAString, onKeyboard, onWheel, scrollStop} from "../utilities/functions";
 import ColorPicker from "./ColorPicker";
 import SwitchLabel from "./common/SwitchLabel";
-
 
 const HEIGHT = "calc(100% - 55px)"
 
@@ -53,7 +52,8 @@ const useStyles = makeStyles(t => ({
         height: '100%',
         flex: '1',
         padding: '0 0 0 200px',
-        justifyContent: 'center'
+        justifyContent: 'center',
+        outline: "none !important"
     },
     buttonContainer: {
         position: 'absolute',
@@ -155,11 +155,13 @@ const TwoDViewer = (props: {
     }, {})
     const activePopulationsHash = activePopulations.map(pop => `${pop.id}+${pop.color}`).join('')
     const atlas = getAtlas(props.selectedAtlas)
+    const canvasContainerRef = useRef(null)
     const canvasRef = useRef(null)
     const hiddenCanvasRef = useRef(null)
     const subdivisions = props.subdivisions.sort()
     const segments = subdivisions.flatMap((s) => [`${s}-${ROSTRAL}`, `${s}-${CAUDAL}`])
     const [selectedValueIndex, setSelectedValueIndex] = useState(0);
+    const cursorRef = useRef(selectedValueIndex);
     const [content, setContent] = useState({})
     const [isLoading, setIsLoading] = useState(false)
     const [isReady, setIsReady] = useState(false)
@@ -376,6 +378,17 @@ const TwoDViewer = (props: {
         setIsReady(true)
     }, [])
 
+    useEffect(() => {
+        scrollStop(canvasRef.current,
+            (e) => onWheel(e, cursorRef, segments.length, (n) => setSelectedValueIndex(n)),
+            () => handleSegmentChange(cursorRef.current))
+    }, [canvasRef])
+
+    useEffect(() => {
+        canvasContainerRef.current.addEventListener('keydown',
+            (e: { keyCode: number }) => onKeyboard(e, cursorRef, segments.length, (n) => setSelectedValueIndex(n)),
+            false);
+    }, [canvasContainerRef])
 
     const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
         setAnchorEl(event.currentTarget);
@@ -550,7 +563,7 @@ const TwoDViewer = (props: {
                     )}
                 </Popover>
             </Box>
-            <Box className={classes.densityMapImageContainer}>
+            <Box className={classes.densityMapImageContainer} ref={canvasContainerRef} tabIndex="0">
                 <canvas hidden={true} ref={hiddenCanvasRef}/>
                 <canvas hidden={isLoading} className={classes.densityMapImage} ref={canvasRef}/>
             </Box>

@@ -49,3 +49,6 @@ export enum DensityImages {
     ANNOTATION = "annotation",
     CANAL = "canal",
 }
+
+export const ARROW_KEY_RIGHT = 39
+export const ARROW_KEY_LEFT = 37

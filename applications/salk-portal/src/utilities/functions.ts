@@ -1,5 +1,5 @@
 import {getAtlas} from "../service/AtlasService";
-import {AtlasChoice, POPULATION_FINISHED_STATE} from "./constants";
+import {ARROW_KEY_LEFT, ARROW_KEY_RIGHT, AtlasChoice} from "./constants";
 import Range from "../models/Range";
 
 export const areAllSelected = (obj: { [x: string]: {
@@ -49,6 +49,45 @@ export function areEqual(obj1: any, obj2: any){
    return  JSON.stringify(obj1) === JSON.stringify(obj2)
 }
 
-export function mod(n: number, m: number) : number {
+function mod(n: number, m: number) : number {
    return ((n % m) + m) % m;
+}
+
+export function scrollStop (element: any, onEvent: (arg0: any) => void, callback: () => void , refresh = 300) {
+
+   // Make sure a valid callback was provided
+   if (!callback || typeof callback !== 'function') return;
+
+   // Setup scrolling variable
+   let isScrolling : any;
+
+   // Listen for wheel events
+   element.addEventListener('wheel', (event: any) => {
+      onEvent(event)
+
+      // Clear our timeout throughout the scroll
+      clearTimeout(isScrolling);
+
+      // Set a timeout to run after scrolling ends
+      isScrolling = setTimeout(() => callback(), refresh);
+
+   }, false);
+
+}
+
+export const onWheel = (event: { deltaY: number; }, currentRef: { current: number; }, len: number, callback: (arg0: number) => void) => {
+   const direction = Math.sign(event.deltaY) * -1
+   const nextCursor = mod(currentRef.current + direction, len)
+   callback(nextCursor)
+   currentRef.current = nextCursor
+}
+
+export const onKeyboard = (event: { keyCode: number; }, currentRef: { current: number; }, len: number, callback: (arg0: number) => void) => {
+   const direction = event.keyCode === ARROW_KEY_RIGHT ? 1 : event.keyCode === ARROW_KEY_LEFT ? -1 : null
+   if (!direction){
+      return
+   }
+   const nextCursor = mod(currentRef.current + direction, len)
+   callback(nextCursor)
+   currentRef.current = nextCursor
 }

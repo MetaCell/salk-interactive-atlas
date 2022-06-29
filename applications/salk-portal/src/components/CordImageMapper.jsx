@@ -3,7 +3,7 @@ import React, {useEffect, useRef, useState} from 'react';
 import CORD from "../assets/images/cord.png";
 import {ImageMap} from "@qiuz/react-image-map";
 import {makeStyles} from "@material-ui/core/styles";
-import {mod} from "../utilities/functions";
+import {scrollStop, onWheel} from "../utilities/functions";
 
 const useStyles = makeStyles({
     imageMap: {
@@ -38,33 +38,10 @@ const CordImageMapper = (props) => {
 
     const mapArea = segments.map((s, i) => generateArea(i));
 
-    function scrollStop (element, callback, refresh = 300) {
-
-        // Make sure a valid callback was provided
-        if (!callback || typeof callback !== 'function') return;
-
-        // Setup scrolling variable
-        let isScrolling;
-
-        // Listen for wheel events
-        element.addEventListener('wheel', function (event) {
-            const direction = Math.sign(event.deltaY) * -1
-            const nextCursor = mod(cursorRef.current + direction, segments.length)
-            setCursor(nextCursor)
-            cursorRef.current = nextCursor
-
-            // Clear our timeout throughout the scroll
-            clearTimeout(isScrolling);
-
-            // Set a timeout to run after scrolling ends
-            isScrolling = setTimeout(() => callback(cursorRef.current), refresh);
-
-        }, false);
-
-    }
 
     useEffect(() => {
-        scrollStop(ref.current,(e) => onChange(e) )
+        scrollStop(ref.current, (e) => onWheel(e, cursorRef, segments.length, (n) => setCursor(n)),
+            () => onChange(cursorRef.current) )
     }, [ref])
 
     useEffect(() => {
