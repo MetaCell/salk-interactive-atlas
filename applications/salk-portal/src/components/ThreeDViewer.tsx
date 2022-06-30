@@ -159,7 +159,9 @@ class ThreeDViewer extends Component {
     }
 
     componentDidUpdate(prevProps: Readonly<{}>, prevState: Readonly<{}>, snapshot?: any) {
-        this.updatePopulations(
+        // @ts-ignore
+        if (this.state.anchorEl === prevState.anchorEl){
+            this.updatePopulations(
             // @ts-ignore
             !eqSet(getActiveSubdivisionsSet(prevState.subdivisions), getActiveSubdivisionsSet(this.state.subdivisions))
             || !eqSet(
@@ -180,7 +182,7 @@ class ThreeDViewer extends Component {
                         this.props.activePopulations[pId].opacity)
                     ))
             ))
-    }
+    }}
 
     getInstancesToShow() {
         // @ts-ignore
@@ -302,7 +304,7 @@ class ThreeDViewer extends Component {
     handleSubdivisionSwitch(subdivisionId: string) {
         // @ts-ignore
         const {subdivisions} = this.state
-        const nextSubdivisions: any = {...subdivisions}
+        const nextSubdivisions: any = JSON.parse(JSON.stringify(subdivisions))
         nextSubdivisions[subdivisionId].selected = !nextSubdivisions[subdivisionId].selected
         this.setState({subdivisions: nextSubdivisions, needsReset: true}, () => {
             this.setState({needsReset: false})
