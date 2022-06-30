@@ -234,14 +234,19 @@ class ThreeDViewer extends Component {
         }
     }
 
-
     addPopulation(population: Population) {
         // @ts-ignore
         const {selectedAtlas} = this.props
         // @ts-ignore
         const {subdivisions} = this.state
         const activeSubdivisions = getActiveSubdivisionsSet(subdivisions)
+
+        if (activeSubdivisions.size === 0){
+            return
+        }
+
         const ranges = getAllowedRanges(selectedAtlas, activeSubdivisions)
+        const minOffset = ranges.reduce((min, r) => r.start < min ? r.start : min, ranges[0].start)
         // @ts-ignore
         const geometry = new THREE.SphereGeometry(1, 32, 16);
         const dummy = new THREE.Object3D();
@@ -249,14 +254,16 @@ class ThreeDViewer extends Component {
         const material = new THREE.MeshBasicMaterial(
             {color: population.color, transparent: true, opacity: population.opacity}
         );
+
         const mesh = new THREE.InstancedMesh(geometry, material, population.cells.length);
+        mesh.position.x = minOffset
         mesh.frustumCulled = false
         for (let i = 0; i < population.cells.length; i++) {
 
             const cell = population.cells[i]
             if (ranges.some((r) => r.includes(cell.x))) {
                 position.set(
-                    cell.x,
+                    cell.x - minOffset,
                     cell.y,
                     cell.z
                 )
@@ -274,10 +281,11 @@ class ThreeDViewer extends Component {
         }
     }
 
+
     onMount(scene: any) {
         this.scene = scene;
         const light = new THREE.AmbientLight(0x404040);
-        scene.add(light);
+        this.scene.add(light);
         this.onUpdateEnd()
     }
 
