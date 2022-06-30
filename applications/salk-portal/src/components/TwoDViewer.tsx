@@ -38,7 +38,6 @@ import {areAllSelected, getRGBAFromHexAlpha, getRGBAString, onKeyboard, onWheel,
 import ColorPicker from "./ColorPicker";
 import SwitchLabel from "./common/SwitchLabel";
 import {TWO_D_VIEWER_SNACKBAR_MESSAGE} from "../utilities/resources";
-import Alert from "./common/Alert";
 import SnackbarAlert from "./common/Alert";
 
 const HEIGHT = "calc(100% - 55px)"
