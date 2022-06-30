@@ -9,7 +9,7 @@ import {
     FormControlLabel,
     MenuItem,
     Popover,
-    Select,
+    Select, Snackbar,
     Switch,
     Typography
 } from "@material-ui/core";
@@ -37,6 +37,9 @@ import ArrowDropUpIcon from "@material-ui/icons/ArrowDropUp";
 import {areAllSelected, getRGBAFromHexAlpha, getRGBAString, onKeyboard, onWheel, scrollStop} from "../utilities/functions";
 import ColorPicker from "./ColorPicker";
 import SwitchLabel from "./common/SwitchLabel";
+import {TWO_D_VIEWER_SNACKBAR_MESSAGE} from "../utilities/resources";
+import Alert from "./common/Alert";
+import SnackbarAlert from "./common/Alert";
 
 const HEIGHT = "calc(100% - 55px)"
 
@@ -175,6 +178,9 @@ const TwoDViewer = (props: {
         {[key: string] : {color: string, selected: boolean, opacity: number}})
     const [laminaPopoverAnchorEl, setLaminaPopoverAnchorEl] = React.useState(null);
     const [selectedLaminaPopoverId, setSelectedLaminaPopoverId] = React.useState(null);
+    const [isSnackbarOpen, setIsSnackbarOpen] = React.useState(false);
+    const [showSnackbar, setShowSnackbar] = React.useState(true);
+
 
 
     const fetchData = async (population: Population, apiMethod: (id: string, subdivision: string, options: any) => Promise<any>) => {
@@ -435,6 +441,19 @@ const TwoDViewer = (props: {
         setIsLoading(true)
     }
 
+    const handleSnackbarOpen = () => {
+        if (showSnackbar){
+            setIsSnackbarOpen(true)
+        }
+    };
+
+    const handleSnackbarClose = (event: React.SyntheticEvent | Event, reason?: string) => {
+        if (reason === 'clickaway') {
+            return;
+        }
+        setIsSnackbarOpen(false);
+        setShowSnackbar(false)
+    };
 
     const classes = useStyles();
     // @ts-ignore
@@ -442,6 +461,7 @@ const TwoDViewer = (props: {
     const isMenuOpen = Boolean(anchorEl);
     // @ts-ignore
     const popoverHeight = anchorEl?.parentNode?.parentNode?.clientHeight ? anchorEl.parentNode.parentNode.clientHeight - theme.spacing(1) : 0
+
     return (
         <Box sx={boxStyle}>
             <Box className={classes.buttonContainer}>
@@ -485,6 +505,7 @@ const TwoDViewer = (props: {
                             className={`${classes.menuFontSize}`}
                             disableUnderline={true}
                             value={selectedValueIndex}
+                            onOpen={() => handleSnackbarOpen()}
                             onChange={(event) => handleSegmentChange(event.target.value as number)}
                             MenuProps={{classes: {paper: classes.selectMenu}}}
                         >
@@ -562,6 +583,15 @@ const TwoDViewer = (props: {
                         />
                     )}
                 </Popover>
+                <Snackbar
+                    open={isSnackbarOpen}
+                    autoHideDuration={6000}
+                    onClose={handleSnackbarClose}
+                >
+                    <SnackbarAlert onClose={handleSnackbarClose} severity="info" >
+                        {TWO_D_VIEWER_SNACKBAR_MESSAGE}
+                    </SnackbarAlert>
+                </Snackbar>
             </Box>
             <Box className={classes.densityMapImageContainer} ref={canvasContainerRef} tabIndex="0">
                 <canvas hidden={true} ref={hiddenCanvasRef}/>
