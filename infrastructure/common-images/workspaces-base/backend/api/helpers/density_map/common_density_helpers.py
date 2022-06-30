@@ -3,6 +3,8 @@ import numpy as np
 from api.constants import ROSTRAL
 from api.helpers.ICustomAtlas import ICustomAtlas
 
+ZOOM_FACTOR = 10
+
 
 def get_bins(image_size: tuple, bin_sizes: tuple, bin_limits: tuple) -> list:
     """
@@ -28,9 +30,9 @@ def get_subdivision_limits(bg_atlas: ICustomAtlas, subdivision: str) -> tuple:
     for s in bg_atlas.metadata['atlas_segments']:
         if s['Segment'] == segment:
             if part == ROSTRAL:
-                return s['Start'], int(math.floor((s['Start'] + s['End']) / 2))
+                return s['Start'] * ZOOM_FACTOR, s['End'] * ZOOM_FACTOR, 0.25
             else:
-                return int(math.ceil((s['Start'] + s['End'])) / 2), s['End']
+                return s['Start'] * ZOOM_FACTOR, s['End'] * ZOOM_FACTOR, 0.75
 
 
 def get_subdivision_bin_limits(bg_atlas: ICustomAtlas, subdivision: str) -> tuple:

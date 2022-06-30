@@ -30,7 +30,7 @@ class Command(BaseCommand):
                           'mesh_filename': PosixPath('/home/afonso/.brainglobe/salk_cord_10um_v1.0/meshes/6.obj'),
                           'mesh': None
                           }
-                save_lamina_image(generate_lamina_image(bg_atlas, s, lamina['acronym']), lamina['name'], s)
+                save_lamina_image(generate_lamina_image(bg_atlas, s, lamina['acronym']), lamina['acronym'], s)
             save_laminas_json(bg_atlas)
         self.stdout.write(self.style.SUCCESS('Generate canal finished'))
 

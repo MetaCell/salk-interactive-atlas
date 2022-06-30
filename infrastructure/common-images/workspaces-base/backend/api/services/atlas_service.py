@@ -5,7 +5,7 @@ from django.conf import settings
 from api.helpers.ICustomAtlas import ICustomAtlas
 from api.services.filesystem_service import create_dir
 
-ANNOTATIONS_PATH = os.path.join(settings.PERSISTENT_ROOT, "annotations")
+ANNOTATIONS_PATH = os.path.join(settings.PERSISTENT_ROOT, "annotation")
 CANAL_PATH = os.path.join(settings.PERSISTENT_ROOT, "canal")
 LAMINAS_PATH = os.path.join(settings.PERSISTENT_ROOT, "laminas")
 

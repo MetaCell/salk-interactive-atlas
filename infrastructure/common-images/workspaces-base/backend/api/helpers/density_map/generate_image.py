@@ -24,14 +24,13 @@ def get_annotation_array(bg_atlas: ICustomAtlas, subdivision: str):
 
 def _generate_image(bg_atlas: ICustomAtlas, subdivision: str, image_data) -> Image:
     scaled_img_array = _get_img_array(bg_atlas, subdivision, image_data)
-    canal_img = get_image_from_array(scaled_img_array, 'RGB')
-    return black_to_transparent(canal_img)
+    img = get_image_from_array(scaled_img_array, 'RGB')
+    return black_to_transparent(img)
 
 
 def _get_img_array(bg_atlas, subdivision, image_data):
-    subdivision_limits = get_subdivision_limits(bg_atlas, subdivision)
-    middle_point = int((subdivision_limits[0] + subdivision_limits[1]) / 2)
-    img_array = image_data[middle_point]
-    # scale image to 'greyish' tons (max value matches with #808080 (128))
+    segment_start, segment_end, position_within_segment = get_subdivision_limits(bg_atlas, subdivision)
+    image_idx = int((segment_end - segment_start) * position_within_segment + segment_start)
+    img_array = image_data[image_idx]
     scaled_img_array = 128 / np.max(img_array) * img_array
     return scaled_img_array
