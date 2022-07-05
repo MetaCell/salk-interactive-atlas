@@ -2,8 +2,9 @@ import AtlasInstance from "./AtlasInstance"
 import AtlasSegment from "./AtlasSegment"
 import {AtlasChoice, DensityImages} from "../utilities/constants";
 import AtlasLamina from "./AtlasLamina";
+import {shadeHexColor} from "../utilities/functions";
 
-
+const DARK_GREY_SHADE = "#212425"
 
 export default class Atlas {
     instances: AtlasInstance[];
@@ -44,6 +45,13 @@ export default class Atlas {
         const json = require("../assets/atlas/" + this.id + '/atlas_laminas.json')
         for (const key of Object.keys(json)){
             this.laminas.push(new AtlasLamina(key, json[key]))
+        }
+        this.laminas.sort((a, b) => a.minY - b.minY);
+        const lighterShadeStep = 1 / this.laminas.length
+        let currentShade = 0
+        for (const lamina of this.laminas){
+            lamina.setDefaultShade(shadeHexColor(DARK_GREY_SHADE, currentShade))
+            currentShade += lighterShadeStep
         }
     }
 

@@ -173,7 +173,7 @@ const TwoDViewer = (props: {
     const [overlaysSwitchState, setOverlaysSwitchState] = useState(getDefaultOverlays())
     // TODO: Get lamina color from backend
     const [laminas, setLaminas] = useState(atlas.laminas.reduce(
-        (obj, lamina) => ({...obj, [lamina.id]: {selected: false, color: '#0000FF', opacity: 1}}), {}) as
+        (obj, lamina) => ({...obj, [lamina.id]: {selected: false, color: lamina.defaultShade, opacity: 1}}), {}) as
         {[key: string] : {color: string, selected: boolean, opacity: number}})
     const [laminaPopoverAnchorEl, setLaminaPopoverAnchorEl] = React.useState(null);
     const [selectedLaminaPopoverId, setSelectedLaminaPopoverId] = React.useState(null);
@@ -436,8 +436,8 @@ const TwoDViewer = (props: {
 
 
     const handleLaminaColorChange = async (id: string, color: string, opacity: number) => {
-        setLaminas({...laminas, [id]: {...laminas[id], color, opacity}})
         setIsLoading(true)
+        setLaminas({...laminas, [id]: {...laminas[id], color, opacity}})
     }
 
     const handleSnackbarOpen = () => {
