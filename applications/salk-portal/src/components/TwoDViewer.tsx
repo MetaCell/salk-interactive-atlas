@@ -173,7 +173,7 @@ const TwoDViewer = (props: {
     const [overlaysSwitchState, setOverlaysSwitchState] = useState(getDefaultOverlays())
     // TODO: Get lamina color from backend
     const [laminas, setLaminas] = useState(atlas.laminas.reduce(
-        (obj, lamina) => ({...obj, [lamina]: {selected: false, color: '#0000FF', opacity: 1}}), {}) as
+        (obj, lamina) => ({...obj, [lamina.id]: {selected: false, color: '#0000FF', opacity: 1}}), {}) as
         {[key: string] : {color: string, selected: boolean, opacity: number}})
     const [laminaPopoverAnchorEl, setLaminaPopoverAnchorEl] = React.useState(null);
     const [selectedLaminaPopoverId, setSelectedLaminaPopoverId] = React.useState(null);
@@ -514,7 +514,7 @@ const TwoDViewer = (props: {
                         </Select>
                     </FormControl>
 
-                    {atlas.laminas.length > 0 &&
+                    {Object.keys(laminas).length > 0 &&
                         <Fragment>
                             <Box onClick={() => setIsSubRegionsOpen(!isSubRegionsOpen)}
                                  className={`${classes.entryPadding} ${classes.menuButtonContainer}`}>
@@ -533,7 +533,7 @@ const TwoDViewer = (props: {
                                     onChange={() => handleShowAllLaminaSwitch()}
                                     checked={areAllSelected(laminas)}
                                 />
-                                {atlas.laminas.sort().map(lId =>
+                                {Object.keys(laminas).sort().map(lId =>
                                     <span key={lId} className={`${classes.entryPadding} ${classes.laminaEntry}`}>
                                         <span className={classes.laminaColor}
                                               onClick={(event) => handleLaminaPopoverClick(event, lId)}>

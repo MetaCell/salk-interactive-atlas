@@ -1,13 +1,14 @@
 import AtlasInstance from "./AtlasInstance"
 import AtlasSegment from "./AtlasSegment"
 import {AtlasChoice, DensityImages} from "../utilities/constants";
+import AtlasLamina from "./AtlasLamina";
 
 
 
 export default class Atlas {
     instances: AtlasInstance[];
     segments: AtlasSegment[]
-    laminas: string[]
+    laminas: AtlasLamina[]
     name: string
     id: AtlasChoice;
 
@@ -16,7 +17,7 @@ export default class Atlas {
         this.id = atlasId
         this.constructInstances()
         this.constructSegments()
-        this.laminas = this._getLaminas().sort()
+        this.constructLaminas()
     }
 
     constructInstances(){
@@ -38,8 +39,12 @@ export default class Atlas {
         }
     }
 
-    _getLaminas(){
-        return require("../assets/atlas/" + this.id + '/atlas_laminas.json')
+    constructLaminas(){
+        this.laminas = []
+        const json = require("../assets/atlas/" + this.id + '/atlas_laminas.json')
+        for (const key of Object.keys(json)){
+            this.laminas.push(new AtlasLamina(key, json[key]))
+        }
     }
 
     getImageSrc(imageType: DensityImages, segment: string){
