@@ -6,15 +6,15 @@ from api.helpers.density_map.common_density_helpers import get_subdivision_limit
 from api.helpers.image_manipulation import get_image_from_array, black_to_transparent
 
 
-def generate_annotation_image(bg_atlas: ICustomAtlas, subdivision: str) -> Image:
+def generate_annotation_image(bg_atlas: ICustomAtlas, subdivision: str) -> (np.array, Image):
     return _generate_image(bg_atlas, subdivision, bg_atlas.get_annotation(['WM', 'GM']))
 
 
-def generate_canal_image(bg_atlas: ICustomAtlas, subdivision: str) -> Image:
+def generate_canal_image(bg_atlas: ICustomAtlas, subdivision: str) -> (np.array, Image):
     return _generate_image(bg_atlas, subdivision, bg_atlas.canal)
 
 
-def generate_lamina_image(bg_atlas: ICustomAtlas, subdivision: str, lamina_acronym) -> Image:
+def generate_lamina_image(bg_atlas: ICustomAtlas, subdivision: str, lamina_acronym) -> (np.array, Image):
     return _generate_image(bg_atlas, subdivision, bg_atlas.get_image_volume(lamina_acronym))
 
 
@@ -22,10 +22,10 @@ def get_annotation_array(bg_atlas: ICustomAtlas, subdivision: str):
     return _get_img_array(bg_atlas, subdivision, bg_atlas.get_annotation(['WM', 'GM']))
 
 
-def _generate_image(bg_atlas: ICustomAtlas, subdivision: str, image_data) -> Image:
+def _generate_image(bg_atlas: ICustomAtlas, subdivision: str, image_data) -> (np.array, Image):
     scaled_img_array = _get_img_array(bg_atlas, subdivision, image_data)
     img = get_image_from_array(scaled_img_array, 'RGB')
-    return black_to_transparent(img)
+    return scaled_img_array, black_to_transparent(img)
 
 
 def _get_img_array(bg_atlas, subdivision, image_data):

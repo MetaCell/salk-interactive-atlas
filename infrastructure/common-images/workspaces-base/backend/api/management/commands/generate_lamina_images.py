@@ -2,11 +2,10 @@ from pathlib import PosixPath
 
 from django.core.management.base import BaseCommand
 
-from api.helpers.atlas import get_bg_atlas, get_subdivisions
-from api.helpers.density_map.generate_image import generate_canal_image, generate_lamina_image
+from api.helpers.atlas import get_bg_atlas, get_subdivisions, get_img_min_y
+from api.helpers.density_map.generate_image import generate_lamina_image
 from api.management.utilities import get_valid_atlases
-from api.models import AtlasesChoice
-from api.services.atlas_service import save_canal_image, save_lamina_image, save_laminas_json
+from api.services.atlas_service import save_lamina_image, save_laminas_json
 
 
 class Command(BaseCommand):
@@ -23,6 +22,7 @@ class Command(BaseCommand):
                 continue
             bg_atlas = get_bg_atlas(atlas_id)
             subdivisions = get_subdivisions(bg_atlas)
+            laminas_metadata = {}
             for s in subdivisions:
                 # TODO: Change hardcoded to for lamina in bg_atlas.structures['laminae']
                 lamina = {'id': 6, 'name': 'Lamina 1', 'acronym': 'L1', 'rgb_triplet': [100, 0, 100],
@@ -30,7 +30,10 @@ class Command(BaseCommand):
                           'mesh_filename': PosixPath('/home/afonso/.brainglobe/salk_cord_10um_v1.0/meshes/6.obj'),
                           'mesh': None
                           }
-                save_lamina_image(generate_lamina_image(bg_atlas, s, lamina['acronym']), lamina['acronym'], s)
-            save_laminas_json(bg_atlas)
+                img_array, img = generate_lamina_image(bg_atlas, s, lamina['acronym'])
+                save_lamina_image(img, lamina['acronym'], s)
+                if s == subdivisions[0]:
+                    laminas_metadata[lamina['acronym']] = get_img_min_y(img_array)
+            save_laminas_json(laminas_metadata)
         self.stdout.write(self.style.SUCCESS('Generate canal finished'))
 

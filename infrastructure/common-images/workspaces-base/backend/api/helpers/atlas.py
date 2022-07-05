@@ -1,3 +1,5 @@
+import numpy as np
+
 from api.constants import CAUDAL, ROSTRAL
 from api.helpers.ICustomAtlas import ICustomAtlas
 from api.helpers.bg_atlasapi_wrapper import SalkAtlas
@@ -27,3 +29,8 @@ def get_subdivision_boundaries(bg_atlas: ICustomAtlas) -> tuple:
 
 def get_bg_atlas(atlas_id: str) -> ICustomAtlas:
     return SalkAtlas(atlas_id)
+
+
+def get_img_min_y(img: np.array) -> int:
+    item_index = np.where(img > 0)
+    return int(item_index[0].min())

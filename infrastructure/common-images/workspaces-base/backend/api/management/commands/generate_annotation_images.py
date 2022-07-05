@@ -21,5 +21,6 @@ class Command(BaseCommand):
             bg_atlas = get_bg_atlas(atlas_id)
             subdivisions = get_subdivisions(bg_atlas)
             for s in subdivisions:
-                save_annotation_image(generate_annotation_image(bg_atlas, s), s)
+                _, img = generate_annotation_image(bg_atlas, s)
+                save_annotation_image(img, s)
         self.stdout.write(self.style.SUCCESS('Generate annotations finished'))

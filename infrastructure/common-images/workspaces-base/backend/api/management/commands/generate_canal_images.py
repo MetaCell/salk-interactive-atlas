@@ -21,5 +21,6 @@ class Command(BaseCommand):
             bg_atlas = get_bg_atlas(atlas_id)
             subdivisions = get_subdivisions(bg_atlas)
             for s in subdivisions:
-                save_canal_image(generate_canal_image(bg_atlas, s), s)
+                _, img = generate_canal_image(bg_atlas, s)
+                save_canal_image(img, s)
         self.stdout.write(self.style.SUCCESS('Generate canal finished'))
