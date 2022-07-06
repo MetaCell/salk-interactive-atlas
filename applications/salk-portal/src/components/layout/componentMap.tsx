@@ -1,6 +1,6 @@
-import ThreeDViewer from "../ThreeDViewer";
-import TwoDViewer from "../TwoDViewer";
-import ElectrophysiologyViewer from "../ElectrophysiologyViewer";
+import ThreeDViewer from "../viewers/threeD/ThreeDViewer";
+import TwoDViewer from "../viewers/twoD/TwoDViewer";
+import ElectrophysiologyViewer from "../viewers/ElectrophysiologyViewer";
 import {widgetIds} from "../../widgets";
 
 

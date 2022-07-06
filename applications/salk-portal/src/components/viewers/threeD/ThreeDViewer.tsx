@@ -11,15 +11,15 @@ import Canvas from "@metacell/geppetto-meta-ui/3d-canvas/Canvas";
 import CameraControls from "@metacell/geppetto-meta-ui/camera-controls/CameraControls";
 // @ts-ignore
 import CaptureControls from "@metacell/geppetto-meta-ui/capture-controls/CaptureControls";
-import theme, {canvasBg, headerBorderColor} from "../theme";
-import {getAtlas} from "../service/AtlasService"
-import {getInstancesIds} from "../utilities/instancesHelper";
-import {areAllSelected, eqSet, getAllowedRanges} from "../utilities/functions";
-import {Population} from "../apiclient/workspaces";
-import {AtlasChoice} from "../utilities/constants";
+import theme, {canvasBg, headerBorderColor} from "../../../theme";
+import {getAtlas} from "../../../service/AtlasService"
+import {getInstancesIds} from "../../../utilities/instancesHelper";
+import {areAllSelected, eqSet, getAllowedRanges} from "../../../utilities/functions";
+import {Population} from "../../../apiclient/workspaces";
+import {AtlasChoice} from "../../../utilities/constants";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 // @ts-ignore
-import SWITCH_ICON from "../assets/images/icons/switch_icon.svg";
+import SWITCH_ICON from "../../../assets/images/icons/switch_icon.svg";
 
 const MOCKED_GREY_MATTER = 'GM'
 const MOCKED_WHITE_MATTER = 'WM'

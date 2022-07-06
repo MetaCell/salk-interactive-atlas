@@ -104,3 +104,8 @@ export function shadeHexColor(color: string, percent: number) {
    const B = f & 0x0000FF;
    return "#" + (0x1000000 + (Math.round((t - R) * p) + R) * 0x10000 + (Math.round((t - G) * p) + G) * 0x100 + (Math.round((t - B) * p) + B)).toString(16).slice(1);
 }
+
+export function capitalize(word: string) {
+   const lower = word.toLowerCase();
+   return word.charAt(0).toUpperCase() + lower.slice(1);
+}

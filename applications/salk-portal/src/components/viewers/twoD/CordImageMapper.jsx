@@ -1,9 +1,9 @@
 import React, {useEffect, useRef, useState} from 'react';
 // @ts-ignore
-import CORD from "../assets/images/cord.png";
+import CORD from "../../../assets/images/cord.png";
 import {ImageMap} from "@qiuz/react-image-map";
 import {makeStyles} from "@material-ui/core/styles";
-import {scrollStop, onWheel} from "../utilities/functions";
+import {scrollStop, onWheel} from "../../../utilities/functions";
 
 const useStyles = makeStyles({
     imageMap: {

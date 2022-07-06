@@ -1,6 +1,6 @@
 import React from 'react';
 import {makeStyles} from "@material-ui/core/styles";
-import {canvasBg} from "../theme";
+import {canvasBg} from "../../theme";
 const useStyles = makeStyles({
     placeholder: {
         background: canvasBg,

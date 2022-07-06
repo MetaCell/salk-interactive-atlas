@@ -1,6 +1,6 @@
 import AtlasInstance from "./AtlasInstance"
 import AtlasSegment from "./AtlasSegment"
-import {AtlasChoice, DensityImages} from "../utilities/constants";
+import {AtlasChoice, DensityImages, LaminaImageTypes} from "../utilities/constants";
 import AtlasLamina from "./AtlasLamina";
 import {shadeHexColor} from "../utilities/functions";
 
@@ -21,52 +21,52 @@ export default class Atlas {
         this.constructLaminas()
     }
 
-    constructInstances(){
+    constructInstances() {
         this.instances = []
         const objsContext = require.context("../assets/atlas", true, /^.*\.obj$/)
-        for (const filepath of objsContext.keys()){
-            if (filepath.includes(this.id)){
+        for (const filepath of objsContext.keys()) {
+            if (filepath.includes(this.id)) {
                 const filename = filepath.replace(/^.*[\\\/]/, '')
                 this.instances.push(new AtlasInstance(filename, this.id))
             }
         }
     }
 
-    constructSegments(){
+    constructSegments() {
         this.segments = []
         const json = require("../assets/atlas/" + this.id + '/atlas_segments.json')
-        for (const entry of json){
+        for (const entry of json) {
             this.segments.push(new AtlasSegment(entry))
         }
     }
 
-    constructLaminas(){
+    constructLaminas() {
         this.laminas = []
         const json = require("../assets/atlas/" + this.id + '/atlas_laminas.json')
-        for (const key of Object.keys(json)){
+        for (const key of Object.keys(json)) {
             this.laminas.push(new AtlasLamina(key, json[key]))
         }
         this.laminas.sort((a, b) => a.minY - b.minY);
         const lighterShadeStep = 1 / this.laminas.length
         let currentShade = 0
-        for (const lamina of this.laminas){
+        for (const lamina of this.laminas) {
             lamina.setDefaultShade(shadeHexColor(DARK_GREY_SHADE, currentShade))
             currentShade += lighterShadeStep
         }
     }
 
-    getImageSrc(imageType: DensityImages, segment: string){
-        try{
+    getImageSrc(imageType: DensityImages, segment: string) {
+        try {
             return require("../assets/atlas/" + this.id + '/' + imageType + '/' + segment + ".png").default
-        }catch (e){
+        } catch (e) {
             return null
         }
     }
 
-    getLaminaSrc(laminaName: string, segment: string){
-        try{
-            return require("../assets/atlas/" + this.id + '/laminas/' + laminaName + '/' + segment + ".png").default
-        }catch (e){
+    getLaminaSrc(laminaName: string, segment: string, type: LaminaImageTypes) {
+        try {
+            return require("../assets/atlas/" + this.id + '/laminas/' + laminaName + '/' + type + '/' + segment + ".png").default
+        } catch (e) {
             return null
         }
     }

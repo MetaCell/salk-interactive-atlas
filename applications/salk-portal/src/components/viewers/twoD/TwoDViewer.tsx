@@ -1,6 +1,6 @@
 import React, {Fragment, useEffect, useRef, useState} from 'react';
 import {makeStyles} from "@material-ui/core/styles";
-import theme, {bodyBgColor, canvasBg, headerBorderColor} from "../theme";
+import theme, {bodyBgColor, canvasBg, headerBorderColor} from "../../../theme";
 import {
     Box,
     Button,
@@ -13,32 +13,35 @@ import {
     Switch,
     Typography
 } from "@material-ui/core";
-import {Population} from "../apiclient/workspaces";
+import {Population} from "../../../apiclient/workspaces";
 import {
     AtlasChoice,
     CAUDAL,
     DensityImages,
-    DensityMapTypes,
+    DensityMapTypes, LaminaImageTypes,
     NEURONAL_LOCATIONS_ID,
     OVERLAYS, PROBABILITY_MAP_ID,
     RequestState,
     ROSTRAL
-} from "../utilities/constants";
-import workspaceService from "../service/WorkspaceService";
-import {getAtlas} from "../service/AtlasService";
-import {clearCanvas, drawColoredImage, drawImage} from "../service/CanvasService";
-import {useDidUpdateEffect} from "../utilities/hooks/useDidUpdateEffect";
+} from "../../../utilities/constants";
+import workspaceService from "../../../service/WorkspaceService";
+import {getAtlas} from "../../../service/AtlasService";
+import {clearCanvas, drawColoredImage, drawImage} from "../../../service/CanvasService";
+import {useDidUpdateEffect} from "../../../utilities/hooks/useDidUpdateEffect";
 // @ts-ignore
 import SWITCH_ICON from "../assets/images/icons/switch_icon.svg";
 import ExpandLessIcon from "@material-ui/icons/ExpandLess";
 import CordImageMapper from "./CordImageMapper";
 import ArrowDropDownIcon from "@material-ui/icons/ArrowDropDown";
 import ArrowDropUpIcon from "@material-ui/icons/ArrowDropUp";
-import {areAllSelected, getRGBAFromHexAlpha, getRGBAString, onKeyboard, onWheel, scrollStop} from "../utilities/functions";
-import ColorPicker from "./ColorPicker";
-import SwitchLabel from "./common/SwitchLabel";
-import {TWO_D_VIEWER_SNACKBAR_MESSAGE} from "../utilities/resources";
-import SnackbarAlert from "./common/Alert";
+import {areAllSelected, getRGBAFromHexAlpha, getRGBAString, onKeyboard, onWheel, scrollStop} from "../../../utilities/functions";
+import ColorPicker from "../../common/ColorPicker";
+import SwitchLabel from "../../common/SwitchLabel";
+import {TWO_D_VIEWER_SNACKBAR_MESSAGE} from "../../../utilities/resources";
+import SnackbarAlert from "../../common/Alert";
+import SubregionsLabel from "./SubregionsLabel";
+import LaminaTypeRadioSelect from "./LaminaTypeRadioSelect";
+import OverlayLabel from "./OverlayLabel";
 
 const HEIGHT = "calc(100% - 55px)"
 
@@ -134,6 +137,10 @@ const useStyles = makeStyles(t => ({
         fontWeight: 400,
         fontSize: '0.75rem',
     },
+    laminaTopLabelContainer: {
+        display: 'flex',
+        flex: '1'
+    }
 }))
 
 const SEPARATOR = '_'
@@ -171,18 +178,20 @@ const TwoDViewer = (props: {
     const cache = useRef({} as any);
     const [anchorEl, setAnchorEl] = React.useState<HTMLButtonElement | null>(null);
     const [overlaysSwitchState, setOverlaysSwitchState] = useState(getDefaultOverlays())
-    // TODO: Get lamina color from backend
     const [laminas, setLaminas] = useState(atlas.laminas.reduce(
         (obj, lamina) => ({...obj, [lamina.id]: {selected: false, color: lamina.defaultShade, opacity: 1}}), {}) as
         {[key: string] : {color: string, selected: boolean, opacity: number}})
     const [laminaPopoverAnchorEl, setLaminaPopoverAnchorEl] = React.useState(null);
     const [selectedLaminaPopoverId, setSelectedLaminaPopoverId] = React.useState(null);
+    const [laminaType, setLaminaType] = React.useState(LaminaImageTypes.FILLED);
     const [isSnackbarOpen, setIsSnackbarOpen] = React.useState(false);
     const [showSnackbar, setShowSnackbar] = React.useState(true);
 
 
 
     const fetchData = async (population: Population, apiMethod: (id: string, subdivision: string, options: any) => Promise<any>) => {
+        // Fetches either probability map or centroids image from the backend
+
         const response = await apiMethod(population.id.toString(), segments[selectedValueIndex], {responseType: 'blob'})
         if (response.status === 200) {
             // @ts-ignore
@@ -194,6 +203,9 @@ const TwoDViewer = (props: {
     }
 
     function updateCentroids() {
+        // If neuronal centroids switch is active and there are populations active fetches data for the populations not in cache
+        // Updates the cache variable on the centroids key
+
         if (activePopulations.length > 0) {
             if (overlaysSwitchState[NEURONAL_LOCATIONS_ID]) {
                 return Promise.all(activePopulations.filter((p: Population) => !isInCache(p, DensityMapTypes.CENTROIDS_DATA)).map(p =>
@@ -210,6 +222,9 @@ const TwoDViewer = (props: {
     }
 
     function updateProbabilityMap() {
+        // If probability maps switch is active and there are populations active fetches data for the populations not in cache
+        // Updates the cache variable on the probability map key
+
         if (activePopulations.length > 0) {
             if (overlaysSwitchState[PROBABILITY_MAP_ID]) {
                 return Promise.all(activePopulations.filter((p: Population) => !isInCache(p, DensityMapTypes.PROBABILITY_DATA)).map(p =>
@@ -226,6 +241,7 @@ const TwoDViewer = (props: {
     }
 
     const updateData = (newData: { [x: string]: any; }, type: DensityMapTypes) => {
+        // Updates the cache variable on the given key with the given data
         Object.keys(newData).forEach(id => {
             // @ts-ignore
             cache.current[`${id}${SEPARATOR}${segments[selectedValueIndex]}`] = {
@@ -236,6 +252,8 @@ const TwoDViewer = (props: {
     }
 
     const getActiveContent = () => {
+        // Retrieves from cache the content of the active populations
+
         const activeContent = {}
         // @ts-ignore
         activePopulations.forEach(pop => activeContent[pop.id.toString()] = cache.current[`${pop.id}${SEPARATOR}${segments[selectedValueIndex]}`])
@@ -243,12 +261,16 @@ const TwoDViewer = (props: {
     }
 
     const isInCache = (pop: Population, type: DensityMapTypes) => {
+        // Checks if a given population has data in cache for the density map type given
+
         const id = pop.id.toString()
         // @ts-ignore
         return Object.keys(cache.current).includes(`${id}${SEPARATOR}${segments[selectedValueIndex]}`) && cache.current[`${id}${SEPARATOR}${segments[selectedValueIndex]}`][type] != null
     }
 
     const isCanvasReady = () => {
+        // Checks if both canvas and hidden canvas refs already exist
+
         const canvas = canvasRef.current
         const hiddenCanvas = hiddenCanvasRef.current
         return canvas && hiddenCanvas
@@ -261,7 +283,7 @@ const TwoDViewer = (props: {
         }
     }
 
-    const drawContent = async () => {
+    const draw = async () => {
         if (!isLoading) {
             return
         }
@@ -307,7 +329,7 @@ const TwoDViewer = (props: {
         for (const lId of Object.keys(laminas)) {
             // @ts-ignore
             if (laminas[lId].selected) {
-                const laminaData = atlas.getLaminaSrc(lId, segments[selectedValueIndex])
+                const laminaData = atlas.getLaminaSrc(lId, segments[selectedValueIndex], laminaType)
                 // @ts-ignore
                 promises.push(drawColoredImage(canvas, hiddenCanvas, laminaData, laminas[lId].color))
             }
@@ -376,8 +398,8 @@ const TwoDViewer = (props: {
     }, [invalidCachePopulations])
 
     useEffect(() => {
-        drawContent().catch(console.error)
-    }, [content, laminas])
+        draw().catch(console.error)
+    }, [content, laminas, laminaType])
 
     useEffect(() => {
         setIsReady(true)
@@ -454,6 +476,12 @@ const TwoDViewer = (props: {
         setShowSnackbar(false)
     };
 
+    const handleLaminaTypeChange = (value: string) => {
+        setIsLoading(true)
+        // @ts-ignore
+        setLaminaType(value)
+    }
+
     const classes = useStyles();
     // @ts-ignore
     const boxStyle = {flexGrow: 1, background: canvasBg, padding: "1rem", minHeight: "100%", height: HEIGHT}
@@ -523,16 +551,19 @@ const TwoDViewer = (props: {
                             </Box>
                             <Collapse in={isSubRegionsOpen} timeout="auto" unmountOnExit={true}
                                       className={`${classes.collapse}`}>
-                                <FormControlLabel
-                                    className={classes.entryPadding}
-                                    control={
-                                        <Switch/>
-                                    }
-                                    label="All subregions"
-                                    labelPlacement="start"
-                                    onChange={() => handleShowAllLaminaSwitch()}
-                                    checked={areAllSelected(laminas)}
-                                />
+                                <Box className={classes.laminaTopLabelContainer}>
+                                    <LaminaTypeRadioSelect onChange={(v: string) => handleLaminaTypeChange(v)}/>
+                                    <FormControlLabel
+                                        className={`${classes.entryPadding} ${classes.laminaLabel}`}
+                                        control={
+                                            <Switch/>
+                                        }
+                                        label={"All subregions"}
+                                        labelPlacement="start"
+                                        onChange={() => handleShowAllLaminaSwitch()}
+                                        checked={areAllSelected(laminas)}
+                                    />
+                                </Box>
                                 {Object.keys(laminas).sort().map(lId =>
                                     <span key={lId} className={`${classes.entryPadding} ${classes.laminaEntry}`}>
                                         <span className={classes.laminaColor}
@@ -575,7 +606,7 @@ const TwoDViewer = (props: {
                             className={classes.entryPadding}
                             key={oId}
                             control={<Switch/>}
-                            label={OVERLAYS[oId].name}
+                            label={<OverlayLabel label={OVERLAYS[oId].name}/>}
                             labelPlacement="start"
                             onChange={() => handleOverlaySwitch(oId)}
                             checked={overlaysSwitchState[oId]}
