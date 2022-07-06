@@ -3,7 +3,7 @@ from pathlib import PosixPath
 from django.core.management.base import BaseCommand
 
 from api.helpers.atlas import get_bg_atlas, get_subdivisions, get_img_min_y
-from api.helpers.density_map.generate_image import generate_lamina_image
+from api.helpers.density_map.generate_image import generate_lamina_image, generate_image_contour
 from api.management.utilities import get_valid_atlases
 from api.services.atlas_service import save_lamina_image, save_laminas_json
 
@@ -31,9 +31,11 @@ class Command(BaseCommand):
                           'mesh': None
                           }
                 img_array, img = generate_lamina_image(bg_atlas, s, lamina['acronym'])
+                contour_img_array, contour_img = generate_image_contour(img_array, True)
                 save_lamina_image(img, lamina['acronym'], s)
+                save_lamina_image(contour_img, f"{lamina['acronym']}_contour", s)
                 if s == subdivisions[0]:
                     laminas_metadata[lamina['acronym']] = get_img_min_y(img_array)
             save_laminas_json(laminas_metadata)
-        self.stdout.write(self.style.SUCCESS('Generate canal finished'))
+        self.stdout.write(self.style.SUCCESS('Generate laminas finished'))
 
