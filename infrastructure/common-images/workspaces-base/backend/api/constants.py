@@ -1,4 +1,7 @@
+import os
 from enum import Enum
+
+from django.conf import settings
 
 ROSTRAL = "Rostral"
 CAUDAL = "Caudal"
@@ -13,3 +16,13 @@ class PopulationPersistentFiles(Enum):
 CORDMAP_DATA = "cordmap_data"
 POPULATIONS_DATA = 'populations'
 POPULATIONS_SPLIT_DATA = 'split'
+
+LAMINAS_PATH = os.path.join(settings.PERSISTENT_ROOT, "laminas")
+ANNOTATIONS_PATH = os.path.join(settings.PERSISTENT_ROOT, "annotation")
+CANAL_PATH = os.path.join(settings.PERSISTENT_ROOT, "canal")
+
+
+class LaminasImages(Enum):
+    FILLED = 'filled'
+    CONTOUR = 'contour'
+    DASHED = 'dashed'
