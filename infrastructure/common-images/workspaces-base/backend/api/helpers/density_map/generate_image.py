@@ -14,7 +14,7 @@ def generate_annotation_image(bg_atlas: ICustomAtlas, subdivision: str) -> (np.a
         [img_array == bg_atlas.structures["WM"]["id"] - 1, img_array == bg_atlas.structures["GM"]["id"] - 1],
         [np.uint32(GREY), np.uint32(_get_annotation_grey_shade(bg_atlas))], 0)
     img = get_image_from_array(colored_img_array, 'RGB')
-    return colored_img_array, black_to_transparent(img)
+    return colored_img_array, black_to_transparent(img, 255)
 
 
 def _get_annotation_grey_shade(bg_atlas: ICustomAtlas) -> float:
@@ -23,7 +23,7 @@ def _get_annotation_grey_shade(bg_atlas: ICustomAtlas) -> float:
 
 
 def generate_canal_image(bg_atlas: ICustomAtlas, subdivision: str) -> (np.array, Image):
-    return _generate_image(bg_atlas, subdivision, bg_atlas.canal, WHITE)
+    return _generate_image(bg_atlas, subdivision, bg_atlas.canal, WHITE, 255)
 
 
 def generate_lamina_image(bg_atlas: ICustomAtlas, subdivision: str, lamina_acronym) -> (np.array, Image):
@@ -34,10 +34,11 @@ def get_annotation_array(bg_atlas: ICustomAtlas, subdivision: str):
     return _get_scaled_img_array(bg_atlas, subdivision, bg_atlas.get_annotation(['WM', 'GM']))
 
 
-def _generate_image(bg_atlas: ICustomAtlas, subdivision: str, image_data, grey_scale_max: int = GREY) -> (np.array, Image):
+def _generate_image(bg_atlas: ICustomAtlas, subdivision: str, image_data,
+                    grey_scale_max: int = GREY, opacity: int = 128) -> (np.array, Image):
     scaled_img_array = _get_scaled_img_array(bg_atlas, subdivision, image_data, grey_scale_max)
     img = get_image_from_array(scaled_img_array, 'RGB')
-    return scaled_img_array, black_to_transparent(img)
+    return scaled_img_array, black_to_transparent(img, opacity)
 
 
 def _get_img_array(bg_atlas, subdivision, image_data):
