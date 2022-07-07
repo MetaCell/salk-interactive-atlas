@@ -15,12 +15,12 @@ def apply_greyscale_alpha_mask(img: Image) -> Image:
     return img
 
 
-def black_to_transparent(img: Image) -> Image:
+def black_to_transparent(img: Image, opacity: int = 128) -> Image:
     rgb = np.array(img)
     h, w = rgb.shape[:2]
 
     # Add an alpha channel, half opaque (128)
-    rgba = np.dstack((rgb, np.zeros((h, w), dtype=np.uint8) + 128))
+    rgba = np.dstack((rgb, np.zeros((h, w), dtype=np.uint8) + opacity))
 
     # Make mask of black pixels - mask is True where image is black
     m_black = (rgba[:, :, 0:3] == [0, 0, 0]).all(2)

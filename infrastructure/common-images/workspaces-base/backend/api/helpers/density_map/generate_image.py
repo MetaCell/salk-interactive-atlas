@@ -1,6 +1,7 @@
 import numpy as np
 from PIL import Image
 
+from api.constants import GREY, DARK_GREY, WHITE
 from api.helpers.ICustomAtlas import ICustomAtlas
 from api.helpers.density_map.common_density_helpers import get_subdivision_limits
 from api.helpers.exceptions import NoImageDataError
@@ -8,11 +9,21 @@ from api.helpers.image_manipulation import get_image_from_array, black_to_transp
 
 
 def generate_annotation_image(bg_atlas: ICustomAtlas, subdivision: str) -> (np.array, Image):
-    return _generate_image(bg_atlas, subdivision, bg_atlas.get_annotation(['WM', 'GM']))
+    img_array = _get_img_array(bg_atlas, subdivision, bg_atlas.get_annotation(['WM', 'GM']))
+    colored_img_array = np.select(
+        [img_array == bg_atlas.structures["WM"]["id"] - 1, img_array == bg_atlas.structures["GM"]["id"] - 1],
+        [np.uint32(GREY), np.uint32(_get_annotation_grey_shade(bg_atlas))], 0)
+    img = get_image_from_array(colored_img_array, 'RGB')
+    return colored_img_array, black_to_transparent(img, 255)
+
+
+def _get_annotation_grey_shade(bg_atlas: ICustomAtlas) -> float:
+    laminas_len = len(list(filter(lambda k: 'Sp' in k, bg_atlas.structures.acronym_to_id_map.keys())))
+    return round((255 - DARK_GREY) * (1/laminas_len * (laminas_len - 1))) + DARK_GREY
 
 
 def generate_canal_image(bg_atlas: ICustomAtlas, subdivision: str) -> (np.array, Image):
-    return _generate_image(bg_atlas, subdivision, bg_atlas.canal)
+    return _generate_image(bg_atlas, subdivision, bg_atlas.canal, WHITE, 255)
 
 
 def generate_lamina_image(bg_atlas: ICustomAtlas, subdivision: str, lamina_acronym) -> (np.array, Image):
@@ -20,23 +31,28 @@ def generate_lamina_image(bg_atlas: ICustomAtlas, subdivision: str, lamina_acron
 
 
 def get_annotation_array(bg_atlas: ICustomAtlas, subdivision: str):
-    return _get_img_array(bg_atlas, subdivision, bg_atlas.get_annotation(['WM', 'GM']))
+    return _get_scaled_img_array(bg_atlas, subdivision, bg_atlas.get_annotation(['WM', 'GM']))
 
 
-def _generate_image(bg_atlas: ICustomAtlas, subdivision: str, image_data) -> (np.array, Image):
-    scaled_img_array = _get_img_array(bg_atlas, subdivision, image_data)
+def _generate_image(bg_atlas: ICustomAtlas, subdivision: str, image_data,
+                    grey_scale_max: int = GREY, opacity: int = 128) -> (np.array, Image):
+    scaled_img_array = _get_scaled_img_array(bg_atlas, subdivision, image_data, grey_scale_max)
     img = get_image_from_array(scaled_img_array, 'RGB')
-    return scaled_img_array, black_to_transparent(img)
+    return scaled_img_array, black_to_transparent(img, opacity)
 
 
 def _get_img_array(bg_atlas, subdivision, image_data):
     segment_start, segment_end, position_within_segment = get_subdivision_limits(bg_atlas, subdivision)
     image_idx = int((segment_end - segment_start) * position_within_segment + segment_start)
-    img_array = image_data[image_idx]
+    return image_data[image_idx]
+
+
+def _get_scaled_img_array(bg_atlas, subdivision, image_data, grey_scale_max: int = GREY):
+    img_array = _get_img_array(bg_atlas, subdivision, image_data)
     max_value = np.max(img_array)
     if max_value == 0:
         raise NoImageDataError()
-    scaled_img_array = 128 / max_value * img_array
+    scaled_img_array = grey_scale_max / max_value * img_array
     return scaled_img_array
 
 

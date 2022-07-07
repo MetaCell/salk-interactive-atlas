@@ -26,3 +26,8 @@ class LaminasImages(Enum):
     FILLED = 'filled'
     CONTOUR = 'contour'
     DASHED = 'dashed'
+
+
+WHITE = 255
+GREY = 128
+DARK_GREY = 35
