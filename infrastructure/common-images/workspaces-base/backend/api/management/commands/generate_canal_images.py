@@ -2,6 +2,7 @@ from django.core.management.base import BaseCommand
 
 from api.helpers.atlas import get_bg_atlas, get_subdivisions
 from api.helpers.density_map.generate_image import generate_canal_image
+from api.helpers.exceptions import NoImageDataError
 from api.management.utilities import get_valid_atlases
 from api.services.atlas_service import save_canal_image
 
@@ -21,5 +22,9 @@ class Command(BaseCommand):
             bg_atlas = get_bg_atlas(atlas_id)
             subdivisions = get_subdivisions(bg_atlas)
             for s in subdivisions:
-                save_canal_image(generate_canal_image(bg_atlas, s), s)
+                try:
+                    _, img = generate_canal_image(bg_atlas, s)
+                except NoImageDataError:
+                    continue
+                save_canal_image(img, s)
         self.stdout.write(self.style.SUCCESS('Generate canal finished'))

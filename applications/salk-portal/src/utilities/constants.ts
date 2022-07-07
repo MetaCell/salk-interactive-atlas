@@ -52,3 +52,9 @@ export enum DensityImages {
 
 export const ARROW_KEY_RIGHT = 39
 export const ARROW_KEY_LEFT = 37
+
+export enum LaminaImageTypes {
+    FILLED = "filled",
+    CONTOUR = "contour",
+    DASHED = "dashed",
+}

@@ -1,4 +1,4 @@
-import React, {Fragment, useState} from 'react';
+import React, {useState} from 'react';
 import {makeStyles} from '@material-ui/core/styles';
 import {
     Box,
@@ -12,18 +12,18 @@ import {
     FormControl,
     RadioGroup,
     Radio,
-    Button, Popover, Tooltip
+    Button, Popover
 } from '@material-ui/core';
 import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown';
-import {canvasIconColor, headerBg, headerBorderColor, teal, blue, brown, skyBlue, purple} from "../theme";
+import {canvasIconColor, headerBg, headerBorderColor} from "../theme";
 import TOGGLE from "../assets/images/icons/toggle.svg";
 import ATLAS from "../assets/images/icons/atlas.svg";
 import ADD from "../assets/images/icons/add.svg";
 import UP_ICON from "../assets/images/icons/up.svg";
 import POPULATION from "../assets/images/icons/population.svg";
-import {atlasMap, MAX_STR_LENGTH_SIDEBAR, POPULATION_FINISHED_STATE} from "../utilities/constants";
+import {atlasMap, POPULATION_FINISHED_STATE} from "../utilities/constants";
 import {getRGBAFromHexAlpha, getRGBAString} from "../utilities/functions";
-import ColorPicker from "./ColorPicker";
+import ColorPicker from "./common/ColorPicker";
 import SwitchLabel from "./common/SwitchLabel";
 
 const useStyles = makeStyles({
