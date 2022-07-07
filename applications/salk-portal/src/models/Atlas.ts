@@ -42,7 +42,7 @@ export default class Atlas {
 
     constructLaminas() {
         this.laminas = []
-        const json = require("../assets/atlas/" + this.id + '/atlas_laminas.json')
+        const json = require("../assets/atlas/" + this.id + '/laminas/atlas_laminas.json')
         for (const key of Object.keys(json)) {
             this.laminas.push(new AtlasLamina(key, json[key]))
         }

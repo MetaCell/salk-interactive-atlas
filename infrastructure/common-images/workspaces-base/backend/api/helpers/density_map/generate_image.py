@@ -3,6 +3,7 @@ from PIL import Image
 
 from api.helpers.ICustomAtlas import ICustomAtlas
 from api.helpers.density_map.common_density_helpers import get_subdivision_limits
+from api.helpers.exceptions import NoImageDataError
 from api.helpers.image_manipulation import get_image_from_array, black_to_transparent
 
 
@@ -32,7 +33,10 @@ def _get_img_array(bg_atlas, subdivision, image_data):
     segment_start, segment_end, position_within_segment = get_subdivision_limits(bg_atlas, subdivision)
     image_idx = int((segment_end - segment_start) * position_within_segment + segment_start)
     img_array = image_data[image_idx]
-    scaled_img_array = 128 / np.max(img_array) * img_array
+    max_value = np.max(img_array)
+    if max_value == 0:
+        raise NoImageDataError()
+    scaled_img_array = 128 / max_value * img_array
     return scaled_img_array
 
 
