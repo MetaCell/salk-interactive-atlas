@@ -39,7 +39,6 @@ import ColorPicker from "../../common/ColorPicker";
 import SwitchLabel from "../../common/SwitchLabel";
 import {TWO_D_VIEWER_SNACKBAR_MESSAGE} from "../../../utilities/resources";
 import SnackbarAlert from "../../common/Alert";
-import SubregionsLabel from "./SubregionsLabel";
 import LaminaTypeRadioSelect from "./LaminaTypeRadioSelect";
 import OverlayLabel from "./OverlayLabel";
 
