@@ -515,7 +515,7 @@ const TwoDViewer = (props: {
                         },
                     }}
                     classes={{
-                        paper: classes.popover
+                        paper: `${classes.popover} scrollbar`
                     }}
                 >
                     <Box className={`${classes.cordImageContainer}`}>
