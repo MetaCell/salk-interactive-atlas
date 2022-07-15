@@ -1,29 +1,32 @@
 import numpy as np
 from PIL import Image
 
-from api.constants import GREY, DARK_GREY, WHITE
+from api.constants import FULLY_OPAQUE, WHITE
 from api.helpers.ICustomAtlas import ICustomAtlas
 from api.helpers.density_map.common_density_helpers import get_subdivision_limits
 from api.helpers.exceptions import NoImageDataError
 from api.helpers.image_manipulation import get_image_from_array, black_to_transparent
+from workspaces.settings import GREY_SCALE_MAX_DEFAULT, GREY_SCALE_MAX_CANAL, GREY_SCALE_MAX_ANNOTATION, \
+    CANAL_IMAGE_OPACITY, DEFAULT_IMAGE_OPACITY
 
 
 def generate_annotation_image(bg_atlas: ICustomAtlas, subdivision: str) -> (np.array, Image):
     img_array = _get_img_array(bg_atlas, subdivision, bg_atlas.get_annotation(['WM', 'GM']))
     colored_img_array = np.select(
         [img_array == bg_atlas.structures["WM"]["id"] - 1, img_array == bg_atlas.structures["GM"]["id"] - 1],
-        [np.uint32(GREY), np.uint32(_get_annotation_grey_shade(bg_atlas))], 0)
+        [np.uint32(GREY_SCALE_MAX_DEFAULT), np.uint32(_get_annotation_grey_shade(bg_atlas))], 0)
     img = get_image_from_array(colored_img_array, 'RGB')
-    return colored_img_array, black_to_transparent(img, 255)
+    return colored_img_array, black_to_transparent(img, FULLY_OPAQUE)
 
 
 def _get_annotation_grey_shade(bg_atlas: ICustomAtlas) -> float:
     laminas_len = len(list(filter(lambda k: 'Sp' in k, bg_atlas.structures.acronym_to_id_map.keys())))
-    return round((255 - DARK_GREY) * (1/laminas_len * (laminas_len - 1))) + DARK_GREY
+    return round(
+        (WHITE - GREY_SCALE_MAX_ANNOTATION) * (1 / laminas_len * (laminas_len - 1))) + GREY_SCALE_MAX_ANNOTATION
 
 
 def generate_canal_image(bg_atlas: ICustomAtlas, subdivision: str) -> (np.array, Image):
-    return _generate_image(bg_atlas, subdivision, bg_atlas.canal, WHITE, 255)
+    return _generate_image(bg_atlas, subdivision, bg_atlas.canal, GREY_SCALE_MAX_CANAL, CANAL_IMAGE_OPACITY)
 
 
 def generate_lamina_image(bg_atlas: ICustomAtlas, subdivision: str, lamina_acronym) -> (np.array, Image):
@@ -35,7 +38,8 @@ def get_annotation_array(bg_atlas: ICustomAtlas, subdivision: str):
 
 
 def _generate_image(bg_atlas: ICustomAtlas, subdivision: str, image_data,
-                    grey_scale_max: int = GREY, opacity: int = 128) -> (np.array, Image):
+                    grey_scale_max: int = GREY_SCALE_MAX_DEFAULT,
+                    opacity: int = DEFAULT_IMAGE_OPACITY) -> (np.array, Image):
     scaled_img_array = _get_scaled_img_array(bg_atlas, subdivision, image_data, grey_scale_max)
     img = get_image_from_array(scaled_img_array, 'RGB')
     return scaled_img_array, black_to_transparent(img, opacity)
@@ -47,7 +51,7 @@ def _get_img_array(bg_atlas, subdivision, image_data):
     return image_data[image_idx]
 
 
-def _get_scaled_img_array(bg_atlas, subdivision, image_data, grey_scale_max: int = GREY):
+def _get_scaled_img_array(bg_atlas, subdivision, image_data, grey_scale_max: int = GREY_SCALE_MAX_DEFAULT):
     img_array = _get_img_array(bg_atlas, subdivision, image_data)
     max_value = np.max(img_array)
     if max_value == 0:

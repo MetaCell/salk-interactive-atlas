@@ -3,6 +3,8 @@ import io
 from PIL import Image
 from matplotlib.figure import Figure
 
+from api.constants import HALF_OPAQUE
+
 
 def get_image_from_array(img_array: np.array, mode: str = 'RGBA') -> Image:
     i = Image.fromarray(img_array)
@@ -15,7 +17,7 @@ def apply_greyscale_alpha_mask(img: Image) -> Image:
     return img
 
 
-def black_to_transparent(img: Image, opacity: int = 128) -> Image:
+def black_to_transparent(img: Image, opacity: int = HALF_OPAQUE) -> Image:
     rgb = np.array(img)
     h, w = rgb.shape[:2]
 

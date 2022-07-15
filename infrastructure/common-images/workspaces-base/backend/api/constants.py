@@ -24,6 +24,9 @@ class LaminasImages(Enum):
     DASHED = 'dashed'
 
 
+FULLY_OPAQUE = 255
+HALF_OPAQUE = 128
+
 WHITE = 255
 GREY = 128
 DARK_GREY = 35
