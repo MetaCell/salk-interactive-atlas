@@ -128,6 +128,9 @@ PROJECT_NAME = "WORKSPACES"
 
 # Persistent storage
 PERSISTENT_ROOT = os.path.join(BASE_DIR, "persistent")
+LAMINAS_PATH = os.path.join(PERSISTENT_ROOT, "laminas")
+ANNOTATIONS_PATH = os.path.join(PERSISTENT_ROOT, "annotation")
+CANAL_PATH = os.path.join(PERSISTENT_ROOT, "canal")
 
 # ***********************************************************************
 # * import base CloudHarness Django settings

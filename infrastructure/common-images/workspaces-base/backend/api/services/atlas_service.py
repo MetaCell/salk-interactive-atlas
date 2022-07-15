@@ -1,8 +1,8 @@
 import json
 import os
 
-from api.constants import ANNOTATIONS_PATH, CANAL_PATH, LAMINAS_PATH
 from api.services.filesystem_service import create_dir
+from workspaces.settings import LAMINAS_PATH, CANAL_PATH, ANNOTATIONS_PATH
 
 
 def save_annotation_image(img, subdivision: str):
