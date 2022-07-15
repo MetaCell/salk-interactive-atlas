@@ -1,9 +1,8 @@
 import {getAtlas} from "../service/AtlasService";
-import {AtlasChoice, POPULATION_FINISHED_STATE} from "./constants";
+import {ARROW_KEY_LEFT, ARROW_KEY_RIGHT, AtlasChoice} from "./constants";
 import Range from "../models/Range";
 
 export const areAllSelected = (obj: { [x: string]: {
-      status: string;
       selected: any } }) : boolean => {
    return Object.keys(obj).reduce((acc, pId) => obj[pId].selected && acc, true)
 }
@@ -50,6 +49,63 @@ export function areEqual(obj1: any, obj2: any){
    return  JSON.stringify(obj1) === JSON.stringify(obj2)
 }
 
-export function mod(n: number, m: number) : number {
+function mod(n: number, m: number) : number {
    return ((n % m) + m) % m;
+}
+
+export function scrollStop (element: any, onEvent: (arg0: any) => void, callback: () => void , refresh = 300) {
+
+   // Make sure a valid callback was provided
+   if (!callback || typeof callback !== 'function') return;
+
+   // Setup scrolling variable
+   let isScrolling : any;
+
+   // Listen for wheel events
+   element.addEventListener('wheel', (event: any) => {
+      onEvent(event)
+
+      // Clear our timeout throughout the scroll
+      clearTimeout(isScrolling);
+
+      // Set a timeout to run after scrolling ends
+      isScrolling = setTimeout(() => callback(), refresh);
+
+   }, false);
+
+}
+
+export const onWheel = (event: { deltaY: number; }, currentRef: { current: number; }, len: number, callback: (arg0: number) => void) => {
+   const direction = Math.sign(event.deltaY) * -1
+   const nextCursor = mod(currentRef.current + direction, len)
+   callback(nextCursor)
+   currentRef.current = nextCursor
+}
+
+export const onKeyboard = (event: { keyCode: number; }, currentRef: { current: number; }, len: number, callback: (arg0: number) => void) => {
+   const direction = event.keyCode === ARROW_KEY_RIGHT ? 1 : event.keyCode === ARROW_KEY_LEFT ? -1 : null
+   if (!direction){
+      return
+   }
+   const nextCursor = mod(currentRef.current + direction, len)
+   callback(nextCursor)
+   currentRef.current = nextCursor
+}
+
+export function shadeHexColor(color: string, percent: number) {
+   const f = parseInt(color.slice(1), 16)
+   const t = percent < 0 ? 0 : 255
+   const p = percent < 0 ? percent * -1 : percent
+   // tslint:disable-next-line:no-bitwise
+   const R = f >> 16
+   // tslint:disable-next-line:no-bitwise
+   const G = f >> 8 & 0x00FF
+   // tslint:disable-next-line:no-bitwise
+   const B = f & 0x0000FF;
+   return "#" + (0x1000000 + (Math.round((t - R) * p) + R) * 0x10000 + (Math.round((t - G) * p) + G) * 0x100 + (Math.round((t - B) * p) + B)).toString(16).slice(1);
+}
+
+export function capitalize(word: string) {
+   const lower = word.toLowerCase();
+   return word.charAt(0).toUpperCase() + lower.slice(1);
 }

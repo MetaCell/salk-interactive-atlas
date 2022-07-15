@@ -12,10 +12,11 @@ https://docs.djangoproject.com/en/4.0/ref/settings/
 
 import os
 from pathlib import Path
+from api.constants import GREY, WHITE, DARK_GREY, FULLY_OPAQUE, HALF_OPAQUE
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
-BASE_DIR = Path(__file__).resolve().parent.parent
 
+BASE_DIR = Path(__file__).resolve().parent.parent
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.0/howto/deployment/checklist/
@@ -29,7 +30,6 @@ DEBUG = False if os.environ.get("PRODUCTION", None) else True
 ALLOWED_HOSTS = [
     "*",
 ]
-
 
 # Application definition
 
@@ -73,7 +73,6 @@ TEMPLATES = [
 
 WSGI_APPLICATION = "workspaces.wsgi.application"
 
-
 # Password validation
 # https://docs.djangoproject.com/en/4.0/ref/settings/#auth-password-validators
 
@@ -92,7 +91,6 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
 # Internationalization
 # https://docs.djangoproject.com/en/4.0/topics/i18n/
 
@@ -104,19 +102,16 @@ USE_I18N = True
 
 USE_TZ = True
 
-
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.0/howto/static-files/
 
 STATIC_URL = "/static/"
 STATIC_ROOT = os.path.join(BASE_DIR, "static/")
 
-
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
-
 
 # ***********************************************************************
 # * Salk settings
@@ -128,6 +123,9 @@ PROJECT_NAME = "WORKSPACES"
 
 # Persistent storage
 PERSISTENT_ROOT = os.path.join(BASE_DIR, "persistent")
+LAMINAS_PATH = os.path.join(PERSISTENT_ROOT, "laminas")
+ANNOTATIONS_PATH = os.path.join(PERSISTENT_ROOT, "annotation")
+CANAL_PATH = os.path.join(PERSISTENT_ROOT, "canal")
 
 # ***********************************************************************
 # * import base CloudHarness Django settings
@@ -197,3 +195,10 @@ KC_PRIVILEGED_ROLES = [
 ]
 
 KC_DEFAULT_USER_ROLE = KC_USER_ROLE  # don't add the user role to the realm default role
+
+GREY_SCALE_MAX_DEFAULT = GREY
+GREY_SCALE_MAX_CANAL = WHITE
+GREY_SCALE_MAX_ANNOTATION = DARK_GREY
+
+DEFAULT_IMAGE_OPACITY = HALF_OPAQUE
+CANAL_IMAGE_OPACITY = FULLY_OPAQUE

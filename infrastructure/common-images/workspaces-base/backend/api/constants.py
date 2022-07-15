@@ -1,4 +1,7 @@
+import os
 from enum import Enum
+
+from django.conf import settings
 
 ROSTRAL = "Rostral"
 CAUDAL = "Caudal"
@@ -13,3 +16,17 @@ class PopulationPersistentFiles(Enum):
 CORDMAP_DATA = "cordmap_data"
 POPULATIONS_DATA = 'populations'
 POPULATIONS_SPLIT_DATA = 'split'
+
+
+class LaminasImages(Enum):
+    FILLED = 'filled'
+    CONTOUR = 'contour'
+    DASHED = 'dashed'
+
+
+FULLY_OPAQUE = 255
+HALF_OPAQUE = 128
+
+WHITE = 255
+GREY = 128
+DARK_GREY = 35

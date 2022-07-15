@@ -1,12 +1,24 @@
+import json
 import os
-from django.conf import settings
 
 from api.services.filesystem_service import create_dir
+from workspaces.settings import LAMINAS_PATH, CANAL_PATH, ANNOTATIONS_PATH
 
-ANNOTATIONS_PATH = os.path.join(settings.PERSISTENT_ROOT, "annotations")
+
+def save_annotation_image(img, subdivision: str):
+    return save_image(img, ANNOTATIONS_PATH, subdivision)
 
 
-def save_annotation_image(img, subdivision):
-    create_dir(ANNOTATIONS_PATH)
-    path = os.path.join(ANNOTATIONS_PATH, subdivision + '.png', )
+def save_canal_image(img, subdivision: str):
+    return save_image(img, CANAL_PATH, subdivision)
+
+
+def save_laminas_json(laminas_metadata: dict):
+    with open(os.path.join(LAMINAS_PATH, "atlas_laminas.json"), "w") as f:
+        json.dump(laminas_metadata, f)
+
+
+def save_image(img, p: str, subdivision: str):
+    create_dir(p)
+    path = os.path.join(p, subdivision + '.png', )
     img.save(path)
