@@ -11,7 +11,7 @@ FROM node:16-alpine as base
 
 ENV BUILDDIR=/builddir
 
-COPY --from=static_assets /usr/src/app/persistent/ ${BUILDDIR}/src/assets/atlas/salk_cord_10um/
+COPY --from=atlas_static_assets /usr/src/app/persistent/ ${BUILDDIR}/src/assets/atlas/salk_cord_10um/
 COPY package.json ${BUILDDIR}/package.json
 COPY package-lock.json ${BUILDDIR}/package-lock.json
 WORKDIR ${BUILDDIR}
