@@ -94,11 +94,11 @@ steps:
         - '${{DEPLOYMENT_PUBLISH_TAG}}'
         - latest
         registry: '${{REGISTRY_PUBLISH_URL}}'
-      publish_salk-portal:
+      publish_workspaces-base:
         stage: publish
         type: push
-        title: Salk portal
-        candidate: '${{REGISTRY}}/salk/salk-portal:${{DEPLOYMENT_TAG}}'
+        title: Workspaces base
+        candidate: '${{REGISTRY}}/salk/workspaces-base:${{DEPLOYMENT_TAG}}'
         tags:
         - '${{DEPLOYMENT_PUBLISH_TAG}}'
         - latest
@@ -108,6 +108,33 @@ steps:
         type: push
         title: Workspaces
         candidate: '${{REGISTRY}}/salk/workspaces:${{DEPLOYMENT_TAG}}'
+        tags:
+        - '${{DEPLOYMENT_PUBLISH_TAG}}'
+        - latest
+        registry: '${{REGISTRY_PUBLISH_URL}}'
+      publish_workspaces-generate-population-static-files:
+        stage: publish
+        type: push
+        title: Workspaces generate population static files
+        candidate: '${{REGISTRY}}/salk/workspaces-generate-population-static-files:${{DEPLOYMENT_TAG}}'
+        tags:
+        - '${{DEPLOYMENT_PUBLISH_TAG}}'
+        - latest
+        registry: '${{REGISTRY_PUBLISH_URL}}'
+      publish_workspaces-generate-population-cells:
+        stage: publish
+        type: push
+        title: Workspaces generate population cells
+        candidate: '${{REGISTRY}}/salk/workspaces-generate-population-cells:${{DEPLOYMENT_TAG}}'
+        tags:
+        - '${{DEPLOYMENT_PUBLISH_TAG}}'
+        - latest
+        registry: '${{REGISTRY_PUBLISH_URL}}'
+      publish_salk-portal:
+        stage: publish
+        type: push
+        title: Salk portal
+        candidate: '${{REGISTRY}}/salk/salk-portal:${{DEPLOYMENT_TAG}}'
         tags:
         - '${{DEPLOYMENT_PUBLISH_TAG}}'
         - latest
