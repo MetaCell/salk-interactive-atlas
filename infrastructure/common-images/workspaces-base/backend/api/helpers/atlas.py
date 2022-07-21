@@ -20,6 +20,7 @@ def get_subdivision_boundaries(bg_atlas: ICustomAtlas) -> tuple:
     for seg in segments_metadata:
         # We are dividing each segment in the brainglobe atlas into
         # 2 evenly separated areas (Rostral and Caudal)
+        # lower bound is inclusive
         breakpoints.append((seg["Start"] + seg["End"]) / 2)
         breakpoints.append(seg["End"])
         subdivision.append(f"{seg['Segment']}-{ROSTRAL}")

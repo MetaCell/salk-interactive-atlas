@@ -69,8 +69,9 @@ def generate_images(population):
     subdivisions = get_subdivisions(bg_atlas)
     for s in subdivisions:
         cells = np.array(get_cells(s, [population]))
-        _store_image(CentroidsCreator(), PopulationPersistentFiles.CENTROIDS_IMG, bg_atlas, cells, population, s)
-        _store_image(ProbabilityMapCreator(), PopulationPersistentFiles.PROBABILITY_MAP_IMG, bg_atlas, cells, population, s)
+        if len(cells) > 0:
+            _store_image(CentroidsCreator(), PopulationPersistentFiles.CENTROIDS_IMG, bg_atlas, cells, population, s)
+            _store_image(ProbabilityMapCreator(), PopulationPersistentFiles.PROBABILITY_MAP_IMG, bg_atlas, cells, population, s)
 
 
 def _store_image(creator: IImageCreator, extension: PopulationPersistentFiles, bg_atlas, cells, population, s, ):

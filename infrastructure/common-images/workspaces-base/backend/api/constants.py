@@ -1,7 +1,4 @@
-import os
 from enum import Enum
-
-from django.conf import settings
 
 ROSTRAL = "Rostral"
 CAUDAL = "Caudal"
