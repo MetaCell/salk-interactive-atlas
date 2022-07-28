@@ -6,7 +6,7 @@ import {makeStyles} from "@material-ui/core/styles";
 import {getRGBAFromHexAlpha, getRGBAString} from "../../../utilities/functions";
 import ColorPicker from "../../common/ColorPicker";
 import LaminaStyleSelect from "./LaminaStyleSelect";
-import FormatColorResetIcon from '@material-ui/icons/FormatColorReset';
+import SettingsBackupRestoreIcon from '@material-ui/icons/SettingsBackupRestore';
 import IconButtonTooltip from "../../common/IconButtonTooltip";
 import { DARK_GREY_SHADE } from '../../../models/Atlas';
 
@@ -80,7 +80,7 @@ export default function LaminaPicker(props: {
                     <Box className={`${classes.colorPickerBackground} ${classes.inlineContainer}`}>
                         <LaminaStyleSelect options={options} onClick={(o: number) => handleLaminaStyleChange(o)}
                                            selected={indexSelected}/>
-                        <IconButtonTooltip icon={<FormatColorResetIcon/>} tooltip={"Reset colors"}
+                        <IconButtonTooltip icon={<SettingsBackupRestoreIcon/>} tooltip={"Reset colors"}
                                            onClick={() => handleLaminaBaseColorChange(DARK_GREY_SHADE)}/>
                     </Box>
                 </Popover>
