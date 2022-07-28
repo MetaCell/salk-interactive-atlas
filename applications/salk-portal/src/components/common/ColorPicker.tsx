@@ -3,7 +3,7 @@ import {Box} from "@material-ui/core";
 import {ChromePicker, ColorResult} from 'react-color';
 
 // @ts-ignore
-const ColorPicker = ({selectedColor, handleColorChange}) => {
+const ColorPicker = ({selectedColor, handleColorChange, ...other}) => {
     const [background, setBackground] = useState(selectedColor);
 
     const onChangeCompleteHandler = async (color: ColorResult) => {
@@ -15,7 +15,8 @@ const ColorPicker = ({selectedColor, handleColorChange}) => {
         <Box className="picker">
             <ChromePicker
                 color={background}
-                onChangeComplete={(color, event) => onChangeCompleteHandler(color)}
+                onChangeComplete={(color: any, event: any) => onChangeCompleteHandler(color)}
+                {...other}
             />
         </Box>
     );

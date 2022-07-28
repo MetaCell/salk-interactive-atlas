@@ -4,7 +4,7 @@ import {AtlasChoice, DensityImages, LaminaImageTypes} from "../utilities/constan
 import AtlasLamina from "./AtlasLamina";
 import {shadeHexColor} from "../utilities/functions";
 
-const DARK_GREY_SHADE = "#232323"
+export const DARK_GREY_SHADE = "#232323"
 
 export default class Atlas {
     instances: AtlasInstance[];
@@ -47,12 +47,7 @@ export default class Atlas {
             this.laminas.push(new AtlasLamina(key, json[key]))
         }
         this.laminas.sort((a, b) => a.minY - b.minY);
-        const lighterShadeStep = 1 / (this.laminas.length + 1) // +1 bc WM color follows the same grey pattern
-        let currentShade = 0
-        for (const lamina of this.laminas) {
-            lamina.setDefaultShade(shadeHexColor(DARK_GREY_SHADE, currentShade))
-            currentShade += lighterShadeStep
-        }
+        getLaminaShades(this.laminas.length).forEach((shade, idx) => this.laminas[idx].setDefaultShade(shade))
     }
 
     getImageSrc(imageType: DensityImages, segment: string) {
@@ -70,4 +65,15 @@ export default class Atlas {
             return null
         }
     }
+}
+
+export function getLaminaShades(laminasLength: number, baseColor = DARK_GREY_SHADE) : string[] {
+    const lighterShadeStep = 1 / (laminasLength + 1) // +1 bc WM color follows the same grey pattern
+    let currentShade = 0
+    const shades = []
+    for (let i = 0; i < laminasLength; i++) {
+        shades.push(shadeHexColor(baseColor, currentShade))
+        currentShade += lighterShadeStep
+    }
+    return shades
 }
