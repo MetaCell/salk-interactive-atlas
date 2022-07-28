@@ -81,7 +81,7 @@ export default function LaminaPicker(props: {
                         <LaminaStyleSelect options={options} onClick={(o: number) => handleLaminaStyleChange(o)}
                                            selected={indexSelected}/>
                         <IconButtonTooltip icon={<FormatColorResetIcon/>} tooltip={"Reset colors"}
-                                           onClick={() => console.log('Reset Colors')}/>
+                                           onClick={() => handleLaminaBaseColorChange(DARK_GREY_SHADE)}/>
                     </Box>
                 </Popover>
             </FormControl>
