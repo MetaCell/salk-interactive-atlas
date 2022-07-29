@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {Box} from "@material-ui/core";
 import {ChromePicker, ColorResult} from 'react-color';
 
@@ -10,6 +10,10 @@ const ColorPicker = ({selectedColor, handleColorChange, ...other}) => {
         await handleColorChange(color.hex, color.rgb.a)
         setBackground(color.rgb)
     }
+
+    useEffect(() => {
+        setBackground(selectedColor)
+    }, [selectedColor])
 
     return (
         <Box className="picker">
