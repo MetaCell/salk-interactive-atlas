@@ -8,6 +8,16 @@ export const areAllSelected = (obj: { [x: string]: {
    return Object.keys(obj).reduce((acc, pId) => obj[pId].selected && acc, true)
 }
 
+export const areSomeSelected = (obj: { [x: string]: {
+      selected: any } }) : boolean => {
+   for (const key of Object.keys(obj)){
+      if (obj[key].selected){
+         return true
+      }
+   }
+   return false
+}
+
 export function eqSet(set1: Set<any>, set2: Set<any>) : boolean {
    if (set1.size !== set2.size) return false;
    for (const x of set1) if (!set2.has(x)) return false;

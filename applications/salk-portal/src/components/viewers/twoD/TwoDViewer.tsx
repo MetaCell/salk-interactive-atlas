@@ -35,7 +35,7 @@ import CordImageMapper from "./CordImageMapper";
 import ArrowDropDownIcon from "@material-ui/icons/ArrowDropDown";
 import ArrowDropUpIcon from "@material-ui/icons/ArrowDropUp";
 import {
-    areAllSelected,
+    areAllSelected, areSomeSelected,
     getRGBAFromHexAlpha,
     getRGBAString,
     onKeyboard,
@@ -179,8 +179,8 @@ const TwoDViewer = (props: {
     const [selectedValueIndex, setSelectedValueIndex] = useState(0);
     const cursorRef = useRef(selectedValueIndex);
     const [content, setContent] = useState({})
-    const [drawingNeedsUpdate, setDrawingNeedsUpdate] = useState(false)
-    const [isReady, setIsReady] = useState(false)
+    const [isDrawing, setIsDrawing] = useState(false)
+    const [isComponentReady, setIsComponentReady] = useState(false)
     const [isSubRegionsOpen, setIsSubRegionsOpen] = useState(false)
     const cache = useRef({} as any);
     const [anchorEl, setAnchorEl] = React.useState<HTMLButtonElement | null>(null);
@@ -291,12 +291,12 @@ const TwoDViewer = (props: {
     }
 
     const draw = async () => {
-        if (!drawingNeedsUpdate) {
+        if (!isDrawing) {
             return
         }
 
         if (!isCanvasReady()) {
-            setDrawingNeedsUpdate(false)
+            setIsDrawing(false)
             return
         }
 
@@ -347,12 +347,12 @@ const TwoDViewer = (props: {
         if (canal) {
             drawImage(canvas, canal)
         }
-        setDrawingNeedsUpdate(false)
+        setIsDrawing(false)
     }
 
 
     useDidUpdateEffect(() => {
-        setDrawingNeedsUpdate(true)
+        setIsDrawing(true)
         const promise1 = updateProbabilityMap()
         const promise2 = updateCentroids();
         if (promise1 || promise2) {
@@ -360,22 +360,21 @@ const TwoDViewer = (props: {
         } else {
             setContent(getActiveContent())
         }
-    }, [selectedValueIndex, isReady])
+    }, [selectedValueIndex, isComponentReady])
 
     useDidUpdateEffect(() => {
-        setDrawingNeedsUpdate(true)
+        setIsDrawing(true)
         const promise1 = updateProbabilityMap()
         const promise2 = updateCentroids();
         if (promise1 || promise2) {
             Promise.all([promise1, promise2].filter(p => p != null)).then(() => setContent(getActiveContent()))
         } else {
             setContent(getActiveContent())
-
         }
     }, [activePopulationsHash])
 
     useDidUpdateEffect(() => {
-        setDrawingNeedsUpdate(true)
+        setIsDrawing(true)
         const promise = updateProbabilityMap();
         if (promise) {
             promise.then(() => setContent(getActiveContent()))
@@ -385,7 +384,7 @@ const TwoDViewer = (props: {
     }, [overlaysSwitchState[PROBABILITY_MAP_ID]])
 
     useDidUpdateEffect(() => {
-        setDrawingNeedsUpdate(true)
+        setIsDrawing(true)
         const promise = updateCentroids()
         if (promise) {
             promise.then(() => setContent(getActiveContent()))
@@ -409,7 +408,7 @@ const TwoDViewer = (props: {
     }, [content, laminas, laminaType])
 
     useEffect(() => {
-        setIsReady(true)
+        setIsComponentReady(true)
     }, [])
 
     useEffect(() => {
@@ -441,12 +440,12 @@ const TwoDViewer = (props: {
     };
 
     const handleLaminaSwitch = (laminaId: string) => {
-        setDrawingNeedsUpdate(true)
+        setIsDrawing(true)
         setLaminas({...laminas, [laminaId]: {...laminas[laminaId], selected: !laminas[laminaId].selected}})
     }
 
     const handleShowAllLaminaSwitch = () => {
-        setDrawingNeedsUpdate(true)
+        setIsDrawing(true)
         const areAllLaminasActive = areAllSelected(laminas)
         const nextLaminas: any = {}
         Object.keys(laminas).forEach(lId => nextLaminas[lId] = {...laminas[lId], selected: !areAllLaminasActive})
@@ -465,20 +464,26 @@ const TwoDViewer = (props: {
 
 
     const handleLaminaColorChange = (id: string, color: string, opacity: number) => {
-        setDrawingNeedsUpdate(true)
+        if (laminas[id].selected){
+            setIsDrawing(true)
+        }
         setLaminas({...laminas, [id]: {...laminas[id], color, opacity}})
     }
 
 
     const handleLaminaTypeChange = (value: string) => {
-        setDrawingNeedsUpdate(true)
+        if (areSomeSelected(laminas)){
+            setIsDrawing(true)
+        }
         // @ts-ignore
         setLaminaType(value)
     }
 
     const handleLaminaBaseColorChange = (hexColor: string) => {
         setLaminaBaseColor(hexColor)
-        setDrawingNeedsUpdate(true)
+        if (areSomeSelected(laminas)){
+            setIsDrawing(true)
+        }
         const shades = getLaminaShades(Object.keys(laminas).length, hexColor)
         const nextLaminas = {...laminas}
         Object.keys(nextLaminas).forEach((lk, idx) => nextLaminas[lk].color = shades[idx])
@@ -646,7 +651,7 @@ const TwoDViewer = (props: {
             </Box>
             <Box className={classes.densityMapImageContainer} ref={canvasContainerRef} tabIndex="0">
                 <canvas hidden={true} ref={hiddenCanvasRef}/>
-                <canvas hidden={drawingNeedsUpdate} className={classes.densityMapImage} ref={canvasRef}/>
+                <canvas hidden={isDrawing} className={classes.densityMapImage} ref={canvasRef}/>
             </Box>
         </Box>
     );
