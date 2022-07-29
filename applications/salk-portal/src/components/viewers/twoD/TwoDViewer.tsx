@@ -48,7 +48,7 @@ import {TWO_D_VIEWER_SNACKBAR_MESSAGE} from "../../../utilities/resources";
 import SnackbarAlert from "../../common/Alert";
 import LaminaPicker from "./LaminaPicker";
 import OverlayLabel from "./OverlayLabel";
-import {getLaminaShades} from "../../../models/Atlas";
+import {DARK_GREY_SHADE, getLaminaShades} from "../../../models/Atlas";
 
 const HEIGHT = "calc(100% - 55px)"
 
@@ -179,7 +179,7 @@ const TwoDViewer = (props: {
     const [selectedValueIndex, setSelectedValueIndex] = useState(0);
     const cursorRef = useRef(selectedValueIndex);
     const [content, setContent] = useState({})
-    const [isLoading, setIsLoading] = useState(false)
+    const [drawingNeedsUpdate, setDrawingNeedsUpdate] = useState(false)
     const [isReady, setIsReady] = useState(false)
     const [isSubRegionsOpen, setIsSubRegionsOpen] = useState(false)
     const cache = useRef({} as any);
@@ -191,6 +191,7 @@ const TwoDViewer = (props: {
     const [laminaPopoverAnchorEl, setLaminaPopoverAnchorEl] = React.useState(null);
     const [selectedLaminaPopoverId, setSelectedLaminaPopoverId] = React.useState(null);
     const [laminaType, setLaminaType] = React.useState(LaminaImageTypes.FILLED);
+    const [laminaBaseColor, setLaminaBaseColor] = React.useState(DARK_GREY_SHADE);
     const [isSnackbarOpen, setIsSnackbarOpen] = React.useState(false);
     const [showSnackbar, setShowSnackbar] = React.useState(true);
 
@@ -290,12 +291,12 @@ const TwoDViewer = (props: {
     }
 
     const draw = async () => {
-        if (!isLoading) {
+        if (!drawingNeedsUpdate) {
             return
         }
 
         if (!isCanvasReady()) {
-            setIsLoading(false)
+            setDrawingNeedsUpdate(false)
             return
         }
 
@@ -346,12 +347,12 @@ const TwoDViewer = (props: {
         if (canal) {
             drawImage(canvas, canal)
         }
-        setIsLoading(false)
+        setDrawingNeedsUpdate(false)
     }
 
 
     useDidUpdateEffect(() => {
-        setIsLoading(true)
+        setDrawingNeedsUpdate(true)
         const promise1 = updateProbabilityMap()
         const promise2 = updateCentroids();
         if (promise1 || promise2) {
@@ -362,7 +363,7 @@ const TwoDViewer = (props: {
     }, [selectedValueIndex, isReady])
 
     useDidUpdateEffect(() => {
-        setIsLoading(true)
+        setDrawingNeedsUpdate(true)
         const promise1 = updateProbabilityMap()
         const promise2 = updateCentroids();
         if (promise1 || promise2) {
@@ -374,7 +375,7 @@ const TwoDViewer = (props: {
     }, [activePopulationsHash])
 
     useDidUpdateEffect(() => {
-        setIsLoading(true)
+        setDrawingNeedsUpdate(true)
         const promise = updateProbabilityMap();
         if (promise) {
             promise.then(() => setContent(getActiveContent()))
@@ -384,7 +385,7 @@ const TwoDViewer = (props: {
     }, [overlaysSwitchState[PROBABILITY_MAP_ID]])
 
     useDidUpdateEffect(() => {
-        setIsLoading(true)
+        setDrawingNeedsUpdate(true)
         const promise = updateCentroids()
         if (promise) {
             promise.then(() => setContent(getActiveContent()))
@@ -440,16 +441,16 @@ const TwoDViewer = (props: {
     };
 
     const handleLaminaSwitch = (laminaId: string) => {
+        setDrawingNeedsUpdate(true)
         setLaminas({...laminas, [laminaId]: {...laminas[laminaId], selected: !laminas[laminaId].selected}})
-        setIsLoading(true)
     }
 
     const handleShowAllLaminaSwitch = () => {
+        setDrawingNeedsUpdate(true)
         const areAllLaminasActive = areAllSelected(laminas)
         const nextLaminas: any = {}
         Object.keys(laminas).forEach(lId => nextLaminas[lId] = {...laminas[lId], selected: !areAllLaminasActive})
         setLaminas(nextLaminas)
-        setIsLoading(true)
     }
 
     const handleLaminaPopoverClick = (event: React.MouseEvent<HTMLSpanElement>, id: string) => {
@@ -464,19 +465,20 @@ const TwoDViewer = (props: {
 
 
     const handleLaminaColorChange = (id: string, color: string, opacity: number) => {
-        setIsLoading(true)
+        setDrawingNeedsUpdate(true)
         setLaminas({...laminas, [id]: {...laminas[id], color, opacity}})
     }
 
 
     const handleLaminaTypeChange = (value: string) => {
-        setIsLoading(true)
+        setDrawingNeedsUpdate(true)
         // @ts-ignore
         setLaminaType(value)
     }
 
     const handleLaminaBaseColorChange = (hexColor: string) => {
-        setIsLoading(true)
+        setLaminaBaseColor(hexColor)
+        setDrawingNeedsUpdate(true)
         const shades = getLaminaShades(Object.keys(laminas).length, hexColor)
         const nextLaminas = {...laminas}
         Object.keys(nextLaminas).forEach((lk, idx) => nextLaminas[lk].color = shades[idx])
@@ -568,7 +570,8 @@ const TwoDViewer = (props: {
                                       className={`${classes.collapse}`}>
                                 <Box className={classes.laminaTopLabelContainer}>
                                     <LaminaPicker onLaminaStyleChange={(v: string) => handleLaminaTypeChange(v)}
-                                        onLaminaBaseColorChange={(hexColor: string) => handleLaminaBaseColorChange(hexColor)}/>
+                                        onLaminaBaseColorChange={(hexColor: string) => handleLaminaBaseColorChange(hexColor)}
+                                        baseColor={laminaBaseColor}/>
                                     <FormControlLabel
                                         className={`${classes.entryPadding} ${classes.laminaLabel}`}
                                         control={
@@ -643,7 +646,7 @@ const TwoDViewer = (props: {
             </Box>
             <Box className={classes.densityMapImageContainer} ref={canvasContainerRef} tabIndex="0">
                 <canvas hidden={true} ref={hiddenCanvasRef}/>
-                <canvas hidden={isLoading} className={classes.densityMapImage} ref={canvasRef}/>
+                <canvas hidden={drawingNeedsUpdate} className={classes.densityMapImage} ref={canvasRef}/>
             </Box>
         </Box>
     );

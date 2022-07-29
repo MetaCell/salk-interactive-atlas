@@ -37,11 +37,11 @@ const useStyles = makeStyles(t => ({
 export default function LaminaPicker(props: {
     onLaminaStyleChange: (value: string) => void,
     onLaminaBaseColorChange: (value: string) => void
+    baseColor: string
 }) {
-    const {onLaminaStyleChange, onLaminaBaseColorChange} = props
+    const {onLaminaStyleChange, onLaminaBaseColorChange, baseColor} = props
     const options = Object.values(LaminaImageTypes)
     const [indexSelected, setIndexSelected] = useState<number>(0);
-    const [baseColor, setBaseColor] = useState<string>(DARK_GREY_SHADE);
     const [anchorEl, setAnchorEl] = useState(null);
     const classes = useStyles();
 
@@ -51,7 +51,6 @@ export default function LaminaPicker(props: {
     };
 
     const handleLaminaBaseColorChange = (color: string) => {
-        setBaseColor(color)
         onLaminaBaseColorChange(color)
     }
 
