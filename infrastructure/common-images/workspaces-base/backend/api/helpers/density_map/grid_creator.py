@@ -29,6 +29,7 @@ def get_grid_image(bg_atlas: ICustomAtlas, subdivision: str, canal_img_array: Im
 
     resolution_x = 1 / (bg_atlas.resolution[2] * UM_TO_MM)
     resolution_y = 1 / (bg_atlas.resolution[1] * UM_TO_MM)
+    resolution_z = 1 / (bg_atlas.resolution[0] * UM_TO_MM)
 
     ratio_x = w / x_shape
     ratio_y = h / y_shape
@@ -47,7 +48,7 @@ def get_grid_image(bg_atlas: ICustomAtlas, subdivision: str, canal_img_array: Im
     ax.set_xticklabels(x_ticks_labels)
     ax.set_yticklabels(y_ticks_labels)
 
-    ax.set_title(f'{_get_subdivision_depth(bg_atlas, subdivision)} mm',
+    ax.set_title(f'{_get_subdivision_depth(bg_atlas, subdivision, resolution_z)} mm',
                  fontdict={'fontsize': 8,
                            'fontweight': rcParams['axes.titleweight'],
                            'verticalalignment': 'baseline',
@@ -86,12 +87,12 @@ def _add_margin(pil_img, top, right, bottom, left, color=(255, 0, 0, 0)) -> Imag
     return result
 
 
-def _get_subdivision_depth(bg_atlas: ICustomAtlas, subdivision: str) -> Optional[int]:
+def _get_subdivision_depth(bg_atlas: ICustomAtlas, subdivision: str, resolution: int) -> Optional[int]:
     reference = 'C8-Rostral'
     breakpoints, subdivisions = get_subdivision_boundaries(bg_atlas)
     subdivision_depth = _get_first_slice_depth(breakpoints, subdivisions, subdivision)
     depth = _get_first_slice_depth(breakpoints, subdivisions, reference) - subdivision_depth
-    return depth
+    return depth * resolution
 
 
 def _get_first_slice_depth(breakpoints, subdivisions, subdivision) -> int:
