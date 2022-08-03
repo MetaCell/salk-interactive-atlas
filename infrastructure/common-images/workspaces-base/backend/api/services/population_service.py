@@ -6,7 +6,7 @@ import numpy as np
 from api.constants import PopulationPersistentFiles
 from api.helpers.atlas import get_subdivision_boundaries, get_bg_atlas, get_subdivisions
 from api.helpers.density_map.centroids_creator import CentroidsCreator
-from api.helpers.density_map.iimage_creator import IImageCreator
+from api.helpers.density_map.ipopulation_image_creator import IPopulationImageCreator
 from api.helpers.density_map.probability_map_creator import ProbabilityMapCreator
 
 
@@ -74,6 +74,6 @@ def generate_images(population):
             _store_image(ProbabilityMapCreator(), PopulationPersistentFiles.PROBABILITY_MAP_IMG, bg_atlas, cells, population, s)
 
 
-def _store_image(creator: IImageCreator, extension: PopulationPersistentFiles, bg_atlas, cells, population, s, ):
+def _store_image(creator: IPopulationImageCreator, extension: PopulationPersistentFiles, bg_atlas, cells, population, s, ):
     img = creator.create(bg_atlas=bg_atlas, subdivision=s, points=cells)
     img.save(population.get_subdivision_storage_path(s, extension))

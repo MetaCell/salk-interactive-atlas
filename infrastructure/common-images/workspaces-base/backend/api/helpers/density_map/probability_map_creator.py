@@ -3,12 +3,12 @@ from PIL import Image
 
 from api.helpers.ICustomAtlas import ICustomAtlas
 from api.helpers.density_map.common_density_helpers import get_subdivision_bin_limits, get_bins
-from api.helpers.density_map.iimage_creator import IImageCreator
+from api.helpers.density_map.ipopulation_image_creator import IPopulationImageCreator
 from skimage.filters import gaussian
 from api.helpers.image_manipulation import get_image_from_array, apply_greyscale_alpha_mask
 
 
-class ProbabilityMapCreator(IImageCreator):
+class ProbabilityMapCreator(IPopulationImageCreator):
 
     def create(self, bg_atlas: ICustomAtlas, subdivision: str, points: np.array) -> Image:
         return _generate_probability_map(bg_atlas, subdivision, points)

@@ -2,6 +2,7 @@ ARG WORKSPACES_BASE
 FROM $WORKSPACES_BASE AS atlas_static_assets
 
 RUN python3 manage.py generate_canal_images salk_cord_10um
+RUN python3 manage.py generate_grid_images salk_cord_10um
 RUN python3 manage.py generate_lamina_images salk_cord_10um
 RUN python3 manage.py generate_annotation_images salk_cord_10um
 

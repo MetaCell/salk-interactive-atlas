@@ -126,6 +126,7 @@ PERSISTENT_ROOT = os.path.join(BASE_DIR, "persistent")
 LAMINAS_PATH = os.path.join(PERSISTENT_ROOT, "laminas")
 ANNOTATIONS_PATH = os.path.join(PERSISTENT_ROOT, "annotation")
 CANAL_PATH = os.path.join(PERSISTENT_ROOT, "canal")
+GRID_PATH = os.path.join(PERSISTENT_ROOT, "grid")
 
 # ***********************************************************************
 # * import base CloudHarness Django settings

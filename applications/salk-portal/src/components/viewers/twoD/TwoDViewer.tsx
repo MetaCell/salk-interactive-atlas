@@ -306,6 +306,14 @@ const TwoDViewer = (props: {
         // Clear previous content
         clearCanvas(canvas)
 
+
+        // Draw grid
+        const grid = atlas.getImageSrc(DensityImages.GRID, segments[selectedValueIndex])
+        if (grid) {
+            drawImage(canvas, grid)
+        }
+
+
         // Draw Annotation (Grey Matter and White Matter)
         const background = atlas.getImageSrc(DensityImages.ANNOTATION, segments[selectedValueIndex])
         if (background) {
@@ -651,7 +659,7 @@ const TwoDViewer = (props: {
             </Box>
             <Box className={classes.densityMapImageContainer} ref={canvasContainerRef} tabIndex="0">
                 <canvas hidden={true} ref={hiddenCanvasRef}/>
-                <canvas hidden={isDrawing} className={classes.densityMapImage} ref={canvasRef}/>
+                <canvas hidden={isDrawing} className={classes.densityMapImage} ref={canvasRef} width={300} height={200}/>
             </Box>
         </Box>
     );

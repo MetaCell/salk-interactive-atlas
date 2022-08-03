@@ -6,11 +6,11 @@ from matplotlib import pyplot as plt, rcParams
 from api.helpers.ICustomAtlas import ICustomAtlas
 from api.helpers.density_map.common_density_helpers import get_subdivision_limits
 from api.helpers.density_map.generate_image import get_annotation_array
-from api.helpers.density_map.iimage_creator import IImageCreator
+from api.helpers.density_map.ipopulation_image_creator import IPopulationImageCreator
 from api.helpers.image_manipulation import fig_to_img
 
 
-class CentroidsCreator(IImageCreator):
+class CentroidsCreator(IPopulationImageCreator):
 
     def create(self, bg_atlas: ICustomAtlas, subdivision: str, points: np.array) -> Image:
         return _generate_centroids(bg_atlas, subdivision, points)

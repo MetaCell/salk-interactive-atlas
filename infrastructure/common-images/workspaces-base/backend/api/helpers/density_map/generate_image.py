@@ -4,6 +4,7 @@ from PIL import Image
 from api.constants import FULLY_OPAQUE, WHITE
 from api.helpers.ICustomAtlas import ICustomAtlas
 from api.helpers.density_map.common_density_helpers import get_subdivision_limits
+from api.helpers.density_map.grid_creator import get_grid_image
 from api.helpers.exceptions import NoImageDataError
 from api.helpers.image_manipulation import get_image_from_array, black_to_transparent
 from workspaces.settings import GREY_SCALE_MAX_DEFAULT, GREY_SCALE_MAX_CANAL, GREY_SCALE_MAX_ANNOTATION, \
@@ -25,22 +26,14 @@ def _get_annotation_grey_shade(bg_atlas: ICustomAtlas) -> float:
         (WHITE - GREY_SCALE_MAX_ANNOTATION) * (1 / laminas_len * (laminas_len - 1))) + GREY_SCALE_MAX_ANNOTATION
 
 
-def generate_canal_image(bg_atlas: ICustomAtlas, subdivision: str) -> (np.array, Image):
-    return _generate_image(bg_atlas, subdivision, bg_atlas.canal, GREY_SCALE_MAX_CANAL, CANAL_IMAGE_OPACITY)
-
-
-def generate_lamina_image(bg_atlas: ICustomAtlas, subdivision: str, lamina_acronym) -> (np.array, Image):
-    return _generate_image(bg_atlas, subdivision, bg_atlas.get_image_volume(lamina_acronym))
-
-
 def get_annotation_array(bg_atlas: ICustomAtlas, subdivision: str):
-    return _get_scaled_img_array(bg_atlas, subdivision, bg_atlas.get_annotation(['WM', 'GM']))
+    return get_scaled_img_array(bg_atlas, subdivision, bg_atlas.get_annotation(['WM', 'GM']))
 
 
 def _generate_image(bg_atlas: ICustomAtlas, subdivision: str, image_data,
                     grey_scale_max: int = GREY_SCALE_MAX_DEFAULT,
                     opacity: int = DEFAULT_IMAGE_OPACITY) -> (np.array, Image):
-    scaled_img_array = _get_scaled_img_array(bg_atlas, subdivision, image_data, grey_scale_max)
+    scaled_img_array = get_scaled_img_array(bg_atlas, subdivision, image_data, grey_scale_max)
     img = get_image_from_array(scaled_img_array, 'RGB')
     return scaled_img_array, black_to_transparent(img, opacity)
 
@@ -51,7 +44,7 @@ def _get_img_array(bg_atlas, subdivision, image_data):
     return image_data[image_idx]
 
 
-def _get_scaled_img_array(bg_atlas, subdivision, image_data, grey_scale_max: int = GREY_SCALE_MAX_DEFAULT):
+def get_scaled_img_array(bg_atlas, subdivision, image_data, grey_scale_max: int = GREY_SCALE_MAX_DEFAULT):
     img_array = _get_img_array(bg_atlas, subdivision, image_data)
     max_value = np.max(img_array)
     if max_value == 0:
@@ -88,3 +81,16 @@ def generate_image_contour(scaled_img_array: np.array, dashed=False) -> (np.arra
                 contour_img_array[row_up][col_left] = 0
 
     return contour_img_array, black_to_transparent(get_image_from_array(contour_img_array, 'RGB'))
+
+
+def generate_canal_image(bg_atlas: ICustomAtlas, subdivision: str) -> (np.array, Image):
+    return _generate_image(bg_atlas, subdivision, bg_atlas.canal, GREY_SCALE_MAX_CANAL, CANAL_IMAGE_OPACITY)
+
+
+def generate_grid_image(bg_atlas: ICustomAtlas, subdivision: str) -> (np.array, Image):
+    canal_img_array = get_scaled_img_array(bg_atlas, subdivision, bg_atlas.canal, GREY_SCALE_MAX_CANAL)
+    return get_grid_image(bg_atlas, subdivision, canal_img_array)
+
+
+def generate_lamina_image(bg_atlas: ICustomAtlas, subdivision: str, lamina_acronym) -> (np.array, Image):
+    return _generate_image(bg_atlas, subdivision, bg_atlas.get_image_volume(lamina_acronym))

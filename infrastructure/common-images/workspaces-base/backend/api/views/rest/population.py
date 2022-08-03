@@ -3,15 +3,12 @@ import logging
 import numpy as np
 from django.http import HttpResponse, Http404
 from dry_rest_permissions.generics import DRYPermissions
+from rest_framework import status, viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
-from rest_framework import status, viewsets
 
 from api.constants import PopulationPersistentFiles
 from api.helpers.atlas import get_bg_atlas
-from api.helpers.density_map.centroids_creator import CentroidsCreator
-from api.helpers.density_map.iimage_creator import IImageCreator
-from api.helpers.density_map.probability_map_creator import ProbabilityMapCreator
 from api.helpers.exceptions import DensityMapIncorrectSubdivisionError
 from api.models import Experiment, Population
 from api.serializers import PopulationSerializer
