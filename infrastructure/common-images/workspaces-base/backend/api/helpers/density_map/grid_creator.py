@@ -27,12 +27,16 @@ def get_grid_image(bg_atlas: ICustomAtlas, subdivision: str, canal_img_array: Im
     w = w / dpi
 
     fig, ax = plt.subplots()
+    # Updates figure size to coop with the labels and ticks
+    # So that the plot/grid size is the same size as the atlas shape
+    # aka, figure needs to be bigger due to labels and ticks so that the grid is the size we want w x h
     x_shape, y_shape = _set_size(w, h, ax)
 
     resolution_x = 1 / (bg_atlas.resolution[2] * UM_TO_MM)
     resolution_y = 1 / (bg_atlas.resolution[1] * UM_TO_MM)
     resolution_z = 1 / (bg_atlas.resolution[0] * UM_TO_MM)
 
+    # calculates ratio from image size to atlas size
     ratio_x = w / x_shape
     ratio_y = h / y_shape
 
@@ -55,6 +59,7 @@ def get_grid_image(bg_atlas: ICustomAtlas, subdivision: str, canal_img_array: Im
                            'horizontalalignment': 'right'},
                  loc='right')
 
+    # Sets axis color
     ax.spines['bottom'].set_color(GRID_COLOR)
     ax.spines['top'].set_color(GRID_COLOR)
     ax.spines['left'].set_color(GRID_COLOR)
@@ -70,22 +75,37 @@ def get_grid_image(bg_atlas: ICustomAtlas, subdivision: str, canal_img_array: Im
 
     plt.grid(False)
     img = fig_to_img(fig)
+
+    # Corrects image alignment by adding a constant amount of padding to the image
     shifted_image = _add_margin(img, 0, CONSTANT_RIGHT_OFFSET, CONSTANT_BOTTOM_OFFSET, 0)
     return shifted_image
 
 
-def _get_ticks(canal_offset, ratio, shape, step=0.1):
-    ticks = np.round(np.arange((canal_offset * -1 - shape / 2) * ratio,
-                                  (canal_offset * -1 + shape / 2) * ratio + step, step), 1)
+def _get_ticks(canal_offset, img_to_res_ratio, shape, step=0.1):
+    # ticks are on image scale
+    ticks = np.round(
+        np.arange(
+            _get_tick_rounded(canal_offset * -1 - shape / 2, img_to_res_ratio),
+            _get_tick_rounded(canal_offset * -1 + shape / 2 + step, img_to_res_ratio), step),
+        2)
+    # tick labels apply the canal center offset
     ticks_labels = []
-    for tick in ticks:
-        if tick * 10 % 5 == 0:
-            if tick == -0:
-                tick = 0
-            ticks_labels.append(tick)
+    for idx, tick in enumerate(ticks):
+        if idx % 5 == 0:
+            label = round((tick - canal_offset * -1) * img_to_res_ratio, 2)
+            if round(label, 1) * 10 == 0:
+                label = 0
+            ticks_labels.append(label)
         else:
             ticks_labels.append('')
     return ticks, ticks_labels
+
+
+def _get_tick_rounded(original, ratio):
+    # gets tick value in the image scale so that it starts with 0 on the 2 decimal place
+    scaled = original * ratio
+    diff = round(round(scaled, 2) - round(scaled, 1), 2)
+    return original + diff / ratio
 
 
 def _set_size(w, h, ax=None) -> (float, float):
