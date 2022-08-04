@@ -84,11 +84,15 @@ def generate_image_contour(scaled_img_array: np.array, dashed=False) -> (np.arra
 
 
 def generate_canal_image(bg_atlas: ICustomAtlas, subdivision: str) -> (np.array, Image):
-    return _generate_image(bg_atlas, subdivision, bg_atlas.canal, GREY_SCALE_MAX_CANAL, CANAL_IMAGE_OPACITY)
+    # TODO: Remove following line when no longer in need of mocked data
+    canal_data = np.repeat(_get_img_array(bg_atlas, 'C1-Rostral', bg_atlas.canal)[np.newaxis,:, :], 790, axis=0)
+    return _generate_image(bg_atlas, subdivision, canal_data, GREY_SCALE_MAX_CANAL, CANAL_IMAGE_OPACITY)
 
 
 def generate_grid_image(bg_atlas: ICustomAtlas, subdivision: str) -> (np.array, Image):
-    canal_img_array = get_scaled_img_array(bg_atlas, subdivision, bg_atlas.canal, GREY_SCALE_MAX_CANAL)
+    # TODO: Remove following line when no longer in need of mocked data
+    canal_data = np.repeat(_get_img_array(bg_atlas, 'C1-Rostral', bg_atlas.canal)[np.newaxis,:, :], 790, axis=0)
+    canal_img_array = get_scaled_img_array(bg_atlas, subdivision, canal_data, GREY_SCALE_MAX_CANAL)
     return get_grid_image(bg_atlas, subdivision, canal_img_array)
 
 
