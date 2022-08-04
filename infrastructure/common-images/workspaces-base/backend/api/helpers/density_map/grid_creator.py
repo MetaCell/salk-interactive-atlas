@@ -1,5 +1,6 @@
 from typing import Optional
 
+import numpy as np
 from PIL import Image
 from matplotlib import pyplot as plt, rcParams
 
@@ -11,6 +12,7 @@ from api.helpers.image_manipulation import fig_to_img
 CONSTANT_RIGHT_OFFSET = 10
 CONSTANT_BOTTOM_OFFSET = 1
 UM_TO_MM = 10
+GRID_COLOR = 'grey'
 
 
 def get_grid_image(bg_atlas: ICustomAtlas, subdivision: str, canal_img_array: Image) -> Image:
@@ -37,13 +39,10 @@ def get_grid_image(bg_atlas: ICustomAtlas, subdivision: str, canal_img_array: Im
     canal_offset_x *= resolution_x
     canal_offset_y *= resolution_y * -1
 
-    x_ticks = [canal_offset_x * -1 - x_shape / 2, canal_offset_x * -1, canal_offset_x * -1 + x_shape / 2]
-    x_ticks_labels = [round((x - canal_offset_x * -1) * ratio_x, 2) for x in x_ticks]
+    x_ticks, x_ticks_labels = _get_ticks(canal_offset_x, ratio_x, x_shape)
+    y_ticks, y_ticks_labels = _get_ticks(canal_offset_y, ratio_y, y_shape)
 
-    y_ticks = [canal_offset_y * -1 - y_shape / 2, canal_offset_y * -1, + canal_offset_y * -1 + y_shape / 2]
-    y_ticks_labels = [round((y - canal_offset_y * -1) * ratio_y, 2) for y in y_ticks]
-
-    ax.set_xticks([-x_shape / 2, canal_offset_x, x_shape / 2])
+    ax.set_xticks(x_ticks)
     ax.set_yticks(y_ticks)
     ax.set_xticklabels(x_ticks_labels)
     ax.set_yticklabels(y_ticks_labels)
@@ -51,9 +50,19 @@ def get_grid_image(bg_atlas: ICustomAtlas, subdivision: str, canal_img_array: Im
     ax.set_title(f'{_get_subdivision_depth(bg_atlas, subdivision, resolution_z)} mm',
                  fontdict={'fontsize': 8,
                            'fontweight': rcParams['axes.titleweight'],
+                           'color': GRID_COLOR,
                            'verticalalignment': 'baseline',
                            'horizontalalignment': 'right'},
                  loc='right')
+
+    ax.spines['bottom'].set_color(GRID_COLOR)
+    ax.spines['top'].set_color(GRID_COLOR)
+    ax.spines['left'].set_color(GRID_COLOR)
+    ax.spines['right'].set_color(GRID_COLOR)
+    ax.xaxis.label.set_color(GRID_COLOR)
+    ax.yaxis.label.set_color(GRID_COLOR)
+    ax.tick_params(axis='x', colors=GRID_COLOR)
+    ax.tick_params(axis='y', colors=GRID_COLOR)
 
     for item in ([ax.title, ax.xaxis.label, ax.yaxis.label] +
                  ax.get_xticklabels() + ax.get_yticklabels()):
@@ -63,6 +72,20 @@ def get_grid_image(bg_atlas: ICustomAtlas, subdivision: str, canal_img_array: Im
     img = fig_to_img(fig)
     shifted_image = _add_margin(img, 0, CONSTANT_RIGHT_OFFSET, CONSTANT_BOTTOM_OFFSET, 0)
     return shifted_image
+
+
+def _get_ticks(canal_offset, ratio, shape, step=0.1):
+    ticks = np.round(np.arange((canal_offset * -1 - shape / 2) * ratio,
+                                  (canal_offset * -1 + shape / 2) * ratio + step, step), 1)
+    ticks_labels = []
+    for tick in ticks:
+        if tick * 10 % 5 == 0:
+            if tick == -0:
+                tick = 0
+            ticks_labels.append(tick)
+        else:
+            ticks_labels.append('')
+    return ticks, ticks_labels
 
 
 def _set_size(w, h, ax=None) -> (float, float):
@@ -100,4 +123,3 @@ def _get_first_slice_depth(breakpoints, subdivisions, subdivision) -> int:
     if index == 0:
         return 0
     return breakpoints[index - 1]
-
