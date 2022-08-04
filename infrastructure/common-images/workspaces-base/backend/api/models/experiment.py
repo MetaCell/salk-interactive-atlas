@@ -9,7 +9,14 @@ from .tag import Tag
 class ExperimentsObjectsManager(models.Manager):
     def get_queryset(self, prefetch=True):
         if prefetch:
-            return super(ExperimentsObjectsManager, self).get_queryset().select_related("owner", ).prefetch_related("teams", "tags", "collaborators", "collaborators")
+            return (
+                super(ExperimentsObjectsManager, self)
+                .get_queryset()
+                .select_related(
+                    "owner",
+                )
+                .prefetch_related("teams", "tags", "collaborators", "collaborators")
+            )
         return super(ExperimentsObjectsManager, self).get_queryset()
 
     def my_experiments(self, user, prefetch=True):
@@ -28,7 +35,9 @@ class ExperimentsObjectsManager(models.Manager):
         )
 
     def public_experiments(self, prefetch=True):
-        return self.get_queryset(prefetch).filter(is_private=False)  # all public experiments
+        return self.get_queryset(prefetch).filter(
+            is_private=False
+        )  # all public experiments
 
     def list(self, user, prefetch=True):
         return self.get_queryset(prefetch).filter(id__in=self.list_ids(user))

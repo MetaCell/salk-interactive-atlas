@@ -48,6 +48,7 @@ export const MAX_STR_LENGTH_SIDEBAR = 15
 export enum DensityImages {
     ANNOTATION = "annotation",
     CANAL = "canal",
+    GRID = "grid",
 }
 
 export const ARROW_KEY_RIGHT = 39

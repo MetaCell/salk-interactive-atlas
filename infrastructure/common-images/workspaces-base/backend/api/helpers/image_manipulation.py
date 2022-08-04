@@ -1,18 +1,19 @@
-import numpy as np
 import io
-from PIL import Image
+
+import numpy as np
 from matplotlib.figure import Figure
+from PIL import Image
 
 from api.constants import HALF_OPAQUE
 
 
-def get_image_from_array(img_array: np.array, mode: str = 'RGBA') -> Image:
+def get_image_from_array(img_array: np.array, mode: str = "RGBA") -> Image:
     i = Image.fromarray(img_array)
     return i.convert(mode)
 
 
 def apply_greyscale_alpha_mask(img: Image) -> Image:
-    mask = img.convert('L')
+    mask = img.convert("L")
     img.putalpha(mask)
     return img
 

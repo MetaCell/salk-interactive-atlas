@@ -1,13 +1,14 @@
 from django.core.management.base import BaseCommand
 
 from api.helpers.atlas import get_bg_atlas, get_subdivisions
-from api.helpers.density_map.generate_image import generate_annotation_image
+from api.helpers.density_map.generate_image import generate_grid_image
+from api.helpers.exceptions import NoImageDataError
 from api.management.utilities import get_valid_atlases
-from api.services.atlas_service import save_annotation_image
+from api.services.atlas_service import save_grid_image
 
 
 class Command(BaseCommand):
-    help = "Generates annotation images for the provided atlases"
+    help = "Generates grid images for the provided atlases"
 
     def add_arguments(self, parser):
         parser.add_argument("atlases_ids", nargs="+", type=str)
@@ -23,6 +24,9 @@ class Command(BaseCommand):
             bg_atlas = get_bg_atlas(atlas_id)
             subdivisions = get_subdivisions(bg_atlas)
             for s in subdivisions:
-                _, img = generate_annotation_image(bg_atlas, s)
-                save_annotation_image(img, s)
-        self.stdout.write(self.style.SUCCESS("Generate annotations finished"))
+                try:
+                    img = generate_grid_image(bg_atlas, s)
+                except NoImageDataError:
+                    continue
+                save_grid_image(img, s)
+        self.stdout.write(self.style.SUCCESS("Generate grids finished"))

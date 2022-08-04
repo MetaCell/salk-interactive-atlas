@@ -12,14 +12,10 @@ class TagsSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Tag
-        fields = (
-            "tags",
-        )
+        fields = ("tags",)
 
 
 class TagSerializer(serializers.ModelSerializer):
     class Meta:
         model = Tag
-        fields = (
-            "name",
-        )
+        fields = ("name",)

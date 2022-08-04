@@ -4,7 +4,6 @@ from bg_atlasapi import BrainGlobeAtlas
 
 
 class ICustomAtlas(ABC, BrainGlobeAtlas):
-
     def __init__(self, atlas_name):
         super().__init__(atlas_name)
 

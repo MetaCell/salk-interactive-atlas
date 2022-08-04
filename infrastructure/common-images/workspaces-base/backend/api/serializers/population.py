@@ -11,4 +11,13 @@ class AtlasChoiceField(serializers.RelatedField):
 class PopulationSerializer(serializers.ModelSerializer):
     class Meta:
         model = Population
-        fields = ("id", "name", "color", "experiment", "atlas", "cells", "opacity", "status")
+        fields = (
+            "id",
+            "name",
+            "color",
+            "experiment",
+            "atlas",
+            "cells",
+            "opacity",
+            "status",
+        )

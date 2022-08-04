@@ -1,17 +1,14 @@
 import logging
 
 import numpy as np
-from django.http import HttpResponse, Http404
+from django.http import Http404, HttpResponse
 from dry_rest_permissions.generics import DRYPermissions
+from rest_framework import status, viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
-from rest_framework import status, viewsets
 
 from api.constants import PopulationPersistentFiles
 from api.helpers.atlas import get_bg_atlas
-from api.helpers.density_map.centroids_creator import CentroidsCreator
-from api.helpers.density_map.iimage_creator import IImageCreator
-from api.helpers.density_map.probability_map_creator import ProbabilityMapCreator
 from api.helpers.exceptions import DensityMapIncorrectSubdivisionError
 from api.models import Experiment, Population
 from api.serializers import PopulationSerializer
@@ -46,17 +43,27 @@ class PopulationViewSet(viewsets.ModelViewSet):
             # there is no file yet associated with the population --> return not found 404
             raise Http404
 
-    @action(detail=True, url_path='probability_map/(?P<subdivision>[^/.]+)', url_name='probability_map')
+    @action(
+        detail=True,
+        url_path="probability_map/(?P<subdivision>[^/.]+)",
+        url_name="probability_map",
+    )
     def probability_map(self, request, **kwargs):
-        return self._handle_get_image_request(PopulationPersistentFiles.PROBABILITY_MAP_IMG, request, **kwargs)
+        return self._handle_get_image_request(
+            PopulationPersistentFiles.PROBABILITY_MAP_IMG, request, **kwargs
+        )
 
-    @action(detail=True, url_path='centroids/(?P<subdivision>[^/.]+)', url_name='centroids')
+    @action(
+        detail=True, url_path="centroids/(?P<subdivision>[^/.]+)", url_name="centroids"
+    )
     def centroids(self, request, **kwargs):
-        return self._handle_get_image_request(PopulationPersistentFiles.CENTROIDS_IMG, request, **kwargs)
+        return self._handle_get_image_request(
+            PopulationPersistentFiles.CENTROIDS_IMG, request, **kwargs
+        )
 
     def _handle_get_image_request(self, content, request, **kwargs):
         instance = self.get_object()
-        subdivision = kwargs.get('subdivision')
+        subdivision = kwargs.get("subdivision")
         bg_atlas = get_bg_atlas(instance.atlas)
         try:
             validate_subdivision(bg_atlas, subdivision)
@@ -71,4 +78,3 @@ class PopulationViewSet(viewsets.ModelViewSet):
         response = HttpResponse(content_type="image/png", status=status.HTTP_200_OK)
         img.save(response, "PNG")
         return response
-

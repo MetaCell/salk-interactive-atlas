@@ -5,15 +5,23 @@ from django.db import migrations, models
 
 class Migration(migrations.Migration):
     dependencies = [
-        ('api', '0006_auto_20220519_0957'),
+        ("api", "0006_auto_20220519_0957"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='population',
-            name='status',
+            model_name="population",
+            name="status",
             field=models.CharField(
-                choices=[('error', 'Error'), ('pending', 'Pending'), ('running', 'Running'), ('finished', 'Finished')],
-                default='pending', editable=False, max_length=8),
+                choices=[
+                    ("error", "Error"),
+                    ("pending", "Pending"),
+                    ("running", "Running"),
+                    ("finished", "Finished"),
+                ],
+                default="pending",
+                editable=False,
+                max_length=8,
+            ),
         ),
     ]

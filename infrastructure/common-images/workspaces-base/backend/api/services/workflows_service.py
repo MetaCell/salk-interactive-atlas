@@ -18,15 +18,16 @@ GENERATE_CELLS_OP = "salk-generate-population-cells-tasks-op"
 
 def _create_task(image_name, **kwargs):
     from cloudharness.workflows import tasks
+
     return tasks.CustomTask(
-        name=f"{image_name}-{str(uuid.uuid4())[:8]}",
-        image_name=image_name,
-        **kwargs
+        name=f"{image_name}-{str(uuid.uuid4())[:8]}", image_name=image_name, **kwargs
     )
 
 
 def _get_pod_context(current_app):
-    return operations.PodExecutionContext('usesvolume', current_app.harness.deployment.volume.name, required=True)
+    return operations.PodExecutionContext(
+        "usesvolume", current_app.harness.deployment.volume.name, required=True
+    )
 
 
 def _get_shared_directory(current_app):
@@ -39,7 +40,7 @@ def execute_generate_population_static_files_workflow(population_id: int):
         basename=GENERATE_IMAGES_OP,
         tasks=(_create_task(GENERATE_IMAGES_IMAGE, population_id=population_id),),
         shared_directory=_get_shared_directory(current_app),
-        pod_context=_get_pod_context(current_app)        
+        pod_context=_get_pod_context(current_app),
     ).execute()
 
 
@@ -47,7 +48,13 @@ def execute_generate_population_cells_workflow(population_id: int, data_filepath
     current_app = get_current_configuration()
     operations.PipelineOperation(
         basename=GENERATE_CELLS_OP,
-        tasks=(_create_task(GENERATE_CELLS_IMAGE, population_id=population_id, data_filepath=data_filepath,),),
+        tasks=(
+            _create_task(
+                GENERATE_CELLS_IMAGE,
+                population_id=population_id,
+                data_filepath=data_filepath,
+            ),
+        ),
         shared_directory=_get_shared_directory(current_app),
-        pod_context=_get_pod_context(current_app)
+        pod_context=_get_pod_context(current_app),
     ).execute()

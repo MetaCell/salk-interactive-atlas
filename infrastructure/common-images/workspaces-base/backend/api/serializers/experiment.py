@@ -51,9 +51,18 @@ class ExperimentSerializer(serializers.ModelSerializer, EagerLoadingMixin):
     tags = TagSerializer(many=True, read_only=True)
     date_created = serializers.CharField(read_only=True)
     has_edit_permission = serializers.SerializerMethodField()
-    
-    select_related_fields = ("owner", "owner__userdetail",)
-    prefetch_related_fields = ("teams", "collaborator_set", "population_set", "tags", "owner__groups")
+
+    select_related_fields = (
+        "owner",
+        "owner__userdetail",
+    )
+    prefetch_related_fields = (
+        "teams",
+        "collaborator_set",
+        "population_set",
+        "tags",
+        "owner__groups",
+    )
 
     class Meta:
         model = Experiment

@@ -16,4 +16,5 @@ class DensityMapIncorrectSubdivisionError(Exception):
 
 class NoImageDataError(Exception):
     """Exception raised for errors in generating images due to the lack of data"""
+
     pass

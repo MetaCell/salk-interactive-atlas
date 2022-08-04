@@ -1,7 +1,7 @@
 import os.path
 import shutil
-from pathlib import Path
 import uuid
+from pathlib import Path
 from typing import List
 
 from django.core.files.uploadedfile import TemporaryUploadedFile
