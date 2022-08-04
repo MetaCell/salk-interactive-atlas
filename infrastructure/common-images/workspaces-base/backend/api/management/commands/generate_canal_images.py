@@ -8,16 +8,18 @@ from api.services.atlas_service import save_canal_image
 
 
 class Command(BaseCommand):
-    help = 'Generates canal images for the provided atlases'
+    help = "Generates canal images for the provided atlases"
 
     def add_arguments(self, parser):
-        parser.add_argument('atlases_ids', nargs='+', type=str)
+        parser.add_argument("atlases_ids", nargs="+", type=str)
 
     def handle(self, *args, **options):
         valid_atlas_ids = get_valid_atlases()
-        for atlas_id in options['atlases_ids']:
+        for atlas_id in options["atlases_ids"]:
             if atlas_id not in valid_atlas_ids:
-                self.stdout.write(self.style.WARNING(f'{atlas_id} not recognized. Skipping'))
+                self.stdout.write(
+                    self.style.WARNING(f"{atlas_id} not recognized. Skipping")
+                )
                 continue
             bg_atlas = get_bg_atlas(atlas_id)
             subdivisions = get_subdivisions(bg_atlas)
@@ -27,4 +29,4 @@ class Command(BaseCommand):
                 except NoImageDataError:
                     continue
                 save_canal_image(img, s)
-        self.stdout.write(self.style.SUCCESS('Generate canal finished'))
+        self.stdout.write(self.style.SUCCESS("Generate canal finished"))

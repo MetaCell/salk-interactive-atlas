@@ -1,4 +1,5 @@
 import numpy as np
+
 from api.helpers.ICustomAtlas import ICustomAtlas
 
 
@@ -14,7 +15,7 @@ class SalkAtlas(ICustomAtlas):
         # TODO: Remove uncomment code when no longer in need of mocked data and uncomment commented return
         canal = self.get_image_volume(self.structures["CC"]["id"])
         return np.repeat(canal[0][np.newaxis, :, :], 790, axis=0)
-        #return self.get_image_volume(self.structures["CC"]["id"])
+        # return self.get_image_volume(self.structures["CC"]["id"])
 
     def get_image_volume(self, region_key):
         """

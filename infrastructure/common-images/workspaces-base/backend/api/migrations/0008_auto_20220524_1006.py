@@ -3,7 +3,9 @@
 from django.db import migrations
 
 from api.models import Population, PopulationStatus
-from api.services.workflows_service import execute_generate_population_static_files_workflow
+from api.services.workflows_service import (
+    execute_generate_population_static_files_workflow,
+)
 
 
 def update_existent_populations(apps, schema_editor):

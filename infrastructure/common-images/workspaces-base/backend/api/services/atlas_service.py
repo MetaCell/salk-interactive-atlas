@@ -2,7 +2,7 @@ import json
 import os
 
 from api.services.filesystem_service import create_dir
-from workspaces.settings import LAMINAS_PATH, CANAL_PATH, ANNOTATIONS_PATH, GRID_PATH
+from workspaces.settings import ANNOTATIONS_PATH, CANAL_PATH, GRID_PATH, LAMINAS_PATH
 
 
 def save_annotation_image(img, subdivision: str):
@@ -24,5 +24,8 @@ def save_laminas_json(laminas_metadata: dict):
 
 def save_image(img, p: str, subdivision: str):
     create_dir(p)
-    path = os.path.join(p, subdivision + '.png', )
+    path = os.path.join(
+        p,
+        subdivision + ".png",
+    )
     img.save(path)

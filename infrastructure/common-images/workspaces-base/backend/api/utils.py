@@ -40,7 +40,7 @@ def flat_map(f, lst):
 
 
 def get_persistence_path(path: str) -> str:
-    return path.split(PERSISTENT_ROOT + '/')[1]
+    return path.split(PERSISTENT_ROOT + "/")[1]
 
 
 def has_property(obj, prop: str) -> bool:

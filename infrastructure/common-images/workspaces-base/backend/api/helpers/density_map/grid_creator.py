@@ -1,18 +1,31 @@
 from typing import Optional
 
 import numpy as np
+from matplotlib import pyplot as plt
+from matplotlib import rcParams
 from PIL import Image
-from matplotlib import pyplot as plt, rcParams
 
-from api.helpers.ICustomAtlas import ICustomAtlas
 from api.helpers.atlas import get_subdivision_boundaries
-from api.helpers.density_map.common_density_helpers import get_img_geometric_center, get_img_content_center, sub_cords
+from api.helpers.density_map.common_density_helpers import (
+    get_img_content_center,
+    get_img_geometric_center,
+    sub_cords,
+)
+from api.helpers.ICustomAtlas import ICustomAtlas
 from api.helpers.image_manipulation import fig_to_img
-from workspaces.settings import UM_TO_MM, GRID_COLOR, GRID_CONSTANT_RIGHT_OFFSET, GRID_CONSTANT_BOTTOM_OFFSET, \
-    FIGURE_DPI, GRID_SUBREGION_DEPTH_ZERO_REFERENCE
+from workspaces.settings import (
+    FIGURE_DPI,
+    GRID_COLOR,
+    GRID_CONSTANT_BOTTOM_OFFSET,
+    GRID_CONSTANT_RIGHT_OFFSET,
+    GRID_SUBREGION_DEPTH_ZERO_REFERENCE,
+    UM_TO_MM,
+)
 
 
-def get_grid_image(bg_atlas: ICustomAtlas, subdivision: str, canal_img_array: Image) -> Image:
+def get_grid_image(
+    bg_atlas: ICustomAtlas, subdivision: str, canal_img_array: Image
+) -> Image:
     geometric_center = get_img_geometric_center(canal_img_array)
     canal_center = get_img_content_center(canal_img_array)
     canal_offset = sub_cords(geometric_center, canal_center)
@@ -48,33 +61,42 @@ def get_grid_image(bg_atlas: ICustomAtlas, subdivision: str, canal_img_array: Im
     ax.set_xticklabels(x_ticks_labels)
     ax.set_yticklabels(y_ticks_labels)
 
-    ax.set_title(f'{_get_subdivision_depth(bg_atlas, subdivision, resolution_z)} mm',
-                 fontdict={'fontsize': 8,
-                           'fontweight': rcParams['axes.titleweight'],
-                           'color': GRID_COLOR,
-                           'verticalalignment': 'baseline',
-                           'horizontalalignment': 'right'},
-                 loc='right')
+    ax.set_title(
+        f"{_get_subdivision_depth(bg_atlas, subdivision, resolution_z)} mm",
+        fontdict={
+            "fontsize": 8,
+            "fontweight": rcParams["axes.titleweight"],
+            "color": GRID_COLOR,
+            "verticalalignment": "baseline",
+            "horizontalalignment": "right",
+        },
+        loc="right",
+    )
 
     # Sets axis color
-    ax.spines['bottom'].set_color(GRID_COLOR)
-    ax.spines['top'].set_color(GRID_COLOR)
-    ax.spines['left'].set_color(GRID_COLOR)
-    ax.spines['right'].set_color(GRID_COLOR)
+    ax.spines["bottom"].set_color(GRID_COLOR)
+    ax.spines["top"].set_color(GRID_COLOR)
+    ax.spines["left"].set_color(GRID_COLOR)
+    ax.spines["right"].set_color(GRID_COLOR)
     ax.xaxis.label.set_color(GRID_COLOR)
     ax.yaxis.label.set_color(GRID_COLOR)
-    ax.tick_params(axis='x', colors=GRID_COLOR)
-    ax.tick_params(axis='y', colors=GRID_COLOR)
+    ax.tick_params(axis="x", colors=GRID_COLOR)
+    ax.tick_params(axis="y", colors=GRID_COLOR)
 
-    for item in ([ax.title, ax.xaxis.label, ax.yaxis.label] +
-                 ax.get_xticklabels() + ax.get_yticklabels()):
+    for item in (
+        [ax.title, ax.xaxis.label, ax.yaxis.label]
+        + ax.get_xticklabels()
+        + ax.get_yticklabels()
+    ):
         item.set_fontsize(8)
 
     plt.grid(False)
     img = fig_to_img(fig)
 
     # Corrects image alignment by adding a constant amount of padding to the image
-    shifted_image = _add_margin(img, 0, GRID_CONSTANT_RIGHT_OFFSET, GRID_CONSTANT_BOTTOM_OFFSET, 0)
+    shifted_image = _add_margin(
+        img, 0, GRID_CONSTANT_RIGHT_OFFSET, GRID_CONSTANT_BOTTOM_OFFSET, 0
+    )
     return shifted_image
 
 
@@ -83,8 +105,11 @@ def _get_ticks(canal_offset, img_to_res_ratio, shape, step=0.1):
     ticks = np.round(
         np.arange(
             _get_tick_rounded(canal_offset * -1 - shape / 2, img_to_res_ratio),
-            _get_tick_rounded(canal_offset * -1 + shape / 2 + step, img_to_res_ratio), step),
-        2)
+            _get_tick_rounded(canal_offset * -1 + shape / 2 + step, img_to_res_ratio),
+            step,
+        ),
+        2,
+    )
     # tick labels apply the canal center offset
     ticks_labels = []
     for idx, tick in enumerate(ticks):
@@ -94,7 +119,7 @@ def _get_ticks(canal_offset, img_to_res_ratio, shape, step=0.1):
                 label = 0
             ticks_labels.append(label)
         else:
-            ticks_labels.append('')
+            ticks_labels.append("")
     return ticks, ticks_labels
 
 
@@ -106,8 +131,9 @@ def _get_tick_rounded(original, ratio):
 
 
 def _set_size(w, h, ax=None) -> (float, float):
-    """ w, h: width, height in inches """
-    if not ax: ax = plt.gca()
+    """w, h: width, height in inches"""
+    if not ax:
+        ax = plt.gca()
     l = ax.figure.subplotpars.left
     r = ax.figure.subplotpars.right
     t = ax.figure.subplotpars.top
@@ -127,11 +153,18 @@ def _add_margin(pil_img, top, right, bottom, left, color=(255, 0, 0, 0)) -> Imag
     return result
 
 
-def _get_subdivision_depth(bg_atlas: ICustomAtlas, subdivision: str, resolution: int,
-                           subregion_zero_reference: str = GRID_SUBREGION_DEPTH_ZERO_REFERENCE) -> Optional[int]:
+def _get_subdivision_depth(
+    bg_atlas: ICustomAtlas,
+    subdivision: str,
+    resolution: int,
+    subregion_zero_reference: str = GRID_SUBREGION_DEPTH_ZERO_REFERENCE,
+) -> Optional[int]:
     breakpoints, subdivisions = get_subdivision_boundaries(bg_atlas)
     subdivision_depth = _get_first_slice_depth(breakpoints, subdivisions, subdivision)
-    depth = _get_first_slice_depth(breakpoints, subdivisions, subregion_zero_reference) - subdivision_depth
+    depth = (
+        _get_first_slice_depth(breakpoints, subdivisions, subregion_zero_reference)
+        - subdivision_depth
+    )
     return depth * resolution
 
 

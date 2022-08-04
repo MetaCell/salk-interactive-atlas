@@ -4,7 +4,7 @@ import csv
 import numpy as np
 
 from api.constants import PopulationPersistentFiles
-from api.helpers.atlas import get_subdivision_boundaries, get_bg_atlas, get_subdivisions
+from api.helpers.atlas import get_bg_atlas, get_subdivision_boundaries, get_subdivisions
 from api.helpers.density_map.centroids_creator import CentroidsCreator
 from api.helpers.density_map.ipopulation_image_creator import IPopulationImageCreator
 from api.helpers.density_map.probability_map_creator import ProbabilityMapCreator
@@ -12,7 +12,9 @@ from api.helpers.density_map.probability_map_creator import ProbabilityMapCreato
 
 def split_cells_per_segment(population):
     population.remove_split_cells_csv()
-    breakpoints, subdivisions = get_subdivision_boundaries(get_bg_atlas(population.atlas))
+    breakpoints, subdivisions = get_subdivision_boundaries(
+        get_bg_atlas(population.atlas)
+    )
     get_cell_segment = lambda depth: _boundaries(breakpoints, subdivisions, depth)
 
     population.create_split_storage()
@@ -20,7 +22,12 @@ def split_cells_per_segment(population):
     file_writer_dict = {}
     try:
         for s in subdivisions:
-            file = open(population.get_subdivision_storage_path(s, PopulationPersistentFiles.CSV_FILE), "w")
+            file = open(
+                population.get_subdivision_storage_path(
+                    s, PopulationPersistentFiles.CSV_FILE
+                ),
+                "w",
+            )
             writer = csv.writer(file)
             file_writer_dict[s] = {"file": file, "writer": writer}
         with open(population.cells.path) as cells_file:
@@ -39,7 +46,11 @@ def split_cells_per_segment(population):
 def get_cells(subdivision, populations):
     cells = []
     for pop in populations:
-        with open(pop.get_subdivision_storage_path(subdivision, PopulationPersistentFiles.CSV_FILE)) as cells_file:
+        with open(
+            pop.get_subdivision_storage_path(
+                subdivision, PopulationPersistentFiles.CSV_FILE
+            )
+        ) as cells_file:
             reader = csv.reader(cells_file)
             for row in reader:
                 cells.append([float(c) for c in row])
@@ -70,10 +81,31 @@ def generate_images(population):
     for s in subdivisions:
         cells = np.array(get_cells(s, [population]))
         if len(cells) > 0:
-            _store_image(CentroidsCreator(), PopulationPersistentFiles.CENTROIDS_IMG, bg_atlas, cells, population, s)
-            _store_image(ProbabilityMapCreator(), PopulationPersistentFiles.PROBABILITY_MAP_IMG, bg_atlas, cells, population, s)
+            _store_image(
+                CentroidsCreator(),
+                PopulationPersistentFiles.CENTROIDS_IMG,
+                bg_atlas,
+                cells,
+                population,
+                s,
+            )
+            _store_image(
+                ProbabilityMapCreator(),
+                PopulationPersistentFiles.PROBABILITY_MAP_IMG,
+                bg_atlas,
+                cells,
+                population,
+                s,
+            )
 
 
-def _store_image(creator: IPopulationImageCreator, extension: PopulationPersistentFiles, bg_atlas, cells, population, s, ):
+def _store_image(
+    creator: IPopulationImageCreator,
+    extension: PopulationPersistentFiles,
+    bg_atlas,
+    cells,
+    population,
+    s,
+):
     img = creator.create(bg_atlas=bg_atlas, subdivision=s, points=cells)
     img.save(population.get_subdivision_storage_path(s, extension))

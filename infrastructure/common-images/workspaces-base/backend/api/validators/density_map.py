@@ -1,8 +1,6 @@
-from api.helpers.ICustomAtlas import ICustomAtlas
 from api.helpers.atlas import get_subdivisions
-from api.helpers.exceptions import (
-    DensityMapIncorrectSubdivisionError,
-)
+from api.helpers.exceptions import DensityMapIncorrectSubdivisionError
+from api.helpers.ICustomAtlas import ICustomAtlas
 
 
 def validate_subdivision(atlas: ICustomAtlas, subdivision: str):

@@ -2,8 +2,8 @@ import os
 
 from django.core.management.base import BaseCommand
 
-from api.services.filesystem_service import remove_dir
 from api.models import Population
+from api.services.filesystem_service import remove_dir
 from workspaces.settings import PERSISTENT_ROOT
 
 
@@ -15,7 +15,7 @@ class Command(BaseCommand):
         parser.add_argument("data_filepath", type=str)
 
     def handle(self, *args, **options):
-        path = os.path.join(PERSISTENT_ROOT, options['data_filepath'])
+        path = os.path.join(PERSISTENT_ROOT, options["data_filepath"])
         try:
             p = Population.objects.get(pk=options["population_id"])
             p.generate_cells(path)
@@ -27,4 +27,6 @@ class Command(BaseCommand):
             self.stdout.write(self.style.WARNING(f"{options['population_id']}: {e}."))
 
         remove_dir(os.path.dirname(path))
-        self.stdout.write(self.style.SUCCESS("Generate population cells finished successfully"))
+        self.stdout.write(
+            self.style.SUCCESS("Generate population cells finished successfully")
+        )

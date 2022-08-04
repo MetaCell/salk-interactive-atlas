@@ -12,7 +12,8 @@ https://docs.djangoproject.com/en/4.0/ref/settings/
 
 import os
 from pathlib import Path
-from api.constants import GREY, WHITE, DARK_GREY, FULLY_OPAQUE, HALF_OPAQUE
+
+from api.constants import DARK_GREY, FULLY_OPAQUE, GREY, HALF_OPAQUE, WHITE
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 
@@ -206,8 +207,8 @@ CANAL_IMAGE_OPACITY = FULLY_OPAQUE
 
 GRID_CONSTANT_RIGHT_OFFSET = 10
 GRID_CONSTANT_BOTTOM_OFFSET = 1
-GRID_COLOR = 'grey'
-GRID_SUBREGION_DEPTH_ZERO_REFERENCE = 'C8-Rostral'
+GRID_COLOR = "grey"
+GRID_SUBREGION_DEPTH_ZERO_REFERENCE = "C8-Rostral"
 
 FIGURE_DPI = 100
 

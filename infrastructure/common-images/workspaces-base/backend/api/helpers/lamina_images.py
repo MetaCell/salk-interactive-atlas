@@ -3,7 +3,10 @@ import os
 from api.constants import LaminasImages
 from api.helpers import ICustomAtlas
 from api.helpers.atlas import get_img_min_y
-from api.helpers.density_map.generate_image import generate_lamina_image, generate_image_contour
+from api.helpers.density_map.generate_image import (
+    generate_image_contour,
+    generate_lamina_image,
+)
 from api.services.atlas_service import save_image
 from workspaces.settings import LAMINAS_PATH
 
@@ -22,7 +25,18 @@ class LaminaImages:
         self.subdivision = subdivision
 
     def save_images(self):
-        save_image(self.filled, os.path.join(LAMINAS_PATH, self.acronym, LaminasImages.FILLED.value), self.subdivision)
-        save_image(self.contour, os.path.join(LAMINAS_PATH, self.acronym, LaminasImages.CONTOUR.value),
-                   self.subdivision)
-        save_image(self.dashed, os.path.join(LAMINAS_PATH, self.acronym, LaminasImages.DASHED.value), self.subdivision)
+        save_image(
+            self.filled,
+            os.path.join(LAMINAS_PATH, self.acronym, LaminasImages.FILLED.value),
+            self.subdivision,
+        )
+        save_image(
+            self.contour,
+            os.path.join(LAMINAS_PATH, self.acronym, LaminasImages.CONTOUR.value),
+            self.subdivision,
+        )
+        save_image(
+            self.dashed,
+            os.path.join(LAMINAS_PATH, self.acronym, LaminasImages.DASHED.value),
+            self.subdivision,
+        )

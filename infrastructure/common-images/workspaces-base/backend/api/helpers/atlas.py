@@ -1,11 +1,14 @@
 import numpy as np
 
 from api.constants import CAUDAL, ROSTRAL
-from api.helpers.ICustomAtlas import ICustomAtlas
 from api.helpers.bg_atlasapi_wrapper import SalkAtlas
+from api.helpers.ICustomAtlas import ICustomAtlas
 from api.utils import flat_map
 
-split_segments = lambda seg: [f"{seg['Segment']}-{ROSTRAL}", f"{seg['Segment']}-{CAUDAL}"]
+split_segments = lambda seg: [
+    f"{seg['Segment']}-{ROSTRAL}",
+    f"{seg['Segment']}-{CAUDAL}",
+]
 
 
 def get_subdivisions(bg_atlas: ICustomAtlas) -> list:

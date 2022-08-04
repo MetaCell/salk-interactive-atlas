@@ -19,20 +19,22 @@ def get_bins(image_size: tuple, bin_sizes: tuple, bin_limits: tuple) -> list:
     bins = []
     for dim in range(0, len(image_size)):
         if bin_limits[dim]:
-            bins.append(np.arange(bin_limits[dim][0], bin_limits[dim][1] + 1, bin_sizes[dim]))
+            bins.append(
+                np.arange(bin_limits[dim][0], bin_limits[dim][1] + 1, bin_sizes[dim])
+            )
         else:
             bins.append(np.arange(0, image_size[dim] + 1, bin_sizes[dim]))
     return bins
 
 
 def get_subdivision_limits(bg_atlas: ICustomAtlas, subdivision: str) -> tuple:
-    segment, part = subdivision.split('-')
-    for s in bg_atlas.metadata['atlas_segments']:
-        if s['Segment'] == segment:
+    segment, part = subdivision.split("-")
+    for s in bg_atlas.metadata["atlas_segments"]:
+        if s["Segment"] == segment:
             if part == ROSTRAL:
-                return s['Start'], (s["Start"] + s["End"]) / 2, 0.25
+                return s["Start"], (s["Start"] + s["End"]) / 2, 0.25
             else:
-                return (s["Start"] + s["End"]) / 2, s['End'], 0.75
+                return (s["Start"] + s["End"]) / 2, s["End"], 0.75
 
 
 def get_subdivision_bin_limits(bg_atlas: ICustomAtlas, subdivision: str) -> tuple:

@@ -12,7 +12,8 @@ from api.models import Experiment
 from api.serializers import (
     ExperimentFileUploadSerializer,
     ExperimentSerializer,
-    TagSerializer, TagsSerializer,
+    TagSerializer,
+    TagsSerializer,
 )
 from api.services.experiment_service import add_tag, delete_tag, upload_files
 from api.services.filesystem_service import create_temp_dir, move_files
@@ -86,7 +87,7 @@ class ExperimentViewSet(viewsets.ModelViewSet):
     @action(detail=True, methods=["post"], url_path="tag", url_name="tag_add")
     def add_tags(self, request, pk):
         instance = self.get_object()
-        tags_names = request.data.get("tags").split(',')
+        tags_names = request.data.get("tags").split(",")
         tags = []
         for name in tags_names:
             tags.append(add_tag(instance, name, save=False))
@@ -136,6 +137,4 @@ class ExperimentViewSet(viewsets.ModelViewSet):
         return Response(status=response_status)
 
     def perform_create(self, serializer):
-        experiment = serializer.save(
-            owner=self.request.user
-        )
+        experiment = serializer.save(owner=self.request.user)

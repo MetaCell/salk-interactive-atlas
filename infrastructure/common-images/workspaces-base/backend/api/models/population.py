@@ -1,24 +1,36 @@
-import os
 import logging
+import os
 
-from PIL import Image
 from django.conf import settings
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
+from PIL import Image
 
+from ..constants import (
+    POPULATIONS_DATA,
+    POPULATIONS_SPLIT_DATA,
+    PopulationPersistentFiles,
+)
+from ..helpers.generate_population_cells import get_cells_filepath
+from ..services.filesystem_service import create_dir, remove_dir, remove_file
+from ..services.population_service import generate_images, split_cells_per_segment
+from ..services.workflows_service import (
+    execute_generate_population_static_files_workflow,
+)
+from ..utils import has_property, is_valid_hex_str
 from .atlas import AtlasesChoice
 from .experiment import Experiment
-from ..constants import PopulationPersistentFiles, POPULATIONS_DATA, POPULATIONS_SPLIT_DATA
-from ..services.filesystem_service import create_dir, remove_dir, remove_file
-from ..helpers.generate_population_cells import get_cells_filepath
-from ..services.population_service import generate_images, split_cells_per_segment
-from ..services.workflows_service import execute_generate_population_static_files_workflow
-from ..utils import is_valid_hex_str, has_property
 
 
 class PopulationObjectsManager(models.Manager):
     def get_queryset(self):
-        return super(PopulationObjectsManager, self).get_queryset().select_related("experiment",)
+        return (
+            super(PopulationObjectsManager, self)
+            .get_queryset()
+            .select_related(
+                "experiment",
+            )
+        )
 
 
 class PopulationStatus(models.TextChoices):
@@ -41,7 +53,10 @@ class Population(models.Model):
     )
     cells = models.FileField(upload_to=POPULATIONS_DATA)
     status = models.CharField(
-        choices=PopulationStatus.choices, editable=False, default=PopulationStatus.PENDING, max_length=8
+        choices=PopulationStatus.choices,
+        editable=False,
+        default=PopulationStatus.PENDING,
+        max_length=8,
     )
 
     # objects = models.Manager()
@@ -55,7 +70,9 @@ class Population(models.Model):
     def split_storage_path(self) -> str:
         return os.path.join(self.storage_path, str(self.id), POPULATIONS_SPLIT_DATA)
 
-    def get_subdivision_storage_path(self, subdivision, content: PopulationPersistentFiles) -> str:
+    def get_subdivision_storage_path(
+        self, subdivision, content: PopulationPersistentFiles
+    ) -> str:
         return os.path.join(self.split_storage_path, subdivision + content.value)
 
     def remove_split_cells_csv(self):
@@ -65,7 +82,7 @@ class Population(models.Model):
         create_dir(self.split_storage_path)
 
     def save(
-            self, force_insert=False, force_update=False, using=None, update_fields=None
+        self, force_insert=False, force_update=False, using=None, update_fields=None
     ):
         self.update_color()
         has_file_changed = self._has_file_changed()
@@ -81,9 +98,13 @@ class Population(models.Model):
         try:
             current = Population.objects.get(id=self.id)
         except Population.DoesNotExist:
-            return has_property(self.cells, 'file')
-        return (not has_property(current.cells, 'file') and has_property(self.cells, 'file')) \
-               or (has_property(self.cells, 'file') and self.cells.file.name != current.cells.file.name)
+            return has_property(self.cells, "file")
+        return (
+            not has_property(current.cells, "file") and has_property(self.cells, "file")
+        ) or (
+            has_property(self.cells, "file")
+            and self.cells.file.name != current.cells.file.name
+        )
 
     def generate_cells(self, data_filepath: str):
         self.status = PopulationStatus.RUNNING

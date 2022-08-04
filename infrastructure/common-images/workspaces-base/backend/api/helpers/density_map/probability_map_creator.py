@@ -1,20 +1,29 @@
 import numpy as np
 from PIL import Image
-
-from api.helpers.ICustomAtlas import ICustomAtlas
-from api.helpers.density_map.common_density_helpers import get_subdivision_bin_limits, get_bins
-from api.helpers.density_map.ipopulation_image_creator import IPopulationImageCreator
 from skimage.filters import gaussian
-from api.helpers.image_manipulation import get_image_from_array, apply_greyscale_alpha_mask
+
+from api.helpers.density_map.common_density_helpers import (
+    get_bins,
+    get_subdivision_bin_limits,
+)
+from api.helpers.density_map.ipopulation_image_creator import IPopulationImageCreator
+from api.helpers.ICustomAtlas import ICustomAtlas
+from api.helpers.image_manipulation import (
+    apply_greyscale_alpha_mask,
+    get_image_from_array,
+)
 
 
 class ProbabilityMapCreator(IPopulationImageCreator):
-
-    def create(self, bg_atlas: ICustomAtlas, subdivision: str, points: np.array) -> Image:
+    def create(
+        self, bg_atlas: ICustomAtlas, subdivision: str, points: np.array
+    ) -> Image:
         return _generate_probability_map(bg_atlas, subdivision, points)
 
 
-def _generate_probability_map(bg_atlas: ICustomAtlas, subdivision: str, points: np.array) -> Image:
+def _generate_probability_map(
+    bg_atlas: ICustomAtlas, subdivision: str, points: np.array
+) -> Image:
     prob_map_smoothing = 50
     prob_map_normalise = True
     bin_limits = get_subdivision_bin_limits(bg_atlas, subdivision)
@@ -32,11 +41,11 @@ def _generate_probability_map(bg_atlas: ICustomAtlas, subdivision: str, points: 
 
 
 def _generate_prob_map(
-        points: np.array,
-        bg_atlas: ICustomAtlas,
-        bin_limits: tuple = (None, None, None),
-        normalise: bool = True,
-        smoothing: int = None,
+    points: np.array,
+    bg_atlas: ICustomAtlas,
+    bin_limits: tuple = (None, None, None),
+    normalise: bool = True,
+    smoothing: int = None,
 ) -> np.array:
     bins = get_bins(bg_atlas.annotation.shape, (1, 1, 1), bin_limits)
     probability_map, _ = np.histogramdd(points, bins=bins, density=normalise)

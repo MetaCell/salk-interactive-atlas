@@ -22,4 +22,6 @@ class Command(BaseCommand):
                 p.generate_static_files()
             except Exception as e:
                 self.stdout.write(self.style.WARNING(f"{pop_id}: {e}. Skipped"))
-        self.stdout.write(self.style.SUCCESS("Generate population static files finished"))
+        self.stdout.write(
+            self.style.SUCCESS("Generate population static files finished")
+        )
