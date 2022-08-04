@@ -8,6 +8,7 @@ from api.helpers.density_map.common_density_helpers import get_subdivision_limit
 from api.helpers.density_map.generate_image import get_annotation_array
 from api.helpers.density_map.ipopulation_image_creator import IPopulationImageCreator
 from api.helpers.image_manipulation import fig_to_img
+from workspaces.settings import FIGURE_DPI
 
 
 class CentroidsCreator(IPopulationImageCreator):
@@ -21,7 +22,7 @@ def _generate_centroids(bg_atlas: ICustomAtlas, subdivision: str, points: np.arr
     points_slice = points[np.logical_and(subdivision_limits[0] <= points[:, 0], points[:, 0] <= subdivision_limits[1])]
     points_slice = points_slice[:, 1:]
     im = get_annotation_array(bg_atlas, subdivision)
-    dpi = 100
+    dpi = FIGURE_DPI
     h, w = im.shape
     xmin, xmax, ymin, ymax = -0.5, w + 0.5, -0.5, h + 0.5
     fig = plt.figure(figsize=(w / dpi, h / dpi), dpi=dpi)

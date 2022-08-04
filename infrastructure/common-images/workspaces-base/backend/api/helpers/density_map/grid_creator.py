@@ -8,11 +8,8 @@ from api.helpers.ICustomAtlas import ICustomAtlas
 from api.helpers.atlas import get_subdivision_boundaries
 from api.helpers.density_map.common_density_helpers import get_img_geometric_center, get_img_content_center, sub_cords
 from api.helpers.image_manipulation import fig_to_img
-
-CONSTANT_RIGHT_OFFSET = 10
-CONSTANT_BOTTOM_OFFSET = 1
-UM_TO_MM = 10
-GRID_COLOR = 'grey'
+from workspaces.settings import UM_TO_MM, GRID_COLOR, GRID_CONSTANT_RIGHT_OFFSET, GRID_CONSTANT_BOTTOM_OFFSET, \
+    FIGURE_DPI, GRID_SUBREGION_DEPTH_ZERO_REFERENCE
 
 
 def get_grid_image(bg_atlas: ICustomAtlas, subdivision: str, canal_img_array: Image) -> Image:
@@ -21,7 +18,7 @@ def get_grid_image(bg_atlas: ICustomAtlas, subdivision: str, canal_img_array: Im
     canal_offset = sub_cords(geometric_center, canal_center)
     canal_offset_x, canal_offset_y = canal_offset
 
-    dpi = 100
+    dpi = FIGURE_DPI
     h, w = canal_img_array.shape
     h = h / dpi
     w = w / dpi
@@ -77,7 +74,7 @@ def get_grid_image(bg_atlas: ICustomAtlas, subdivision: str, canal_img_array: Im
     img = fig_to_img(fig)
 
     # Corrects image alignment by adding a constant amount of padding to the image
-    shifted_image = _add_margin(img, 0, CONSTANT_RIGHT_OFFSET, CONSTANT_BOTTOM_OFFSET, 0)
+    shifted_image = _add_margin(img, 0, GRID_CONSTANT_RIGHT_OFFSET, GRID_CONSTANT_BOTTOM_OFFSET, 0)
     return shifted_image
 
 
@@ -130,11 +127,11 @@ def _add_margin(pil_img, top, right, bottom, left, color=(255, 0, 0, 0)) -> Imag
     return result
 
 
-def _get_subdivision_depth(bg_atlas: ICustomAtlas, subdivision: str, resolution: int) -> Optional[int]:
-    reference = 'C8-Rostral'
+def _get_subdivision_depth(bg_atlas: ICustomAtlas, subdivision: str, resolution: int,
+                           subregion_zero_reference: str = GRID_SUBREGION_DEPTH_ZERO_REFERENCE) -> Optional[int]:
     breakpoints, subdivisions = get_subdivision_boundaries(bg_atlas)
     subdivision_depth = _get_first_slice_depth(breakpoints, subdivisions, subdivision)
-    depth = _get_first_slice_depth(breakpoints, subdivisions, reference) - subdivision_depth
+    depth = _get_first_slice_depth(breakpoints, subdivisions, subregion_zero_reference) - subdivision_depth
     return depth * resolution
 
 
