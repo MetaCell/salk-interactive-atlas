@@ -38,7 +38,7 @@ export const twoDViewerWidget = (subdivisions: string[], activePopulations: Popu
         id: widgetIds.twoDViewer,
         name: "2D Viewer",
         component: widgetIds.twoDViewer,
-        panelName: "bottomLeftPanel",
+        panelName: "rightPanel",
         enableClose: false,
         status: WidgetStatus.ACTIVE,
         config: {
