@@ -63,7 +63,7 @@ const useStyles = makeStyles(t => ({
         display: 'flex',
         height: '100%',
         flex: '1',
-        padding: '0 0 0 200px',
+        padding: '0 0 0 211px',
         justifyContent: 'center',
         outline: "none !important"
     },
@@ -514,7 +514,7 @@ const TwoDViewer = (props: {
 
     const classes = useStyles();
     // @ts-ignore
-    const boxStyle = {flexGrow: 1, background: canvasBg, padding: "1rem", minHeight: "100%", height: HEIGHT}
+    const boxStyle = {flexGrow: 1, background: canvasBg, minHeight: "100%", height: HEIGHT}
     const isMenuOpen = Boolean(anchorEl);
     // @ts-ignore
     const popoverHeight = anchorEl?.parentNode?.parentNode?.clientHeight ? anchorEl.parentNode.parentNode.clientHeight - theme.spacing(1) : 0
