@@ -139,7 +139,7 @@ def _get_subdivision_depth(
             _get_first_slice_depth(breakpoints, subdivisions, subregion_zero_reference)
             - subdivision_depth
     )
-    return depth * resolution
+    return round(depth * resolution, 3)
 
 
 def _get_first_slice_depth(breakpoints, subdivisions, subdivision) -> int:
