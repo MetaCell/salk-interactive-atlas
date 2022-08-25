@@ -137,10 +137,7 @@ def generate_canal_image(bg_atlas: ICustomAtlas, subdivision: str) -> (np.array,
 
 
 def generate_grid_image(bg_atlas: ICustomAtlas, subdivision: str) -> (np.array, Image):
-    canal_img_array = get_scaled_img_array(
-        bg_atlas, subdivision, bg_atlas.canal, GREY_SCALE_MAX_CANAL
-    )
-    return get_grid_image(bg_atlas, subdivision, canal_img_array)
+    return get_grid_image(bg_atlas, subdivision)
 
 
 def generate_lamina_image(

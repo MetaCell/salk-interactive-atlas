@@ -1,40 +1,27 @@
 from typing import Optional
 
 import numpy as np
+from PIL import Image
 from matplotlib import pyplot as plt
 from matplotlib import rcParams
-from PIL import Image
 
-from api.helpers.atlas import get_subdivision_boundaries
-from api.helpers.density_map.common_density_helpers import (
-    get_img_content_center,
-    get_img_geometric_center,
-    sub_cords,
-)
 from api.helpers.ICustomAtlas import ICustomAtlas
+from api.helpers.atlas import get_subdivision_boundaries
 from api.helpers.image_manipulation import fig_to_img
 from workspaces.settings import (
-    FIGURE_DPI,
     GRID_COLOR,
     GRID_CONSTANT_BOTTOM_OFFSET,
     GRID_CONSTANT_RIGHT_OFFSET,
     GRID_SUBREGION_DEPTH_ZERO_REFERENCE,
-    UM_TO_MM,
+    UM_TO_MM, GRID_FONT_SIZE, GRID_X_RANGE, GRID_Y_RANGE, GRID_DIMENSIONS_MM, GRID_Z_TITLE_PAD, GRID_X_LABEL_ROTATION,
+    GRID_Z_TITLE_VERTICAL_AXES_LOCATION, GRID_AXIS_LABEL_PAD, GRID_X_LABEL_LOC, GRID_Y_LABEL_LOC,
 )
 
 
 def get_grid_image(
-    bg_atlas: ICustomAtlas, subdivision: str, canal_img_array: Image
+        bg_atlas: ICustomAtlas, subdivision: str
 ) -> Image:
-    geometric_center = get_img_geometric_center(canal_img_array)
-    canal_center = get_img_content_center(canal_img_array)
-    canal_offset = sub_cords(geometric_center, canal_center)
-    canal_offset_x, canal_offset_y = canal_offset
-
-    dpi = FIGURE_DPI
-    h, w = canal_img_array.shape
-    h = h / dpi
-    w = w / dpi
+    w, h = GRID_DIMENSIONS_MM
 
     fig, ax = plt.subplots()
     # Updates figure size to coop with the labels and ticks
@@ -42,35 +29,34 @@ def get_grid_image(
     # aka, figure needs to be bigger due to labels and ticks so that the grid is the size we want w x h
     x_shape, y_shape = _set_size(w, h, ax)
 
-    resolution_x = 1 / (bg_atlas.resolution[2] * UM_TO_MM)
-    resolution_y = 1 / (bg_atlas.resolution[1] * UM_TO_MM)
     resolution_z = 1 / (bg_atlas.resolution[0] * UM_TO_MM)
 
     # calculates ratio from image size to atlas size
     ratio_x = w / x_shape
     ratio_y = h / y_shape
 
-    canal_offset_x *= resolution_x
-    canal_offset_y *= resolution_y * -1
-
-    x_ticks, x_ticks_labels = _get_ticks(canal_offset_x, ratio_x, x_shape)
-    y_ticks, y_ticks_labels = _get_ticks(canal_offset_y, ratio_y, y_shape)
+    x_ticks, x_ticks_labels = _get_ticks(GRID_X_RANGE, ratio_x)
+    y_ticks, y_ticks_labels = _get_ticks(GRID_Y_RANGE, ratio_y)
 
     ax.set_xticks(x_ticks)
     ax.set_yticks(y_ticks)
-    ax.set_xticklabels(x_ticks_labels)
+    ax.set_xticklabels(x_ticks_labels, rotation=GRID_X_LABEL_ROTATION)
     ax.set_yticklabels(y_ticks_labels)
+    ax.set_xlabel('mm', labelpad=GRID_AXIS_LABEL_PAD, loc=GRID_X_LABEL_LOC, fontsize=GRID_FONT_SIZE)
+    ax.set_ylabel('mm', labelpad=GRID_AXIS_LABEL_PAD, loc=GRID_Y_LABEL_LOC, fontsize=GRID_FONT_SIZE)
 
     ax.set_title(
-        f"{_get_subdivision_depth(bg_atlas, subdivision, resolution_z)} mm",
+        f"Z-axis position (center in C8 Caudal): {_get_subdivision_depth(bg_atlas, subdivision, resolution_z)} mm",
         fontdict={
-            "fontsize": 8,
+            "fontsize": GRID_FONT_SIZE,
             "fontweight": rcParams["axes.titleweight"],
             "color": GRID_COLOR,
             "verticalalignment": "baseline",
             "horizontalalignment": "right",
         },
         loc="right",
+        y=GRID_Z_TITLE_VERTICAL_AXES_LOCATION,
+        pad=GRID_Z_TITLE_PAD
     )
 
     # Sets axis color
@@ -84,11 +70,11 @@ def get_grid_image(
     ax.tick_params(axis="y", colors=GRID_COLOR)
 
     for item in (
-        [ax.title, ax.xaxis.label, ax.yaxis.label]
-        + ax.get_xticklabels()
-        + ax.get_yticklabels()
+            [ax.title, ax.xaxis.label, ax.yaxis.label]
+            + ax.get_xticklabels()
+            + ax.get_yticklabels()
     ):
-        item.set_fontsize(8)
+        item.set_fontsize(GRID_FONT_SIZE)
 
     plt.grid(False)
     img = fig_to_img(fig)
@@ -100,34 +86,22 @@ def get_grid_image(
     return shifted_image
 
 
-def _get_ticks(canal_offset, img_to_res_ratio, shape, step=0.1):
+def _get_ticks(rg: tuple, img_to_res_ratio: float, step: float = 0.25):
     # ticks are on image scale
-    ticks = np.round(
-        np.arange(
-            _get_tick_rounded(canal_offset * -1 - shape / 2, img_to_res_ratio),
-            _get_tick_rounded(canal_offset * -1 + shape / 2 + step, img_to_res_ratio),
-            step,
-        ),
-        2,
+    step_img_scale = step / img_to_res_ratio
+    ticks = np.arange(
+        rg[0] / img_to_res_ratio,
+        rg[1] / img_to_res_ratio + step_img_scale,
+        step_img_scale,
     )
     # tick labels apply the canal center offset
     ticks_labels = []
     for idx, tick in enumerate(ticks):
-        if idx % 5 == 0:
-            label = round((tick - canal_offset * -1) * img_to_res_ratio, 2)
-            if round(label, 1) * 10 == 0:
-                label = 0
-            ticks_labels.append(label)
-        else:
-            ticks_labels.append("")
+        label = round(tick * img_to_res_ratio, 2)
+        if abs(label) == 0:
+            label = 0.0
+        ticks_labels.append(label)
     return ticks, ticks_labels
-
-
-def _get_tick_rounded(original, ratio):
-    # gets tick value in the image scale so that it starts with 0 on the 2 decimal place
-    scaled = original * ratio
-    diff = round(round(scaled, 2) - round(scaled, 1), 2)
-    return original + diff / ratio
 
 
 def _set_size(w, h, ax=None) -> (float, float):
@@ -154,16 +128,16 @@ def _add_margin(pil_img, top, right, bottom, left, color=(255, 0, 0, 0)) -> Imag
 
 
 def _get_subdivision_depth(
-    bg_atlas: ICustomAtlas,
-    subdivision: str,
-    resolution: int,
-    subregion_zero_reference: str = GRID_SUBREGION_DEPTH_ZERO_REFERENCE,
+        bg_atlas: ICustomAtlas,
+        subdivision: str,
+        resolution: int,
+        subregion_zero_reference: str = GRID_SUBREGION_DEPTH_ZERO_REFERENCE,
 ) -> Optional[int]:
     breakpoints, subdivisions = get_subdivision_boundaries(bg_atlas)
     subdivision_depth = _get_first_slice_depth(breakpoints, subdivisions, subdivision)
     depth = (
-        _get_first_slice_depth(breakpoints, subdivisions, subregion_zero_reference)
-        - subdivision_depth
+            _get_first_slice_depth(breakpoints, subdivisions, subregion_zero_reference)
+            - subdivision_depth
     )
     return depth * resolution
 
