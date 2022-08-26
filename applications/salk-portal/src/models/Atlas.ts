@@ -3,6 +3,7 @@ import AtlasSegment from "./AtlasSegment"
 import {AtlasChoice, DensityImages, LaminaImageTypes} from "../utilities/constants";
 import AtlasLamina from "./AtlasLamina";
 import {shadeHexColor} from "../utilities/functions";
+import Dimensions from "./Dimensions";
 
 export const DARK_GREY_SHADE = "#232323"
 
@@ -12,6 +13,7 @@ export default class Atlas {
     laminas: AtlasLamina[]
     name: string
     id: AtlasChoice;
+    gridDimensions: Dimensions
 
     constructor(atlasId: AtlasChoice, name: string) {
         this.name = name
@@ -19,6 +21,7 @@ export default class Atlas {
         this.constructInstances()
         this.constructSegments()
         this.constructLaminas()
+        this.gridDimensions = this._geGridDimensions()
     }
 
     constructInstances() {
@@ -64,6 +67,11 @@ export default class Atlas {
         } catch (e) {
             return null
         }
+    }
+
+    _geGridDimensions(): Dimensions{
+        const gridMetadata = require("../assets/atlas/" + this.id + '/grid/metadata.json')
+        return new Dimensions(gridMetadata.width, gridMetadata.height)
     }
 }
 

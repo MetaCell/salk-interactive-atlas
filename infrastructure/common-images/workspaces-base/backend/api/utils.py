@@ -1,3 +1,4 @@
+import math
 import os
 import re
 
@@ -49,3 +50,8 @@ def has_property(obj, prop: str) -> bool:
     except Exception:
         return False
     return True
+
+
+def get_closest_multiple(number: float, multiple_of: float) -> tuple[int, float]:
+    closest_integer = int(math.ceil(number / multiple_of))
+    return closest_integer, closest_integer * multiple_of
