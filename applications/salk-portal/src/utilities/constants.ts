@@ -59,7 +59,3 @@ export enum LaminaImageTypes {
     CONTOUR = "contour",
     DASHED = "dashed",
 }
-
-// todo: should depend on the atlas selected
-export const CANVAS_WIDTH = 332
-export const CANVAS_HEIGHT = 260
