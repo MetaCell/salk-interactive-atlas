@@ -15,7 +15,7 @@ import {
 } from "@material-ui/core";
 import {Population} from "../../../apiclient/workspaces";
 import {
-    AtlasChoice,
+    AtlasChoice, CANVAS_HEIGHT, CANVAS_WIDTH,
     CAUDAL,
     DensityImages,
     DensityMapTypes, LaminaImageTypes,
@@ -659,7 +659,8 @@ const TwoDViewer = (props: {
             </Box>
             <Box className={classes.densityMapImageContainer} ref={canvasContainerRef} tabIndex="0">
                 <canvas hidden={true} ref={hiddenCanvasRef}/>
-                <canvas hidden={isDrawing} className={classes.densityMapImage} ref={canvasRef} width={300} height={200}/>
+                <canvas hidden={isDrawing} className={classes.densityMapImage} ref={canvasRef}
+                        width={CANVAS_WIDTH} height={CANVAS_HEIGHT}/>
             </Box>
         </Box>
     );

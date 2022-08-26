@@ -41,8 +41,8 @@ def get_subdivision_bin_limits(bg_atlas: ICustomAtlas, subdivision: str) -> tupl
     return get_subdivision_limits(bg_atlas, subdivision), None, None
 
 
-def get_img_geometric_center(img_array) -> (float, float):
-    return math.floor(img_array.shape[1] / 2), math.floor(img_array.shape[0] / 2)
+def _get_img_geometric_center(img_array) -> (int, int):
+    return int(math.floor(img_array.shape[1] / 2)), int(math.floor(img_array.shape[0] / 2))
 
 
 def _bounding_box_coords(img_array) -> (float, float, float, float):
@@ -54,10 +54,24 @@ def _bounding_box_coords(img_array) -> (float, float, float, float):
     return left, top, right, bottom
 
 
-def get_img_content_center(img_array) -> (float, float):
+def _get_img_content_center(img_array) -> (int, int):
     left, top, right, bottom = _bounding_box_coords(img_array)
-    return math.floor((right + left) / 2), math.floor((top + bottom) / 2)
+    return int(math.floor((right + left) / 2)), int(math.floor((top + bottom) / 2))
 
 
-def sub_cords(t1, t2) -> (float, float):
-    return (t1[0] - t2[0]) * 1.0, (t1[1] - t2[1]) * 1.0
+def _sub_cords(t1, t2) -> (int, int):
+    return (t1[0] - t2[0]), (t1[1] - t2[1])
+
+
+def get_img_array_offset(img_array: np.array) -> tuple[int, int]:
+    """
+    content center might not match with the geometric center of the atlas slice
+    We get the bounding box of the array content and calculate the {content_center} coordinates from it
+    Atlas slice geometric center can be calculated from the shape
+    The difference from the two points give us the translation vector
+    :param img_array:
+    :return:
+    """
+    geometric_center = _get_img_geometric_center(img_array)
+    content_center = _get_img_content_center(img_array)
+    return _sub_cords(geometric_center, content_center)
