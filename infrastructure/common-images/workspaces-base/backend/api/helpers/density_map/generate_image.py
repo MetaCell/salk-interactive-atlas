@@ -103,18 +103,18 @@ def get_canal_offset(bg_atlas: ICustomAtlas, subdivision: str) -> tuple[int, int
 def shift_image(img_array: np.array, shift_vector: tuple[int, int]) -> np.array:
     f"""
     We should shift the array data by {shift_vector} amount without roll over data to 'the other side'
-    In order to achieve that we pad the original array with {shift_vector} amount and then roll it
+    In order to achieve that we pad the original array with {shift_vector} amount
     :param img_array:
     :param shift_vector:
     :return:
     """
 
-    y_pad = (0, int(shift_vector[1] * -1)) if shift_vector[1] < 0 else (int(shift_vector[1]), 0)
-    x_pad = (int(shift_vector[0] * -1), 0) if shift_vector[0] < 0 else (0, int(shift_vector[0]))
+    y_pad = (0, int(shift_vector[1] * -2)) if shift_vector[1] < 0 else (int(shift_vector[1] * 2), 0)
+    x_pad = (int(shift_vector[0] * -2), 0) if shift_vector[0] < 0 else (0, int(shift_vector[0] * 2))
     pads = [y_pad, x_pad]
     padded_array = numpy.pad(img_array, pad_width=pads, mode='constant', constant_values=0)
-    shifted_array = numpy.roll(padded_array, shift_vector, (1, 0))
-    return shifted_array
+    # shifted_array = numpy.roll(padded_array, shift_vector, (1, 0))
+    return padded_array
 
 
 def generate_image_contour(
