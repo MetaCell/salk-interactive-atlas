@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Optional, Tuple
 
 import numpy as np
 from PIL import Image
@@ -90,7 +90,7 @@ def get_grid_image(
 
 
 def get_grid_dimensions(bg_atlas: ICustomAtlas, tick_step: float = GRID_TICK_STEP, tolerance: float = 0.1) -> \
-        tuple[float, float]:
+        Tuple[float, float]:
     """
     Gets the grid dimensions based on the {bg_atlas} shape 
     Considering the {tick_step} and {tolerance} we make it so that the ticks happen on 'nice' places and not congested

@@ -1,7 +1,7 @@
 import numpy
 import numpy as np
 from PIL import Image
-
+from typing import Tuple
 from api.constants import FULLY_OPAQUE, WHITE
 from api.helpers.density_map.common_density_helpers import get_subdivision_limits, get_img_array_offset
 from api.helpers.density_map.grid_creator import get_grid_image
@@ -93,14 +93,14 @@ def get_scaled_img_array(
     return scaled_img_array
 
 
-def get_canal_offset(bg_atlas: ICustomAtlas, subdivision: str) -> tuple[int, int]:
+def get_canal_offset(bg_atlas: ICustomAtlas, subdivision: str) -> Tuple[int, int]:
     canal_img_array = get_scaled_img_array(
         bg_atlas, subdivision, bg_atlas.canal, GREY_SCALE_MAX_CANAL
     )
     return get_img_array_offset(canal_img_array)
 
 
-def shift_image(img_array: np.array, shift_vector: tuple[int, int]) -> np.array:
+def shift_image(img_array: np.array, shift_vector: Tuple[int, int]) -> np.array:
     f"""
     We should shift the array data by {shift_vector} amount without roll over data to 'the other side'
     In order to achieve that we pad the original array with {shift_vector} amount

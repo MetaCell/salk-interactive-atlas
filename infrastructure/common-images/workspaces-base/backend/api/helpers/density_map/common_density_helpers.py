@@ -4,6 +4,7 @@ import numpy as np
 
 from api.constants import ROSTRAL
 from api.helpers.ICustomAtlas import ICustomAtlas
+from typing import Tuple
 
 
 def get_bins(image_size: tuple, bin_sizes: tuple, bin_limits: tuple) -> list:
@@ -63,7 +64,7 @@ def _sub_cords(t1, t2) -> (int, int):
     return (t1[0] - t2[0]), (t1[1] - t2[1])
 
 
-def get_img_array_offset(img_array: np.array) -> tuple[int, int]:
+def get_img_array_offset(img_array: np.array) -> Tuple[int, int]:
     """
     content center might not match with the geometric center of the atlas slice
     We get the bounding box of the array content and calculate the {content_center} coordinates from it

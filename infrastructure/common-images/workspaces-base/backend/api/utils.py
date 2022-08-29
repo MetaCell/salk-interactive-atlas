@@ -5,6 +5,7 @@ import re
 from django.http import FileResponse
 
 from workspaces.settings import PERSISTENT_ROOT
+from typing import Tuple
 
 
 def send_file(file):
@@ -52,6 +53,6 @@ def has_property(obj, prop: str) -> bool:
     return True
 
 
-def get_closest_multiple(number: float, multiple_of: float) -> tuple[int, float]:
+def get_closest_multiple(number: float, multiple_of: float) -> Tuple[int, float]:
     closest_integer = int(math.ceil(number / multiple_of))
     return closest_integer, closest_integer * multiple_of
