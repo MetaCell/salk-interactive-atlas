@@ -21,10 +21,12 @@ export const COMMUNITY_HASH = 'community';
 
 export const PROBABILITY_MAP_ID = 'probabilityMap'
 export const NEURONAL_LOCATIONS_ID = 'neuronalLocations'
+export const GRID_VIEW = 'grid view'
 
 export const OVERLAYS = {
     [PROBABILITY_MAP_ID]: new OverlayMetadata(PROBABILITY_MAP_ID, "Probability Map"),
     [NEURONAL_LOCATIONS_ID]:  new OverlayMetadata(NEURONAL_LOCATIONS_ID, "Neuronal Locations"),
+    [GRID_VIEW]:  new OverlayMetadata(GRID_VIEW, "Grid"),
 } as any
 
 export enum RequestState {
