@@ -7,10 +7,10 @@ harness:
     resources:
       requests:
         memory: 1Gi
-        cpu: 100m
+        cpu: 500m
       limits:
         memory: 1Gi
-        cpu: 100m
+        cpu: 500m
     volume:
       name: salk-files
       mountpath: /usr/src/app/persistent
