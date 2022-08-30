@@ -1,0 +1,54 @@
+harness:
+  subdomain: www
+  secured: true
+  deployment:
+    auto: true
+    port: 8080
+    resources:
+      requests:
+        memory: 2Gi
+        cpu: 500m
+      limits:
+        memory: 2Gi
+        cpu: 500m
+    volume:
+      name: salk-files
+      mountpath: /usr/src/app/persistent
+      auto: true
+      size: 5Gi
+  dependencies:
+    build:
+    - cloudharness-django
+    hard:
+    - accounts
+    - events
+    - argo
+  service:
+    auto: true
+    port: 8080
+  resources:
+    - name: "keycloak"
+      src: "keycloak.json"
+      dst: "/usr/src/app/static/www/keycloak.json"
+  sentry: false
+  database:
+    auto: true
+    type: postgres
+  livenessProbe:
+    path: /backend/k8s/live
+  readinessProbe:
+    path: /backend/k8s/ready
+  uri_role_mapping:
+    - uri: /*
+      roles:
+        - default-roles-salk
+    - uri: /avatars/*
+      white-listed: true
+    - uri: /backend/api/*
+      roles:
+        - workspaces:workspaces-user
+        - workspaces:workspaces-administrator
+      require-any-role: true
+    - uri: /backend/admin/*
+      roles:
+        - workspaces:workspaces-administrator
