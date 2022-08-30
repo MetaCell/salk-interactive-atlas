@@ -40,17 +40,15 @@ module.exports = env => {
         disableHostCheck: true,
         historyApiFallback: true,
         proxy: {
-          '/proxy/workspaces': {
-            target: replaceHost(proxyTarget, 'workspaces'), // 'http://localhost:8000', // for local development
+          '/backend': {
+            target: replaceHost(proxyTarget, 'www'),
             secure: false,
             changeOrigin: true,
-            pathRewrite: { '^/proxy/workspaces': '' }
           },
           '/avatars': {
             target: replaceHost(proxyTarget, 'www'),
             secure: false,
             changeOrigin: true,
-            logLevel: "debug"
           },
         },
         port: PORT,
