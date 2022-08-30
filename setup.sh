@@ -15,7 +15,7 @@ kubectl create rolebinding salk-admin-default --clusterrole=admin --serviceaccou
 eval $(minikube docker-env)
 kubectl config use-context minikube
 
-harness-deployment cloud-harness . -l -d salk.local -dtls -n salk -e dev -i salk-portal
+harness-deployment cloud-harness . -l -d salk.local -dtls -n salk -e dev -i portal
 
 kubectl config use-context minikube
 

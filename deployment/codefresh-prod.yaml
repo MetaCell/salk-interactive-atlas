@@ -2,7 +2,6 @@ version: '1.0'
 stages:
 - prepare
 - deploy
-- publish
 steps:
   main_clone:
     title: Clone main repository
@@ -25,13 +24,13 @@ steps:
       git: github
   prepare_deployment:
     title: Prepare helm chart
-    image: python:3.7
+    image: python:3.9.10
     stage: prepare
     working_directory: .
     commands:
-    - pip install cloud-harness/tools
-    - harness-deployment cloud-harness . -t ${{DEPLOYMENT_TAG}} -d ${{DOMAIN}} -r
-      ${{REGISTRY}} -n ${{NAMESPACE}} -rs ${{REGISTRY_SECRET}} -e prod -i salk-portal
+    - bash cloud-harness/install.sh
+    - harness-deployment cloud-harness . -t ${{CF_BUILD_ID}} -d ${{DOMAIN}} -r ${{REGISTRY}}
+      -rs ${{REGISTRY_SECRET}} -n ${{NAMESPACE}} -e prod -i portal
   prepare_deployment_view:
     commands:
     - helm template ./deployment/helm --debug -n ${{NAMESPACE}}
@@ -43,121 +42,51 @@ steps:
     title: View helm chart
   deployment:
     stage: deploy
-    image: codefresh/cfstep-helm:3.6.2
+    type: helm
+    working_directory: ./${{CF_REPO_NAME}}
     title: Installing chart
-    environment:
-    - CHART_REF=./deployment/helm
-    - RELEASE_NAME=${{NAMESPACE}}
-    - KUBE_CONTEXT=${{CLUSTER_NAME}}
-    - NAMESPACE=${{NAMESPACE}}
-    - CHART_VERSION=${{DEPLOYMENT_TAG}}
-    - HELM_REPO_USE_HTTP=false
-    - HELM_REPO_CONTEXT_PATH=
-    - TIMEOUT=600s
-    - VALUESFILE_values=./deployment/helm/values.yaml
-  approval:
-    type: pending-approval
-    stage: publish
-    title: Approve
-    description: Approve publication
-    timeout:
-      duration: 168
-      finalState: approved
-  publish:
-    type: parallel
-    stage: publish
+    arguments:
+      helm_version: 3.6.2
+      chart_name: deployment/helm
+      release_name: '${{NAMESPACE}}'
+      kube_context: '${{CLUSTER_NAME}}'
+      namespace: '${{NAMESPACE}}'
+      chart_version: '${{DEPLOYMENT_TAG}}'
+      cmd_ps: --wait --timeout 600s
+      custom_value_files:
+      - ./deployment/helm/values.yaml
+      custom_values: []
+  build_application_images:
+    stage: build
     steps:
-      publish_cloudharness-base-debian:
-        stage: publish
-        type: push
-        title: Cloudharness base debian
-        candidate: '${{REGISTRY}}/salk/cloudharness-base-debian:${{DEPLOYMENT_TAG}}'
-        tags:
-        - '${{DEPLOYMENT_PUBLISH_TAG}}'
-        - latest
-        registry: '${{REGISTRY_PUBLISH_URL}}'
-      publish_accounts:
-        stage: publish
-        type: push
+      accounts:
+        type: build
+        stage: build
+        tag: '${{CF_BUILD_ID}}'
+        dockerfile: Dockerfile
+        registry: '${{CODEFRESH_REGISTRY}}'
+        buildkit: true
+        build_arguments:
+        - TAG=${{CF_BUILD_ID}}
+        - DOMAIN=${{DOMAIN}}
+        - NOCACHE=${{CF_BUILD_ID}}
+        - REGISTRY=${{REGISTRY}}/salk/
+        image_name: salk/accounts
         title: Accounts
-        candidate: '${{REGISTRY}}/salk/accounts:${{DEPLOYMENT_TAG}}'
-        tags:
-        - '${{DEPLOYMENT_PUBLISH_TAG}}'
-        - latest
-        registry: '${{REGISTRY_PUBLISH_URL}}'
-      publish_events:
-        stage: publish
-        type: push
-        title: Events
-        candidate: '${{REGISTRY}}/salk/events:${{DEPLOYMENT_TAG}}'
-        tags:
-        - '${{DEPLOYMENT_PUBLISH_TAG}}'
-        - latest
-        registry: '${{REGISTRY_PUBLISH_URL}}'
-      publish_workspaces-base:
-        stage: publish
-        type: push
-        title: Workspaces base
-        candidate: '${{REGISTRY}}/salk/workspaces-base:${{DEPLOYMENT_TAG}}'
-        tags:
-        - '${{DEPLOYMENT_PUBLISH_TAG}}'
-        - latest
-        registry: '${{REGISTRY_PUBLISH_URL}}'
-      publish_workspaces:
-        stage: publish
-        type: push
-        title: Workspaces
-        candidate: '${{REGISTRY}}/salk/workspaces:${{DEPLOYMENT_TAG}}'
-        tags:
-        - '${{DEPLOYMENT_PUBLISH_TAG}}'
-        - latest
-        registry: '${{REGISTRY_PUBLISH_URL}}'
-      publish_workspaces-generate-population-static-files:
-        stage: publish
-        type: push
-        title: Workspaces generate population static files
-        candidate: '${{REGISTRY}}/salk/workspaces-generate-population-static-files:${{DEPLOYMENT_TAG}}'
-        tags:
-        - '${{DEPLOYMENT_PUBLISH_TAG}}'
-        - latest
-        registry: '${{REGISTRY_PUBLISH_URL}}'
-      publish_workspaces-generate-population-cells:
-        stage: publish
-        type: push
-        title: Workspaces generate population cells
-        candidate: '${{REGISTRY}}/salk/workspaces-generate-population-cells:${{DEPLOYMENT_TAG}}'
-        tags:
-        - '${{DEPLOYMENT_PUBLISH_TAG}}'
-        - latest
-        registry: '${{REGISTRY_PUBLISH_URL}}'
-      publish_salk-portal:
-        stage: publish
-        type: push
-        title: Salk portal
-        candidate: '${{REGISTRY}}/salk/salk-portal:${{DEPLOYMENT_TAG}}'
-        tags:
-        - '${{DEPLOYMENT_PUBLISH_TAG}}'
-        - latest
-        registry: '${{REGISTRY_PUBLISH_URL}}'
-    when:
-      condition:
-        all:
-          whenVarExists: includes("${{DEPLOYMENT_PUBLISH_TAG}}", "{{DEPLOYMENT_PUBLISH_TAG}}")
-            == false
-  git-tag:
-    title: Performing git tagging
-    stage: publish
-    image: alpine/git:latest
-    commands:
-    - git tag ${{DEPLOYMENT_PUBLISH_TAG}}
-    - ORIGIN=$(git remote get-url origin)
-    - PROTOCOL=https://
-    - REPLACEMENT=${PROTOCOL}${{REPO_TOKEN}}@
-    - git remote set-url origin ${ORIGIN/$PROTOCOL/$REPLACEMENT}
-    - git push origin --tags
-    when:
-      condition:
-        all:
-          whenVarExists: includes("${{DEPLOYMENT_PUBLISH_TAG}}", "{{DEPLOYMENT_PUBLISH_TAG}}")
-            == false
-          whenVarExists2: includes("${{REPO_TOKEN}}", "{{REPO_TOKEN}}") == false
+        working_directory: ./.overrides/applications/accounts
+      portal:
+        type: build
+        stage: build
+        tag: '${{CF_BUILD_ID}}'
+        dockerfile: Dockerfile
+        registry: '${{CODEFRESH_REGISTRY}}'
+        buildkit: true
+        build_arguments:
+        - TAG=${{CF_BUILD_ID}}
+        - DOMAIN=${{DOMAIN}}
+        - NOCACHE=${{CF_BUILD_ID}}
+        - REGISTRY=${{REGISTRY}}/salk/
+        - CLOUDHARNESS_DJANGO=${{REGISTRY}}/salk/cloudharness-django:${{CF_BUILD_ID}}
+        image_name: salk/portal
+        title: Portal
+        working_directory: ./applications/portal

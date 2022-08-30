@@ -2,7 +2,9 @@ version: '1.0'
 stages:
 - prepare
 - build
+- unittest
 - deploy
+- qa
 - publish
 steps:
   main_clone:
@@ -26,13 +28,13 @@ steps:
       git: github
   prepare_deployment:
     title: Prepare helm chart
-    image: python:3.7
+    image: python:3.9.10
     stage: prepare
     working_directory: .
     commands:
-    - pip install cloud-harness/tools
+    - bash cloud-harness/install.sh
     - harness-deployment cloud-harness . -t ${{CF_BUILD_ID}} -d ${{DOMAIN}} -r ${{REGISTRY}}
-      -n ${{NAMESPACE}} -rs ${{REGISTRY_SECRET}} -e dev -i salk-portal
+      -rs ${{REGISTRY_SECRET}} -n ${{NAMESPACE}} -e dev -i portal
   prepare_deployment_view:
     commands:
     - helm template ./deployment/helm --debug -n ${{NAMESPACE}}
@@ -56,14 +58,9 @@ steps:
         buildkit: true
         build_arguments:
         - TAG=${{CF_BUILD_ID}}
-        - NAMESPACE=${{NAMESPACE}}
         - DOMAIN=${{DOMAIN}}
         - NOCACHE=${{CF_BUILD_ID}}
         - REGISTRY=${{REGISTRY}}/salk/
-        - WORKSPACES_GENERATE_POPULATION_STATIC_FILES=${{REGISTRY}}/salk/workspaces-generate-population-static-files:${{CF_BUILD_ID}}
-        - WORKSPACES_GENERATE_POPULATION_CELLS=${{REGISTRY}}/salk/workspaces-generate-population-cells:${{CF_BUILD_ID}}
-        - CLOUDHARNESS_BASE_DEBIAN=${{REGISTRY}}/salk/cloudharness-base-debian:${{CF_BUILD_ID}}
-        - WORKSPACES_BASE=${{REGISTRY}}/salk/workspaces-base:${{CF_BUILD_ID}}
         image_name: salk/cloudharness-base-debian
         title: Cloudharness base debian
         working_directory: ./cloud-harness
@@ -72,7 +69,7 @@ steps:
     type: parallel
     stage: build
     steps:
-      workspaces-base:
+      cloudharness-django:
         type: build
         stage: build
         tag: '${{CF_BUILD_ID}}'
@@ -81,17 +78,13 @@ steps:
         buildkit: true
         build_arguments:
         - TAG=${{CF_BUILD_ID}}
-        - NAMESPACE=${{NAMESPACE}}
         - DOMAIN=${{DOMAIN}}
         - NOCACHE=${{CF_BUILD_ID}}
         - REGISTRY=${{REGISTRY}}/salk/
-        - WORKSPACES_GENERATE_POPULATION_STATIC_FILES=${{REGISTRY}}/salk/workspaces-generate-population-static-files:${{CF_BUILD_ID}}
-        - WORKSPACES_GENERATE_POPULATION_CELLS=${{REGISTRY}}/salk/workspaces-generate-population-cells:${{CF_BUILD_ID}}
         - CLOUDHARNESS_BASE_DEBIAN=${{REGISTRY}}/salk/cloudharness-base-debian:${{CF_BUILD_ID}}
-        - WORKSPACES_BASE=${{REGISTRY}}/salk/workspaces-base:${{CF_BUILD_ID}}
-        image_name: salk/workspaces-base
-        title: Workspaces base
-        working_directory: ./infrastructure/common-images/workspaces-base
+        image_name: salk/cloudharness-django
+        title: Cloudharness django
+        working_directory: ./cloud-harness/infrastructure/common-images/cloudharness-django
   build_application_images:
     type: parallel
     stage: build
@@ -105,7 +98,6 @@ steps:
         buildkit: true
         build_arguments:
         - TAG=${{CF_BUILD_ID}}
-        - NAMESPACE=${{NAMESPACE}}
         - DOMAIN=${{DOMAIN}}
         - NOCACHE=${{CF_BUILD_ID}}
         - REGISTRY=${{REGISTRY}}/salk/
@@ -121,14 +113,13 @@ steps:
         buildkit: true
         build_arguments:
         - TAG=${{CF_BUILD_ID}}
-        - NAMESPACE=${{NAMESPACE}}
         - DOMAIN=${{DOMAIN}}
         - NOCACHE=${{CF_BUILD_ID}}
         - REGISTRY=${{REGISTRY}}/salk/
         image_name: salk/events
         title: Events
         working_directory: ./cloud-harness/applications/events
-      workspaces:
+      portal:
         type: build
         stage: build
         tag: '${{CF_BUILD_ID}}'
@@ -137,86 +128,37 @@ steps:
         buildkit: true
         build_arguments:
         - TAG=${{CF_BUILD_ID}}
-        - NAMESPACE=${{NAMESPACE}}
         - DOMAIN=${{DOMAIN}}
         - NOCACHE=${{CF_BUILD_ID}}
         - REGISTRY=${{REGISTRY}}/salk/
-        - CLOUDHARNESS_BASE_DEBIAN=${{REGISTRY}}/salk/cloudharness-base-debian:${{CF_BUILD_ID}}
-        - WORKSPACES_BASE=${{REGISTRY}}/salk/workspaces-base:${{CF_BUILD_ID}}
-        image_name: salk/workspaces
-        title: Workspaces
-        working_directory: ./applications/workspaces
-      workspaces-generate-population-static-files:
-        type: build
-        stage: build
-        tag: '${{CF_BUILD_ID}}'
-        dockerfile: Dockerfile
-        registry: '${{CODEFRESH_REGISTRY}}'
-        buildkit: true
-        build_arguments:
-        - TAG=${{CF_BUILD_ID}}
-        - NAMESPACE=${{NAMESPACE}}
-        - DOMAIN=${{DOMAIN}}
-        - NOCACHE=${{CF_BUILD_ID}}
-        - REGISTRY=${{REGISTRY}}/salk/
-        - WORKSPACES_GENERATE_POPULATION_STATIC_FILES=${{REGISTRY}}/salk/workspaces-generate-population-static-files:${{CF_BUILD_ID}}
-        - WORKSPACES_GENERATE_POPULATION_CELLS=${{REGISTRY}}/salk/workspaces-generate-population-cells:${{CF_BUILD_ID}}
-        - CLOUDHARNESS_BASE_DEBIAN=${{REGISTRY}}/salk/cloudharness-base-debian:${{CF_BUILD_ID}}
-        - WORKSPACES_BASE=${{REGISTRY}}/salk/workspaces-base:${{CF_BUILD_ID}}
-        image_name: salk/workspaces-generate-population-static-files
-        title: Workspaces generate population static files
-        working_directory: ./applications/workspaces/tasks/generate-population-static-files
-      workspaces-generate-population-cells:
-        type: build
-        stage: build
-        tag: '${{CF_BUILD_ID}}'
-        dockerfile: Dockerfile
-        registry: '${{CODEFRESH_REGISTRY}}'
-        buildkit: true
-        build_arguments:
-        - TAG=${{CF_BUILD_ID}}
-        - NAMESPACE=${{NAMESPACE}}
-        - DOMAIN=${{DOMAIN}}
-        - NOCACHE=${{CF_BUILD_ID}}
-        - REGISTRY=${{REGISTRY}}/salk/
-        - WORKSPACES_GENERATE_POPULATION_STATIC_FILES=${{REGISTRY}}/salk/workspaces-generate-population-static-files:${{CF_BUILD_ID}}
-        - WORKSPACES_GENERATE_POPULATION_CELLS=${{REGISTRY}}/salk/workspaces-generate-population-cells:${{CF_BUILD_ID}}
-        - CLOUDHARNESS_BASE_DEBIAN=${{REGISTRY}}/salk/cloudharness-base-debian:${{CF_BUILD_ID}}
-        - WORKSPACES_BASE=${{REGISTRY}}/salk/workspaces-base:${{CF_BUILD_ID}}
-        image_name: salk/workspaces-generate-population-cells
-        title: Workspaces generate population cells
-        working_directory: ./applications/workspaces/tasks/generate-population-cells
-      salk-portal:
-        type: build
-        stage: build
-        tag: '${{CF_BUILD_ID}}'
-        dockerfile: Dockerfile
-        registry: '${{CODEFRESH_REGISTRY}}'
-        buildkit: true
-        build_arguments:
-        - TAG=${{CF_BUILD_ID}}
-        - NAMESPACE=${{NAMESPACE}}
-        - DOMAIN=${{DOMAIN}}
-        - NOCACHE=${{CF_BUILD_ID}}
-        - REGISTRY=${{REGISTRY}}/salk/
-        - WORKSPACES_BASE=${{REGISTRY}}/salk/workspaces-base:${{CF_BUILD_ID}}
-        image_name: salk/salk-portal
-        title: Salk portal
-        working_directory: ./applications/salk-portal
+        - CLOUDHARNESS_DJANGO=${{REGISTRY}}/salk/cloudharness-django:${{CF_BUILD_ID}}
+        image_name: salk/portal
+        title: Portal
+        working_directory: ./applications/portal
   deployment:
     stage: deploy
-    image: codefresh/cfstep-helm:3.6.2
+    type: helm
+    working_directory: ./${{CF_REPO_NAME}}
     title: Installing chart
-    environment:
-    - CHART_REF=./deployment/helm
-    - RELEASE_NAME=${{NAMESPACE}}
-    - KUBE_CONTEXT=${{CLUSTER_NAME}}
-    - NAMESPACE=${{NAMESPACE}}
-    - CHART_VERSION=${{DEPLOYMENT_PUBLISH_TAG}}
-    - HELM_REPO_USE_HTTP=false
-    - HELM_REPO_CONTEXT_PATH=
-    - TIMEOUT=600s
-    - VALUESFILE_values=./deployment/helm/values.yaml
+    arguments:
+      helm_version: 3.6.2
+      chart_name: deployment/helm
+      release_name: '${{NAMESPACE}}'
+      kube_context: '${{CLUSTER_NAME}}'
+      namespace: '${{NAMESPACE}}'
+      chart_version: '${{CF_BUILD_ID}}'
+      cmd_ps: --wait --timeout 600s
+      custom_value_files:
+      - ./deployment/helm/values.yaml
+      custom_values: []
+  approval:
+    type: pending-approval
+    stage: publish
+    title: Approve build
+    description: Approve build release and tagging
+    timeout:
+      duration: 168
+      finalState: denied
   publish:
     type: parallel
     stage: publish
@@ -226,6 +168,14 @@ steps:
         type: push
         title: Cloudharness base debian
         candidate: '${{REGISTRY}}/salk/cloudharness-base-debian:${{CF_BUILD_ID}}'
+        tags:
+        - '${{DEPLOYMENT_PUBLISH_TAG}}'
+        registry: '${{REGISTRY_PUBLISH_URL}}'
+      publish_cloudharness-django:
+        stage: publish
+        type: push
+        title: Cloudharness django
+        candidate: '${{REGISTRY}}/salk/cloudharness-django:${{CF_BUILD_ID}}'
         tags:
         - '${{DEPLOYMENT_PUBLISH_TAG}}'
         registry: '${{REGISTRY_PUBLISH_URL}}'
@@ -245,43 +195,16 @@ steps:
         tags:
         - '${{DEPLOYMENT_PUBLISH_TAG}}'
         registry: '${{REGISTRY_PUBLISH_URL}}'
-      publish_workspaces-base:
+      publish_portal:
         stage: publish
         type: push
-        title: Workspaces base
-        candidate: '${{REGISTRY}}/salk/workspaces-base:${{CF_BUILD_ID}}'
+        title: Portal
+        candidate: '${{REGISTRY}}/salk/portal:${{CF_BUILD_ID}}'
         tags:
         - '${{DEPLOYMENT_PUBLISH_TAG}}'
         registry: '${{REGISTRY_PUBLISH_URL}}'
-      publish_workspaces:
-        stage: publish
-        type: push
-        title: Workspaces
-        candidate: '${{REGISTRY}}/salk/workspaces:${{CF_BUILD_ID}}'
-        tags:
-        - '${{DEPLOYMENT_PUBLISH_TAG}}'
-        registry: '${{REGISTRY_PUBLISH_URL}}'
-      publish_workspaces-generate-population-static-files:
-        stage: publish
-        type: push
-        title: Workspaces generate population static files
-        candidate: '${{REGISTRY}}/salk/workspaces-generate-population-static-files:${{CF_BUILD_ID}}'
-        tags:
-        - '${{DEPLOYMENT_PUBLISH_TAG}}'
-        registry: '${{REGISTRY_PUBLISH_URL}}'
-      publish_workspaces-generate-population-cells:
-        stage: publish
-        type: push
-        title: Workspaces generate population cells
-        candidate: '${{REGISTRY}}/salk/workspaces-generate-population-cells:${{CF_BUILD_ID}}'
-        tags:
-        - '${{DEPLOYMENT_PUBLISH_TAG}}'
-        registry: '${{REGISTRY_PUBLISH_URL}}'
-      publish_salk-portal:
-        stage: publish
-        type: push
-        title: Salk portal
-        candidate: '${{REGISTRY}}/salk/salk-portal:${{CF_BUILD_ID}}'
-        tags:
-        - '${{DEPLOYMENT_PUBLISH_TAG}}'
-        registry: '${{REGISTRY_PUBLISH_URL}}'
+    when:
+      condition:
+        all:
+          whenVarExists: includes("${{DEPLOYMENT_PUBLISH_TAG}}", "{{DEPLOYMENT_PUBLISH_TAG}}")
+            == false
