@@ -6,11 +6,11 @@ harness:
     port: 8080
     resources:
       requests:
-        memory: 2Gi
-        cpu: 500m
+        memory: 1Gi
+        cpu: 100m
       limits:
-        memory: 2Gi
-        cpu: 500m
+        memory: 1Gi
+        cpu: 100m
     volume:
       name: salk-files
       mountpath: /usr/src/app/persistent
@@ -36,8 +36,14 @@ harness:
     type: postgres
   livenessProbe:
     path: /backend/k8s/live
+    periodSeconds: 30
+    failureThreshold: 5
+    initialDelaySeconds: 30
   readinessProbe:
     path: /backend/k8s/ready
+    periodSeconds: 30
+    failureThreshold: 5
+    initialDelaySeconds: 30
   uri_role_mapping:
     - uri: /*
       roles:
