@@ -4,6 +4,7 @@ import numpy as np
 
 from pathlib import Path
 
+from cordmap.data.utils import split_populations
 from cordmap.postprocessing.analyse import summarise_points
 
 
@@ -53,6 +54,7 @@ def save_output(
             output_directory / "registration_errors.csv"
         )
         labeled_cells.to_csv(output_directory / "cells_with_labels.csv")
+        split_populations(output_directory)
 
     if save_npy:
         np.save(output_directory / "transformed_cells.npy", transformed_cells)

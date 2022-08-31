@@ -41,6 +41,7 @@ def get_single_data_section(
     )
     if len(cord_slice) == 0:
         return None
+
     cord_gm_data_slice_image = create_cord_gm_image(
         cord_slice,
         gm_slice,
@@ -54,17 +55,20 @@ def get_single_data_section(
         cord_gm_data_slice_image, scale_factor=atlas_pixel_size
     ).astype(np.float32)
 
-    cells_slice, gm_slice, cord_slice = downscale_points(
-        cells_slice, gm_slice, cord_slice, scale_factor=atlas_pixel_size
+    cells_slice, gm_slice, cord_slice, central_canal = downscale_points(
+        cells_slice,
+        gm_slice,
+        cord_slice,
+        centroid,
+        scale_factor=atlas_pixel_size,
     )
 
-    centroid = (centroid / subsample).astype(int)
     return (
         cells_slice,
         gm_slice,
         cord_slice,
         cord_gm_data_slice_image,
-        centroid,
+        central_canal,
         cell_pop_labels,
     )
 
