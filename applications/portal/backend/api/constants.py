@@ -21,6 +21,11 @@ class LaminasImages(Enum):
     DASHED = "dashed"
 
 
+class GridImages(Enum):
+    COMPLETE = "complete"
+    FRAME = "frame"
+
+
 FULLY_OPAQUE = 255
 HALF_OPAQUE = 128
 
