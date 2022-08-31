@@ -1,4 +1,6 @@
 import numpy as np
+import pathlib
+import pandas as pd
 
 from cordmap.register.constants import segments_df
 from cordmap.utils.misc import check_set_intersections
@@ -161,3 +163,12 @@ def slice_loading_error_detected(composite_image):
             f"skipping slice..."
         )
         return True
+
+
+def split_populations(directory):
+    folder = pathlib.Path(directory)
+    df = pd.read_csv(folder / "cells_with_labels.csv")
+    for cell_pop_label in df["population_key"].unique():
+        pop_df = df[df["population_key"] == cell_pop_label].reset_index()
+        new_filename = f"cells_with_labels_{cell_pop_label}.csv"
+        pop_df.to_csv(folder / new_filename)

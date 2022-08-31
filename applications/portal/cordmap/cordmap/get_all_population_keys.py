@@ -31,7 +31,8 @@ def get_populations_from_file(fpath, ignore_set, population_keys=None):
     data, metadata, max_y = load_data(data_fpath)
     data_by_type = filter_data_by_type(data, metadata)
     segment_keys = get_segment_keys(data_by_type)
-    for k in df["objectNames"].values:
+
+    for k in df[df["isPoint"] == 1]["objectNames"].values:
         k = k.strip()
         if k not in segment_keys and k not in ignore_set:
             population_keys.append(k)
