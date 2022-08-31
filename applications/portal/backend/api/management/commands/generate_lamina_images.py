@@ -1,4 +1,4 @@
-from pathlib import PosixPath
+from typing import List
 
 from django.core.management.base import BaseCommand
 
@@ -7,6 +7,20 @@ from api.helpers.exceptions import NoImageDataError
 from api.helpers.lamina_images import LaminaImages
 from api.management.utilities import get_valid_atlases
 from api.services.atlas_service import save_laminas_json
+
+
+def get_laminas(bg_atlas) -> List[str]:
+    laminas_set = set()
+    for s in bg_atlas.structures.acronym_to_id_map:
+        if "Sp" in s:
+            if '-' in s:
+                begin, end = [int(number_as_str) for number_as_str in s.split('Sp')[0].split('-')]
+                while end >= begin:
+                    laminas_set.remove(f"{end}Sp")
+                    end -= 1
+            laminas_set.add(s)
+
+    return list(laminas_set)
 
 
 class Command(BaseCommand):
@@ -29,12 +43,7 @@ class Command(BaseCommand):
             laminas_metadata = {}
             for s in subdivisions:
                 # TODO: Change hardcoded to for lamina in bg_atlas.structures['laminae']
-                for l_key in list(
-                    filter(
-                        lambda k: "Sp" in k,
-                        bg_atlas.structures.acronym_to_id_map.keys(),
-                    )
-                ):
+                for l_key in get_laminas(bg_atlas):
                     lamina = bg_atlas.structures[l_key].data
                     try:
                         lamina_images = LaminaImages(lamina["acronym"], bg_atlas, s)
