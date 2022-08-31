@@ -6,6 +6,15 @@ from api.helpers.ICustomAtlas import ICustomAtlas
 class SalkAtlas(ICustomAtlas):
     def __init__(self, atlas_name):
         super().__init__(atlas_name)
+        self._annotation = self.get_annotation_with_merged_layers_1_to_4()
+
+    def _get_atlas_merge_layers_1_to_4(self):
+        return np.logical_and(self.annotation > 2, self.annotation <= 6)
+
+    def get_annotation_with_merged_layers_1_to_4(self):
+        img = self.annotation.copy()
+        img[self._get_atlas_merge_layers_1_to_4()] = 14
+        return img
 
     @property
     def canal(self):
