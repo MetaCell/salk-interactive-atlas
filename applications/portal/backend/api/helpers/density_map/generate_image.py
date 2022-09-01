@@ -4,7 +4,7 @@ from PIL import Image
 from typing import Tuple
 from api.constants import FULLY_OPAQUE, WHITE
 from api.helpers.density_map.common_density_helpers import get_subdivision_limits, get_img_array_offset
-from api.helpers.density_map.grid_creator import get_grid_image
+from api.helpers.density_map.grid_creator import get_grid_images
 from api.helpers.exceptions import NoImageDataError
 from api.helpers.ICustomAtlas import ICustomAtlas
 from api.helpers.image_manipulation import black_to_transparent, get_image_from_array
@@ -163,8 +163,8 @@ def generate_canal_image(bg_atlas: ICustomAtlas, subdivision: str) -> (np.array,
     )
 
 
-def generate_grid_image(bg_atlas: ICustomAtlas, subdivision: str) -> (np.array, Image):
-    return get_grid_image(bg_atlas, subdivision)
+def generate_grid_images(bg_atlas: ICustomAtlas, subdivision: str) -> (Image, Image):
+    return get_grid_images(bg_atlas, subdivision)
 
 
 def generate_lamina_image(

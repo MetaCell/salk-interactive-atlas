@@ -20,9 +20,9 @@ from workspaces.settings import (
 )
 
 
-def get_grid_image(
+def get_grid_images(
         bg_atlas: ICustomAtlas, subdivision: str
-) -> Image:
+) -> (Image, Image):
     w, h = get_grid_dimensions(bg_atlas)
 
     fig, ax = plt.subplots()
@@ -32,7 +32,6 @@ def get_grid_image(
     x_shape, y_shape = _set_size(w, h, ax)
 
     resolution_z = 1 / (bg_atlas.resolution[0] * UM_TO_MM)
-
 
     # calculates ratio from image size to atlas size
     ratio_x = w / x_shape
@@ -80,13 +79,18 @@ def get_grid_image(
         item.set_fontsize(GRID_FONT_SIZE)
 
     plt.grid(False)
-    img = fig_to_img(fig)
+    frame_img = fig_to_img(fig)
+    plt.grid(True)
+    complete_img = fig_to_img(fig)
 
-    # Corrects image alignment by adding a constant amount of padding to the image
-    shifted_image = _add_margin(
-        img, 0, GRID_CONSTANT_RIGHT_OFFSET, GRID_CONSTANT_BOTTOM_OFFSET, 0
+    # Corrects images alignment by adding a constant amount of padding to the image
+    frame_shifted_image = _add_margin(
+        frame_img, 0, GRID_CONSTANT_RIGHT_OFFSET, GRID_CONSTANT_BOTTOM_OFFSET, 0
     )
-    return shifted_image
+    complete_shifted_image = _add_margin(
+        complete_img, 0, GRID_CONSTANT_RIGHT_OFFSET, GRID_CONSTANT_BOTTOM_OFFSET, 0
+    )
+    return frame_shifted_image, complete_shifted_image
 
 
 def get_grid_dimensions(bg_atlas: ICustomAtlas, tick_step: float = GRID_TICK_STEP, tolerance: float = 0.1) -> \
