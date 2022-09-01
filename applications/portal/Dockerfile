@@ -50,5 +50,5 @@ FROM backend
 ENV BUILDDIR=/builddir
 
 COPY --from=frontend $BUILDDIR/public ${APP_DIR}/static/www
-ENV WORKERS=4
+ENV WORKERS=3
 CMD uvicorn --workers ${WORKERS} --host 0.0.0.0 --port ${PORT} main:app
