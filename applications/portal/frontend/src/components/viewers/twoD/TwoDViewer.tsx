@@ -25,7 +25,11 @@ import {
 } from "../../../utilities/constants";
 import workspaceService from "../../../service/WorkspaceService";
 import {getAtlas} from "../../../service/AtlasService";
-import {clearCanvas, drawColoredImage, drawImage} from "../../../service/CanvasService";
+import {
+    clearCanvas,
+    drawColoredImage,
+    drawImage, loadImages,
+} from "../../../service/CanvasService";
 import {useDidUpdateEffect} from "../../../utilities/hooks/useDidUpdateEffect";
 // @ts-ignore
 import SWITCH_ICON from "../assets/images/icons/switch_icon.svg";
@@ -283,11 +287,8 @@ const TwoDViewer = (props: {
         return canvas && hiddenCanvas
     }
 
-    function getDrawColoredImagePromise(data: string | RequestState, canvas: null, hiddenCanvas: null, pId: string) {
-        if (data != null && data !== RequestState.NO_CONTENT && data !== RequestState.ERROR) {
-            // @ts-ignore
-            return drawColoredImage(canvas, hiddenCanvas, data, activePopulationsColorMap[pId])
-        }
+    function hasColoredImageData(data: string | RequestState) {
+        return data != null && data !== RequestState.NO_CONTENT && data !== RequestState.ERROR
     }
 
     const draw = async () => {
@@ -306,54 +307,66 @@ const TwoDViewer = (props: {
         // Clear previous content
         clearCanvas(canvas)
 
+        const imagesToLoad = []
+        const drawImageCallback = (img: HTMLImageElement) => drawImage(canvas, img)
+        const drawColoredImageCallback = (color: string) => (img: HTMLImageElement) => drawColoredImage(canvas, hiddenCanvas, img, color)
 
-        // Draw grid
+
+        // Get grid
         const grid = atlas.getGridSrc(segments[selectedValueIndex], gridType)
         if (grid) {
-            drawImage(canvas, grid)
+            imagesToLoad.push({src: grid, draw: drawImageCallback})
         }
 
-        // Draw Annotation (Grey Matter and White Matter)
+        // Get annotation
         const background = atlas.getImageSrc(DensityImages.ANNOTATION, segments[selectedValueIndex])
         if (background) {
-            drawImage(canvas, background)
+            imagesToLoad.push({src: background, draw: drawImageCallback})
         }
-        const promises = []
+
         for (const pId of Object.keys(content)) {
-            // Draw probability map
+            // @ts-ignore
+            const color = activePopulationsColorMap[pId]
+
+            // Get probability map
             if (overlaysSwitchState[PROBABILITY_MAP_ID]) {
                 // @ts-ignore
                 const pData = content[pId][DensityMapTypes.PROBABILITY_DATA]
-                const promise = getDrawColoredImagePromise(pData, canvas, hiddenCanvas, pId);
-                if (promise) {
-                    promises.push(promise)
+                if (hasColoredImageData(pData)) {
+                    imagesToLoad.push({src: pData, draw: (drawColoredImageCallback(color))})
                 }
             }
-            // Draw neuron centroids
+
+            // Get neuron centroids
             if (overlaysSwitchState[NEURONAL_LOCATIONS_ID]) {
                 // @ts-ignore
                 const cData = content[pId][DensityMapTypes.CENTROIDS_DATA]
-                const promise = getDrawColoredImagePromise(cData, canvas, hiddenCanvas, pId);
-                if (promise) {
-                    promises.push(promise)
+                if (hasColoredImageData(cData)) {
+                    imagesToLoad.push({src: cData, draw: (drawColoredImageCallback(color))})
                 }
             }
         }
-        // Draw laminas
+
+        // Get laminas
         for (const lId of Object.keys(laminas)) {
             // @ts-ignore
             if (laminas[lId].selected) {
                 const laminaData = atlas.getLaminaSrc(lId, segments[selectedValueIndex], laminaType)
-                // @ts-ignore
-                promises.push(drawColoredImage(canvas, hiddenCanvas, laminaData, laminas[lId].color))
+                if (laminaData) {
+                    imagesToLoad.push({src: laminaData, draw: (drawColoredImageCallback(laminas[lId].color))})
+                }
             }
         }
 
-        await Promise.all(promises)
+        // Get canal
         const canal = atlas.getImageSrc(DensityImages.CANAL, segments[selectedValueIndex])
         if (canal) {
-            drawImage(canvas, canal)
+            imagesToLoad.push({src: canal, draw: drawImageCallback})
         }
+
+
+        Promise.all(loadImages(imagesToLoad)).then((imagesContainer: any) =>
+            imagesContainer.forEach((iCt: any) => iCt.draw(iCt.img)))
         setIsDrawing(false)
     }
 
@@ -471,7 +484,7 @@ const TwoDViewer = (props: {
 
 
     const handleLaminaColorChange = (id: string, color: string, opacity: number) => {
-        if (laminas[id].selected){
+        if (laminas[id].selected) {
             setIsDrawing(true)
         }
         setLaminas({...laminas, [id]: {...laminas[id], color, opacity}})
@@ -479,7 +492,7 @@ const TwoDViewer = (props: {
 
 
     const handleLaminaTypeChange = (value: string) => {
-        if (areSomeSelected(laminas)){
+        if (areSomeSelected(laminas)) {
             setIsDrawing(true)
         }
         // @ts-ignore
@@ -494,7 +507,7 @@ const TwoDViewer = (props: {
 
     const handleLaminaBaseColorChange = (hexColor: string) => {
         setLaminaBaseColor(hexColor)
-        if (areSomeSelected(laminas)){
+        if (areSomeSelected(laminas)) {
             setIsDrawing(true)
         }
         const shades = getLaminaShades(Object.keys(laminas).length, hexColor)
@@ -588,8 +601,8 @@ const TwoDViewer = (props: {
                                       className={`${classes.collapse}`}>
                                 <Box className={classes.laminaTopLabelContainer}>
                                     <LaminaPicker onLaminaStyleChange={(v: string) => handleLaminaTypeChange(v)}
-                                        onLaminaBaseColorChange={(hexColor: string) => handleLaminaBaseColorChange(hexColor)}
-                                        baseColor={laminaBaseColor}/>
+                                                  onLaminaBaseColorChange={(hexColor: string) => handleLaminaBaseColorChange(hexColor)}
+                                                  baseColor={laminaBaseColor}/>
                                     <FormControlLabel
                                         className={`${classes.entryPadding} ${classes.laminaLabel}`}
                                         control={
@@ -660,7 +673,7 @@ const TwoDViewer = (props: {
                             MenuProps={{classes: {paper: classes.selectMenu}}}
                         >
                             {Object.values(GridTypes).map((type, idx) =>
-                                <MenuItem key={type} value={type}> {type.value} </MenuItem>
+                                <MenuItem key={idx} value={type}> {type.value} </MenuItem>
                             )}
                         </Select>
                     </FormControl>
