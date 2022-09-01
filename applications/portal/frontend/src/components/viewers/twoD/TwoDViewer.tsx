@@ -15,10 +15,9 @@ import {
 } from "@material-ui/core";
 import {Population} from "../../../apiclient/workspaces";
 import {
-    AtlasChoice, CANVAS_HEIGHT, CANVAS_WIDTH,
-    CAUDAL,
+    AtlasChoice, CAUDAL,
     DensityImages,
-    DensityMapTypes, LaminaImageTypes,
+    DensityMapTypes, GridTypes, LaminaImageTypes,
     NEURONAL_LOCATIONS_ID,
     OVERLAYS, PROBABILITY_MAP_ID,
     RequestState,
@@ -191,6 +190,7 @@ const TwoDViewer = (props: {
     const [laminaPopoverAnchorEl, setLaminaPopoverAnchorEl] = React.useState(null);
     const [selectedLaminaPopoverId, setSelectedLaminaPopoverId] = React.useState(null);
     const [laminaType, setLaminaType] = React.useState(LaminaImageTypes.FILLED);
+    const [gridType, setGridType] = React.useState(GridTypes.FRAME);
     const [laminaBaseColor, setLaminaBaseColor] = React.useState(DARK_GREY_SHADE);
     const [isSnackbarOpen, setIsSnackbarOpen] = React.useState(false);
     const [showSnackbar, setShowSnackbar] = React.useState(true);
@@ -308,11 +308,10 @@ const TwoDViewer = (props: {
 
 
         // Draw grid
-        const grid = atlas.getImageSrc(DensityImages.GRID, segments[selectedValueIndex])
+        const grid = atlas.getGridSrc(segments[selectedValueIndex], gridType)
         if (grid) {
             drawImage(canvas, grid)
         }
-
 
         // Draw Annotation (Grey Matter and White Matter)
         const background = atlas.getImageSrc(DensityImages.ANNOTATION, segments[selectedValueIndex])
@@ -413,7 +412,7 @@ const TwoDViewer = (props: {
 
     useEffect(() => {
         draw().catch(console.error)
-    }, [content, laminas, laminaType])
+    }, [content, laminas, laminaType, gridType])
 
     useEffect(() => {
         setIsComponentReady(true)
@@ -486,6 +485,12 @@ const TwoDViewer = (props: {
         // @ts-ignore
         setLaminaType(value)
     }
+
+    const handleGridTypeChange = (value: string) => {
+        setIsDrawing(true)
+        // @ts-ignore
+        setGridType(value);
+    };
 
     const handleLaminaBaseColorChange = (hexColor: string) => {
         setLaminaBaseColor(hexColor)
@@ -646,6 +651,19 @@ const TwoDViewer = (props: {
                             checked={overlaysSwitchState[oId]}
                         />
                     )}
+                    <FormControl className={`${classes.dropdownContainer}`}>
+                        <Select
+                            className={`${classes.menuFontSize}`}
+                            disableUnderline={true}
+                            value={gridType}
+                            onChange={(event) => handleGridTypeChange(event.target.value)}
+                            MenuProps={{classes: {paper: classes.selectMenu}}}
+                        >
+                            {Object.values(GridTypes).map((type, idx) =>
+                                <MenuItem key={type} value={type}> {type.value} </MenuItem>
+                            )}
+                        </Select>
+                    </FormControl>
                 </Popover>
                 <Snackbar
                     open={isSnackbarOpen}
