@@ -5,14 +5,14 @@
 from __future__ import annotations
 
 import os
-from typing import List, Optional
 
 from django.apps import apps
 from django.conf import settings
 from django.core.asgi import get_asgi_application
-from fastapi import Depends, FastAPI, HTTPException, Request
-from fastapi.security import HTTPBasicCredentials, HTTPBearer
+from fastapi import FastAPI
+from starlette.exceptions import HTTPException as StarletteHTTPException
 from starlette.middleware.cors import CORSMiddleware
+from starlette.responses import JSONResponse
 from fastapi.staticfiles import StaticFiles
 
 
@@ -53,3 +53,14 @@ app.mount("/backend", get_asgi_application())
 # frontend mounts
 frontend_path = os.path.join(settings.STATIC_ROOT, "www")
 app.mount("/", StaticFiles(directory=frontend_path, html=True), name="frontend")
+
+@app.exception_handler(StarletteHTTPException)
+async def http_exception_handler(request, exc):
+    if exc.status_code == 404:
+        from workspaces.views import index
+        return index(request)
+    return JSONResponse(
+        {"detail": exc.detail},
+        status_code=exc.status_code,
+        headers=exc.headers
+    )
