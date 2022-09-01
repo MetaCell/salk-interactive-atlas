@@ -12,7 +12,7 @@ from django.core.asgi import get_asgi_application
 from fastapi import FastAPI
 from starlette.exceptions import HTTPException as StarletteHTTPException
 from starlette.middleware.cors import CORSMiddleware
-from starlette.responses import JSONResponse
+from starlette.responses import FileResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 
 
@@ -57,8 +57,8 @@ app.mount("/", StaticFiles(directory=frontend_path, html=True), name="frontend")
 @app.exception_handler(StarletteHTTPException)
 async def http_exception_handler(request, exc):
     if exc.status_code == 404:
-        from workspaces.views import index
-        return index(request)
+        # 404 return the react index.html so react can do it's routing thing :-)
+        return FileResponse(f"{frontend_path}/index.html")
     return JSONResponse(
         {"detail": exc.detail},
         status_code=exc.status_code,
