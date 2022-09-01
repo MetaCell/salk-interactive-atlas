@@ -1,6 +1,6 @@
 import AtlasInstance from "./AtlasInstance"
 import AtlasSegment from "./AtlasSegment"
-import {AtlasChoice, DensityImages, LaminaImageTypes} from "../utilities/constants";
+import {AtlasChoice, DensityImages, GridTypes, LaminaImageTypes} from "../utilities/constants";
 import AtlasLamina from "./AtlasLamina";
 import {shadeHexColor} from "../utilities/functions";
 import Dimensions from "./Dimensions";
@@ -64,6 +64,17 @@ export default class Atlas {
     getLaminaSrc(laminaName: string, segment: string, type: LaminaImageTypes) {
         try {
             return require("../assets/atlas/" + this.id + '/laminas/' + laminaName + '/' + type + '/' + segment + ".png").default
+        } catch (e) {
+            return null
+        }
+    }
+
+    getGridSrc(segment: string, gridType: { folder: string; }) {
+        if (gridType.folder === null){
+            return null
+        }
+        try {
+            return require("../assets/atlas/" + this.id + '/grid/' + gridType.folder + '/' + segment + ".png").default
         } catch (e) {
             return null
         }
