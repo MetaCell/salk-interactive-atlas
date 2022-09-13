@@ -49,14 +49,15 @@ def execute_generate_population_static_files_workflow(population_id: int):
     ).execute()
 
 
-def execute_generate_population_cells_workflow(population_id: int, data_filepath: str):
+def execute_generate_population_cells_workflow(populations_ids: [], data_filepath: str):
     current_app = get_current_configuration()
     operations.PipelineOperation(
         basename=GENERATE_CELLS_OP,
         tasks=(
             _create_task(
                 GENERATE_CELLS_IMAGE,
-                command=["python", "manage.py", f"generate_population_cells", f"{population_id}", f"{data_filepath}"]
+                command=["python", "manage.py", f"generate_population_cells", f"{data_filepath}",
+                         *[str(pop) for pop in populations_ids]]
             ),
         ),
         shared_directory=_get_shared_directory(current_app),

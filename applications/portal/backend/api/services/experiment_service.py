@@ -34,8 +34,10 @@ def delete_tag(experiment: Experiment, tag_name: str):
 def upload_files(experiment: Experiment, key_filepath: str, data_filepath: str):
     key_path = PosixPath(os.path.join(settings.PERSISTENT_ROOT, key_filepath))
     populations = get_populations_from_file(key_path, population_ignore_set)
+    populations_ids = []
     for name in populations:
         population = Population.objects.create(
             experiment_id=experiment.id, name=name
         )
-        execute_generate_population_cells_workflow(population.id, data_filepath)
+        populations_ids.append(population.id)
+    execute_generate_population_cells_workflow(populations_ids, data_filepath)
