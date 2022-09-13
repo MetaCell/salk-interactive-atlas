@@ -110,7 +110,7 @@ class Population(models.Model):
         self.status = PopulationStatus.RUNNING
         self.save()
         try:
-            self.cells.name = get_cells_filepath(data_filepath, self.storage_path)
+            self.cells.name = get_cells_filepath(self.name, data_filepath, self.storage_path)
         except Exception as e:
             logging.exception(e)
             self.status = PopulationStatus.ERROR
