@@ -35,7 +35,7 @@ def split_cells_per_segment(population):
             for row in reader:
                 cell_depth = float(row['z'])
                 subdivision = get_cell_segment(cell_depth)
-                file_writer_dict[subdivision]["writer"].writerow(row)
+                file_writer_dict[subdivision]["writer"].writerow([row['z'], row['x'], row['y']])
     except Exception:
         pass
     finally:
