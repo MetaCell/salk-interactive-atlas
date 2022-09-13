@@ -13,7 +13,7 @@ from workspaces.settings import (
     DEFAULT_IMAGE_OPACITY,
     GREY_SCALE_MAX_ANNOTATION,
     GREY_SCALE_MAX_CANAL,
-    GREY_SCALE_MAX_DEFAULT,
+    GREY_SCALE_MAX_DEFAULT, POSITION_WITHIN_SUBSEGMENT,
 )
 
 
@@ -73,11 +73,11 @@ def _generate_shifted_image(
 
 
 def _get_img_array(bg_atlas, subdivision, image_data):
-    segment_start, segment_end, position_within_segment = get_subdivision_limits(
+    segment_start, segment_end = get_subdivision_limits(
         bg_atlas, subdivision
     )
     image_idx = int(
-        (segment_end - segment_start) * position_within_segment + segment_start
+        (segment_end - segment_start) * POSITION_WITHIN_SUBSEGMENT + segment_start
     )
     return image_data[image_idx]
 

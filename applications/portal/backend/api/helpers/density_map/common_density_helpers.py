@@ -33,9 +33,9 @@ def get_subdivision_limits(bg_atlas: ICustomAtlas, subdivision: str) -> tuple:
     for s in bg_atlas.metadata["atlas_segments"]:
         if s["Segment"] == segment:
             if part == ROSTRAL:
-                return s["Start"], (s["Start"] + s["End"]) / 2, 0.25
+                return s["Start"], (s["Start"] + s["End"]) / 2
             else:
-                return (s["Start"] + s["End"]) / 2, s["End"], 0.75
+                return (s["Start"] + s["End"]) / 2, s["End"]
 
 
 def get_subdivision_bin_limits(bg_atlas: ICustomAtlas, subdivision: str) -> tuple:
