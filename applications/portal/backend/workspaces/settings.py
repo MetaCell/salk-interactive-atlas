@@ -187,7 +187,6 @@ LOGGING = {
     },
 }
 
-
 # Static files (CSS, JavaScript, Images)
 MEDIA_ROOT = PERSISTENT_ROOT
 STATIC_ROOT = os.path.join(BASE_DIR, "static")
@@ -247,3 +246,5 @@ GRID_UNIT = "mm"
 FIGURE_DPI = 100
 
 UM_TO_MM = 10
+
+POSITION_WITHIN_SUBSEGMENT = 0.5  # Position (in percentage) of the slice to pick from a subsegment
