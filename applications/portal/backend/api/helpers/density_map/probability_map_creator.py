@@ -6,6 +6,7 @@ from api.helpers.density_map.common_density_helpers import (
     get_bins,
     get_subdivision_bin_limits,
 )
+from api.helpers.density_map.generate_image import shift_image, get_canal_offset
 from api.helpers.density_map.ipopulation_image_creator import IPopulationImageCreator
 from api.helpers.ICustomAtlas import ICustomAtlas
 from api.helpers.image_manipulation import (
@@ -36,7 +37,8 @@ def _generate_probability_map(
     )
     img_data = _get_accumulated_probability_map(probability_map)
     scaled_image_data = 256 / np.max(img_data) * img_data
-    img = get_image_from_array(scaled_image_data)
+    shifted_img_array = shift_image(scaled_image_data, get_canal_offset(bg_atlas, subdivision))
+    img = get_image_from_array(shifted_img_array)
     return apply_greyscale_alpha_mask(img)
 
 
