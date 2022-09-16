@@ -34,7 +34,7 @@ def generate_annotation_image(
         ],
         0,
     )
-    shifted_img_array = shift_image(colored_img_array, get_canal_offset(bg_atlas, subdivision))
+    shifted_img_array = shift_image_array(colored_img_array, get_canal_offset(bg_atlas, subdivision))
     img = get_image_from_array(shifted_img_array, "RGB")
     return colored_img_array, black_to_transparent(img, FULLY_OPAQUE)
 
@@ -67,7 +67,7 @@ def _generate_shifted_image(
     scaled_img_array = get_scaled_img_array(
         bg_atlas, subdivision, image_data, grey_scale_max
     )
-    shifted_img_array = shift_image(scaled_img_array, get_canal_offset(bg_atlas, subdivision))
+    shifted_img_array = shift_image_array(scaled_img_array, get_canal_offset(bg_atlas, subdivision))
     img = get_image_from_array(shifted_img_array, "RGB")
     return scaled_img_array, black_to_transparent(img, opacity)
 
@@ -100,7 +100,20 @@ def get_canal_offset(bg_atlas: ICustomAtlas, subdivision: str) -> Tuple[int, int
     return get_img_array_offset(canal_img_array)
 
 
-def shift_image(img_array: np.array, shift_vector: Tuple[int, int]) -> np.array:
+def get_pad_from_offset(offset: Tuple[int, int]) -> Tuple[int, int, int, int]:
+    top, right, bottom, left = 0, 0, 0, 0
+    if offset[0] < 0:
+        right = offset[0]
+    elif offset[0] > 0:
+        left = offset[0]
+    if offset[1] < 0:
+        top = offset[1]
+    elif offset[1] > 0:
+        bottom = offset[1]
+    return top, right, bottom, left
+
+
+def shift_image_array(img_array: np.array, shift_vector: Tuple[int, int]) -> np.array:
     f"""
     We should shift the array data by {shift_vector} amount without roll over data to 'the other side'
     In order to achieve that we pad the original array with {shift_vector} amount

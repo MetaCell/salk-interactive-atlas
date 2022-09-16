@@ -54,3 +54,12 @@ def fig_to_numpy(fig: Figure) -> np.array:
     # makes the array 2 color (black background, white centroids)
     two_color_array = numpy.where(grey_scale_array < 255, grey_scale_array, 0)
     return two_color_array
+
+
+def pad_image(pil_img, top, right, bottom, left, color=(255, 0, 0, 0)) -> Image:
+    width, height = pil_img.size
+    new_width = int(width + right + left)
+    new_height = int(height + top + bottom)
+    result = Image.new(pil_img.mode, (new_width, new_height), color)
+    result.paste(pil_img, (left, top))
+    return result
