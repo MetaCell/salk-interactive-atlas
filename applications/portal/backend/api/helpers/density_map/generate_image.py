@@ -103,13 +103,13 @@ def get_canal_offset(bg_atlas: ICustomAtlas, subdivision: str) -> Tuple[int, int
 def get_pad_from_offset(offset: Tuple[int, int]) -> Tuple[int, int, int, int]:
     top, right, bottom, left = 0, 0, 0, 0
     if offset[0] < 0:
-        right = offset[0]
+        right = offset[0] * 2
     elif offset[0] > 0:
-        left = offset[0]
+        left = offset[0] * 2
     if offset[1] < 0:
-        top = offset[1]
+        top = offset[1] * 2
     elif offset[1] > 0:
-        bottom = offset[1]
+        bottom = offset[1] * 2
     return top, right, bottom, left
 
 
