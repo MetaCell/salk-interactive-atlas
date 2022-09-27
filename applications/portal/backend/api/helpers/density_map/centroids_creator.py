@@ -6,22 +6,24 @@ from PIL import Image
 
 from api.constants import FULLY_OPAQUE
 from api.helpers.density_map.common_density_helpers import get_subdivision_limits
-from api.helpers.density_map.generate_image import get_annotation_array, shift_image, get_canal_offset
+from api.helpers.density_map.generate_image import get_annotation_array, shift_image_array, get_canal_offset, \
+    get_pad_from_offset
 from api.helpers.density_map.ipopulation_image_creator import IPopulationImageCreator
 from api.helpers.ICustomAtlas import ICustomAtlas
-from api.helpers.image_manipulation import fig_to_img, fig_to_numpy, get_image_from_array, black_to_transparent
+from api.helpers.image_manipulation import fig_to_img, fig_to_numpy, get_image_from_array, black_to_transparent, \
+    pad_image
 from workspaces.settings import FIGURE_DPI
 
 
 class CentroidsCreator(IPopulationImageCreator):
     def create(
-        self, bg_atlas: ICustomAtlas, subdivision: str, points: np.array
+            self, bg_atlas: ICustomAtlas, subdivision: str, points: np.array
     ) -> Image:
         return _generate_centroids(bg_atlas, subdivision, points)
 
 
 def _generate_centroids(
-    bg_atlas: ICustomAtlas, subdivision: str, points: np.array
+        bg_atlas: ICustomAtlas, subdivision: str, points: np.array
 ) -> Image:
     subdivision_limits = get_subdivision_limits(bg_atlas, subdivision)
     points_slice = points[
@@ -45,30 +47,29 @@ def _generate_centroids(
     plt.scatter(x=points_slice[:, 1], y=points_slice[:, 0], c="y", s=1)
     plt.grid(False)
     plt.axis("off")
-    img_array = fig_to_numpy(fig)
-    shifted_img_array = shift_image(img_array, get_canal_offset(bg_atlas, subdivision))
-    return black_to_transparent(get_image_from_array(shifted_img_array, 'RGB'), FULLY_OPAQUE)
+    img = fig_to_img(fig)
+    return pad_image(img, *get_pad_from_offset(get_canal_offset(bg_atlas, subdivision)))
 
 
 def _imshow(
-    axis,
-    X,
-    cmap=None,
-    norm=None,
-    aspect=None,
-    interpolation=None,
-    alpha=None,
-    vmin=None,
-    vmax=None,
-    origin=None,
-    extent=None,
-    *,
-    interpolation_stage=None,
-    filternorm=True,
-    filterrad=4.0,
-    resample=None,
-    url=None,
-    **kwargs
+        axis,
+        X,
+        cmap=None,
+        norm=None,
+        aspect=None,
+        interpolation=None,
+        alpha=None,
+        vmin=None,
+        vmax=None,
+        origin=None,
+        extent=None,
+        *,
+        interpolation_stage=None,
+        filternorm=True,
+        filterrad=4.0,
+        resample=None,
+        url=None,
+        **kwargs
 ):
     if aspect is None:
         aspect = rcParams["image.aspect"]
