@@ -13,6 +13,7 @@ import CHECK_FILLED from "../../assets/images/icons/check_filled.svg";
 import workspaceService from "../../service/WorkspaceService";
 import * as Yup from 'yup'
 import {ExperimentTagsInner} from "../../apiclient/workspaces";
+// @ts-ignore
 import Loader from "@metacell/geppetto-meta-ui/loader/Loader";
 
 
@@ -139,16 +140,15 @@ const useStyles = makeStyles(() => ({
 const UPLOAD_ICON = () => <img src={UPLOAD} alt="upload"/>
 const nameKey = "name"
 const descriptionKey = "description"
-const keyFilesKey = "keyFiles"
-const dataFilesKey = "dataFiles"
+const keyFileKey = "keyFile"
+const dataFileKey = "dataFile"
 
 export const CreateExperimentDialog = (props: any) => {
     const classes = useStyles();
     const api = workspaceService.getApi()
     const {open, handleClose, user, onExperimentCreation} = props;
-    const [dataFiles, setDataFile] = useState<any>([]);
-    const [keyFiles, setKeyFile] = useState<any>([]);
-    const [pairsLength, setPairsLength] = useState<any>(1);
+    const [dataFile, setDataFile] = useState<any>(null);
+    const [keyFile, setKeyFile] = useState<any>(null);
     const [name, setName] = useState<string>(null);
     const [description, setDescription] = useState<string>(null);
     const [tags, setTags] = useState<string[]>([]);
@@ -158,10 +158,7 @@ export const CreateExperimentDialog = (props: any) => {
     const validationSchema = Yup.object().shape({
         [nameKey]: Yup.string().required(),
         [descriptionKey]: Yup.string().required(),
-        [keyFilesKey]: Yup.array().min(1).required(),
-        [dataFilesKey]: Yup.array().min(1).required()
     })
-
 
 
     const handleFormChange = (newValue: any, setState: any, errorKey: string) => {
@@ -170,21 +167,11 @@ export const CreateExperimentDialog = (props: any) => {
         setErrors(errors)
     }
 
-    const handleFileUpload = (files: any, key: string, index: number, state: any, setState: (value: any) => void) => {
+    const handleFileUpload = (files: any, key: string, setFileState: (value: any) => void) => {
         if (files.length > 0) {
-            const nextState = [...state]
-            nextState[index] = files[0]
-            setState(nextState)
-            errors.delete(getFileErrorKey(key, index))
+            setFileState(files[0])
+            errors.delete(getFileErrorKey(key))
             setErrors(errors)
-        }
-    }
-
-    const handleRemoveFile = (index: number, state: any, setState: (value: any) => void) => {
-        if (index >= 0 && state.length > index) {
-            const nextState = [...state]
-            nextState[index] = null
-            setState(nextState)
         }
     }
 
@@ -196,13 +183,13 @@ export const CreateExperimentDialog = (props: any) => {
         return {
             name,
             description,
-            keyFiles,
-            dataFiles,
+            keyFile,
+            dataFile,
             tags
         }
     }
 
-    const getFileErrorKey = (fileKey: string, index: number) => `${fileKey}.${index}`
+    const getFileErrorKey = (fileKey: string) => `${fileKey}`
 
 
     const getValidationErrors = async () => {
@@ -211,21 +198,19 @@ export const CreateExperimentDialog = (props: any) => {
             await validationSchema.validate(getCurrentFormDataObject(), {strict: true, abortEarly: false})
         } catch (exception) {
             for (const e of exception.inner) {
-                if (e.path === keyFilesKey || e.path === dataFilesKey) {
-                    errorsSet.add(getFileErrorKey(e.path, 0))
+                if (e.path === keyFileKey || e.path === dataFileKey) {
+                    errorsSet.add(getFileErrorKey(e.path))
                 } else {
                     errorsSet.add(e.path)
                 }
             }
         }
 
-        for (let i = 0; i < pairsLength; i++) {
-            if (keyFiles[i] && !dataFiles[i]) {
-                errorsSet.add(getFileErrorKey(dataFilesKey, i))
-            }
-            if (!keyFiles[i] && dataFiles[i]) {
-                errorsSet.add(getFileErrorKey(keyFilesKey, i))
-            }
+        if (keyFile && !dataFile) {
+            errorsSet.add(getFileErrorKey(dataFileKey))
+        }
+        if (!keyFile && dataFile) {
+            errorsSet.add(getFileErrorKey(keyFileKey))
         }
 
         return errorsSet
@@ -233,6 +218,7 @@ export const CreateExperimentDialog = (props: any) => {
 
 
     const handleAction = async () => {
+        console.log("submit")
         setIsLoading(true)
         const errorsSet = await getValidationErrors()
         if (errorsSet.size > 0) {
@@ -243,16 +229,13 @@ export const CreateExperimentDialog = (props: any) => {
         const res = await api.createExperiment(name, description, null, true,
             null, null, user, null, null, null, null)
         const experiment = res.data
-        if (tags.length > 0){
+        if (tags.length > 0) {
             await api.addTagsExperiment(experiment.id.toString(), tags)
         }
-        const promises = []
-        for (let i = 0; i < pairsLength; i++) {
-            if (keyFiles[i] && dataFiles[i]) {
-                promises.push(api.uploadFilesExperiment(experiment.id.toString(), keyFiles[i], dataFiles[i]))
-            }
+        if (keyFile && dataFile) {
+            await api.uploadFilesExperiment(experiment.id.toString(), keyFile, dataFile)
         }
-        await Promise.all(promises)
+
         onExperimentCreation(experiment.id)
         handleClose()
     }
@@ -265,26 +248,8 @@ export const CreateExperimentDialog = (props: any) => {
 
         fetchTagOptions().catch(console.error)
     }, []);
-    // const [progress, setProgress] = useState(0);
-
-    // useEffect(() => {
-    //   const timer = setInterval(() => {
-    //     setProgress((oldProgress) => {
-    //       if (oldProgress === 100) {
-    //         return 0;
-    //       }
-    //       const diff = Math.random() * 10;
-    //       return Math.min(oldProgress + diff, 100);
-    //     });
-    //   }, 500);
-
-    //   return () => {
-    //     clearInterval(timer);
-    //   };
-    // }, []);
 
     // @ts-ignore
-
     return !isLoading ? (
         <Modal
             dialogActions={true}
@@ -297,79 +262,70 @@ export const CreateExperimentDialog = (props: any) => {
         >
             <Box display={'flex'} alignItems="center" justifyContent={'center'} className={classes.fileDrop}>
                 <Grid container={true} item={true} spacing={3}>
-                    {[...Array(pairsLength)].map((n, i) =>
-                        <Fragment key={i}>
-                            {!keyFiles[i] ? (
-                                <Grid item={true} xs={12} sm={6}>
-                                    <Typography className={classes.fileLabel}>Key file</Typography>
-                                    <DropzoneArea
-                                        dropzoneClass={`${errors.has(getFileErrorKey(keyFilesKey, i)) ? classes.errorBorder : ""}`}
-                                        onChange={(files: any) => handleFileUpload(files, keyFilesKey, i, keyFiles,
-                                            (value) => setKeyFile(value))}
-                                        dropzoneText="Select your key file or drop it here"
-                                        Icon={UPLOAD_ICON}
-                                        showPreviews={false}
-                                        showPreviewsInDropzone={false}
-                                        filesLimit={1}
-                                        showAlerts={['error']}
-                                        classes={{icon: "MuiButton-outlined primary"}}
-                                        required={true}
-                                    />
-                                </Grid>
-                            ) : (
-                                <Grid item={true} xs={12} sm={6}>
-                                    <Typography className={classes.fileLabel}>Key file</Typography>
-                                    <Box className={classes.progress}>
-                                        <Typography>
-                                            <img src={CHECK_FILLED} alt="check"/>
-                                            {keyFiles[i].name}
-                                        </Typography>
-                                        <Button disableRipple={true}
-                                                onClick={() => handleRemoveFile(i, keyFiles,
-                                                    (value) => setKeyFile(value))}>Remove</Button>
-                                    </Box>
-                                </Grid>)
-                            }
-                            {!dataFiles[i] ? (
-                                <Grid item={true} xs={12} sm={6}>
-                                    <Typography className={classes.fileLabel}>Data file</Typography>
-                                    <DropzoneArea
-                                        dropzoneClass={`${errors.has(getFileErrorKey(dataFilesKey, i)) ? classes.errorBorder : ""}`}
-                                        onChange={(files: any) => handleFileUpload(files, dataFilesKey, i, dataFiles,
-                                            (value) => setDataFile(value))}
-                                        dropzoneText="Select your data file or drop it here"
-                                        Icon={UPLOAD_ICON}
-                                        showPreviews={false}
-                                        showPreviewsInDropzone={false}
-                                        filesLimit={1}
-                                        showAlerts={['error']}
-                                        classes={{icon: "MuiButton-outlined primary"}}
-                                        maxFileSize={300000000}
-                                        required={true}
-                                    />
-                                </Grid>
-                            ) : (
-                                <Grid item={true} xs={12} sm={6}>
-                                    <Typography className={classes.fileLabel}>Data file</Typography>
-                                    <Box className={classes.progress}>
-                                        <Typography>
-                                            <img src={CHECK_FILLED} alt="check"/>
-                                            {dataFiles[i].name}
-                                        </Typography>
-                                        <Button disableRipple={true}
-                                                onClick={() => handleRemoveFile(i, keyFiles, (value) =>
-                                                    setDataFile(value))}>Remove</Button>
-                                    </Box>
-                                </Grid>
-                            )}
-                        </Fragment>
-                    )}
+                    <Fragment>
+                        {!keyFile ? (
+                            <Grid item={true} xs={12} sm={6}>
+                                <Typography className={classes.fileLabel}>Key file</Typography>
+                                <DropzoneArea
+                                    dropzoneClass={`${errors.has(getFileErrorKey(keyFileKey)) ? classes.errorBorder : ""}`}
+                                    onChange={(files: any) => handleFileUpload(files, keyFileKey,
+                                        (value) => setKeyFile(value))}
+                                    dropzoneText="Select your key file or drop it here"
+                                    Icon={UPLOAD_ICON}
+                                    showPreviews={false}
+                                    showPreviewsInDropzone={false}
+                                    filesLimit={1}
+                                    showAlerts={['error']}
+                                    classes={{icon: "MuiButton-outlined primary"}}
+                                    required={true}
+                                />
+                            </Grid>
+                        ) : (
+                            <Grid item={true} xs={12} sm={6}>
+                                <Typography className={classes.fileLabel}>Key file</Typography>
+                                <Box className={classes.progress}>
+                                    <Typography>
+                                        <img src={CHECK_FILLED} alt="check"/>
+                                        {keyFile.name}
+                                    </Typography>
+                                    <Button disableRipple={true}
+                                            onClick={() => setKeyFile(null)}>Remove</Button>
+                                </Box>
+                            </Grid>)
+                        }
+                        {!dataFile ? (
+                            <Grid item={true} xs={12} sm={6}>
+                                <Typography className={classes.fileLabel}>Data file</Typography>
+                                <DropzoneArea
+                                    dropzoneClass={`${errors.has(getFileErrorKey(dataFile)) ? classes.errorBorder : ""}`}
+                                    onChange={(files: any) => handleFileUpload(files, dataFileKey,
+                                        (value) => setDataFile(value))}
+                                    dropzoneText="Select your data file or drop it here"
+                                    Icon={UPLOAD_ICON}
+                                    showPreviews={false}
+                                    showPreviewsInDropzone={false}
+                                    filesLimit={1}
+                                    showAlerts={['error']}
+                                    classes={{icon: "MuiButton-outlined primary"}}
+                                    maxFileSize={300000000}
+                                    required={true}
+                                />
+                            </Grid>
+                        ) : (
+                            <Grid item={true} xs={12} sm={6}>
+                                <Typography className={classes.fileLabel}>Data file</Typography>
+                                <Box className={classes.progress}>
+                                    <Typography>
+                                        <img src={CHECK_FILLED} alt="check"/>
+                                        {dataFile.name}
+                                    </Typography>
+                                    <Button disableRipple={true}
+                                            onClick={() => setDataFile(null)}>Remove</Button>
+                                </Box>
+                            </Grid>
+                        )}
+                    </Fragment>
                 </Grid>
-            </Box>
-
-            <Box className={classes.addSet}>
-                <Button disableRipple={true} onClick={() => setPairsLength(pairsLength + 1)}>+ Add another set of
-                    files</Button>
             </Box>
 
             <Box p={2} pb={5}>
