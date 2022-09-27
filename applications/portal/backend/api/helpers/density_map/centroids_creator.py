@@ -50,9 +50,6 @@ def _generate_centroids(
     img = fig_to_img(fig)
     return pad_image(img, *get_pad_from_offset(get_canal_offset(bg_atlas, subdivision)))
 
-    # shifted_img_array = shift_image_array(img_array, )
-    # return black_to_transparent(get_image_from_array(shifted_img_array, 'RGB'), FULLY_OPAQUE)
-
 
 def _imshow(
         axis,
