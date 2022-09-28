@@ -1,5 +1,6 @@
 import io
 
+import numpy
 import numpy as np
 from matplotlib.figure import Figure
 from PIL import Image
@@ -31,7 +32,7 @@ def black_to_transparent(img: Image, opacity: int = HALF_OPAQUE) -> Image:
     # Make all pixels matched by mask into transparent ones
     rgba[m_black] = (0, 0, 0, 0)
 
-    # Convert Numpy array back to PIL Image and s
+    # Convert Numpy array back to PIL Image
     return Image.fromarray(rgba)
 
 
@@ -45,3 +46,11 @@ def fig_to_img(fig: Figure) -> Image:
     buf.seek(0)
     img = Image.open(buf)
     return img
+
+
+def fig_to_numpy(fig: Figure) -> np.array:
+    img = fig_to_img(fig)
+    grey_scale_array = numpy.array(img.convert('L'))
+    # makes the array 2 color (black background, white centroids)
+    two_color_array = numpy.where(grey_scale_array < 255, grey_scale_array, 0)
+    return two_color_array

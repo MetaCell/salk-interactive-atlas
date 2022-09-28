@@ -4,11 +4,12 @@ from matplotlib import pyplot as plt
 from matplotlib import rcParams
 from PIL import Image
 
+from api.constants import FULLY_OPAQUE
 from api.helpers.density_map.common_density_helpers import get_subdivision_limits
-from api.helpers.density_map.generate_image import get_annotation_array
+from api.helpers.density_map.generate_image import get_annotation_array, shift_image, get_canal_offset
 from api.helpers.density_map.ipopulation_image_creator import IPopulationImageCreator
 from api.helpers.ICustomAtlas import ICustomAtlas
-from api.helpers.image_manipulation import fig_to_img
+from api.helpers.image_manipulation import fig_to_img, fig_to_numpy, get_image_from_array, black_to_transparent
 from workspaces.settings import FIGURE_DPI
 
 
@@ -44,7 +45,9 @@ def _generate_centroids(
     plt.scatter(x=points_slice[:, 1], y=points_slice[:, 0], c="y", s=1)
     plt.grid(False)
     plt.axis("off")
-    return fig_to_img(fig)
+    img_array = fig_to_numpy(fig)
+    shifted_img_array = shift_image(img_array, get_canal_offset(bg_atlas, subdivision))
+    return black_to_transparent(get_image_from_array(shifted_img_array, 'RGB'), FULLY_OPAQUE)
 
 
 def _imshow(
