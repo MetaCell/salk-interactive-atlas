@@ -7,7 +7,7 @@ from matplotlib import rcParams
 
 from api.helpers.ICustomAtlas import ICustomAtlas
 from api.helpers.atlas import get_subdivision_boundaries
-from api.helpers.image_manipulation import fig_to_img
+from api.helpers.image_manipulation import fig_to_img, pad_image
 from api.utils import get_closest_multiple
 from workspaces.settings import (
     GRID_COLOR,
@@ -86,10 +86,10 @@ def get_grid_images(
     complete_img = fig_to_img(fig)
 
     # Corrects images alignment by adding a constant amount of padding to the image
-    frame_shifted_image = _add_margin(
+    frame_shifted_image = pad_image(
         frame_img, 0, GRID_CONSTANT_RIGHT_OFFSET, GRID_CONSTANT_BOTTOM_OFFSET, 0
     )
-    complete_shifted_image = _add_margin(
+    complete_shifted_image = pad_image(
         complete_img, 0, GRID_CONSTANT_RIGHT_OFFSET, GRID_CONSTANT_BOTTOM_OFFSET, 0
     )
     return frame_shifted_image, complete_shifted_image
@@ -165,15 +165,6 @@ def _set_size(w, h, ax=None) -> (float, float):
     fig_h = float(h) / (t - b)
     ax.figure.set_size_inches(fig_w, fig_h)
     return fig_w, fig_h
-
-
-def _add_margin(pil_img, top, right, bottom, left, color=(255, 0, 0, 0)) -> Image:
-    width, height = pil_img.size
-    new_width = int(width + right + left)
-    new_height = int(height + top + bottom)
-    result = Image.new(pil_img.mode, (new_width, new_height), color)
-    result.paste(pil_img, (left, top))
-    return result
 
 
 def _get_subdivision_depth(
