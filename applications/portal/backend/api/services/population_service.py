@@ -31,11 +31,11 @@ def split_cells_per_segment(population):
             writer = csv.writer(file)
             file_writer_dict[s] = {"file": file, "writer": writer}
         with open(population.cells.path) as cells_file:
-            reader = csv.reader(cells_file)
+            reader = csv.DictReader(cells_file)
             for row in reader:
-                cell_depth = float(row[0])
+                cell_depth = float(row['z'])
                 subdivision = get_cell_segment(cell_depth)
-                file_writer_dict[subdivision]["writer"].writerow(row)
+                file_writer_dict[subdivision]["writer"].writerow([row['z'], row['x'], row['y']])
     except Exception:
         pass
     finally:
@@ -47,9 +47,9 @@ def get_cells(subdivision, populations):
     cells = []
     for pop in populations:
         with open(
-            pop.get_subdivision_storage_path(
-                subdivision, PopulationPersistentFiles.CSV_FILE
-            )
+                pop.get_subdivision_storage_path(
+                    subdivision, PopulationPersistentFiles.CSV_FILE
+                )
         ) as cells_file:
             reader = csv.reader(cells_file)
             for row in reader:
@@ -100,12 +100,12 @@ def generate_images(population):
 
 
 def _store_image(
-    creator: IPopulationImageCreator,
-    extension: PopulationPersistentFiles,
-    bg_atlas,
-    cells,
-    population,
-    s,
+        creator: IPopulationImageCreator,
+        extension: PopulationPersistentFiles,
+        bg_atlas,
+        cells,
+        population,
+        s,
 ):
     img = creator.create(bg_atlas=bg_atlas, subdivision=s, points=cells)
     img.save(population.get_subdivision_storage_path(s, extension))

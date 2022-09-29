@@ -26,7 +26,7 @@ import {Experiment, ExperimentPopulationsInner, Population} from "../apiclient/w
 import {areAllSelected} from "../utilities/functions";
 import workspaceService from "../service/WorkspaceService";
 import Cell from "../models/Cell";
-import {threeDViewerWidget, ElectrophysiologyWidget, widgetIds, twoDViewerWidget} from "../widgets";
+import {ElectrophysiologyWidget, threeDViewerWidget, twoDViewerWidget, widgetIds} from "../widgets";
 import {useInterval} from "../utilities/hooks/useInterval";
 import {useParams} from "react-router";
 
@@ -153,7 +153,12 @@ const ExperimentsPage = () => {
     async function getCells(p: ExperimentPopulationsInner) {
         const cellsFile = await api.cellsPopulation(`${p.id}`);
         // @ts-ignore
-        return cellsFile.data.split(/\r?\n/).map(csv => new Cell(csv));
+        const cellsFileArray = cellsFile.data.split(/\r?\n/)
+        if (cellsFileArray[cellsFileArray.length - 1] === ''){
+            cellsFileArray.pop()
+        }
+        const header = cellsFileArray.shift().split(',')
+        return cellsFileArray.map((csv: string) => new Cell(csv, header))
     }
 
     useInterval(() => {
@@ -165,11 +170,7 @@ const ExperimentsPage = () => {
                 if (p.status !== POPULATION_FINISHED_STATE) return [];
                 const existingPopulation = experiment.populations.find((e: ExperimentPopulationsInner) => e.id === p.id)
                 if (existingPopulation !== undefined && typeof existingPopulation.cells !== "string" && existingPopulation.cells.length > 0) return existingPopulation.cells
-                try {
-                    return await getCells(p);
-                } catch {
-                    return [];
-                }
+                return getCells(p);
             }));
             let shouldUpdateExperiment = false;
             fetchedExperiment.populations.forEach((p, i) => {
@@ -200,11 +201,7 @@ const ExperimentsPage = () => {
             const data = response.data;
             const cells = await Promise.all(data.populations.map(async (p) => {
                 if (p.status !== POPULATION_FINISHED_STATE) return [];
-                try {
-                    return await getCells(p);
-                } catch {
-                    return [];
-                }
+                return getCells(p);
             }));
             data.populations.forEach((p, i) => {
                 data.populations[i].cells = cells[i]

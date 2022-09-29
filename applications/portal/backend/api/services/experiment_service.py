@@ -1,6 +1,10 @@
 import os.path
+from pathlib import PosixPath
 
-from api.helpers.exceptions import InvalidInputError
+from cordmap.get_all_population_keys import get_populations_from_file
+from cordmap.register.constants import population_ignore_set
+from django.conf import settings
+
 from api.models import Experiment, Population, Tag
 from api.services.workflows_service import execute_generate_population_cells_workflow
 
@@ -27,24 +31,11 @@ def delete_tag(experiment: Experiment, tag_name: str):
     return True
 
 
-def upload_files(experiment: Experiment, data_filepath: str, population_id: int):
-    try:
-        population_name = os.path.basename(data_filepath).split("_Data")[0]
-    except Exception:
-        raise InvalidInputError
-
-    created = False
-    if population_id:
-        try:
-            population = Population.objects.get(
-                experiment_id=experiment.id, id=population_id
-            )
-        except Population.DoesNotExist:
-            raise InvalidInputError
-    else:
+def upload_files(experiment: Experiment, key_filepath: str, data_filepath: str):
+    key_path = PosixPath(os.path.join(settings.PERSISTENT_ROOT, key_filepath))
+    populations = get_populations_from_file(key_path, population_ignore_set)
+    for name in populations:
         population = Population.objects.create(
-            experiment_id=experiment.id, name=population_name
+            experiment_id=experiment.id, name=name
         )
-        created = True
-    execute_generate_population_cells_workflow(population.id, data_filepath)
-    return created
+        execute_generate_population_cells_workflow(population.id, data_filepath)

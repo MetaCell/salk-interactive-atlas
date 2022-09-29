@@ -22,6 +22,7 @@ from api.validators.upload_files import validate_input_files
 log = logging.getLogger("__name__")
 
 DATA_INDEX = 1
+KEY_INDEX = 0
 
 
 class ExperimentViewSet(viewsets.ModelViewSet):
@@ -122,15 +123,13 @@ class ExperimentViewSet(viewsets.ModelViewSet):
             validate_input_files(key_file, data_file)
         except InvalidInputError:
             return Response(status=status.HTTP_400_BAD_REQUEST)
-
-        population_id = request.FILES.get("population_id", None)
         try:
             dir_path = create_temp_dir(CORDMAP_DATA)
             filepaths = move_files([key_file, data_file], dir_path)
         except Exception as e:
             return Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR)
         try:
-            created = upload_files(instance, filepaths[DATA_INDEX], population_id)
+            created = upload_files(instance, filepaths[KEY_INDEX], filepaths[DATA_INDEX])
             response_status = status.HTTP_201_CREATED if created else status.HTTP_200_OK
         except InvalidInputError:
             response_status = status.HTTP_400_BAD_REQUEST
