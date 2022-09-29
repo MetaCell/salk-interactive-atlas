@@ -8,7 +8,7 @@ export default class Range{
     }
 
     public includes(num: number) : boolean{
-        return num >= this.start && num <= this.end
+        return num >= this.start && num < this.end
     }
 
     public setStart(start: number){
