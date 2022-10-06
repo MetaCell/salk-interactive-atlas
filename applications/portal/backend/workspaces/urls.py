@@ -43,6 +43,7 @@ class SecuredOpenApiGenerator(SchemaGenerator):
             }
         )
         schema["security"] = [{"bearerAuth": []}]
+        schema["servers"] = [{"url": "/backend"},]
         return schema
 
 
@@ -59,6 +60,7 @@ urlpatterns = [
             description="API for all workspaces...",
             version="0.0.1",
             generator_class=SecuredOpenApiGenerator,
+            url="/backend"
         ),
         name="openapi-schema",
     ),

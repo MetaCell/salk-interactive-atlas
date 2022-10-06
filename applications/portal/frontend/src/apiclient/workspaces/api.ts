@@ -116,28 +116,28 @@ export interface Experiment {
     'owner'?: ExperimentOwner;
     /**
      * 
-     * @type {Array<ExperimentOwnerGroupsInner>}
+     * @type {Array<ExperimentOwnerGroups>}
      * @memberof Experiment
      */
-    'teams'?: Array<ExperimentOwnerGroupsInner>;
+    'teams'?: Array<ExperimentOwnerGroups>;
     /**
      * 
-     * @type {Array<ExperimentCollaboratorsInner>}
+     * @type {Array<ExperimentCollaborators>}
      * @memberof Experiment
      */
-    'collaborators'?: Array<ExperimentCollaboratorsInner>;
+    'collaborators'?: Array<ExperimentCollaborators>;
     /**
      * 
-     * @type {Array<ExperimentPopulationsInner>}
+     * @type {Array<ExperimentPopulations>}
      * @memberof Experiment
      */
-    'populations'?: Array<ExperimentPopulationsInner>;
+    'populations'?: Array<ExperimentPopulations>;
     /**
      * 
-     * @type {Array<ExperimentTagsInner>}
+     * @type {Array<ExperimentTags>}
      * @memberof Experiment
      */
-    'tags'?: Array<ExperimentTagsInner>;
+    'tags'?: Array<ExperimentTags>;
     /**
      * 
      * @type {string}
@@ -148,85 +148,48 @@ export interface Experiment {
 /**
  * 
  * @export
- * @interface ExperimentCollaboratorsInner
+ * @interface ExperimentCollaborators
  */
-export interface ExperimentCollaboratorsInner {
+export interface ExperimentCollaborators {
     /**
      * 
      * @type {number}
-     * @memberof ExperimentCollaboratorsInner
+     * @memberof ExperimentCollaborators
      */
     'id'?: number;
     /**
      * 
-     * @type {ExperimentCollaboratorsInnerUser}
-     * @memberof ExperimentCollaboratorsInner
+     * @type {ExperimentUser}
+     * @memberof ExperimentCollaborators
      */
-    'user': ExperimentCollaboratorsInnerUser;
+    'user': ExperimentUser;
     /**
      * 
      * @type {string}
-     * @memberof ExperimentCollaboratorsInner
+     * @memberof ExperimentCollaborators
      */
     'shared_on'?: string;
     /**
      * 
      * @type {string}
-     * @memberof ExperimentCollaboratorsInner
+     * @memberof ExperimentCollaborators
      */
-    'role'?: ExperimentCollaboratorsInnerRoleEnum;
+    'role'?: ExperimentCollaboratorsRoleEnum;
 }
 
-export const ExperimentCollaboratorsInnerRoleEnum = {
+export const ExperimentCollaboratorsRoleEnum = {
     V: 'v',
     E: 'e'
 } as const;
 
-export type ExperimentCollaboratorsInnerRoleEnum = typeof ExperimentCollaboratorsInnerRoleEnum[keyof typeof ExperimentCollaboratorsInnerRoleEnum];
+export type ExperimentCollaboratorsRoleEnum = typeof ExperimentCollaboratorsRoleEnum[keyof typeof ExperimentCollaboratorsRoleEnum];
 
-/**
- * 
- * @export
- * @interface ExperimentCollaboratorsInnerUser
- */
-export interface ExperimentCollaboratorsInnerUser {
-    /**
-     * 
-     * @type {number}
-     * @memberof ExperimentCollaboratorsInnerUser
-     */
-    'id'?: number;
-    /**
-     * 
-     * @type {string}
-     * @memberof ExperimentCollaboratorsInnerUser
-     */
-    'first_name'?: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof ExperimentCollaboratorsInnerUser
-     */
-    'last_name'?: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof ExperimentCollaboratorsInnerUser
-     */
-    'email'?: string;
-}
 /**
  * 
  * @export
  * @interface ExperimentFileUpload
  */
 export interface ExperimentFileUpload {
-    /**
-     * 
-     * @type {number}
-     * @memberof ExperimentFileUpload
-     */
-    'population_id'?: number;
     /**
      * 
      * @type {any}
@@ -278,10 +241,10 @@ export interface ExperimentOwner {
     'email'?: string;
     /**
      * 
-     * @type {Array<ExperimentOwnerGroupsInner>}
+     * @type {Array<ExperimentOwnerGroups>}
      * @memberof ExperimentOwner
      */
-    'groups'?: Array<ExperimentOwnerGroupsInner>;
+    'groups'?: Array<ExperimentOwnerGroups>;
     /**
      * 
      * @type {string}
@@ -292,97 +255,128 @@ export interface ExperimentOwner {
 /**
  * 
  * @export
- * @interface ExperimentOwnerGroupsInner
+ * @interface ExperimentOwnerGroups
  */
-export interface ExperimentOwnerGroupsInner {
+export interface ExperimentOwnerGroups {
     /**
      * 
      * @type {number}
-     * @memberof ExperimentOwnerGroupsInner
+     * @memberof ExperimentOwnerGroups
      */
     'id'?: number;
     /**
      * 
      * @type {string}
-     * @memberof ExperimentOwnerGroupsInner
+     * @memberof ExperimentOwnerGroups
      */
     'name': string;
 }
 /**
  * 
  * @export
- * @interface ExperimentPopulationsInner
+ * @interface ExperimentPopulations
  */
-export interface ExperimentPopulationsInner {
+export interface ExperimentPopulations {
     /**
      * 
      * @type {number}
-     * @memberof ExperimentPopulationsInner
+     * @memberof ExperimentPopulations
      */
     'id'?: number;
     /**
      * 
      * @type {string}
-     * @memberof ExperimentPopulationsInner
+     * @memberof ExperimentPopulations
      */
     'name': string;
     /**
      * 
      * @type {string}
-     * @memberof ExperimentPopulationsInner
+     * @memberof ExperimentPopulations
      */
     'color': string;
     /**
      * 
      * @type {number}
-     * @memberof ExperimentPopulationsInner
+     * @memberof ExperimentPopulations
      */
     'experiment': number;
     /**
      * 
      * @type {string}
-     * @memberof ExperimentPopulationsInner
+     * @memberof ExperimentPopulations
      */
-    'atlas'?: ExperimentPopulationsInnerAtlasEnum;
+    'atlas'?: ExperimentPopulationsAtlasEnum;
     /**
      * 
      * @type {any}
-     * @memberof ExperimentPopulationsInner
+     * @memberof ExperimentPopulations
      */
     'cells': any;
     /**
      * 
      * @type {number}
-     * @memberof ExperimentPopulationsInner
+     * @memberof ExperimentPopulations
      */
     'opacity'?: number;
     /**
      * 
      * @type {string}
-     * @memberof ExperimentPopulationsInner
+     * @memberof ExperimentPopulations
      */
     'status'?: string;
 }
 
-export const ExperimentPopulationsInnerAtlasEnum = {
+export const ExperimentPopulationsAtlasEnum = {
     SalkCord10um: 'salk_cord_10um',
     AllenCord20um: 'allen_cord_20um'
 } as const;
 
-export type ExperimentPopulationsInnerAtlasEnum = typeof ExperimentPopulationsInnerAtlasEnum[keyof typeof ExperimentPopulationsInnerAtlasEnum];
+export type ExperimentPopulationsAtlasEnum = typeof ExperimentPopulationsAtlasEnum[keyof typeof ExperimentPopulationsAtlasEnum];
 
 /**
  * 
  * @export
- * @interface ExperimentTagsInner
+ * @interface ExperimentTags
  */
-export interface ExperimentTagsInner {
+export interface ExperimentTags {
     /**
      * 
      * @type {string}
-     * @memberof ExperimentTagsInner
+     * @memberof ExperimentTags
      */
     'name': string;
+}
+/**
+ * 
+ * @export
+ * @interface ExperimentUser
+ */
+export interface ExperimentUser {
+    /**
+     * 
+     * @type {number}
+     * @memberof ExperimentUser
+     */
+    'id'?: number;
+    /**
+     * 
+     * @type {string}
+     * @memberof ExperimentUser
+     */
+    'first_name'?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof ExperimentUser
+     */
+    'last_name'?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof ExperimentUser
+     */
+    'email'?: string;
 }
 /**
  * 
@@ -636,10 +630,10 @@ export interface UserTeam {
     'email'?: string;
     /**
      * 
-     * @type {Array<ExperimentOwnerGroupsInner>}
+     * @type {Array<ExperimentOwnerGroups>}
      * @memberof UserTeam
      */
-    'groups'?: Array<ExperimentOwnerGroupsInner>;
+    'groups'?: Array<ExperimentOwnerGroups>;
     /**
      * 
      * @type {string}
@@ -867,15 +861,15 @@ export const ApiApiAxiosParamCreator = function (configuration?: Configuration) 
          * @param {string} [dateCreated] 
          * @param {string} [lastModified] 
          * @param {ExperimentOwner} [owner] 
-         * @param {Array<ExperimentOwnerGroupsInner>} [teams] 
-         * @param {Array<ExperimentCollaboratorsInner>} [collaborators] 
-         * @param {Array<ExperimentPopulationsInner>} [populations] 
-         * @param {Array<ExperimentTagsInner>} [tags] 
+         * @param {Array<ExperimentOwnerGroups>} [teams] 
+         * @param {Array<ExperimentCollaborators>} [collaborators] 
+         * @param {Array<ExperimentPopulations>} [populations] 
+         * @param {Array<ExperimentTags>} [tags] 
          * @param {string} [hasEditPermission] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        createExperiment: async (name: string, description: string, id?: number, isPrivate?: boolean, dateCreated?: string, lastModified?: string, owner?: ExperimentOwner, teams?: Array<ExperimentOwnerGroupsInner>, collaborators?: Array<ExperimentCollaboratorsInner>, populations?: Array<ExperimentPopulationsInner>, tags?: Array<ExperimentTagsInner>, hasEditPermission?: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+        createExperiment: async (name: string, description: string, id?: number, isPrivate?: boolean, dateCreated?: string, lastModified?: string, owner?: ExperimentOwner, teams?: Array<ExperimentOwnerGroups>, collaborators?: Array<ExperimentCollaborators>, populations?: Array<ExperimentPopulations>, tags?: Array<ExperimentTags>, hasEditPermission?: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'name' is not null or undefined
             assertParamExists('createExperiment', 'name', name)
             // verify required parameter 'description' is not null or undefined
@@ -1718,15 +1712,15 @@ export const ApiApiAxiosParamCreator = function (configuration?: Configuration) 
          * @param {string} [dateCreated] 
          * @param {string} [lastModified] 
          * @param {ExperimentOwner} [owner] 
-         * @param {Array<ExperimentOwnerGroupsInner>} [teams] 
-         * @param {Array<ExperimentCollaboratorsInner>} [collaborators] 
-         * @param {Array<ExperimentPopulationsInner>} [populations] 
-         * @param {Array<ExperimentTagsInner>} [tags] 
+         * @param {Array<ExperimentOwnerGroups>} [teams] 
+         * @param {Array<ExperimentCollaborators>} [collaborators] 
+         * @param {Array<ExperimentPopulations>} [populations] 
+         * @param {Array<ExperimentTags>} [tags] 
          * @param {string} [hasEditPermission] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        partialUpdateExperiment: async (id: string, name: string, description: string, id2?: number, isPrivate?: boolean, dateCreated?: string, lastModified?: string, owner?: ExperimentOwner, teams?: Array<ExperimentOwnerGroupsInner>, collaborators?: Array<ExperimentCollaboratorsInner>, populations?: Array<ExperimentPopulationsInner>, tags?: Array<ExperimentTagsInner>, hasEditPermission?: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+        partialUpdateExperiment: async (id: string, name: string, description: string, id2?: number, isPrivate?: boolean, dateCreated?: string, lastModified?: string, owner?: ExperimentOwner, teams?: Array<ExperimentOwnerGroups>, collaborators?: Array<ExperimentCollaborators>, populations?: Array<ExperimentPopulations>, tags?: Array<ExperimentTags>, hasEditPermission?: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'id' is not null or undefined
             assertParamExists('partialUpdateExperiment', 'id', id)
             // verify required parameter 'name' is not null or undefined
@@ -2279,15 +2273,15 @@ export const ApiApiAxiosParamCreator = function (configuration?: Configuration) 
          * @param {string} [dateCreated] 
          * @param {string} [lastModified] 
          * @param {ExperimentOwner} [owner] 
-         * @param {Array<ExperimentOwnerGroupsInner>} [teams] 
-         * @param {Array<ExperimentCollaboratorsInner>} [collaborators] 
-         * @param {Array<ExperimentPopulationsInner>} [populations] 
-         * @param {Array<ExperimentTagsInner>} [tags] 
+         * @param {Array<ExperimentOwnerGroups>} [teams] 
+         * @param {Array<ExperimentCollaborators>} [collaborators] 
+         * @param {Array<ExperimentPopulations>} [populations] 
+         * @param {Array<ExperimentTags>} [tags] 
          * @param {string} [hasEditPermission] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        updateExperiment: async (id: string, name: string, description: string, id2?: number, isPrivate?: boolean, dateCreated?: string, lastModified?: string, owner?: ExperimentOwner, teams?: Array<ExperimentOwnerGroupsInner>, collaborators?: Array<ExperimentCollaboratorsInner>, populations?: Array<ExperimentPopulationsInner>, tags?: Array<ExperimentTagsInner>, hasEditPermission?: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+        updateExperiment: async (id: string, name: string, description: string, id2?: number, isPrivate?: boolean, dateCreated?: string, lastModified?: string, owner?: ExperimentOwner, teams?: Array<ExperimentOwnerGroups>, collaborators?: Array<ExperimentCollaborators>, populations?: Array<ExperimentPopulations>, tags?: Array<ExperimentTags>, hasEditPermission?: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'id' is not null or undefined
             assertParamExists('updateExperiment', 'id', id)
             // verify required parameter 'name' is not null or undefined
@@ -2502,11 +2496,10 @@ export const ApiApiAxiosParamCreator = function (configuration?: Configuration) 
          * @param {string} id A unique integer value identifying this experiment.
          * @param {any} keyFile 
          * @param {any} dataFile 
-         * @param {number} [populationId] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        uploadFilesExperiment: async (id: string, keyFile: any, dataFile: any, populationId?: number, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+        uploadFilesExperiment: async (id: string, keyFile: any, dataFile: any, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'id' is not null or undefined
             assertParamExists('uploadFilesExperiment', 'id', id)
             // verify required parameter 'keyFile' is not null or undefined
@@ -2532,10 +2525,6 @@ export const ApiApiAxiosParamCreator = function (configuration?: Configuration) 
             await setBearerAuthToObject(localVarHeaderParameter, configuration)
 
 
-            if (populationId !== undefined) { 
-                localVarFormParams.append('population_id', populationId as any);
-            }
-    
             if (keyFile !== undefined) { 
                 localVarFormParams.append('key_file', keyFile as any);
             }
@@ -2629,15 +2618,15 @@ export const ApiApiFp = function(configuration?: Configuration) {
          * @param {string} [dateCreated] 
          * @param {string} [lastModified] 
          * @param {ExperimentOwner} [owner] 
-         * @param {Array<ExperimentOwnerGroupsInner>} [teams] 
-         * @param {Array<ExperimentCollaboratorsInner>} [collaborators] 
-         * @param {Array<ExperimentPopulationsInner>} [populations] 
-         * @param {Array<ExperimentTagsInner>} [tags] 
+         * @param {Array<ExperimentOwnerGroups>} [teams] 
+         * @param {Array<ExperimentCollaborators>} [collaborators] 
+         * @param {Array<ExperimentPopulations>} [populations] 
+         * @param {Array<ExperimentTags>} [tags] 
          * @param {string} [hasEditPermission] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async createExperiment(name: string, description: string, id?: number, isPrivate?: boolean, dateCreated?: string, lastModified?: string, owner?: ExperimentOwner, teams?: Array<ExperimentOwnerGroupsInner>, collaborators?: Array<ExperimentCollaboratorsInner>, populations?: Array<ExperimentPopulationsInner>, tags?: Array<ExperimentTagsInner>, hasEditPermission?: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Experiment>> {
+        async createExperiment(name: string, description: string, id?: number, isPrivate?: boolean, dateCreated?: string, lastModified?: string, owner?: ExperimentOwner, teams?: Array<ExperimentOwnerGroups>, collaborators?: Array<ExperimentCollaborators>, populations?: Array<ExperimentPopulations>, tags?: Array<ExperimentTags>, hasEditPermission?: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Experiment>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.createExperiment(name, description, id, isPrivate, dateCreated, lastModified, owner, teams, collaborators, populations, tags, hasEditPermission, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
@@ -2854,15 +2843,15 @@ export const ApiApiFp = function(configuration?: Configuration) {
          * @param {string} [dateCreated] 
          * @param {string} [lastModified] 
          * @param {ExperimentOwner} [owner] 
-         * @param {Array<ExperimentOwnerGroupsInner>} [teams] 
-         * @param {Array<ExperimentCollaboratorsInner>} [collaborators] 
-         * @param {Array<ExperimentPopulationsInner>} [populations] 
-         * @param {Array<ExperimentTagsInner>} [tags] 
+         * @param {Array<ExperimentOwnerGroups>} [teams] 
+         * @param {Array<ExperimentCollaborators>} [collaborators] 
+         * @param {Array<ExperimentPopulations>} [populations] 
+         * @param {Array<ExperimentTags>} [tags] 
          * @param {string} [hasEditPermission] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async partialUpdateExperiment(id: string, name: string, description: string, id2?: number, isPrivate?: boolean, dateCreated?: string, lastModified?: string, owner?: ExperimentOwner, teams?: Array<ExperimentOwnerGroupsInner>, collaborators?: Array<ExperimentCollaboratorsInner>, populations?: Array<ExperimentPopulationsInner>, tags?: Array<ExperimentTagsInner>, hasEditPermission?: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Experiment>> {
+        async partialUpdateExperiment(id: string, name: string, description: string, id2?: number, isPrivate?: boolean, dateCreated?: string, lastModified?: string, owner?: ExperimentOwner, teams?: Array<ExperimentOwnerGroups>, collaborators?: Array<ExperimentCollaborators>, populations?: Array<ExperimentPopulations>, tags?: Array<ExperimentTags>, hasEditPermission?: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Experiment>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.partialUpdateExperiment(id, name, description, id2, isPrivate, dateCreated, lastModified, owner, teams, collaborators, populations, tags, hasEditPermission, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
@@ -2999,15 +2988,15 @@ export const ApiApiFp = function(configuration?: Configuration) {
          * @param {string} [dateCreated] 
          * @param {string} [lastModified] 
          * @param {ExperimentOwner} [owner] 
-         * @param {Array<ExperimentOwnerGroupsInner>} [teams] 
-         * @param {Array<ExperimentCollaboratorsInner>} [collaborators] 
-         * @param {Array<ExperimentPopulationsInner>} [populations] 
-         * @param {Array<ExperimentTagsInner>} [tags] 
+         * @param {Array<ExperimentOwnerGroups>} [teams] 
+         * @param {Array<ExperimentCollaborators>} [collaborators] 
+         * @param {Array<ExperimentPopulations>} [populations] 
+         * @param {Array<ExperimentTags>} [tags] 
          * @param {string} [hasEditPermission] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async updateExperiment(id: string, name: string, description: string, id2?: number, isPrivate?: boolean, dateCreated?: string, lastModified?: string, owner?: ExperimentOwner, teams?: Array<ExperimentOwnerGroupsInner>, collaborators?: Array<ExperimentCollaboratorsInner>, populations?: Array<ExperimentPopulationsInner>, tags?: Array<ExperimentTagsInner>, hasEditPermission?: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Experiment>> {
+        async updateExperiment(id: string, name: string, description: string, id2?: number, isPrivate?: boolean, dateCreated?: string, lastModified?: string, owner?: ExperimentOwner, teams?: Array<ExperimentOwnerGroups>, collaborators?: Array<ExperimentCollaborators>, populations?: Array<ExperimentPopulations>, tags?: Array<ExperimentTags>, hasEditPermission?: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Experiment>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.updateExperiment(id, name, description, id2, isPrivate, dateCreated, lastModified, owner, teams, collaborators, populations, tags, hasEditPermission, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
@@ -3049,12 +3038,11 @@ export const ApiApiFp = function(configuration?: Configuration) {
          * @param {string} id A unique integer value identifying this experiment.
          * @param {any} keyFile 
          * @param {any} dataFile 
-         * @param {number} [populationId] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async uploadFilesExperiment(id: string, keyFile: any, dataFile: any, populationId?: number, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ExperimentFileUpload>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.uploadFilesExperiment(id, keyFile, dataFile, populationId, options);
+        async uploadFilesExperiment(id: string, keyFile: any, dataFile: any, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ExperimentFileUpload>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.uploadFilesExperiment(id, keyFile, dataFile, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
     }
@@ -3124,15 +3112,15 @@ export const ApiApiFactory = function (configuration?: Configuration, basePath?:
          * @param {string} [dateCreated] 
          * @param {string} [lastModified] 
          * @param {ExperimentOwner} [owner] 
-         * @param {Array<ExperimentOwnerGroupsInner>} [teams] 
-         * @param {Array<ExperimentCollaboratorsInner>} [collaborators] 
-         * @param {Array<ExperimentPopulationsInner>} [populations] 
-         * @param {Array<ExperimentTagsInner>} [tags] 
+         * @param {Array<ExperimentOwnerGroups>} [teams] 
+         * @param {Array<ExperimentCollaborators>} [collaborators] 
+         * @param {Array<ExperimentPopulations>} [populations] 
+         * @param {Array<ExperimentTags>} [tags] 
          * @param {string} [hasEditPermission] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        createExperiment(name: string, description: string, id?: number, isPrivate?: boolean, dateCreated?: string, lastModified?: string, owner?: ExperimentOwner, teams?: Array<ExperimentOwnerGroupsInner>, collaborators?: Array<ExperimentCollaboratorsInner>, populations?: Array<ExperimentPopulationsInner>, tags?: Array<ExperimentTagsInner>, hasEditPermission?: string, options?: any): AxiosPromise<Experiment> {
+        createExperiment(name: string, description: string, id?: number, isPrivate?: boolean, dateCreated?: string, lastModified?: string, owner?: ExperimentOwner, teams?: Array<ExperimentOwnerGroups>, collaborators?: Array<ExperimentCollaborators>, populations?: Array<ExperimentPopulations>, tags?: Array<ExperimentTags>, hasEditPermission?: string, options?: any): AxiosPromise<Experiment> {
             return localVarFp.createExperiment(name, description, id, isPrivate, dateCreated, lastModified, owner, teams, collaborators, populations, tags, hasEditPermission, options).then((request) => request(axios, basePath));
         },
         /**
@@ -3327,15 +3315,15 @@ export const ApiApiFactory = function (configuration?: Configuration, basePath?:
          * @param {string} [dateCreated] 
          * @param {string} [lastModified] 
          * @param {ExperimentOwner} [owner] 
-         * @param {Array<ExperimentOwnerGroupsInner>} [teams] 
-         * @param {Array<ExperimentCollaboratorsInner>} [collaborators] 
-         * @param {Array<ExperimentPopulationsInner>} [populations] 
-         * @param {Array<ExperimentTagsInner>} [tags] 
+         * @param {Array<ExperimentOwnerGroups>} [teams] 
+         * @param {Array<ExperimentCollaborators>} [collaborators] 
+         * @param {Array<ExperimentPopulations>} [populations] 
+         * @param {Array<ExperimentTags>} [tags] 
          * @param {string} [hasEditPermission] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        partialUpdateExperiment(id: string, name: string, description: string, id2?: number, isPrivate?: boolean, dateCreated?: string, lastModified?: string, owner?: ExperimentOwner, teams?: Array<ExperimentOwnerGroupsInner>, collaborators?: Array<ExperimentCollaboratorsInner>, populations?: Array<ExperimentPopulationsInner>, tags?: Array<ExperimentTagsInner>, hasEditPermission?: string, options?: any): AxiosPromise<Experiment> {
+        partialUpdateExperiment(id: string, name: string, description: string, id2?: number, isPrivate?: boolean, dateCreated?: string, lastModified?: string, owner?: ExperimentOwner, teams?: Array<ExperimentOwnerGroups>, collaborators?: Array<ExperimentCollaborators>, populations?: Array<ExperimentPopulations>, tags?: Array<ExperimentTags>, hasEditPermission?: string, options?: any): AxiosPromise<Experiment> {
             return localVarFp.partialUpdateExperiment(id, name, description, id2, isPrivate, dateCreated, lastModified, owner, teams, collaborators, populations, tags, hasEditPermission, options).then((request) => request(axios, basePath));
         },
         /**
@@ -3459,15 +3447,15 @@ export const ApiApiFactory = function (configuration?: Configuration, basePath?:
          * @param {string} [dateCreated] 
          * @param {string} [lastModified] 
          * @param {ExperimentOwner} [owner] 
-         * @param {Array<ExperimentOwnerGroupsInner>} [teams] 
-         * @param {Array<ExperimentCollaboratorsInner>} [collaborators] 
-         * @param {Array<ExperimentPopulationsInner>} [populations] 
-         * @param {Array<ExperimentTagsInner>} [tags] 
+         * @param {Array<ExperimentOwnerGroups>} [teams] 
+         * @param {Array<ExperimentCollaborators>} [collaborators] 
+         * @param {Array<ExperimentPopulations>} [populations] 
+         * @param {Array<ExperimentTags>} [tags] 
          * @param {string} [hasEditPermission] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        updateExperiment(id: string, name: string, description: string, id2?: number, isPrivate?: boolean, dateCreated?: string, lastModified?: string, owner?: ExperimentOwner, teams?: Array<ExperimentOwnerGroupsInner>, collaborators?: Array<ExperimentCollaboratorsInner>, populations?: Array<ExperimentPopulationsInner>, tags?: Array<ExperimentTagsInner>, hasEditPermission?: string, options?: any): AxiosPromise<Experiment> {
+        updateExperiment(id: string, name: string, description: string, id2?: number, isPrivate?: boolean, dateCreated?: string, lastModified?: string, owner?: ExperimentOwner, teams?: Array<ExperimentOwnerGroups>, collaborators?: Array<ExperimentCollaborators>, populations?: Array<ExperimentPopulations>, tags?: Array<ExperimentTags>, hasEditPermission?: string, options?: any): AxiosPromise<Experiment> {
             return localVarFp.updateExperiment(id, name, description, id2, isPrivate, dateCreated, lastModified, owner, teams, collaborators, populations, tags, hasEditPermission, options).then((request) => request(axios, basePath));
         },
         /**
@@ -3505,12 +3493,11 @@ export const ApiApiFactory = function (configuration?: Configuration, basePath?:
          * @param {string} id A unique integer value identifying this experiment.
          * @param {any} keyFile 
          * @param {any} dataFile 
-         * @param {number} [populationId] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        uploadFilesExperiment(id: string, keyFile: any, dataFile: any, populationId?: number, options?: any): AxiosPromise<ExperimentFileUpload> {
-            return localVarFp.uploadFilesExperiment(id, keyFile, dataFile, populationId, options).then((request) => request(axios, basePath));
+        uploadFilesExperiment(id: string, keyFile: any, dataFile: any, options?: any): AxiosPromise<ExperimentFileUpload> {
+            return localVarFp.uploadFilesExperiment(id, keyFile, dataFile, options).then((request) => request(axios, basePath));
         },
     };
 };
@@ -3589,16 +3576,16 @@ export class ApiApi extends BaseAPI {
      * @param {string} [dateCreated] 
      * @param {string} [lastModified] 
      * @param {ExperimentOwner} [owner] 
-     * @param {Array<ExperimentOwnerGroupsInner>} [teams] 
-     * @param {Array<ExperimentCollaboratorsInner>} [collaborators] 
-     * @param {Array<ExperimentPopulationsInner>} [populations] 
-     * @param {Array<ExperimentTagsInner>} [tags] 
+     * @param {Array<ExperimentOwnerGroups>} [teams] 
+     * @param {Array<ExperimentCollaborators>} [collaborators] 
+     * @param {Array<ExperimentPopulations>} [populations] 
+     * @param {Array<ExperimentTags>} [tags] 
      * @param {string} [hasEditPermission] 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof ApiApi
      */
-    public createExperiment(name: string, description: string, id?: number, isPrivate?: boolean, dateCreated?: string, lastModified?: string, owner?: ExperimentOwner, teams?: Array<ExperimentOwnerGroupsInner>, collaborators?: Array<ExperimentCollaboratorsInner>, populations?: Array<ExperimentPopulationsInner>, tags?: Array<ExperimentTagsInner>, hasEditPermission?: string, options?: AxiosRequestConfig) {
+    public createExperiment(name: string, description: string, id?: number, isPrivate?: boolean, dateCreated?: string, lastModified?: string, owner?: ExperimentOwner, teams?: Array<ExperimentOwnerGroups>, collaborators?: Array<ExperimentCollaborators>, populations?: Array<ExperimentPopulations>, tags?: Array<ExperimentTags>, hasEditPermission?: string, options?: AxiosRequestConfig) {
         return ApiApiFp(this.configuration).createExperiment(name, description, id, isPrivate, dateCreated, lastModified, owner, teams, collaborators, populations, tags, hasEditPermission, options).then((request) => request(this.axios, this.basePath));
     }
 
@@ -3836,16 +3823,16 @@ export class ApiApi extends BaseAPI {
      * @param {string} [dateCreated] 
      * @param {string} [lastModified] 
      * @param {ExperimentOwner} [owner] 
-     * @param {Array<ExperimentOwnerGroupsInner>} [teams] 
-     * @param {Array<ExperimentCollaboratorsInner>} [collaborators] 
-     * @param {Array<ExperimentPopulationsInner>} [populations] 
-     * @param {Array<ExperimentTagsInner>} [tags] 
+     * @param {Array<ExperimentOwnerGroups>} [teams] 
+     * @param {Array<ExperimentCollaborators>} [collaborators] 
+     * @param {Array<ExperimentPopulations>} [populations] 
+     * @param {Array<ExperimentTags>} [tags] 
      * @param {string} [hasEditPermission] 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof ApiApi
      */
-    public partialUpdateExperiment(id: string, name: string, description: string, id2?: number, isPrivate?: boolean, dateCreated?: string, lastModified?: string, owner?: ExperimentOwner, teams?: Array<ExperimentOwnerGroupsInner>, collaborators?: Array<ExperimentCollaboratorsInner>, populations?: Array<ExperimentPopulationsInner>, tags?: Array<ExperimentTagsInner>, hasEditPermission?: string, options?: AxiosRequestConfig) {
+    public partialUpdateExperiment(id: string, name: string, description: string, id2?: number, isPrivate?: boolean, dateCreated?: string, lastModified?: string, owner?: ExperimentOwner, teams?: Array<ExperimentOwnerGroups>, collaborators?: Array<ExperimentCollaborators>, populations?: Array<ExperimentPopulations>, tags?: Array<ExperimentTags>, hasEditPermission?: string, options?: AxiosRequestConfig) {
         return ApiApiFp(this.configuration).partialUpdateExperiment(id, name, description, id2, isPrivate, dateCreated, lastModified, owner, teams, collaborators, populations, tags, hasEditPermission, options).then((request) => request(this.axios, this.basePath));
     }
 
@@ -3994,16 +3981,16 @@ export class ApiApi extends BaseAPI {
      * @param {string} [dateCreated] 
      * @param {string} [lastModified] 
      * @param {ExperimentOwner} [owner] 
-     * @param {Array<ExperimentOwnerGroupsInner>} [teams] 
-     * @param {Array<ExperimentCollaboratorsInner>} [collaborators] 
-     * @param {Array<ExperimentPopulationsInner>} [populations] 
-     * @param {Array<ExperimentTagsInner>} [tags] 
+     * @param {Array<ExperimentOwnerGroups>} [teams] 
+     * @param {Array<ExperimentCollaborators>} [collaborators] 
+     * @param {Array<ExperimentPopulations>} [populations] 
+     * @param {Array<ExperimentTags>} [tags] 
      * @param {string} [hasEditPermission] 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof ApiApi
      */
-    public updateExperiment(id: string, name: string, description: string, id2?: number, isPrivate?: boolean, dateCreated?: string, lastModified?: string, owner?: ExperimentOwner, teams?: Array<ExperimentOwnerGroupsInner>, collaborators?: Array<ExperimentCollaboratorsInner>, populations?: Array<ExperimentPopulationsInner>, tags?: Array<ExperimentTagsInner>, hasEditPermission?: string, options?: AxiosRequestConfig) {
+    public updateExperiment(id: string, name: string, description: string, id2?: number, isPrivate?: boolean, dateCreated?: string, lastModified?: string, owner?: ExperimentOwner, teams?: Array<ExperimentOwnerGroups>, collaborators?: Array<ExperimentCollaborators>, populations?: Array<ExperimentPopulations>, tags?: Array<ExperimentTags>, hasEditPermission?: string, options?: AxiosRequestConfig) {
         return ApiApiFp(this.configuration).updateExperiment(id, name, description, id2, isPrivate, dateCreated, lastModified, owner, teams, collaborators, populations, tags, hasEditPermission, options).then((request) => request(this.axios, this.basePath));
     }
 
@@ -4048,13 +4035,12 @@ export class ApiApi extends BaseAPI {
      * @param {string} id A unique integer value identifying this experiment.
      * @param {any} keyFile 
      * @param {any} dataFile 
-     * @param {number} [populationId] 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof ApiApi
      */
-    public uploadFilesExperiment(id: string, keyFile: any, dataFile: any, populationId?: number, options?: AxiosRequestConfig) {
-        return ApiApiFp(this.configuration).uploadFilesExperiment(id, keyFile, dataFile, populationId, options).then((request) => request(this.axios, this.basePath));
+    public uploadFilesExperiment(id: string, keyFile: any, dataFile: any, options?: AxiosRequestConfig) {
+        return ApiApiFp(this.configuration).uploadFilesExperiment(id, keyFile, dataFile, options).then((request) => request(this.axios, this.basePath));
     }
 }
 

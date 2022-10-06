@@ -1431,8 +1431,6 @@ components:
     ExperimentFileUpload:
       type: object
       properties:
-        population_id:
-          type: integer
         key_file:
           type: string
           format: binary
@@ -1456,3 +1454,5 @@ components:
       bearerFormat: JWT
 security:
 - bearerAuth: []
+servers:
+- url: /backend

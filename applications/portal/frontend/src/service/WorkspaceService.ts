@@ -1,8 +1,6 @@
 import { Configuration } from '../apiclient/workspaces/configuration';
 import { ApiApi } from '../apiclient/workspaces/api';
 
-const workspacesApiUri = '/backend';
-
 class WorkspaceService {
 
   workspacesApi: ApiApi = null;
@@ -14,7 +12,7 @@ class WorkspaceService {
 
   initApis = (token: string) => {
     this.accessToken = token;
-    this.workspacesApi = new ApiApi(new Configuration({ basePath: workspacesApiUri, accessToken: token }));
+    this.workspacesApi = new ApiApi(new Configuration({ accessToken: token }));
   }
 
   getApi = (): ApiApi => {
