@@ -1,12 +1,8 @@
 import os.path
 from pathlib import PosixPath
-
-from cordmap.get_all_population_keys import get_populations_from_file
-from cordmap.register.constants import population_ignore_set
 from django.conf import settings
-
 from api.models import Experiment, Population, Tag
-from api.services.workflows_service import execute_generate_population_cells_workflow
+from api.services.workflows_service import execute_generate_population_cells_workflow, execute_upload_files_workflow
 
 
 def add_tag(experiment: Experiment, tag_name: str, save=True):
@@ -32,10 +28,5 @@ def delete_tag(experiment: Experiment, tag_name: str):
 
 
 def upload_files(experiment: Experiment, key_filepath: str, data_filepath: str):
-    key_path = PosixPath(os.path.join(settings.PERSISTENT_ROOT, key_filepath))
-    populations = get_populations_from_file(key_path, population_ignore_set)
-    for name in populations:
-        population = Population.objects.create(
-            experiment_id=experiment.id, name=name
-        )
-        execute_generate_population_cells_workflow(population.id, data_filepath)
+    execute_upload_files_workflow(experiment, key_filepath, data_filepath)
+

@@ -1,7 +1,6 @@
 import os.path
 import uuid
 
-from cordmap.main import register_sections_3D
 
 from api.services.filesystem_service import move_file
 
@@ -10,6 +9,7 @@ CELLS_CSV = "cells_with_labels"
 
 
 def get_cells_filepath(population_name: str, data_filepath: str, storage_path: str):
+    from cordmap.main import register_sections_3D
     out_dir = os.path.join(os.path.dirname(data_filepath), OUTPUT_DIRECTORY)
     register_sections_3D(data_filepath, out_dir)
     filepath = move_file(

@@ -14,9 +14,6 @@ from ..constants import (
 from ..helpers.generate_population_cells import get_cells_filepath
 from ..services.filesystem_service import create_dir, remove_dir, remove_file
 from ..services.population_service import generate_images, split_cells_per_segment
-from ..services.workflows_service import (
-    execute_generate_population_static_files_workflow,
-)
 from ..utils import has_property, is_valid_hex_str
 from .atlas import AtlasesChoice
 from .experiment import Experiment
@@ -88,6 +85,9 @@ class Population(models.Model):
         has_file_changed = self._has_file_changed()
         super(Population, self).save(force_insert, force_update, using, update_fields)
         if has_file_changed:  # Only trigger workflow on cells changes
+            from ..services.workflows_service import (
+                execute_generate_population_static_files_workflow,
+            )
             execute_generate_population_static_files_workflow(self.id)
 
     def delete(self, using=None, keep_parents=False):
