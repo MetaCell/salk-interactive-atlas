@@ -1,6 +1,7 @@
 import bisect
 import csv
 import logging
+import os
 
 import numpy as np
 
@@ -47,17 +48,20 @@ def split_cells_per_segment(population):
 def get_cells(subdivision, populations):
     cells = []
     for pop in populations:
-        try:
-            with open(
-                    pop.get_subdivision_storage_path(
-                        subdivision, PopulationPersistentFiles.CSV_FILE
-                    )
-            ) as cells_file:
-                reader = csv.reader(cells_file)
-                for row in reader:
-                    cells.append([float(c) for c in row])
-        except Exception as e:
-            logging.error(e)
+        filepath = pop.get_subdivision_storage_path(
+            subdivision, PopulationPersistentFiles.CSV_FILE
+        )
+        print(filepath)
+        filesize = os.path.getsize(filepath)
+        print(filesize)
+        if filesize > 0:
+            try:
+                with open(filepath) as cells_file:
+                    reader = csv.reader(cells_file)
+                    for row in reader:
+                        cells.append([float(c) for c in row])
+            except Exception as e:
+                logging.error(e)
     return cells
 
 
