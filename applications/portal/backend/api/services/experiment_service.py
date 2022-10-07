@@ -28,5 +28,5 @@ def delete_tag(experiment: Experiment, tag_name: str):
 
 
 def upload_files(experiment: Experiment, key_filepath: str, data_filepath: str):
-    execute_upload_files_workflow(experiment, key_filepath, data_filepath)
+    execute_upload_files_workflow(experiment.id, key_filepath, data_filepath)
 
