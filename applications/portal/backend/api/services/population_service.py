@@ -48,6 +48,7 @@ def split_cells_per_segment(population):
 def get_cells(subdivision, populations):
     cells = []
     for pop in populations:
+        print("6")
         filepath = pop.get_subdivision_storage_path(
             subdivision, PopulationPersistentFiles.CSV_FILE
         )
