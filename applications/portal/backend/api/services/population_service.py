@@ -46,6 +46,7 @@ def split_cells_per_segment(population):
 
 
 def get_cells(subdivision, populations):
+    # todo: remove prints
     cells = []
     for pop in populations:
         print("6")
