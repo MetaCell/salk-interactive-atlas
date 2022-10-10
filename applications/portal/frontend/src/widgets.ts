@@ -6,7 +6,7 @@ import {Population} from "./apiclient/workspaces";
 export const widgetIds = {
     threeDViewer: 'threeDViewer',
     twoDViewer: 'twoDViewer',
-    electrophysiologyViewer: 'epWidget'
+    detailsViewer: 'detailsViewer'
 }
 
 export const threeDViewerWidget = (selectedAtlas: AtlasChoice, activePopulations: any) => {
@@ -24,11 +24,12 @@ export const threeDViewerWidget = (selectedAtlas: AtlasChoice, activePopulations
     }
 };
 
-export const ElectrophysiologyWidget = {
-    id: widgetIds.electrophysiologyViewer,
-    name: "Electrophysiology",
-    component: "electrophysiologyViewer",
+export const DetailsWidget = {
+    id: widgetIds.detailsViewer,
+    name: "Details Viewer",
+    component: "detailsViewer",
     panelName: "rightPanel",
+    pos: 1,
     enableClose: false,
     status: WidgetStatus.ACTIVE,
 };
@@ -39,6 +40,7 @@ export const twoDViewerWidget = (subdivisions: string[], activePopulations: Popu
         name: "2D Viewer",
         component: widgetIds.twoDViewer,
         panelName: "rightPanel",
+        pos: 2,
         enableClose: false,
         status: WidgetStatus.ACTIVE,
         config: {

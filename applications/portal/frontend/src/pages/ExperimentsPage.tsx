@@ -26,7 +26,7 @@ import {Experiment, ExperimentPopulationsInner, Population} from "../apiclient/w
 import {areAllSelected} from "../utilities/functions";
 import workspaceService from "../service/WorkspaceService";
 import Cell from "../models/Cell";
-import {ElectrophysiologyWidget, threeDViewerWidget, twoDViewerWidget, widgetIds} from "../widgets";
+import {DetailsWidget, threeDViewerWidget, twoDViewerWidget, widgetIds} from "../widgets";
 import {useInterval} from "../utilities/hooks/useInterval";
 import {useParams} from "react-router";
 
@@ -220,7 +220,7 @@ const ExperimentsPage = () => {
             setSidebarPopulations(experimentPopulations)
             dispatch(addWidget(threeDViewerWidget(selectedAtlas, {})));
             dispatch(addWidget(twoDViewerWidget(Object.keys(subdivisions), [], selectedAtlas)));
-            dispatch(addWidget(ElectrophysiologyWidget));
+            dispatch(addWidget(DetailsWidget));
         }
     }, [experiment])
 
