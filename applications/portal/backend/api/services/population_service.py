@@ -49,13 +49,10 @@ def get_cells(subdivision, populations):
     # todo: remove prints
     cells = []
     for pop in populations:
-        print("6")
         filepath = pop.get_subdivision_storage_path(
             subdivision, PopulationPersistentFiles.CSV_FILE
         )
-        print(filepath)
         filesize = os.path.getsize(filepath)
-        print(filesize)
         if filesize > 0:
             try:
                 with open(filepath) as cells_file:

@@ -137,9 +137,12 @@ class Population(models.Model):
         self.save()
         raise e
 
-    def get_image(self, subdivision: str, content: PopulationPersistentFiles) -> Image:
-        return Image.open(self.get_subdivision_storage_path(subdivision, content))
+    def get_image_path(self, subdivision: str, content: PopulationPersistentFiles) -> str:
+        return self.get_subdivision_storage_path(subdivision, content)
 
+    def get_image(self, subdivision: str, content: PopulationPersistentFiles) -> Image:
+        return Image.open(self.get_image_path(subdivision, content))
+    
     @staticmethod
     def has_read_permission(request):
         return True
