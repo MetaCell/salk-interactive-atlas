@@ -9,8 +9,8 @@ harness:
         memory: 512Mi
         cpu: 250m
       limits:
-        memory: 1Gi
-        cpu: 1500m
+        memory: 512Mi
+        cpu: 1000m
     volume:
       name: salk-files
       mountpath: /usr/src/app/persistent
@@ -38,12 +38,12 @@ harness:
     path: /backend/k8s/live
     periodSeconds: 30
     failureThreshold: 5
-    initialDelaySeconds: 30
+    initialDelaySeconds: 15
   readinessProbe:
     path: /backend/k8s/ready
     periodSeconds: 30
     failureThreshold: 5
-    initialDelaySeconds: 30
+    initialDelaySeconds: 15
   uri_role_mapping:
     - uri: /*
       roles:
