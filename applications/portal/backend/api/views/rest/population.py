@@ -70,13 +70,15 @@ class PopulationViewSet(viewsets.ModelViewSet):
         if len(cells) == 0:
             return HttpResponse(status=status.HTTP_204_NO_CONTENT)
 
-        bg_atlas = get_bg_atlas(instance.atlas)
-        try:
-            validate_subdivision(bg_atlas, subdivision)
-        except DensityMapIncorrectSubdivisionError:
-            return HttpResponse(status=status.HTTP_400_BAD_REQUEST)
-        except Exception as e:
-            return HttpResponse(status=status.HTTP_400_BAD_REQUEST)
+        # 2022-10-11 ZS: disabled this due to memory issues
+        # ToDo: fix issues with memory
+        # bg_atlas = get_bg_atlas(instance.atlas)
+        # try:
+        #     validate_subdivision(bg_atlas, subdivision)
+        # except DensityMapIncorrectSubdivisionError:
+        #     return HttpResponse(status=status.HTTP_400_BAD_REQUEST)
+        # except Exception as e:
+        #     return HttpResponse(status=status.HTTP_400_BAD_REQUEST)
 
         response = FileResponse(
             open(instance.get_image_path(subdivision, content), 'rb'),
