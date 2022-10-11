@@ -65,13 +65,13 @@ class PopulationViewSet(viewsets.ModelViewSet):
     def _handle_get_image_request(self, content, request, **kwargs):
         instance = self.get_object()
         subdivision = kwargs.get("subdivision")
-        bg_atlas = get_bg_atlas(instance.atlas)
-        try:
-            validate_subdivision(bg_atlas, subdivision)
-        except DensityMapIncorrectSubdivisionError:
-            return HttpResponse(status=status.HTTP_400_BAD_REQUEST)
-        except Exception as e:
-            return HttpResponse(status=status.HTTP_400_BAD_REQUEST)
+        # bg_atlas = get_bg_atlas(instance.atlas)
+        # try:
+        #     validate_subdivision(bg_atlas, subdivision)
+        # except DensityMapIncorrectSubdivisionError:
+        #     return HttpResponse(status=status.HTTP_400_BAD_REQUEST)
+        # except Exception as e:
+        #     return HttpResponse(status=status.HTTP_400_BAD_REQUEST)
 
         cells = get_cells(subdivision, [instance])
         if len(cells) == 0:
