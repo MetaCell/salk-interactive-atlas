@@ -94,21 +94,6 @@ const ExperimentsPage = () => {
     const handleAtlasChange = (atlasId: AtlasChoice) => {
         setSelectedAtlas(atlasId)
     };
-
-    const handleSubdivisionSwitch = (subdivisionId: string) => {
-        const nextSubdivisions: any = {...subdivisions}
-        nextSubdivisions[subdivisionId].selected = !nextSubdivisions[subdivisionId].selected
-        setSubdivisions(nextSubdivisions)
-    };
-
-    const handleShowAllSubdivisions = () => {
-        const areAllSubdivisionsActive = areAllSelected(subdivisions)
-        const nextSubdivisions: any = {}
-        Object.keys(subdivisions)
-            .forEach(sId => nextSubdivisions[sId] = {...subdivisions[sId], selected: !areAllSubdivisionsActive})
-        setSubdivisions(nextSubdivisions)
-    }
-
     const handleShowAllPopulations = () => {
         const areAllPopulationsActive = areAllSelected(sidebarPopulations)
         const nextPopulations: any = {}
@@ -154,12 +139,14 @@ const ExperimentsPage = () => {
         const cellsFile = await api.cellsPopulation(`${p.id}`);
         // @ts-ignore
         const cellsFileArray = cellsFile.data.split(/\r?\n/)
-        if (cellsFileArray[cellsFileArray.length - 1] === ''){
+        if (cellsFileArray[cellsFileArray.length - 1] === '') {
             cellsFileArray.pop()
         }
         const header = cellsFileArray.shift().split(',')
         return cellsFileArray.map((csv: string) => new Cell(csv, header))
     }
+
+
 
     useInterval(() => {
         const fetchData = async () => {
@@ -219,19 +206,25 @@ const ExperimentsPage = () => {
             setPopulations(experimentPopulations)
             setSidebarPopulations(experimentPopulations)
             dispatch(addWidget(threeDViewerWidget(selectedAtlas, {})));
-            dispatch(addWidget(twoDViewerWidget(Object.keys(subdivisions), [], selectedAtlas)));
+            dispatch(addWidget(twoDViewerWidget(Object.keys(subdivisions), [], selectedAtlas,
+                WidgetStatus.ACTIVE)));
             dispatch(addWidget(DetailsWidget(false, null)));
         }
     }, [experiment])
 
     // TODO: Handle selectedAtlas changes
 
+    const getWidgetStatus = (widgetId : string) => {
+        return store.getState().widgets[widgetId].status
+    }
+
     function getWidget(widgetId: string) {
-        switch (widgetId){
+        switch (widgetId) {
             case widgetIds.threeDViewer:
                 return threeDViewerWidget(selectedAtlas, getActivePopulations())
             case widgetIds.twoDViewer:
-                return twoDViewerWidget(Object.keys(subdivisions), Object.values(getActivePopulations()), selectedAtlas)
+                return twoDViewerWidget(Object.keys(subdivisions), Object.values(getActivePopulations()), selectedAtlas,
+                    getWidgetStatus(widgetId))
         }
 
     }

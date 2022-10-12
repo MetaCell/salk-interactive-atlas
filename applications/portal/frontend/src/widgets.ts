@@ -39,7 +39,8 @@ export const DetailsWidget = (active: boolean, populationName: string) => {
     }
 };
 
-export const twoDViewerWidget = (subdivisions: string[], activePopulations: Population[], selectedAtlas: AtlasChoice) => {
+export const twoDViewerWidget = (subdivisions: string[], activePopulations: Population[], selectedAtlas: AtlasChoice,
+                                 status: WidgetStatus) => {
     return {
         id: widgetIds.twoDViewer,
         name: "2D Viewer",
@@ -47,7 +48,7 @@ export const twoDViewerWidget = (subdivisions: string[], activePopulations: Popu
         panelName: "rightPanel",
         pos: 1,
         enableClose: false,
-        status: WidgetStatus.ACTIVE,
+        status,
         config: {
             subdivisions,
             activePopulations,

@@ -11,12 +11,10 @@ const useStyles = makeStyles({
     container: {
         background: canvasBg,
         height: "100%",
-        width: "100%",
-        display: "inline-block",
-        margin: 0,
     },
     title: {
-        paddingLeft: "0.5em"
+        padding: "0.5em",
+        margin: 0
     }
 });
 
