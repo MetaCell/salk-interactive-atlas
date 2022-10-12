@@ -79,7 +79,7 @@ class PopulationViewSet(viewsets.ModelViewSet):
         #     return HttpResponse(status=status.HTTP_400_BAD_REQUEST)
         # except Exception as e:
         #     return HttpResponse(status=status.HTTP_400_BAD_REQUEST)
-
+        
         response = FileResponse(
             open(instance.get_image_path(subdivision, content), 'rb'),
             content_type="image/png"

@@ -1,7 +1,11 @@
+import logging
 from django.db import models
 
 from api.helpers.ICustomAtlas import ICustomAtlas
 
+
+# Get an instance of a logger
+logger = logging.getLogger(__name__)
 
 salkAtlasses = {}
 
@@ -25,5 +29,5 @@ def get_atlas(atlas_id: str) -> ICustomAtlas:
     return salkAtlasses.get(atlas_id, add_atlas(atlas_id))
 
 for atlas_id in (e.value for e in AtlasesChoice):
-    print(f"*** MODELS ATLAS.PY adding atlasses *** {atlas_id}")
+    logger.info(f"adding atlas {atlas_id}")
     add_atlas(atlas_id)

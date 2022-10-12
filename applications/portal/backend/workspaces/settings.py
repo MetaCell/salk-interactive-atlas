@@ -163,31 +163,6 @@ INSTALLED_APPS += [
 # to add some custom styling
 TEMPLATES[0]["DIRS"] = [BASE_DIR / "templates"]
 
-# Django Logging Information
-LOGGING = {
-    # Define the logging version
-    "version": 1,
-    # Enable the existing loggers
-    "disable_existing_loggers": False,
-    # Define the handlers
-    "handlers": {
-        "console": {
-            "class": "logging.StreamHandler",
-            # 'formatter': 'console',
-        },
-    },
-    # Define the loggers
-    "loggers": {
-        "django": {
-            "handlers": [
-                "console",
-            ],
-            "level": "DEBUG" if DEBUG else "INFO",
-            "propagate": True,
-        },
-    },
-}
-
 # Static files (CSS, JavaScript, Images)
 MEDIA_ROOT = PERSISTENT_ROOT
 STATIC_ROOT = os.path.join(BASE_DIR, "static")
@@ -251,16 +226,32 @@ UM_TO_MM = 10
 POSITION_WITHIN_SUBSEGMENT = 0.5  # Position (in percentage) of the slice to pick from a subsegment
 
 
-LOGGING = {
-    'version': 1,
-    'disable_existing_loggers': False,
-    'handlers': {
-        'console': {
-            'class': 'logging.StreamHandler',
-        },
-    },
-    'root': {
-        'handlers': ['console'],
-        'level': 'WARNING',
-    },
-}
+import logging
+# Get an instance of a logger
+logger = logging.getLogger(__name__)
+logger.info("*"*80)
+logger.info(" ")
+logger.info(DATABASES)
+logger.info(" ")
+
+if DATABASES.get("default", None) and DATABASES.get("default").get("ENGINE", None) == "django.db.backends.postgresql":
+    DATABASES.get("default").update({
+        "DISABLE_SERVER_SIDE_CURSORS": True,
+        "CONN_MAX_AGE": 0
+    })
+
+logger.info(DATABASES)
+logger.info(" ")
+logger.info("*"*80)
+# DATABASES = {
+#     "default": {
+#         "ENGINE": "django.db.backends.postgresql",
+#         "NAME": "cloudharness",
+#         "USER": "mnp",
+#         "PASSWORD": "metacell",
+#         "HOST": "portal-db",
+#         "PORT": 5432,
+#         "CONN_MAX_AGE": 0,
+#         "DISABLE_SERVER_SIDE_CURSORS": True
+#     },
+# }

@@ -46,7 +46,6 @@ def split_cells_per_segment(population):
 
 
 def get_cells(subdivision, populations):
-    # todo: remove prints
     cells = []
     for pop in populations:
         filepath = pop.get_subdivision_storage_path(
