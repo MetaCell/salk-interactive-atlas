@@ -7,7 +7,7 @@ import {widgetIds} from "../../widgets";
 const componentMap = {
     [widgetIds.threeDViewer]: ThreeDViewer,
     [widgetIds.twoDViewer]: TwoDViewer,
-    'detailsViewer': DetailsViewer
+    [widgetIds.detailsViewer]: DetailsViewer
 };
 
 export default componentMap;

@@ -3,6 +3,7 @@ import {makeStyles} from "@material-ui/core/styles";
 import {canvasBg} from "../../theme";
 import {Accordion, AccordionDetails, AccordionSummary, Typography} from "@material-ui/core";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
+// @ts-ignore
 import ephys from "../../assets/details/ephys.png";
 import {Details} from "../../utilities/constants";
 
@@ -28,7 +29,7 @@ const DetailsViewer = () => {
                 <Typography>Electrophysiology</Typography>
             </AccordionSummary>
             <AccordionDetails>
-                <img src={ephys} alt={"Electrophysiology PDF"}></img>
+                <img src={ephys} alt={"Electrophysiology PDF"}/>
             </AccordionDetails>
         </Accordion>
         <Accordion expanded={expanded === Details.BEHAVIOUR} onChange={handleChange(Details.BEHAVIOUR)}>
@@ -38,7 +39,7 @@ const DetailsViewer = () => {
                 <Typography>Behaviour</Typography>
             </AccordionSummary>
             <AccordionDetails>
-                <img src={ephys} alt={"Behaviour PDF"}></img>
+                <img src={ephys} alt={"Behaviour PDF"}/>
             </AccordionDetails>
         </Accordion>
         <Accordion expanded={expanded === Details.IO} onChange={handleChange(Details.IO)}>
@@ -48,7 +49,7 @@ const DetailsViewer = () => {
                 <Typography>I/O Mapping</Typography>
             </AccordionSummary>
             <AccordionDetails>
-                <img src={ephys} alt={"I/O Mapping PDF"}></img>
+                <img src={ephys} alt={"I/O Mapping PDF"}/>
             </AccordionDetails>
         </Accordion>
     </div>
