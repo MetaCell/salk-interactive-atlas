@@ -237,7 +237,8 @@ logger.info(" ")
 if DATABASES.get("default", None) and DATABASES.get("default").get("ENGINE", None) == "django.db.backends.postgresql":
     DATABASES.get("default").update({
         "DISABLE_SERVER_SIDE_CURSORS": True,
-        "CONN_MAX_AGE": 0
+        "CONN_MAX_AGE": 0,
+        "ENGINE": "django_postgrespool2"
     })
 
 logger.info(DATABASES)
