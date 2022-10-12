@@ -66,7 +66,7 @@ const useStyles = makeStyles(t => ({
         display: 'flex',
         height: '100%',
         flex: '1',
-        padding: '0 0 0 211px',
+        // padding: '0 0 0 211px', // for now we disable this to show bigger images
         justifyContent: 'center',
         outline: "none !important"
     },
