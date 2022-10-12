@@ -24,14 +24,19 @@ export const threeDViewerWidget = (selectedAtlas: AtlasChoice, activePopulations
     }
 };
 
-export const DetailsWidget = {
-    id: widgetIds.detailsViewer,
-    name: "Details Viewer",
-    component: "detailsViewer",
-    panelName: "rightPanel",
-    pos: 1,
-    enableClose: false,
-    status: WidgetStatus.ACTIVE,
+export const DetailsWidget = (active: boolean, populationName: string) => {
+    return {
+        id: widgetIds.detailsViewer,
+        name: "Details Viewer",
+        component: "detailsViewer",
+        panelName: "rightPanel",
+        pos: 2,
+        enableClose: false,
+        status: active ? WidgetStatus.ACTIVE : WidgetStatus.HIDDEN,
+        config: {
+            populationName,
+        }
+    }
 };
 
 export const twoDViewerWidget = (subdivisions: string[], activePopulations: Population[], selectedAtlas: AtlasChoice) => {
@@ -40,7 +45,7 @@ export const twoDViewerWidget = (subdivisions: string[], activePopulations: Popu
         name: "2D Viewer",
         component: widgetIds.twoDViewer,
         panelName: "rightPanel",
-        pos: 2,
+        pos: 1,
         enableClose: false,
         status: WidgetStatus.ACTIVE,
         config: {

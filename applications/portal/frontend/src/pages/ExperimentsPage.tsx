@@ -220,7 +220,7 @@ const ExperimentsPage = () => {
             setSidebarPopulations(experimentPopulations)
             dispatch(addWidget(threeDViewerWidget(selectedAtlas, {})));
             dispatch(addWidget(twoDViewerWidget(Object.keys(subdivisions), [], selectedAtlas)));
-            dispatch(addWidget(DetailsWidget));
+            dispatch(addWidget(DetailsWidget(false, null)));
         }
     }, [experiment])
 

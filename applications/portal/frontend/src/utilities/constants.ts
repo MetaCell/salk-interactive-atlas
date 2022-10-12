@@ -71,3 +71,6 @@ export enum Details {
     BEHAVIOUR = 'Behaviour',
     IO = 'IO',
 }
+
+export const POPULATION_V1 = "V1"
+export const POPULATION_V2 = "V2"

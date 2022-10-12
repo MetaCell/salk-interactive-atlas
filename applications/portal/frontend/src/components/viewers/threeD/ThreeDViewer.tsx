@@ -20,6 +20,7 @@ import {AtlasChoice} from "../../../utilities/constants";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 // @ts-ignore
 import SWITCH_ICON from "../../../assets/images/icons/switch_icon.svg";
+import {DetailsWidget} from "../../../widgets";
 
 const MOCKED_GREY_MATTER = 'GM'
 const MOCKED_WHITE_MATTER = 'WM'
@@ -300,8 +301,15 @@ class ThreeDViewer extends Component {
         this.onUpdateEnd()
     }
 
-    onSelection(selectedInstances: []) {
-        console.log(selectedInstances)
+    onSelection(selectedInstances: string[]) {
+        if (selectedInstances.length > 0){
+            const nearestSelectionUUID = selectedInstances[0]
+            const mesh = this.scene.getObjectByProperty('uuid', nearestSelectionUUID)
+            if (mesh) {
+                // @ts-ignore
+                this.props.updateWidget(DetailsWidget(true, mesh.name))
+            }
+        }
     }
 
     onUpdateEnd() {

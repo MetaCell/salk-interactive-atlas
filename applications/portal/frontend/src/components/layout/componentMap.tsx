@@ -1,4 +1,4 @@
-import ThreeDViewer from "../viewers/threeD/ThreeDViewer";
+import ThreeDViewer from "../reduxconnect/ThreeDViewerConnect";
 import TwoDViewer from "../viewers/twoD/TwoDViewer";
 import DetailsViewer from "../viewers/DetailsViewer";
 import {widgetIds} from "../../widgets";
