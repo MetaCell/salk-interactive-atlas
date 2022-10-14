@@ -1,13 +1,13 @@
-import ThreeDViewer from "../viewers/threeD/ThreeDViewer";
+import ThreeDViewer from "../reduxconnect/ThreeDViewerConnect";
 import TwoDViewer from "../viewers/twoD/TwoDViewer";
-import ElectrophysiologyViewer from "../viewers/ElectrophysiologyViewer";
+import DetailsViewer from "../viewers/DetailsViewer";
 import {widgetIds} from "../../widgets";
 
 
 const componentMap = {
     [widgetIds.threeDViewer]: ThreeDViewer,
     [widgetIds.twoDViewer]: TwoDViewer,
-    'electrophysiologyViewer': ElectrophysiologyViewer
+    [widgetIds.detailsViewer]: DetailsViewer
 };
 
 export default componentMap;

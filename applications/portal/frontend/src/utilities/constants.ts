@@ -65,3 +65,12 @@ export const GridTypes = {
     FRAME : {value: "Grid Frame", folder: 'frame'},
     COMPLETE : {value: "Complete Grid", folder: 'complete'},
 }
+
+export enum Details {
+    ELECTROPHYSIOLOGY = 'Electrophysiology',
+    BEHAVIOUR = 'Behaviour',
+    IO = 'IO',
+}
+
+export const POPULATION_V1 = "V1"
+export const POPULATION_V2 = "V2"

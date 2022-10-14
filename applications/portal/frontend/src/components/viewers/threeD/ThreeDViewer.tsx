@@ -20,6 +20,7 @@ import {AtlasChoice} from "../../../utilities/constants";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 // @ts-ignore
 import SWITCH_ICON from "../../../assets/images/icons/switch_icon.svg";
+import {DetailsWidget} from "../../../widgets";
 
 const MOCKED_GREY_MATTER = 'GM'
 const MOCKED_WHITE_MATTER = 'WM'
@@ -99,7 +100,7 @@ const styles = (t: any) => ({
     },
     buttonLabel: {
         fontSize: "0.75rem"
-    }    ,
+    },
     popoverContent: {
         paddingBottom: t.spacing(1)
     }
@@ -142,46 +143,52 @@ class ThreeDViewer extends Component {
         this.populationsMap = {}
         this.onMount = this.onMount.bind(this)
         this.onUpdateEnd = this.onUpdateEnd.bind(this)
+        this.onSelection = this.onSelection.bind(this)
 
         // @ts-ignore
         const {selectedAtlas} = this.props
         this.state = {
             subdivisions: getSubdivisions(selectedAtlas),
             needsReset: false,
-            anchorEl: null
+            anchorEl: null,
+            threeDObjects: {}
         }
     }
 
     shouldComponentUpdate(nextProps: Readonly<{}>, nextState: Readonly<{}>, nextContext: any): boolean {
         // @ts-ignore
-        return this.scene && (this.state !== nextState && !(this.state.needsReset && !nextState.needsReset) || this.props !== nextProps)
+        return this.scene && (this.state !== nextState && !(this.state.needsReset && !nextState.needsReset)
+            || this.props !== nextProps)
     }
 
     componentDidUpdate(prevProps: Readonly<{}>, prevState: Readonly<{}>, snapshot?: any) {
         // @ts-ignore
-        if (this.state.anchorEl === prevState.anchorEl){
-            this.updatePopulations(
+        if (this.state.anchorEl === prevState.anchorEl &&
             // @ts-ignore
-            !eqSet(getActiveSubdivisionsSet(prevState.subdivisions), getActiveSubdivisionsSet(this.state.subdivisions))
-            || !eqSet(
+            eqSet(new Set(Object.keys(this.state.threeDObjects)), new Set(Object.keys(prevState.threeDObjects)))) {
+            this.updatePopulations(
                 // @ts-ignore
-                new Set(Object.keys(prevProps.activePopulations)
-                    .map(pId => getColorOpacityPair(
-                        // @ts-ignore
-                        prevProps.activePopulations[pId].color,
-                        // @ts-ignore
-                        prevProps.activePopulations[pId].opacity)
-                    )),
-                // @ts-ignore
-                new Set(Object.keys(this.props.activePopulations)
-                    .map(pId => getColorOpacityPair(
-                        // @ts-ignore
-                        this.props.activePopulations[pId].color,
-                        // @ts-ignore
-                        this.props.activePopulations[pId].opacity)
-                    ))
-            ))
-    }}
+                !eqSet(getActiveSubdivisionsSet(prevState.subdivisions), getActiveSubdivisionsSet(this.state.subdivisions))
+                || !eqSet(
+                    // @ts-ignore
+                    new Set(Object.keys(prevProps.activePopulations)
+                        .map(pId => getColorOpacityPair(
+                            // @ts-ignore
+                            prevProps.activePopulations[pId].color,
+                            // @ts-ignore
+                            prevProps.activePopulations[pId].opacity)
+                        )),
+                    // @ts-ignore
+                    new Set(Object.keys(this.props.activePopulations)
+                        .map(pId => getColorOpacityPair(
+                            // @ts-ignore
+                            this.props.activePopulations[pId].color,
+                            // @ts-ignore
+                            this.props.activePopulations[pId].opacity)
+                        ))
+                ))
+        }
+    }
 
     getInstancesToShow() {
         // @ts-ignore
@@ -196,6 +203,8 @@ class ThreeDViewer extends Component {
     updatePopulations(performCleanUpdate = false) {
         // @ts-ignore
         const {activePopulations} = this.props
+        // @ts-ignore
+        const {threeDObjects} = this.state
         const activePopulationsIds = Object.keys(activePopulations)
         // @ts-ignore
         const currentActivePopulations = Object.keys(this.populationsMap).filter(pId => this.populationsMap[pId].active)
@@ -212,35 +221,38 @@ class ThreeDViewer extends Component {
                 .filter(x => !activePopulationsIds.includes(x));
             populationsToAdd = activePopulationsIds.filter(x => !currentActivePopulations.includes(x));
         }
+        const nextThreeDObjects = {...threeDObjects}
         for (const ptr of populationsToRemove) {
-            this.removePopulation(ptr)
+            this.removePopulation(ptr, nextThreeDObjects)
         }
         // @ts-ignore
 
         for (const pta of populationsToAdd) {
-            this.addPopulation(activePopulations[pta])
+            this.addPopulation(activePopulations[pta], nextThreeDObjects)
+        }
+        if (populationsToAdd.length > 0 || populationsToRemove.length > 0){
+            this.setState({threeDObjects: nextThreeDObjects})
         }
     }
 
-    removePopulation(populationId: string) {
+    removePopulation(populationId: string, threeDObjects: { [x: string]: THREE.InstancedMesh; }) {
         // @ts-ignore
         this.populationsMap[populationId].active = false
         // @ts-ignore
-        const object = this.scene.getObjectByProperty('uuid', this.populationsMap[populationId].uuid)
         if (this.scene) {
             // @ts-ignore
-            this.scene.remove(object)
+            delete threeDObjects[this.populationsMap[populationId].uuid]
         }
     }
 
-    addPopulation(population: Population) {
+    addPopulation(population: Population, threeDObjects: { [x: string]: THREE.InstancedMesh; }) {
         // @ts-ignore
         const {selectedAtlas} = this.props
         // @ts-ignore
         const {subdivisions} = this.state
         const activeSubdivisions = getActiveSubdivisionsSet(subdivisions)
 
-        if (activeSubdivisions.size === 0){
+        if (activeSubdivisions.size === 0) {
             return
         }
 
@@ -257,6 +269,7 @@ class ThreeDViewer extends Component {
         const mesh = new THREE.InstancedMesh(geometry, material, population.cells.length);
         mesh.position.x = minOffset
         mesh.frustumCulled = false
+        mesh.name = population.name
         for (let i = 0; i < population.cells.length; i++) {
 
             const cell = population.cells[i]
@@ -276,7 +289,7 @@ class ThreeDViewer extends Component {
             // @ts-ignore
             this.populationsMap[population.id.toString(10)] = {uuid: mesh.uuid, active: true}
             // @ts-ignore
-            this.scene.add(mesh);
+            threeDObjects[mesh.uuid] = mesh
         }
     }
 
@@ -286,6 +299,17 @@ class ThreeDViewer extends Component {
         const light = new THREE.AmbientLight(0x404040);
         this.scene.add(light);
         this.onUpdateEnd()
+    }
+
+    onSelection(selectedInstances: string[]) {
+        if (selectedInstances.length > 0){
+            const nearestSelectionUUID = selectedInstances[0]
+            const mesh = this.scene.getObjectByProperty('uuid', nearestSelectionUUID)
+            if (mesh) {
+                // @ts-ignore
+                this.props.updateWidget(DetailsWidget(true, mesh.name))
+            }
+        }
     }
 
     onUpdateEnd() {
@@ -342,7 +366,7 @@ class ThreeDViewer extends Component {
         // @ts-ignore
         const {classes} = this.props
         // @ts-ignore
-        const {subdivisions, needsReset, anchorEl} = this.state
+        const {subdivisions, needsReset, anchorEl, threeDObjects} = this.state
         // tslint:disable-next-line:prefer-const
         let {cameraOptions, captureOptions} = getDefaultOptions()
         // @ts-ignore
@@ -407,6 +431,8 @@ class ThreeDViewer extends Component {
                         backgroundColor={canvasBg}
                         onMount={this.onMount}
                         onUpdateEnd={this.onUpdateEnd}
+                        onSelection={this.onSelection}
+                        threeDObjects={Object.values(threeDObjects)}
                     />
                 </Box>
             </Box>)
