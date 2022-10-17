@@ -37,6 +37,7 @@ ENV BUILDDIR=/builddir
 ENV APP_DIR=/usr/src/app
 
 COPY --from=backend ${APP_DIR}/persistent/ ${BUILDDIR}/src/assets/atlas/salk_cord_10um/
+RUN rm -rf ${BUILDDIR}/src/assets/atlas/salk_cord_10um/*.sqlite3
 COPY frontend/package.json ${BUILDDIR}/package.json
 COPY frontend/package-lock.json ${BUILDDIR}/package-lock.json
 WORKDIR ${BUILDDIR}
@@ -50,5 +51,5 @@ FROM backend
 ENV BUILDDIR=/builddir
 
 COPY --from=frontend $BUILDDIR/public ${APP_DIR}/static/www
-ENV WORKERS=3
+ENV WORKERS=2
 CMD uvicorn --workers ${WORKERS} --host 0.0.0.0 --port ${PORT} main:app

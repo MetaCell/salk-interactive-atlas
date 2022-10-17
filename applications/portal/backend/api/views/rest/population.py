@@ -1,7 +1,8 @@
 import logging
 
-import numpy as np
-from django.http import Http404, HttpResponse
+# import numpy as np
+from django.http import Http404, HttpResponse, FileResponse
+
 from dry_rest_permissions.generics import DRYPermissions
 from rest_framework import status, viewsets
 from rest_framework.decorators import action
@@ -64,17 +65,23 @@ class PopulationViewSet(viewsets.ModelViewSet):
     def _handle_get_image_request(self, content, request, **kwargs):
         instance = self.get_object()
         subdivision = kwargs.get("subdivision")
-        bg_atlas = get_bg_atlas(instance.atlas)
-        try:
-            validate_subdivision(bg_atlas, subdivision)
-        except DensityMapIncorrectSubdivisionError:
-            return HttpResponse(status=status.HTTP_400_BAD_REQUEST)
 
-        cells = np.array(get_cells(subdivision, [instance]))
+        cells = get_cells(subdivision, [instance])
         if len(cells) == 0:
             return HttpResponse(status=status.HTTP_204_NO_CONTENT)
 
-        img = instance.get_image(subdivision, content)
-        response = HttpResponse(content_type="image/png", status=status.HTTP_200_OK)
-        img.save(response, "PNG")
+        # 2022-10-11 ZS: disabled this due to memory issues
+        # ToDo: fix issues with memory
+        # bg_atlas = get_bg_atlas(instance.atlas)
+        # try:
+        #     validate_subdivision(bg_atlas, subdivision)
+        # except DensityMapIncorrectSubdivisionError:
+        #     return HttpResponse(status=status.HTTP_400_BAD_REQUEST)
+        # except Exception as e:
+        #     return HttpResponse(status=status.HTTP_400_BAD_REQUEST)
+        
+        response = FileResponse(
+            open(instance.get_image_path(subdivision, content), 'rb'),
+            content_type="image/png"
+        )
         return response
