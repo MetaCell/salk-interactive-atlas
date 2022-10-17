@@ -16,7 +16,7 @@ def get_laminas(bg_atlas) -> List[str]:
             if '-' in s:
                 begin, end = [int(number_as_str) for number_as_str in s.split('Sp')[0].split('-')]
                 while end >= begin:
-                    laminas_set.remove(f"{end}Sp")
+                    laminas_set = {x for x in laminas_set if not x.startswith(f"{end}Sp")}
                     end -= 1
             laminas_set.add(s)
 
