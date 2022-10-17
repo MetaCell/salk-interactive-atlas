@@ -5,7 +5,9 @@ import {Accordion, AccordionDetails, AccordionSummary, Typography} from "@materi
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 // @ts-ignore
 import ephys from "../../assets/details/ephys.png";
-import {Details, POPULATION_V1, POPULATION_V2} from "../../utilities/constants";
+// @ts-ignore
+import ioMapping from "../../assets/details/io_mapping.png";
+import {Details, POPULATION_V1, POPULATION_V2, POPULATION_V3} from "../../utilities/constants";
 
 const useStyles = makeStyles({
     container: {
@@ -29,7 +31,7 @@ const DetailsViewer = (props: {
 
     const hasEphysPDF = () => populationName.includes(POPULATION_V2)
     const hasBehaviorPDF = () => populationName.includes(POPULATION_V2)
-    const hasIOMappingPDF = () => populationName.includes(POPULATION_V1)
+    const hasIOMappingPDF = () => [POPULATION_V1, POPULATION_V2, POPULATION_V3].some(popName => populationName.includes(popName))
 
     const NoDataAvailable = () => <p> No data available </p>
 
@@ -63,7 +65,7 @@ const DetailsViewer = (props: {
                 <Typography>I/O Mapping</Typography>
             </AccordionSummary>
             <AccordionDetails>
-                {hasIOMappingPDF() ? (<img src={ephys} alt={"I/O Mapping PDF"}/>) : <NoDataAvailable/>}
+                {hasIOMappingPDF() ? (<img src={ioMapping} alt={"I/O Mapping PDF"}/>) : <NoDataAvailable/>}
             </AccordionDetails>
         </Accordion>
     </div>) : (
