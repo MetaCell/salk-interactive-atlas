@@ -133,5 +133,4 @@ export function dictZip(keys: string[], values: any[]) {
         return
     }
     return keys.reduce((o, currentValue, currentIndex) => ({...o, [currentValue]: values[currentIndex]}), {})
-
 }

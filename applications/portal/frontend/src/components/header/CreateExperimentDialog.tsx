@@ -218,7 +218,6 @@ export const CreateExperimentDialog = (props: any) => {
 
 
     const handleAction = async () => {
-        console.log("submit")
         setIsLoading(true)
         const errorsSet = await getValidationErrors()
         if (errorsSet.size > 0) {

@@ -21,7 +21,8 @@ import {
     NEURONAL_LOCATIONS_ID,
     OVERLAYS, PROBABILITY_MAP_ID,
     RequestState,
-    ROSTRAL
+    ROSTRAL,
+    alphanumericCollator,
 } from "../../../utilities/constants";
 import workspaceService from "../../../service/WorkspaceService";
 import {getAtlas} from "../../../service/AtlasService";
@@ -614,7 +615,7 @@ const TwoDViewer = (props: {
                                         checked={areAllSelected(laminas)}
                                     />
                                 </Box>
-                                {Object.keys(laminas).sort().map(lId =>
+                                {Object.keys(laminas).sort(alphanumericCollator.compare).map(lId =>
                                     <span key={lId} className={`${classes.entryPadding} ${classes.laminaEntry}`}>
                                         <span className={classes.laminaColor}
                                               onClick={(event) => handleLaminaPopoverClick(event, lId)}>
