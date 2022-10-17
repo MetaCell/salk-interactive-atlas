@@ -1,4 +1,0 @@
-steps:
-  build_application_images:
-    stage: build
-    steps: {}
