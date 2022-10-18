@@ -73,7 +73,5 @@ export enum Details {
 }
 
 export const POPULATION_V1 = "V1"
-export const POPULATION_V2 = "V2"
-export const POPULATION_V3 = "V3"
-
+export const POPULATION_V2A = "V2a"
 export const alphanumericCollator = new Intl.Collator(undefined, {numeric: true, sensitivity: 'base'});
