@@ -73,6 +73,8 @@ def register_sections_3D(
         pathlib.Path(filename), population_ignore_set
     )
     atlas = BrainGlobeAtlas(atlas_name)
+    atlas.annotation[atlas.annotation > 2] = 2
+
     atlas_pixel_size_xy = int(atlas.resolution[1])
 
     atlas_segments = pd.DataFrame.from_dict(atlas.metadata["atlas_segments"])

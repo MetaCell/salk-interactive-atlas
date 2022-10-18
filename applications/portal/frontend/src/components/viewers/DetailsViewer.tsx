@@ -7,7 +7,7 @@ import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import ephys from "../../assets/details/ephys.png";
 // @ts-ignore
 import ioMapping from "../../assets/details/io_mapping.png";
-import {Details, POPULATION_V1, POPULATION_V2, POPULATION_V3} from "../../utilities/constants";
+import {Details, POPULATION_V1, POPULATION_V2A} from "../../utilities/constants";
 
 const useStyles = makeStyles({
     container: {
@@ -29,9 +29,9 @@ const DetailsViewer = (props: {
         setExpanded(newExpanded ? panel : false);
     };
 
-    const hasEphysPDF = () => populationName.includes(POPULATION_V2)
-    const hasBehaviorPDF = () => populationName.includes(POPULATION_V2)
-    const hasIOMappingPDF = () => [POPULATION_V1, POPULATION_V2, POPULATION_V3].some(popName => populationName.includes(popName))
+    const hasEphysPDF = () => populationName.includes(POPULATION_V2A)
+    const hasBehaviorPDF = () => populationName.includes(POPULATION_V2A)
+    const hasIOMappingPDF = () => populationName.includes(POPULATION_V1)
 
     const NoDataAvailable = () => <p> No data available </p>
 
