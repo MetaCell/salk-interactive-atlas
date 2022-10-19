@@ -64,6 +64,7 @@ const useStyles = makeStyles(t => ({
         objectFit: 'contain',
     },
     densityMapImageContainer: {
+        padding: t.spacing(2),
         display: 'flex',
         height: '100%',
         flex: '1',
