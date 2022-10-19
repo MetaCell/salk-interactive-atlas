@@ -7,6 +7,8 @@ import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import ephys from "../../assets/details/ephys.png";
 // @ts-ignore
 import ioMapping from "../../assets/details/io_mapping.png";
+// @ts-ignore
+import behavior from "../../assets/details/behavior.png";
 import {Details, POPULATION_V1, POPULATION_V2A} from "../../utilities/constants";
 
 const useStyles = makeStyles({
@@ -17,6 +19,10 @@ const useStyles = makeStyles({
     title: {
         padding: "0.5em",
         margin: 0
+    },
+    img: {
+        maxHeight: "600px",
+        objectFit: "contain"
     }
 });
 
@@ -45,7 +51,8 @@ const DetailsViewer = (props: {
                 <Typography>Electrophysiology</Typography>
             </AccordionSummary>
             <AccordionDetails>
-                {hasEphysPDF() ? (<img src={ephys} alt={"Electrophysiology PDF"}/>) : <NoDataAvailable/>}
+                {hasEphysPDF() ? (<img className={classes.img} src={ephys} alt={"Electrophysiology PDF"}/>) :
+                    <NoDataAvailable/>}
             </AccordionDetails>
         </Accordion>
         <Accordion expanded={expanded === Details.BEHAVIOUR} onChange={handleChange(Details.BEHAVIOUR)}>
@@ -55,7 +62,8 @@ const DetailsViewer = (props: {
                 <Typography>Behaviour</Typography>
             </AccordionSummary>
             <AccordionDetails>
-                {hasBehaviorPDF() ? (<img src={ephys} alt={"Behaviour PDF"}/>) : <NoDataAvailable/>}
+                {hasBehaviorPDF() ? (<img className={classes.img} src={behavior} alt={"Behaviour PDF"}/>) :
+                    <NoDataAvailable/>}
             </AccordionDetails>
         </Accordion>
         <Accordion expanded={expanded === Details.IO} onChange={handleChange(Details.IO)}>
@@ -65,7 +73,8 @@ const DetailsViewer = (props: {
                 <Typography>I/O Mapping</Typography>
             </AccordionSummary>
             <AccordionDetails>
-                {hasIOMappingPDF() ? (<img src={ioMapping} alt={"I/O Mapping PDF"}/>) : <NoDataAvailable/>}
+                {hasIOMappingPDF() ? (<img className={classes.img} src={ioMapping} alt={"I/O Mapping PDF"}/>) :
+                    <NoDataAvailable/>}
             </AccordionDetails>
         </Accordion>
     </div>) : (
