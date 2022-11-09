@@ -23,6 +23,7 @@ import COMMUNITY from "../assets/images/icons/community.svg";
 import HELP from "../assets/images/icons/help.svg";
 import UP_ICON from "../assets/images/icons/up.svg";
 import { EXPERIMENTS_HASH, SALK_TEAM, ACME_TEAM, COMMUNITY_HASH, SHARED_HASH } from "../utilities/constants";
+import {AboutDialog} from "./AboutDialog";
 
 const useStyles = makeStyles({
   sidebar: {
@@ -171,6 +172,8 @@ const Sidebar = (props) => {
   const classes = useStyles();
   const {experiments} = props;
   const [open, setOpen] = React.useState(true);
+  const [dialogOpen, setDialogOpen] = React.useState(false);
+
 
   const handleClick = () => {
     setOpen(!open);
@@ -250,9 +253,10 @@ const Sidebar = (props) => {
 
       <Box className={classes.footer}>
         <Typography>Funded by NIH</Typography>
-        <Button disableRipple variant="text">Learn More</Button>
+        <Button disableRipple variant="text" onClick={()=>setDialogOpen(!dialogOpen)}>Learn More</Button>
       </Box>
 
+      <AboutDialog open={dialogOpen} handleClose={() => setDialogOpen(false)} />
     </Box>
   )
 };
