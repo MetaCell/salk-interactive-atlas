@@ -22,7 +22,7 @@ import TEAMS from "../assets/images/icons/teams.svg";
 import COMMUNITY from "../assets/images/icons/community.svg";
 import HELP from "../assets/images/icons/help.svg";
 import UP_ICON from "../assets/images/icons/up.svg";
-import { EXPERIMENTS_HASH, SALK_TEAM, ACME_TEAM, COMMUNITY_HASH, SHARED_HASH } from "../utilities/constants";
+import {EXPERIMENTS_HASH, SALK_TEAM, ACME_TEAM, COMMUNITY_HASH, SHARED_HASH, COMING_SOON} from "../utilities/constants";
 import {AboutDialog} from "./AboutDialog";
 
 const useStyles = makeStyles({
@@ -171,7 +171,7 @@ function ListItemLink(props) {
 const Sidebar = (props) => {
   const classes = useStyles();
   const {experiments} = props;
-  const [open, setOpen] = React.useState(true);
+  const [open, setOpen] = React.useState(false);
   const [dialogOpen, setDialogOpen] = React.useState(false);
 
 
@@ -210,14 +210,14 @@ const Sidebar = (props) => {
           <ListItemIcon>
             <img src={SHARED} alt="Shared" />
           </ListItemIcon>
-          <ListItemText primary="Shared with me" />
+          <ListItemText primary={`Shared with me\n${COMING_SOON}`} />
         </ListItemLink>
 
         <ListItem button onClick={handleClick}>
           <ListItemIcon>
             <img src={TEAMS} alt="Teams" />
           </ListItemIcon>
-          <ListItemText primary="Teams" />
+          <ListItemText primary={`Teams ${COMING_SOON}`}/>
           <img src={UP_ICON} className={open ? classes.rotate : ''} alt="arrow" />
         </ListItem>
         <Collapse in={open} timeout="auto" unmountOnExit>
@@ -241,13 +241,13 @@ const Sidebar = (props) => {
           <ListItemIcon>
             <img src={COMMUNITY} alt="Community" />
           </ListItemIcon>
-          <ListItemText primary="Community" />
+          <ListItemText primary={`Community ${COMING_SOON}`}/>
         </ListItemLink>
         <ListItemLink href="#simple-list">
           <ListItemIcon>
             <img src={HELP} alt="help" />
           </ListItemIcon>
-          <ListItemText primary="Help Center" />
+          <ListItemText primary={`Help Center ${COMING_SOON}`} />
         </ListItemLink>
       </List>
 
