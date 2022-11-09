@@ -93,8 +93,8 @@ export const AboutDialog = (props: any) => {
                 <Box className="details">
                     <Box className="detail-block">
                         <Typography component="h4">Investigator</Typography>
-                        <Typography>Salk Mouse Cord Atlas has been instigated by the Goulding Lab at Salk Institute in
-                            La Jolla (San Diego, CA)</Typography>
+\                        <Typography>Salk Mouse Cord Atlas was created for the Goulding Lab at Salk Institute in La Jolla
+                            (San Diego, CA)</Typography>
                         <Link href={'http://goulding.salk.edu/'} target={'_blank'}>Learn more about the Goulding
                             Lab</Link>
                     </Box>
