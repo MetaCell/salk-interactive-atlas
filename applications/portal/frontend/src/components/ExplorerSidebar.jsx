@@ -22,7 +22,7 @@ import TEAMS from "../assets/images/icons/teams.svg";
 import COMMUNITY from "../assets/images/icons/community.svg";
 import HELP from "../assets/images/icons/help.svg";
 import UP_ICON from "../assets/images/icons/up.svg";
-import { EXPERIMENTS_HASH, SALK_TEAM, ACME_TEAM, COMMUNITY_HASH, SHARED_HASH } from "../utilities/constants";
+import {EXPERIMENTS_HASH, SALK_TEAM, ACME_TEAM, COMMUNITY_HASH, SHARED_HASH, COMING_SOON} from "../utilities/constants";
 import {AboutDialog} from "./AboutDialog";
 
 const useStyles = makeStyles({
@@ -171,7 +171,7 @@ function ListItemLink(props) {
 const Sidebar = (props) => {
   const classes = useStyles();
   const {experiments} = props;
-  const [open, setOpen] = React.useState(true);
+  const [open, setOpen] = React.useState(false);
   const [dialogOpen, setDialogOpen] = React.useState(false);
 
 
@@ -206,27 +206,27 @@ const Sidebar = (props) => {
           <Badge badgeContent={experiments.length} />
         </ListItemLink>
 
-        <ListItemLink href="#shared" onClick={() => props.executeScroll(SHARED_HASH)} selected={hash === `#${SHARED_HASH}`}>
+        <ListItemLink disabled href="#shared" onClick={() => props.executeScroll(SHARED_HASH)} selected={hash === `#${SHARED_HASH}`}>
           <ListItemIcon>
             <img src={SHARED} alt="Shared" />
           </ListItemIcon>
-          <ListItemText primary="Shared with me" />
+          <ListItemText primary={`Shared with me`} />
         </ListItemLink>
 
         <ListItem button onClick={handleClick}>
           <ListItemIcon>
             <img src={TEAMS} alt="Teams" />
           </ListItemIcon>
-          <ListItemText primary="Teams" />
+          <ListItemText primary={`Teams`}/>
           <img src={UP_ICON} className={open ? classes.rotate : ''} alt="arrow" />
         </ListItem>
         <Collapse in={open} timeout="auto" unmountOnExit>
           <List component="div" disablePadding>
-            <ListItemLink href="#salkteam" onClick={() => props.executeScroll(SALK_TEAM)} selected={hash === `#${SALK_TEAM}`}>
+            <ListItemLink disabled href="#salkteam" onClick={() => props.executeScroll(SALK_TEAM)} selected={hash === `#${SALK_TEAM}`}>
               <ListItemText primary="Salk Institute Team" />
             </ListItemLink>
 
-            <ListItemLink href="#acmeteam" onClick={() => props.executeScroll(ACME_TEAM)} selected={hash === `#${ACME_TEAM}`}>
+            <ListItemLink disabled href="#acmeteam" onClick={() => props.executeScroll(ACME_TEAM)} selected={hash === `#${ACME_TEAM}`}>
               <ListItemText primary="Acme Team" />
             </ListItemLink>
           </List>
@@ -237,18 +237,18 @@ const Sidebar = (props) => {
         component="nav"
         disablePadding
       >
-        <ListItemLink href="#community" onClick={() => props.executeScroll(COMMUNITY_HASH)} selected={hash ===  `#${COMMUNITY_HASH}`}>
+        <ListItemLink disabled href="#community" onClick={() => props.executeScroll(COMMUNITY_HASH)} selected={hash ===  `#${COMMUNITY_HASH}`}>
           <ListItemIcon>
             <img src={COMMUNITY} alt="Community" />
           </ListItemIcon>
-          <ListItemText primary="Community" />
+          <ListItemText primary={`Community`}/>
         </ListItemLink>
-        <ListItemLink href="#simple-list">
+        {/* <ListItemLink disabled href="#simple-list">
           <ListItemIcon>
             <img src={HELP} alt="help" />
           </ListItemIcon>
-          <ListItemText primary="Help Center" />
-        </ListItemLink>
+          <ListItemText primary={`Help Center`} />
+        </ListItemLink> */}
       </List>
 
       <Box className={classes.footer}>
