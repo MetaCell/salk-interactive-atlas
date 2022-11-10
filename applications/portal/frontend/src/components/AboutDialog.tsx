@@ -105,6 +105,7 @@ export const AboutDialog = (props: any) => {
                         <Link href={'https://www.nih.gov/'} target={'_blank'}>Learn more about NIH</Link>
                     </Box>
                     <Divider/>
+                    <Typography>v1.0.0-beta.1</Typography>
                     <Link href={'https://www.metacell.us/'} target={'_blank'}>
                         <img src={METACELL} alt={"Powered by MetaCell"}/>
                     </Link>

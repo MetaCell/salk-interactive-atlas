@@ -206,27 +206,27 @@ const Sidebar = (props) => {
           <Badge badgeContent={experiments.length} />
         </ListItemLink>
 
-        <ListItemLink href="#shared" onClick={() => props.executeScroll(SHARED_HASH)} selected={hash === `#${SHARED_HASH}`}>
+        <ListItemLink disabled href="#shared" onClick={() => props.executeScroll(SHARED_HASH)} selected={hash === `#${SHARED_HASH}`}>
           <ListItemIcon>
             <img src={SHARED} alt="Shared" />
           </ListItemIcon>
-          <ListItemText primary={`Shared with me\n${COMING_SOON}`} />
+          <ListItemText primary={`Shared with me`} />
         </ListItemLink>
 
         <ListItem button onClick={handleClick}>
           <ListItemIcon>
             <img src={TEAMS} alt="Teams" />
           </ListItemIcon>
-          <ListItemText primary={`Teams ${COMING_SOON}`}/>
+          <ListItemText primary={`Teams`}/>
           <img src={UP_ICON} className={open ? classes.rotate : ''} alt="arrow" />
         </ListItem>
         <Collapse in={open} timeout="auto" unmountOnExit>
           <List component="div" disablePadding>
-            <ListItemLink href="#salkteam" onClick={() => props.executeScroll(SALK_TEAM)} selected={hash === `#${SALK_TEAM}`}>
+            <ListItemLink disabled href="#salkteam" onClick={() => props.executeScroll(SALK_TEAM)} selected={hash === `#${SALK_TEAM}`}>
               <ListItemText primary="Salk Institute Team" />
             </ListItemLink>
 
-            <ListItemLink href="#acmeteam" onClick={() => props.executeScroll(ACME_TEAM)} selected={hash === `#${ACME_TEAM}`}>
+            <ListItemLink disabled href="#acmeteam" onClick={() => props.executeScroll(ACME_TEAM)} selected={hash === `#${ACME_TEAM}`}>
               <ListItemText primary="Acme Team" />
             </ListItemLink>
           </List>
@@ -237,18 +237,18 @@ const Sidebar = (props) => {
         component="nav"
         disablePadding
       >
-        <ListItemLink href="#community" onClick={() => props.executeScroll(COMMUNITY_HASH)} selected={hash ===  `#${COMMUNITY_HASH}`}>
+        <ListItemLink disabled href="#community" onClick={() => props.executeScroll(COMMUNITY_HASH)} selected={hash ===  `#${COMMUNITY_HASH}`}>
           <ListItemIcon>
             <img src={COMMUNITY} alt="Community" />
           </ListItemIcon>
-          <ListItemText primary={`Community ${COMING_SOON}`}/>
+          <ListItemText primary={`Community`}/>
         </ListItemLink>
-        <ListItemLink href="#simple-list">
+        {/* <ListItemLink disabled href="#simple-list">
           <ListItemIcon>
             <img src={HELP} alt="help" />
           </ListItemIcon>
-          <ListItemText primary={`Help Center ${COMING_SOON}`} />
-        </ListItemLink>
+          <ListItemText primary={`Help Center`} />
+        </ListItemLink> */}
       </List>
 
       <Box className={classes.footer}>
