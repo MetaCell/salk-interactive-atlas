@@ -106,11 +106,11 @@ class Population(models.Model):
             and self.cells.file.name != current.cells.file.name
         )
 
-    def generate_cells(self, data_filepath: str):
+    def generate_cells(self, data_filepath: str, is_fiducial: bool = False):
         self.status = PopulationStatus.RUNNING
         self.save()
         try:
-            self.cells.name = get_cells_filepath(self.name, data_filepath, self.storage_path)
+            self.cells.name = get_cells_filepath(self.name, data_filepath, self.storage_path, is_fiducial)
         except Exception as e:
             logging.exception(e)
             self.status = PopulationStatus.ERROR

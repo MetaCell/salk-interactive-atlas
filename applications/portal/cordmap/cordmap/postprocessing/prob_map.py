@@ -1,12 +1,12 @@
 import logging
+from pathlib import Path
 
 import numpy as np
-
-from pathlib import Path
-from tifffile import imsave
 from skimage.filters import gaussian
-from cordmap.utils.misc import ensure_directory_exists
+from tifffile import imsave
+
 from cordmap.utils.image import mask_image_threshold
+from cordmap.utils.misc import ensure_directory_exists
 
 """
 Mostly from github.com/brainglobe/cellfinder

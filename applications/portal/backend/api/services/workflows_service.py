@@ -21,7 +21,8 @@ GENERATE_IMAGES_OP = "salk-generate-population-static-files-tasks-op"
 VOLUME_FOLDER = "/usr/src/app/persistent"
 GENERATE_CELLS_IMAGE = "portal"
 GENERATE_CELLS_OP = "salk-generate-population-cells-tasks-op"
-UPLOAD_FILES_OP = "salk-upload-files-tasks-op"
+UPLOAD_PAIR_FILES_OP = "salk-upload-pair-files-tasks-op"
+UPLOAD_SINGLE_FILES_OP = "salk-upload-single-file-tasks-op"
 
 
 def create_custom_task(image_name, **kwargs):
@@ -65,15 +66,30 @@ def execute_generate_population_cells_workflow(tasks_tuple: Tuple):
     ).execute()
 
 
-def execute_upload_files_workflow(experiment_id: int, key_filepath: str, data_filepath: str):
+def execute_upload_pair_files_workflow(experiment_id: int, key_filepath: str, data_filepath: str):
     current_app = get_current_configuration()
     operations.PipelineOperation(
-        basename=UPLOAD_FILES_OP,
+        basename=UPLOAD_PAIR_FILES_OP,
         tasks=(
             create_custom_task(
                 BASE_IMAGE,
                 command=["python", "manage.py", "initialize_files_upload", f"{experiment_id}", f"{key_filepath}",
                          f"{data_filepath}"],
+            ),
+        ),
+        shared_directory=_get_shared_directory(current_app),
+        pod_context=_get_pod_context(current_app),
+    ).execute()
+
+
+def execute_upload_single_file_workflow(experiment_id: int, filepath: str):
+    current_app = get_current_configuration()
+    operations.PipelineOperation(
+        basename=UPLOAD_SINGLE_FILES_OP,
+        tasks=(
+            create_custom_task(
+                BASE_IMAGE,
+                command=["python", "manage.py", "initialize_files_upload", f"{experiment_id}", f"{filepath}"],
             ),
         ),
         shared_directory=_get_shared_directory(current_app),

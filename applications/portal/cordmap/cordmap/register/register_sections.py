@@ -1,29 +1,24 @@
+import logging
 import math
 import re
 
 import numpy as np
-
-import logging
-
 import pandas as pd
 import ray
-import skimage.morphology
 import skimage.measure
-
+import skimage.morphology
 from fancylog import fancylog
 
+from cordmap.atlas.utils import atlas_section_from_segment
 from cordmap.data.utils import (
+    get_atlas_z_position_from_segment,
     get_segment_from_z_position,
     interpolate_atlas_section,
     slice_loading_error_detected,
-    get_atlas_z_position_from_segment,
 )
-
-from cordmap.atlas.utils import atlas_section_from_segment
-from cordmap.register.validation import registration_quality_good_enough
-
-from cordmap.utils.data_processing import get_single_data_section
 from cordmap.register.elastix import register, transform_multiple_point_sets
+from cordmap.register.validation import registration_quality_good_enough
+from cordmap.utils.data_processing import get_single_data_section
 from cordmap.utils.misc import (
     add_2D_points_to_3D_array,
     add_z_dim_to_2D_points,

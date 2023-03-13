@@ -1,8 +1,8 @@
 import logging
-import pandas as pd
-import numpy as np
-
 from pathlib import Path
+
+import numpy as np
+import pandas as pd
 
 from cordmap.data.utils import split_populations
 from cordmap.postprocessing.analyse import summarise_points

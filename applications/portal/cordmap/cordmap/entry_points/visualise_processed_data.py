@@ -1,9 +1,8 @@
+from pathlib import Path
+
 import fire
 import napari
-
 import numpy as np
-
-from pathlib import Path
 
 from cordmap.data.io import load_data
 from cordmap.data.utils import filter_data_by_type

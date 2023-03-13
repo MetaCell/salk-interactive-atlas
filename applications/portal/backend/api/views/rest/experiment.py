@@ -15,7 +15,7 @@ from api.serializers import (
     TagSerializer,
     TagsSerializer,
 )
-from api.services.experiment_service import add_tag, delete_tag, upload_files
+from api.services.experiment_service import add_tag, delete_tag, upload_pair_files, upload_single_file
 from api.services.filesystem_service import create_temp_dir, move_files
 from api.validators.upload_files import validate_input_files
 
@@ -112,10 +112,10 @@ class ExperimentViewSet(viewsets.ModelViewSet):
         detail=True,
         methods=["post"],
         parser_classes=(MultiPartParser,),
-        name="experiment-upload-file",
-        url_path="upload-files",
+        name="experiment-upload-pair-files",
+        url_path="upload-pair-files",
     )
-    def upload_files(self, request, **kwargs):
+    def upload_pair_files(self, request, **kwargs):
         instance = self.get_object()
         key_file = request.FILES.get("key_file")
         data_file = request.FILES.get("data_file")
@@ -129,7 +129,31 @@ class ExperimentViewSet(viewsets.ModelViewSet):
         except Exception as e:
             return Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR)
         try:
-            created = upload_files(instance, filepaths[KEY_INDEX], filepaths[DATA_INDEX])
+            created = upload_pair_files(instance, filepaths[KEY_INDEX], filepaths[DATA_INDEX])
+            response_status = status.HTTP_201_CREATED if created else status.HTTP_200_OK
+        except InvalidInputError:
+            response_status = status.HTTP_400_BAD_REQUEST
+        return Response(status=response_status)
+
+    @action(
+        detail=True,
+        methods=["post"],
+        parser_classes=(MultiPartParser,),
+        name="experiment-upload-single-file",
+        url_path="upload-single-file",
+    )
+    def upload_single_file(self, request, **kwargs):
+        instance = self.get_object()
+        file = request.FILES.get("file")
+        if file is None:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+        try:
+            dir_path = create_temp_dir(CORDMAP_DATA)
+            filepaths = move_files([file], dir_path)
+        except Exception as e:
+            return Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        try:
+            created = upload_single_file(instance, filepaths[0])
             response_status = status.HTTP_201_CREATED if created else status.HTTP_200_OK
         except InvalidInputError:
             response_status = status.HTTP_400_BAD_REQUEST

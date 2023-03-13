@@ -12,13 +12,14 @@ class Command(BaseCommand):
 
     def add_arguments(self, parser):
         parser.add_argument("population_id", type=int)
-        parser.add_argument("data_filepath", type=str)
+        parser.add_argument("filepath", type=str)
+        parser.add_argument("is_fiducial", type=bool)
 
     def handle(self, *args, **options):
-        path = os.path.join(PERSISTENT_ROOT, options["data_filepath"])
+        path = os.path.join(PERSISTENT_ROOT, options["filepath"])
         try:
             p = Population.objects.get(pk=options["population_id"])
-            p.generate_cells(path)
+            p.generate_cells(path, options.get("is_fiducial", False))
         except Population.DoesNotExist:
             self.stdout.write(
                 self.style.WARNING(f"{options['population_id']}  does not exist")
