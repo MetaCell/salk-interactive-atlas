@@ -157,6 +157,7 @@ INSTALLED_APPS += [
     "workspaces",
     "api",
     "k8s",
+    "django_postgrespool2",
 ]
 
 # override django admin base template with a local template
@@ -226,7 +227,7 @@ UM_TO_MM = 10
 POSITION_WITHIN_SUBSEGMENT = 0.5  # Position (in percentage) of the slice to pick from a subsegment
 
 # for postgres configure to use the database pool
-if DATABASES.get("default", None) and DATABASES.get("default").get("ENGINE", None) == "django.db.backends.postgresql":
-    DATABASES.get("default").update({
-        "ENGINE": "django_postgrespool2"
-    })
+# if DATABASES.get("default", None) and DATABASES.get("default").get("ENGINE", None) == "django.db.backends.postgresql":
+#     DATABASES.get("default").update({
+#         "ENGINE": "django_postgrespool2"
+#     })

@@ -16,7 +16,7 @@ import LOGO from "../../assets/images/logo.svg";
 // @ts-ignore
 import USER from "../../assets/images/icons/user.svg";
 import { UserAccountDialog } from "./UserAccountDialog";
-import { CreateExperimentDialog } from "./CreateExperimentDialog";
+import {CreateExperimentDialog} from "./CreateExperimentDialog/CreateExperimentDialog";
 
 const title = "Salk Mouse Cord Atlas";
 
