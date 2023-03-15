@@ -176,10 +176,9 @@ export const CreateExperimentDialog = (props: any) => {
             await api.addTagsExperiment(experiment.id.toString(), tags)
         }
         if (activeTab === KEY_DATA_TAB) {
-            await api.uploadFilesExperiment(experiment.id.toString(), files[KEY_FILE_KEY], files[DATA_FILE_KEY])
+            await api.uploadPairFilesExperiment(experiment.id.toString(), files[KEY_FILE_KEY], files[DATA_FILE_KEY])
         } else if (activeTab === SINGLE_FILE_TAB) {
-            // todo: change endpoint
-            await api.uploadFileExperiment(experiment.id.toString(), files[SINGLE_FILE_KEY])
+            await api.uploadSingleFileExperiment(experiment.id.toString(), files[SINGLE_FILE_KEY])
         }
 
         onExperimentCreation(experiment.id)

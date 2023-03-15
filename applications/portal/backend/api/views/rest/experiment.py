@@ -10,10 +10,10 @@ from api.constants import CORDMAP_DATA
 from api.helpers.exceptions import InvalidInputError
 from api.models import Experiment
 from api.serializers import (
-    ExperimentFileUploadSerializer,
+    ExperimentPairFileUploadSerializer,
     ExperimentSerializer,
     TagSerializer,
-    TagsSerializer,
+    TagsSerializer, ExperimentSingleFileUploadSerializer,
 )
 from api.services.experiment_service import add_tag, delete_tag, upload_pair_files, upload_single_file
 from api.services.filesystem_service import create_temp_dir, move_files
@@ -35,7 +35,8 @@ class ExperimentViewSet(viewsets.ModelViewSet):
     queryset = Experiment.objects.all()
     parser_classes = (MultiPartParser,)
     custom_serializer_map = {
-        "upload_files": ExperimentFileUploadSerializer,
+        "upload_pair_files": ExperimentPairFileUploadSerializer,
+        "upload_single_file": ExperimentSingleFileUploadSerializer,
         "add_tags": TagsSerializer,
     }
 

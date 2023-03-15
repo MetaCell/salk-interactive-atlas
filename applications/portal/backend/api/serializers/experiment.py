@@ -29,7 +29,7 @@ class IntegerListField(serializers.ListField):
     child = serializers.IntegerField()
 
 
-class ExperimentFileUploadSerializer(serializers.Serializer):
+class ExperimentPairFileUploadSerializer(serializers.Serializer):
     key_file = serializers.FileField()
     data_file = serializers.FileField()
 
@@ -37,6 +37,13 @@ class ExperimentFileUploadSerializer(serializers.Serializer):
         model = Experiment
         fields = ()
 
+
+class ExperimentSingleFileUploadSerializer(serializers.Serializer):
+    file = serializers.FileField()
+
+    class Meta:
+        model = Experiment
+        fields = ()
 
 class ExperimentSerializer(serializers.ModelSerializer, EagerLoadingMixin):
     teams = GroupSerializer(many=True, read_only=True)
