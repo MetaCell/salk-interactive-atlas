@@ -8,7 +8,7 @@ import CHECK_FILLED from "../../../assets/images/icons/check_filled.svg";
 import {common, UploadIcon} from "./Common";
 
 
-export const SingleFileDrop = ({ file, setFile } : any) => {
+export const SingleFileDrop = ({ file, setFile, hasErrors } : any) => {
     const commonClasses = common();
 
     const handleFileUpload = (files: any) => {
@@ -24,6 +24,7 @@ export const SingleFileDrop = ({ file, setFile } : any) => {
                     <Grid item={true} xs={12} sm={12}>
                         <Typography className={commonClasses.fileLabel}>Single file</Typography>
                         <DropzoneArea
+                            dropzoneClass={`${hasErrors ? commonClasses.errorBorder : ""}`}
                             onChange={(files: any) => handleFileUpload(files)}
                             dropzoneText="Select your file or drop it here"
                             Icon={UploadIcon}

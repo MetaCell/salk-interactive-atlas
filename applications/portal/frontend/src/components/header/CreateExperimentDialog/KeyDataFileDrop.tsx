@@ -8,22 +8,19 @@ import CHECK_FILLED from "../../../assets/images/icons/check_filled.svg";
 import {common, UploadIcon} from "./Common";
 
 
-const keyFileKey = "keyFile"
-const dataFileKey = "dataFile"
 
 
-export const KeyDataFileDrop = ({setKeyFile, setDataFile, keyFile, dataFile}: any) => {
+
+export const KeyDataFileDrop = ({setKeyFile, setDataFile, keyFile, dataFile, hasKeyErrors, hasDataErrors}: any) => {
     const commonClasses = common();
-    const [errors, setErrors] = useState(new Set([]));
 
-    const getFileErrorKey = (fileKey: string) => `${fileKey}`
-    const handleFileUpload = (files: any, key: string, setFileState: (value: any) => void) => {
+    const handleFileUpload = (files: any, setFileState: (value: any) => void) => {
         if (files.length > 0) {
             setFileState(files[0])
-            errors.delete(getFileErrorKey(key))
-            setErrors(errors)
         }
     }
+
+    const dropzoneClass = hasKeyErrors ? commonClasses.errorBorder : ""
 
     return (
         <Grid container={true} item={true} spacing={3}>
@@ -32,8 +29,8 @@ export const KeyDataFileDrop = ({setKeyFile, setDataFile, keyFile, dataFile}: an
                     <Grid item={true} xs={12} sm={6}>
                         <Typography className={commonClasses.fileLabel}>Key file</Typography>
                         <DropzoneArea
-                            dropzoneClass={`${errors.has(getFileErrorKey(keyFileKey)) ? commonClasses.errorBorder : ""}`}
-                            onChange={(files: any) => handleFileUpload(files, keyFileKey, (value) => setKeyFile(value))}
+                            dropzoneClass={dropzoneClass}
+                            onChange={(files: any) => handleFileUpload(files, (value) => setKeyFile(value))}
                             dropzoneText="Select your key file or drop it here"
                             Icon={UploadIcon}
                             showPreviews={false}
@@ -60,9 +57,8 @@ export const KeyDataFileDrop = ({setKeyFile, setDataFile, keyFile, dataFile}: an
                     <Grid item={true} xs={12} sm={6}>
                         <Typography className={commonClasses.fileLabel}>Data file</Typography>
                         <DropzoneArea
-                            dropzoneClass={`${errors.has(getFileErrorKey(dataFile)) ? commonClasses.errorBorder : ""}`}
-                            onChange={(files: any) => handleFileUpload(files, dataFileKey,
-                                (value) => setDataFile(value))}
+                            dropzoneClass={dropzoneClass}
+                            onChange={(files: any) => handleFileUpload(files, (value) => setDataFile(value))}
                             dropzoneText="Select your data file or drop it here"
                             Icon={UploadIcon}
                             showPreviews={false}

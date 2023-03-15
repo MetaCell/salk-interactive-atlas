@@ -141,23 +141,39 @@ export const CreateExperimentDialog = (props: any) => {
         return {
             name,
             description,
-            tags
+            tags,
         }
     }
 
-
-    //
     const getValidationErrors = async () => {
         const errorsSet = new Set()
         try {
             await validationSchema.validate(getCurrentFormDataObject(), {strict: true, abortEarly: false})
         } catch (exception) {
             for (const e of exception.inner) {
-                console.log(e)
+                errorsSet.add(e.path)
+            }
+        }
+        if (activeTab === KEY_DATA_TAB) {
+            if (!files[DATA_FILE_KEY]) {
+                errorsSet.add(DATA_FILE_KEY)
+            }
+            if (!files[KEY_FILE_KEY]) {
+                errorsSet.add(KEY_FILE_KEY)
+            }
+        } else {
+            if (!files[SINGLE_FILE_KEY]) {
+                errorsSet.add(SINGLE_FILE_KEY)
             }
         }
 
         return errorsSet
+    }
+
+    const handleAddFile = (type: string, value: any) => {
+        setFiles({...files, [type]: value})
+        errors.delete(type)
+        setErrors(errors)
     }
 
 
@@ -185,6 +201,11 @@ export const CreateExperimentDialog = (props: any) => {
         handleClose()
     }
 
+    const handleTabChange = (event: any, newValue: any) => {
+        setActiveTab(newValue)
+        setErrors(new Set())
+    }
+
     useEffect(() => {
         const fetchTagOptions = async () => {
             const res = await api.listTags()
@@ -206,7 +227,7 @@ export const CreateExperimentDialog = (props: any) => {
             title="Create a new experiment"
         >
             <Box display={'flex'}>
-                <Tabs value={activeTab} onChange={(e, value) => setActiveTab(value)} className={classes.tabs}>
+                <Tabs value={activeTab} onChange={handleTabChange} className={classes.tabs}>
                     <Tab label="Key + Data"/>
                     <Tab label="Single File"/>
                 </Tabs>
@@ -215,14 +236,16 @@ export const CreateExperimentDialog = (props: any) => {
             <Box display={'flex'} alignItems="center" justifyContent={'center'} className={classes.fileDrop}>
                 {activeTab === KEY_DATA_TAB &&
                     <KeyDataFileDrop keyFile={files[KEY_FILE_KEY]} dataFile={files[DATA_FILE_KEY]}
-                                     setKeyFile={(value: any) => setFiles({...files, [KEY_FILE_KEY]: value})}
-                                     setDataFile={(value: any) => setFiles({...files, [DATA_FILE_KEY]: value})}
+                                     setKeyFile={(value: any) => handleAddFile(KEY_FILE_KEY, value) }
+                                     setDataFile={(value: any) => handleAddFile(DATA_FILE_KEY, value)}
+                                     hasKeyErrors={errors.has(KEY_FILE_KEY)}
+                                     hasDataErrors={errors.has(DATA_FILE_KEY)}
+
                     />}
                 {activeTab === SINGLE_FILE_TAB && <SingleFileDrop file={files[SINGLE_FILE_KEY]}
-                                                                  setFile={(value: any) => setFiles({
-                                                                      ...files,
-                                                                      [SINGLE_FILE_KEY]: value
-                                                                  })}/>}
+                                                                  setFile={(value: any) => handleAddFile(SINGLE_FILE_KEY, value)}
+                                                                  hasErrors={errors.has(SINGLE_FILE_KEY)}
+                />}
             </Box>
 
             <Box p={2} pb={5}>
@@ -238,9 +261,6 @@ export const CreateExperimentDialog = (props: any) => {
 
                 <Box display="flex" alignItems={"center"} className={classes.formGroup}>
                     <Typography component="label">Description</Typography>
-                    {
-                        // FIXME: Unclear why we use TextEditor if we only store the text
-                    }
                     <TextEditor
                         wrapperClassName={`${errors.has(DESCRIPTION_KEY) ? commonClasses.errorBorder : classes.editorWrapper}`}
                         onChange={(editorState: any) =>

@@ -14,7 +14,7 @@ export const common = makeStyles(() => ({
         marginBottom: '.25rem',
     },
     errorBorder: {
-        borderColor: "#f44336",
+        borderColor: "#f44336 !important",
         '&:focus-within': {
             borderColor: '#7b61ff'
         },
