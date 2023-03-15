@@ -231,3 +231,5 @@ POSITION_WITHIN_SUBSEGMENT = 0.5  # Position (in percentage) of the slice to pic
 #     DATABASES.get("default").update({
 #         "ENGINE": "django_postgrespool2"
 #     })
+
+FILE_UPLOAD_MAX_MEMORY_SIZE = 0  # Forces all uploaded files to be of type TemporaryUploadedFile opposed to InMemoryUploadedFile

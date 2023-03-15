@@ -7,9 +7,20 @@ from django.core.management.base import BaseCommand
 from api.models import Population
 from api.services.workflows_service import create_custom_task, execute_generate_population_cells_workflow, \
     BASE_IMAGE
-from applications.portal.cordmap.cordmap.register_fiducial.io import MARKER_LABELS
 from workspaces.settings import PERSISTENT_ROOT
 
+# Copied from cordmap
+MARKER_LABELS = [
+    "L1",
+    "L2",
+    "L3",
+    "L4",
+    "L5",
+    "L6",
+    "L7",
+    "L8",
+    "L9",
+]
 
 def get_populations_from_file(filepath, ignore_set=None):
     if ignore_set is None:

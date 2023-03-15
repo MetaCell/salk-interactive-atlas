@@ -29,7 +29,7 @@ def _get_cells_filepath_from_file_pair(population_name: str, data_filepath: str,
 def _get_cells_filepath_from_single_file(population_name: str, filepath: str, storage_path: str):
     from cordmap.entry_points.register_3D_fiducial import register_3D_fiducial
     out_dir = os.path.join(os.path.dirname(filepath), OUTPUT_DIRECTORY)
-    register_3D_fiducial(filepath, out_dir, parallel=False)
+    register_3D_fiducial(filepath, out_dir)
     filepath = move_file(
         os.path.join(out_dir, f"{CELLS_CSV}_{population_name}.csv"),
         storage_path,
