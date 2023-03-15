@@ -44,7 +44,7 @@ class Command(BaseCommand):
             tasks_list.append(
                 create_custom_task(BASE_IMAGE,
                                    command=["python", "manage.py", f"generate_population_cells", f"{population.id}",
-                                            f"{filepath} true"]
+                                            f"{filepath}", "true"]
                                    ))
         execute_generate_population_cells_workflow(tuple(tasks_list))
         self.style.SUCCESS("Cells upload operations launch successfully")

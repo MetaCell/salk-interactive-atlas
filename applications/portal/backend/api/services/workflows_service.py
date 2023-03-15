@@ -73,7 +73,7 @@ def execute_upload_pair_files_workflow(experiment_id: int, key_filepath: str, da
         tasks=(
             create_custom_task(
                 BASE_IMAGE,
-                command=["python", "manage.py", "initialize_files_upload", f"{experiment_id}", f"{key_filepath}",
+                command=["python", "manage.py", "initialize_pair_files_upload", f"{experiment_id}", f"{key_filepath}",
                          f"{data_filepath}"],
             ),
         ),
@@ -89,7 +89,7 @@ def execute_upload_single_file_workflow(experiment_id: int, filepath: str):
         tasks=(
             create_custom_task(
                 BASE_IMAGE,
-                command=["python", "manage.py", "initialize_files_upload", f"{experiment_id}", f"{filepath}"],
+                command=["python", "manage.py", "initialize_single_file_upload", f"{experiment_id}", f"{filepath}"],
             ),
         ),
         shared_directory=_get_shared_directory(current_app),

@@ -7,13 +7,17 @@ from api.services.filesystem_service import remove_dir
 from workspaces.settings import PERSISTENT_ROOT
 
 
+def str2bool(v):
+    return v.lower() in ("yes", "true", "t", "1")
+
+
 class Command(BaseCommand):
     help = "Generates the cells content for the population provided"
 
     def add_arguments(self, parser):
         parser.add_argument("population_id", type=int)
         parser.add_argument("filepath", type=str)
-        parser.add_argument("is_fiducial", type=bool)
+        parser.add_argument("is_fiducial", type=str2bool)
 
     def handle(self, *args, **options):
         path = os.path.join(PERSISTENT_ROOT, options["filepath"])
