@@ -12,7 +12,7 @@ from ..constants import (
     PopulationPersistentFiles,
 )
 from ..helpers.generate_population_cells import get_cells_filepath
-from ..services.filesystem_service import create_dir, remove_dir, remove_file
+from ..services.filesystem_service import create_dir_if_not_exists, remove_dir, remove_file_if_exists
 from ..services.population_service import generate_images, split_cells_per_segment
 from ..utils import has_property, is_valid_hex_str
 from .atlas import AtlasesChoice
@@ -76,7 +76,7 @@ class Population(models.Model):
         remove_dir(self.split_storage_path)
 
     def create_split_storage(self):
-        create_dir(self.split_storage_path)
+        create_dir_if_not_exists(self.split_storage_path)
 
     def save(
         self, force_insert=False, force_update=False, using=None, update_fields=None
@@ -89,9 +89,10 @@ class Population(models.Model):
                 execute_generate_population_static_files_workflow,
             )
             execute_generate_population_static_files_workflow(self.id)
+            self.experiment.compress_populations()
 
     def delete(self, using=None, keep_parents=False):
-        remove_file(self.cells.path)
+        remove_file_if_exists(self.cells.path)
         super(Population, self).delete(using, keep_parents)
 
     def _has_file_changed(self):

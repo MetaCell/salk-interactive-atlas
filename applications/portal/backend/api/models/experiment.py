@@ -1,4 +1,5 @@
 import os
+import zipfile
 
 from django.contrib.auth.models import Group, User
 from django.db import models
@@ -7,7 +8,7 @@ from django.conf import settings
 from .collaborator_role import CollaboratorRole
 from .tag import Tag
 from ..constants import EXPERIMENTS_DATA
-from ..services.filesystem_service import create_dir
+from ..services.filesystem_service import create_dir_if_not_exists, remove_file_if_exists
 
 
 # Create your models here.
@@ -75,7 +76,7 @@ class Experiment(models.Model):
 
     def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
         super(Experiment, self).save(force_insert, force_update, using, update_fields)
-        create_dir(self.storage_path)
+        create_dir_if_not_exists(self.storage_path)
 
     def __str__(self):
         return self.name
@@ -123,3 +124,15 @@ class Experiment(models.Model):
     @property
     def storage_path(self) -> str:
         return os.path.join(settings.PERSISTENT_ROOT, EXPERIMENTS_DATA, str(self.id))
+
+    @property
+    def zip_path(self) -> str:
+        zip_filename = f"{self.name}_populations.zip"
+        return os.path.join(self.storage_path, zip_filename)
+
+    def compress_populations(self):
+        remove_file_if_exists(self.zip_path)
+        with zipfile.ZipFile(self.zip_path, 'w') as zip_file:
+            for population in self.population_set.all():
+                if population.cells:
+                    zip_file.write(population.cells.path, arcname=os.path.basename(population.cells.path))

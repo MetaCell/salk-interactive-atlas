@@ -8,8 +8,8 @@ from api.models import Population
 
 def move_population_files(apps, schema_editor):
     for population in Population.objects.all():
-        old_path = population.cells.name
-        if old_path:
+        if population.cells:
+            old_path = population.cells.path
             # get the current filename
             filename = os.path.basename(old_path)
             # get the new storage path

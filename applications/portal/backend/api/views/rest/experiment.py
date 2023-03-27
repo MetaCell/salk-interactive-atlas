@@ -1,4 +1,5 @@
 import logging
+import os
 
 from dry_rest_permissions.generics import DRYPermissions
 from rest_framework import status, viewsets
@@ -156,6 +157,18 @@ class ExperimentViewSet(viewsets.ModelViewSet):
         except InvalidInputError:
             response_status = status.HTTP_400_BAD_REQUEST
         return Response(status=response_status)
+
+    @action(detail=True, methods=['get'])
+    def compressed_populations(self, request, pk=None):
+        experiment = self.get_object()
+        try:
+            with open(experiment.zip_path, 'rb') as zip_file:
+                data = zip_file.read()
+        except FileNotFoundError:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+        response = Response(data, content_type='application/zip')
+        response['Content-Disposition'] = f'attachment; filename="{os.path.basename(experiment.zip_path)}"'
+        return response
 
     def perform_create(self, serializer):
         experiment = serializer.save(owner=self.request.user)
