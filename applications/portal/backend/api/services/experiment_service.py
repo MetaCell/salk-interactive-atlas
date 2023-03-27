@@ -1,9 +1,5 @@
-import os.path
-from pathlib import PosixPath
-from django.conf import settings
-from api.models import Experiment, Population, Tag
-from api.services.workflows_service import execute_generate_population_cells_workflow, \
-    execute_upload_pair_files_workflow, execute_upload_single_file_workflow
+from api.models import Experiment, Tag
+from api.services.workflows_service import execute_upload_pair_files_workflow, execute_upload_single_file_workflow
 
 
 def add_tag(experiment: Experiment, tag_name: str, save=True):

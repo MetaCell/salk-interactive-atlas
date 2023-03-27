@@ -61,11 +61,11 @@ class Population(models.Model):
 
     @property
     def storage_path(self) -> str:
-        return os.path.join(settings.PERSISTENT_ROOT, POPULATIONS_DATA)
+        return os.path.join(settings.PERSISTENT_ROOT, POPULATIONS_DATA, str(self.id))
 
     @property
     def split_storage_path(self) -> str:
-        return os.path.join(self.storage_path, str(self.id), POPULATIONS_SPLIT_DATA)
+        return os.path.join(self.storage_path, POPULATIONS_SPLIT_DATA)
 
     def get_subdivision_storage_path(
         self, subdivision, content: PopulationPersistentFiles

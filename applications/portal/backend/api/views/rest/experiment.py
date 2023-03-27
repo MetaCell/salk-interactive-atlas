@@ -6,7 +6,6 @@ from rest_framework.decorators import action
 from rest_framework.parsers import MultiPartParser
 from rest_framework.response import Response
 
-from api.constants import CORDMAP_DATA
 from api.helpers.exceptions import InvalidInputError
 from api.models import Experiment
 from api.serializers import (
@@ -16,7 +15,7 @@ from api.serializers import (
     TagsSerializer, ExperimentSingleFileUploadSerializer,
 )
 from api.services.experiment_service import add_tag, delete_tag, upload_pair_files, upload_single_file
-from api.services.filesystem_service import create_temp_dir, move_files
+from api.services.filesystem_service import move_files
 from api.validators.upload_files import validate_input_files
 
 log = logging.getLogger("__name__")
@@ -125,8 +124,7 @@ class ExperimentViewSet(viewsets.ModelViewSet):
         except InvalidInputError:
             return Response(status=status.HTTP_400_BAD_REQUEST)
         try:
-            dir_path = create_temp_dir(CORDMAP_DATA)
-            filepaths = move_files([key_file, data_file], dir_path)
+            filepaths = move_files([key_file, data_file], instance.storage_path)
         except Exception as e:
             return Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR)
         try:
@@ -149,8 +147,7 @@ class ExperimentViewSet(viewsets.ModelViewSet):
         if file is None:
             return Response(status=status.HTTP_400_BAD_REQUEST)
         try:
-            dir_path = create_temp_dir(CORDMAP_DATA)
-            filepaths = move_files([file], dir_path)
+            filepaths = move_files([file], instance.storage_path)
         except Exception as e:
             return Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR)
         try:

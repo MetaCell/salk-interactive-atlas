@@ -1,13 +1,11 @@
 import os.path
 import shutil
-import uuid
 from pathlib import Path
 from typing import List
 
 from django.core.files.uploadedfile import TemporaryUploadedFile
 
 from api.utils import get_persistence_path
-from workspaces.settings import PERSISTENT_ROOT
 
 
 def remove_dir(dir_path: str):
@@ -19,13 +17,6 @@ def remove_dir(dir_path: str):
 
 def create_dir(dir_path: str):
     Path(dir_path).mkdir(parents=True, exist_ok=True)
-
-
-def create_temp_dir(parent_name: str) -> str:
-    filename = str(str(uuid.uuid4())[:8])
-    path = os.path.join(PERSISTENT_ROOT, parent_name, filename)
-    create_dir(path)
-    return path
 
 
 def move_files(files: List[TemporaryUploadedFile], target_dir: str) -> List[str]:
