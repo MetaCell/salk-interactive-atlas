@@ -1,6 +1,7 @@
 import logging
 import os
 
+from django.http import HttpResponse
 from dry_rest_permissions.generics import DRYPermissions
 from rest_framework import status, viewsets
 from rest_framework.decorators import action
@@ -161,14 +162,13 @@ class ExperimentViewSet(viewsets.ModelViewSet):
     @action(detail=True, methods=['get'])
     def compressed_populations(self, request, pk=None):
         experiment = self.get_object()
-        try:
-            with open(experiment.zip_path, 'rb') as zip_file:
-                data = zip_file.read()
-        except FileNotFoundError:
+        if not experiment.zip_path or not os.path.exists(experiment.zip_path):
             return Response(status=status.HTTP_404_NOT_FOUND)
-        response = Response(data, content_type='application/zip')
-        response['Content-Disposition'] = f'attachment; filename="{os.path.basename(experiment.zip_path)}"'
-        return response
+
+        with open(experiment.zip_path, 'rb') as f:
+            response = HttpResponse(f.read(), content_type='application/octet-stream')
+            response['Content-Disposition'] = f'attachment; filename="{os.path.basename(experiment.zip_path)}"'
+            return response
 
     def perform_create(self, serializer):
         experiment = serializer.save(owner=self.request.user)

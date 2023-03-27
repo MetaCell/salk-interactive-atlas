@@ -32,7 +32,6 @@ class Command(BaseCommand):
             # todo: verify if happens
             self.stdout.write(self.style.WARNING(f"{options['population_id']}: {e.__cause__}."))
 
-        remove_dir(os.path.dirname(path))
         self.stdout.write(
             self.style.SUCCESS("Generate population cells finished successfully")
         )
