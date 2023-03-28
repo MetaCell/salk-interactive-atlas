@@ -38,12 +38,21 @@ class ExperimentPairFileUploadSerializer(serializers.Serializer):
         fields = ()
 
 
+class CompressedPopulationsSerializer(serializers.Serializer):
+    active_populations = serializers.ListField(child=serializers.IntegerField())
+
+    class Meta:
+        model = Experiment
+        fields = ()
+
+
 class ExperimentSingleFileUploadSerializer(serializers.Serializer):
     file = serializers.FileField()
 
     class Meta:
         model = Experiment
         fields = ()
+
 
 class ExperimentSerializer(serializers.ModelSerializer, EagerLoadingMixin):
     teams = GroupSerializer(many=True, read_only=True)

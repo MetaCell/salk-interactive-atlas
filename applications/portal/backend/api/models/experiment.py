@@ -125,14 +125,3 @@ class Experiment(models.Model):
     def storage_path(self) -> str:
         return os.path.join(settings.PERSISTENT_ROOT, EXPERIMENTS_DATA, str(self.id))
 
-    @property
-    def zip_path(self) -> str:
-        zip_filename = f"{self.name}_populations.zip"
-        return os.path.join(self.storage_path, zip_filename)
-
-    def compress_populations(self):
-        remove_file_if_exists(self.zip_path)
-        with zipfile.ZipFile(self.zip_path, 'w') as zip_file:
-            for population in self.population_set.all():
-                if population.cells:
-                    zip_file.write(population.cells.path, arcname=os.path.basename(population.cells.path))

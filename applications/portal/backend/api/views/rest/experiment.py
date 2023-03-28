@@ -1,5 +1,7 @@
 import logging
 import os
+import tempfile
+import zipfile
 
 from django.http import HttpResponse
 from dry_rest_permissions.generics import DRYPermissions
@@ -14,7 +16,7 @@ from api.serializers import (
     ExperimentPairFileUploadSerializer,
     ExperimentSerializer,
     TagSerializer,
-    TagsSerializer, ExperimentSingleFileUploadSerializer,
+    TagsSerializer, ExperimentSingleFileUploadSerializer, CompressedPopulationsSerializer,
 )
 from api.services.experiment_service import add_tag, delete_tag, upload_pair_files, upload_single_file
 from api.services.filesystem_service import move_files
@@ -39,6 +41,7 @@ class ExperimentViewSet(viewsets.ModelViewSet):
         "upload_pair_files": ExperimentPairFileUploadSerializer,
         "upload_single_file": ExperimentSingleFileUploadSerializer,
         "add_tags": TagsSerializer,
+        'compressed_populations': CompressedPopulationsSerializer,
     }
 
     def get_serializer_class(self):
@@ -159,15 +162,27 @@ class ExperimentViewSet(viewsets.ModelViewSet):
             response_status = status.HTTP_400_BAD_REQUEST
         return Response(status=response_status)
 
-    @action(detail=True, methods=['get'])
-    def compressed_populations(self, request, pk=None):
+    @action(detail=True, methods=['get'],  url_path='compressed_populations/(?P<active_populations>[^/.]+)')
+    def compressed_populations(self, request, pk=None, active_populations=None):
         experiment = self.get_object()
-        if not experiment.zip_path or not os.path.exists(experiment.zip_path):
-            return Response(status=status.HTTP_404_NOT_FOUND)
 
-        with open(experiment.zip_path, 'rb') as f:
-            response = HttpResponse(f.read(), content_type='application/octet-stream')
-            response['Content-Disposition'] = f'attachment; filename="{os.path.basename(experiment.zip_path)}"'
+        active_populations = active_populations.split(',')
+        if not active_populations or len(active_populations) == 0:
+            return Response(status=status.HTTP_204_NO_CONTENT)
+
+        filename_prefix = f'{experiment.name}'
+        filename_suffix = 's' if len(active_populations) > 1 else ''
+        with tempfile.TemporaryFile() as temp_file:
+            with zipfile.ZipFile(temp_file, 'w') as zip_file:
+                for population in experiment.population_set.filter(id__in=active_populations):
+                    if population.cells:
+                        zip_file.write(population.cells.path, arcname=os.path.basename(population.cells.path))
+                        filename_prefix += f"_{population.name}"
+
+            temp_file.seek(0)  # move the file pointer to the beginning of the file
+
+            response = HttpResponse(temp_file.read(), content_type='application/octet-stream')
+            response['Content-Disposition'] = f'attachment; filename="{filename_prefix}_population{filename_suffix}.zip"'
             return response
 
     def perform_create(self, serializer):

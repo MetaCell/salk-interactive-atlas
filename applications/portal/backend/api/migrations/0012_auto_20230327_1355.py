@@ -10,7 +10,6 @@ def compress_populations(apps, schema_editor):
     for experiment in Experiment.objects.all():
         if not os.path.exists(experiment.zip_path):
             experiment.save()  # creates the experiment file if it doesn't exist
-            experiment.compress_populations()
 
 
 class Migration(migrations.Migration):
