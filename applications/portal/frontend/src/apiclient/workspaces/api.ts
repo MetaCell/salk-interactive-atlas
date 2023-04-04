@@ -71,6 +71,19 @@ export type CollaboratorRoleEnum = typeof CollaboratorRoleEnum[keyof typeof Coll
 /**
  * 
  * @export
+ * @interface CompressedPopulations
+ */
+export interface CompressedPopulations {
+    /**
+     * 
+     * @type {Array<number>}
+     * @memberof CompressedPopulations
+     */
+    'active_populations': Array<number>;
+}
+/**
+ * 
+ * @export
  * @interface Experiment
  */
 export interface Experiment {
@@ -802,6 +815,47 @@ export const ApiApiAxiosParamCreator = function (configuration?: Configuration) 
             const localVarPath = `/api/population/{id}/centroids/{subdivision}/`
                 .replace(`{${"id"}}`, encodeURIComponent(String(id)))
                 .replace(`{${"subdivision"}}`, encodeURIComponent(String(subdivision)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication bearerAuth required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * This viewset automatically provides `list`, `create`, `retrieve`, `update` and `destroy` actions.
+         * @param {string} id A unique integer value identifying this experiment.
+         * @param {string} activePopulations 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        compressedPopulationsExperiment: async (id: string, activePopulations: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'id' is not null or undefined
+            assertParamExists('compressedPopulationsExperiment', 'id', id)
+            // verify required parameter 'activePopulations' is not null or undefined
+            assertParamExists('compressedPopulationsExperiment', 'activePopulations', activePopulations)
+            const localVarPath = `/api/experiments/{id}/compressed_populations/{active_populations}/`
+                .replace(`{${"id"}}`, encodeURIComponent(String(id)))
+                .replace(`{${"active_populations"}}`, encodeURIComponent(String(activePopulations)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -2661,6 +2715,17 @@ export const ApiApiFp = function(configuration?: Configuration) {
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
+         * This viewset automatically provides `list`, `create`, `retrieve`, `update` and `destroy` actions.
+         * @param {string} id A unique integer value identifying this experiment.
+         * @param {string} activePopulations 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async compressedPopulationsExperiment(id: string, activePopulations: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<CompressedPopulations>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.compressedPopulationsExperiment(id, activePopulations, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
          * This viewset automatically provides `list` actions.
          * @param {Collaborator} [collaborator] 
          * @param {*} [options] Override http request option.
@@ -3167,6 +3232,16 @@ export const ApiApiFactory = function (configuration?: Configuration, basePath?:
             return localVarFp.centroidsPopulation(id, subdivision, options).then((request) => request(axios, basePath));
         },
         /**
+         * This viewset automatically provides `list`, `create`, `retrieve`, `update` and `destroy` actions.
+         * @param {string} id A unique integer value identifying this experiment.
+         * @param {string} activePopulations 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        compressedPopulationsExperiment(id: string, activePopulations: string, options?: any): AxiosPromise<CompressedPopulations> {
+            return localVarFp.compressedPopulationsExperiment(id, activePopulations, options).then((request) => request(axios, basePath));
+        },
+        /**
          * This viewset automatically provides `list` actions.
          * @param {Collaborator} [collaborator] 
          * @param {*} [options] Override http request option.
@@ -3636,6 +3711,18 @@ export class ApiApi extends BaseAPI {
      */
     public centroidsPopulation(id: string, subdivision: string, options?: AxiosRequestConfig) {
         return ApiApiFp(this.configuration).centroidsPopulation(id, subdivision, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * This viewset automatically provides `list`, `create`, `retrieve`, `update` and `destroy` actions.
+     * @param {string} id A unique integer value identifying this experiment.
+     * @param {string} activePopulations 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof ApiApi
+     */
+    public compressedPopulationsExperiment(id: string, activePopulations: string, options?: AxiosRequestConfig) {
+        return ApiApiFp(this.configuration).compressedPopulationsExperiment(id, activePopulations, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**

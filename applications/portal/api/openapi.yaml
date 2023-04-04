@@ -331,6 +331,34 @@ paths:
           description: ''
       tags:
       - api
+  /api/experiments/{id}/compressed_populations/{active_populations}/:
+    get:
+      operationId: compressedPopulationsExperiment
+      description: 'This viewset automatically provides `list`, `create`, `retrieve`,
+
+        `update` and `destroy` actions.'
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: A unique integer value identifying this experiment.
+        schema:
+          type: string
+      - name: active_populations
+        in: path
+        required: true
+        description: ''
+        schema:
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CompressedPopulations'
+          description: ''
+      tags:
+      - api
   /api/population/:
     get:
       operationId: listPopulations
@@ -1311,6 +1339,15 @@ components:
       required:
       - name
       - description
+    CompressedPopulations:
+      type: object
+      properties:
+        active_populations:
+          type: array
+          items:
+            type: integer
+      required:
+      - active_populations
     Population:
       type: object
       properties:
