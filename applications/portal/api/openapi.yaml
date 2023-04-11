@@ -331,9 +331,9 @@ paths:
           description: ''
       tags:
       - api
-  /api/experiments/{id}/compressed_populations/{active_populations}/:
+  /api/experiments/{id}/download_populations/{active_populations}/:
     get:
-      operationId: compressedPopulationsExperiment
+      operationId: downloadPopulationsExperiment
       description: 'This viewset automatically provides `list`, `create`, `retrieve`,
 
         `update` and `destroy` actions.'
@@ -355,7 +355,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/CompressedPopulations'
+                $ref: '#/components/schemas/DownloadPopulations'
           description: ''
       tags:
       - api
@@ -1339,7 +1339,7 @@ components:
       required:
       - name
       - description
-    CompressedPopulations:
+    DownloadPopulations:
       type: object
       properties:
         active_populations:

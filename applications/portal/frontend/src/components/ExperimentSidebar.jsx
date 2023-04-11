@@ -240,7 +240,7 @@ const ExperimentSidebar = ({
 
     const downloadPopulationsData = async () => {
         try {
-            const response = await api.compressedPopulationsExperiment(params.id, activePopulations.join(','), {
+            const response = await api.downloadPopulationsExperiment(params.id, activePopulations.join(','), {
                 responseType: 'arraybuffer',
             })
             downloadFile(response)

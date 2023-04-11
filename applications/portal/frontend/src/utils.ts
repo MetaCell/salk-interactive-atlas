@@ -1,5 +1,5 @@
 import { AxiosResponse } from "axios";
-import { CompressedPopulations } from "./apiclient/workspaces";
+import {DownloadPopulations} from "./apiclient/workspaces";
 
 export function formatDate(date: Date) {
   return date.toLocaleDateString("en-US", {hour: '2-digit', minute: '2-digit'});
@@ -16,7 +16,7 @@ export function getDateFromDateTime(date: string) {
   return date ? date?.split(' ')[0] : date;
 }
 
-export function downloadFile(response: AxiosResponse<CompressedPopulations>) {
+export function downloadFile(response: AxiosResponse<DownloadPopulations>) {
   // @ts-ignore
   const blob = new Blob([response.data], { type: response.headers['content-type'] });
   const url = window.URL.createObjectURL(blob);

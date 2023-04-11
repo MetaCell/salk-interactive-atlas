@@ -16,7 +16,7 @@ from api.serializers import (
     ExperimentPairFileUploadSerializer,
     ExperimentSerializer,
     TagSerializer,
-    TagsSerializer, ExperimentSingleFileUploadSerializer, CompressedPopulationsSerializer,
+    TagsSerializer, ExperimentSingleFileUploadSerializer, DownloadPopulationsSerializer,
 )
 from api.services.experiment_service import add_tag, delete_tag, upload_pair_files, upload_single_file
 from api.services.filesystem_service import move_files
@@ -41,7 +41,7 @@ class ExperimentViewSet(viewsets.ModelViewSet):
         "upload_pair_files": ExperimentPairFileUploadSerializer,
         "upload_single_file": ExperimentSingleFileUploadSerializer,
         "add_tags": TagsSerializer,
-        'compressed_populations': CompressedPopulationsSerializer,
+        'download_populations': DownloadPopulationsSerializer,
     }
 
     def get_serializer_class(self):
@@ -162,8 +162,8 @@ class ExperimentViewSet(viewsets.ModelViewSet):
             response_status = status.HTTP_400_BAD_REQUEST
         return Response(status=response_status)
 
-    @action(detail=True, methods=['get'],  url_path='compressed_populations/(?P<active_populations>[^/.]+)')
-    def compressed_populations(self, request, pk=None, active_populations=None):
+    @action(detail=True, methods=['get'],  url_path='download_populations/(?P<active_populations>[^/.]+)')
+    def download_populations(self, request, pk=None, active_populations=None):
         experiment = self.get_object()
 
         active_populations = active_populations.split(',')

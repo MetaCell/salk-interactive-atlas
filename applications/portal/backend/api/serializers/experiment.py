@@ -38,7 +38,7 @@ class ExperimentPairFileUploadSerializer(serializers.Serializer):
         fields = ()
 
 
-class CompressedPopulationsSerializer(serializers.Serializer):
+class DownloadPopulationsSerializer(serializers.Serializer):
     active_populations = serializers.ListField(child=serializers.IntegerField())
 
     class Meta:
