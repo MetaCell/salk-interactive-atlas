@@ -157,7 +157,6 @@ INSTALLED_APPS += [
     "workspaces",
     "api",
     "k8s",
-    "django_postgrespool2",
 ]
 
 # override django admin base template with a local template
