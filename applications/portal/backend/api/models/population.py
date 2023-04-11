@@ -89,7 +89,6 @@ class Population(models.Model):
                 execute_generate_population_static_files_workflow,
             )
             execute_generate_population_static_files_workflow(self.id)
-            self.experiment.compress_populations()
 
     def delete(self, using=None, keep_parents=False):
         remove_file_if_exists(self.cells.path)

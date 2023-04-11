@@ -1,37 +1,12 @@
 import os
 from pathlib import PosixPath
 
-import pandas as pd
 from django.core.management.base import BaseCommand
 
 from api.models import Population
 from api.services.workflows_service import create_custom_task, execute_generate_population_cells_workflow, \
     BASE_IMAGE
 from workspaces.settings import PERSISTENT_ROOT
-
-# Copied from cordmap
-MARKER_LABELS = [
-    "L1",
-    "L2",
-    "L3",
-    "L4",
-    "L5",
-    "L6",
-    "L7",
-    "L8",
-    "L9",
-]
-
-def get_populations_from_file(filepath, ignore_set=None):
-    if ignore_set is None:
-        ignore_set = set()
-    populations = []
-
-    df = pd.read_csv(filepath)
-    for population in set(df[~df["point"].isin(MARKER_LABELS)]["point"].dropna().values):
-        if population not in ignore_set:
-            populations.append(population)
-    return populations
 
 
 class Command(BaseCommand):
@@ -42,11 +17,12 @@ class Command(BaseCommand):
         parser.add_argument("filepath", type=str)
 
     def handle(self, *args, **options):
+        from cordmap.register_fiducial.io import get_population_labels_from_file
 
         filepath = PosixPath(os.path.join(PERSISTENT_ROOT, options["filepath"]))
         experiment_id = int(options["experiment_id"])
 
-        populations = get_populations_from_file(filepath)
+        populations = get_population_labels_from_file(filepath)
         tasks_list = []
         for name in populations:
             population = Population.objects.create(
