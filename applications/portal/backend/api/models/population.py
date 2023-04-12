@@ -55,6 +55,7 @@ class Population(models.Model):
         default=PopulationStatus.PENDING,
         max_length=8,
     )
+    is_fiducial = models.BooleanField(default=False)
 
     # objects = models.Manager()
     objects = PopulationObjectsManager()
@@ -106,11 +107,11 @@ class Population(models.Model):
             and self.cells.file.name != current.cells.file.name
         )
 
-    def generate_cells(self, data_filepath: str, is_fiducial: bool = False):
+    def generate_cells(self, data_filepath: str):
         self.status = PopulationStatus.RUNNING
         self.save()
         try:
-            self.cells.name = get_cells_filepath(self.name, data_filepath, self.storage_path, is_fiducial)
+            self.cells.name = get_cells_filepath(self.name, data_filepath, self.storage_path, self.is_fiducial)
         except Exception as e:
             logging.exception(e)
             self.status = PopulationStatus.ERROR

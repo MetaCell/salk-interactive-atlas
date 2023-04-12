@@ -3,9 +3,7 @@ from pathlib import PosixPath
 
 from django.core.management.base import BaseCommand
 
-from api.models import Population
-from api.services.workflows_service import create_custom_task, execute_generate_population_cells_workflow, \
-    BASE_IMAGE
+from api.management.utilities import handle_populations_upload
 from workspaces.settings import PERSISTENT_ROOT
 
 
@@ -25,16 +23,7 @@ class Command(BaseCommand):
         data_filepath = os.path.join(PERSISTENT_ROOT, options["data_filepath"])
         experiment_id = int(options["experiment_id"])
 
-        populations = get_populations_from_file(key_filepath, population_ignore_set)
-        tasks_list = []
-        for name in populations:
-            population = Population.objects.create(
-                experiment_id=experiment_id, name=name
-            )
-            tasks_list.append(
-                create_custom_task(BASE_IMAGE,
-                                   command=["python", "manage.py", f"generate_population_cells", f"{population.id}",
-                                            f"{data_filepath}", "false"]
-                                   ))
-        execute_generate_population_cells_workflow(tuple(tasks_list))
+        handle_populations_upload(experiment_id,
+                                  get_populations_from_file(key_filepath, population_ignore_set), data_filepath)
+
         self.style.SUCCESS("Cells upload operations launch successfully")
