@@ -2,5 +2,7 @@ uritemplate==4.1.1
 psycopg2-binary==2.9.3
 django-dry-rest-permissions==1.2.0
 bg-atlasapi==1.0.2
+
 djangorestframework==3.13.1
+SQLAlchemy<2
 django-postgrespool2==2.0.5
