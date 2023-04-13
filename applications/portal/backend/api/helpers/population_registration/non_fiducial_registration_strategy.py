@@ -3,7 +3,7 @@ from api.helpers.population_registration.ipopulation_registration_strategy impor
 PAIR_CELLS_CSV_SUFFIX = "cells_with_labels"
 
 
-class NonFiducialCellRegistrationStrategy(PopulationRegistrationStrategy):
+class NonFiducialPopulationRegistrationStrategy(PopulationRegistrationStrategy):
 
     def register(self, data_filepath: str, out_dir: str):
         from cordmap.main import register_sections_3D
