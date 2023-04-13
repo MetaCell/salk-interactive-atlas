@@ -8,8 +8,8 @@ from api.models import Experiment
 
 def create_experiment_storage(apps, schema_editor):
     for experiment in Experiment.objects.all():
-        if not os.path.exists(experiment.zip_path):
-            experiment.save()  # creates the experiment file if it doesn't exist
+        # if not os.path.exists(experiment.zip_path):
+        experiment.save()  # creates the experiment file if it doesn't exist
 
 
 class Migration(migrations.Migration):

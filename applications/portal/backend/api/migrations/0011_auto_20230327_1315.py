@@ -23,7 +23,7 @@ def move_population_files(apps, schema_editor):
 
 class Migration(migrations.Migration):
     dependencies = [
-        ('api', '0010_alter_collaborator_experiment_and_more'),
+        ('api', '0013_population_is_fiducial_alter_population_atlas'),
     ]
 
     operations = [
