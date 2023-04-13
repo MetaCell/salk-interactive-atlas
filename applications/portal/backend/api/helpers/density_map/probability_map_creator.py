@@ -8,7 +8,7 @@ from api.helpers.density_map.common_density_helpers import (
 )
 from api.helpers.density_map.generate_image import shift_image_array, get_canal_offset
 from api.helpers.density_map.ipopulation_image_creator import IPopulationImageCreator
-from api.helpers.ICustomAtlas import ICustomAtlas
+from api.helpers.icustom_atlas import ICustomAtlas
 from api.helpers.image_manipulation import (
     apply_greyscale_alpha_mask,
     get_image_from_array,

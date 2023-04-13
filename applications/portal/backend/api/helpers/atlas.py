@@ -1,7 +1,7 @@
 import numpy as np
 
 from api.constants import CAUDAL, ROSTRAL
-from api.helpers.ICustomAtlas import ICustomAtlas
+from api.helpers.icustom_atlas import ICustomAtlas
 from api.utils import flat_map
 
 from api.models.atlas import get_atlas

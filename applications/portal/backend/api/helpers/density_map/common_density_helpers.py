@@ -3,7 +3,7 @@ import math
 import numpy as np
 
 from api.constants import ROSTRAL
-from api.helpers.ICustomAtlas import ICustomAtlas
+from api.helpers.icustom_atlas import ICustomAtlas
 from typing import Tuple
 
 

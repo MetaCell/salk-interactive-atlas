@@ -1,7 +1,7 @@
 import logging
 from django.db import models
 
-from api.helpers.ICustomAtlas import ICustomAtlas
+from api.helpers.icustom_atlas import ICustomAtlas
 
 # Get an instance of a logger
 logger = logging.getLogger(__name__)
