@@ -2,7 +2,7 @@ import json
 import os
 
 from api.constants import GridImages
-from api.services.filesystem_service import create_dir
+from api.services.filesystem_service import create_dir_if_not_exists
 from workspaces.settings import ANNOTATIONS_PATH, CANAL_PATH, GRID_PATH, LAMINAS_PATH
 
 
@@ -30,7 +30,7 @@ def save_grid_metadata(metadata: dict):
 
 
 def save_image(img, p: str, subdivision: str):
-    create_dir(p)
+    create_dir_if_not_exists(p)
     path = os.path.join(
         p,
         subdivision + ".png",

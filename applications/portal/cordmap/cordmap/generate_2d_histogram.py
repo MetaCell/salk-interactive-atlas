@@ -1,5 +1,5 @@
-import numpy as np
 import matplotlib.pyplot as plt
+import numpy as np
 from bg_atlasapi import BrainGlobeAtlas
 from skimage.filters import gaussian
 

@@ -29,9 +29,25 @@ class IntegerListField(serializers.ListField):
     child = serializers.IntegerField()
 
 
-class ExperimentFileUploadSerializer(serializers.Serializer):
+class ExperimentPairFileUploadSerializer(serializers.Serializer):
     key_file = serializers.FileField()
     data_file = serializers.FileField()
+
+    class Meta:
+        model = Experiment
+        fields = ()
+
+
+class DownloadPopulationsSerializer(serializers.Serializer):
+    active_populations = serializers.ListField(child=serializers.IntegerField())
+
+    class Meta:
+        model = Experiment
+        fields = ()
+
+
+class ExperimentSingleFileUploadSerializer(serializers.Serializer):
+    file = serializers.FileField()
 
     class Meta:
         model = Experiment

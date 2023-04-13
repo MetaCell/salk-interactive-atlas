@@ -12,7 +12,7 @@ from ..constants import (
     PopulationPersistentFiles,
 )
 from ..helpers.generate_population_cells import get_cells_filepath
-from ..services.filesystem_service import create_dir, remove_dir, remove_file
+from ..services.filesystem_service import create_dir_if_not_exists, remove_dir, remove_file_if_exists
 from ..services.population_service import generate_images, split_cells_per_segment
 from ..utils import has_property, is_valid_hex_str
 from .atlas import AtlasesChoice
@@ -55,17 +55,18 @@ class Population(models.Model):
         default=PopulationStatus.PENDING,
         max_length=8,
     )
+    is_fiducial = models.BooleanField(default=False)
 
     # objects = models.Manager()
     objects = PopulationObjectsManager()
 
     @property
     def storage_path(self) -> str:
-        return os.path.join(settings.PERSISTENT_ROOT, POPULATIONS_DATA)
+        return os.path.join(settings.PERSISTENT_ROOT, POPULATIONS_DATA, str(self.id))
 
     @property
     def split_storage_path(self) -> str:
-        return os.path.join(self.storage_path, str(self.id), POPULATIONS_SPLIT_DATA)
+        return os.path.join(self.storage_path, POPULATIONS_SPLIT_DATA)
 
     def get_subdivision_storage_path(
         self, subdivision, content: PopulationPersistentFiles
@@ -76,7 +77,7 @@ class Population(models.Model):
         remove_dir(self.split_storage_path)
 
     def create_split_storage(self):
-        create_dir(self.split_storage_path)
+        create_dir_if_not_exists(self.split_storage_path)
 
     def save(
         self, force_insert=False, force_update=False, using=None, update_fields=None
@@ -91,7 +92,7 @@ class Population(models.Model):
             execute_generate_population_static_files_workflow(self.id)
 
     def delete(self, using=None, keep_parents=False):
-        remove_file(self.cells.path)
+        remove_file_if_exists(self.cells.path)
         super(Population, self).delete(using, keep_parents)
 
     def _has_file_changed(self):
@@ -110,7 +111,7 @@ class Population(models.Model):
         self.status = PopulationStatus.RUNNING
         self.save()
         try:
-            self.cells.name = get_cells_filepath(self.name, data_filepath, self.storage_path)
+            self.cells.name = get_cells_filepath(self.name, data_filepath, self.storage_path, self.is_fiducial)
         except Exception as e:
             logging.exception(e)
             self.status = PopulationStatus.ERROR

@@ -1,8 +1,14 @@
+import os
+import zipfile
+
 from django.contrib.auth.models import Group, User
 from django.db import models
+from django.conf import settings
 
 from .collaborator_role import CollaboratorRole
 from .tag import Tag
+from ..constants import EXPERIMENTS_DATA
+from ..services.filesystem_service import create_dir_if_not_exists, remove_file_if_exists
 
 
 # Create your models here.
@@ -68,6 +74,10 @@ class Experiment(models.Model):
     # objects = models.Manager()
     objects = ExperimentsObjectsManager()
 
+    def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
+        super(Experiment, self).save(force_insert, force_update, using, update_fields)
+        create_dir_if_not_exists(self.storage_path)
+
     def __str__(self):
         return self.name
 
@@ -88,20 +98,20 @@ class Experiment(models.Model):
 
     def has_object_write_permission(self, request):
         return (
-            self.owner == request.user
-            or (
-                self.teams
-                and len(self.teams.filter(team__group__user=request.user)) > 0
-            )
-            or (
-                self.collaborators
-                and len(
+                self.owner == request.user
+                or (
+                        self.teams
+                        and len(self.teams.filter(team__group__user=request.user)) > 0
+                )
+                or (
+                        self.collaborators
+                        and len(
                     self.collaborator_set.filter(
                         user=request.user.id, role=CollaboratorRole.EDITOR
                     )
                 )
-                > 0
-            )
+                        > 0
+                )
         )
 
     @staticmethod
@@ -110,3 +120,8 @@ class Experiment(models.Model):
 
     def has_object_retrieve_density_map_permission(self, request):
         return self.has_object_read_permission(request)
+
+    @property
+    def storage_path(self) -> str:
+        return os.path.join(settings.PERSISTENT_ROOT, EXPERIMENTS_DATA, str(self.id))
+

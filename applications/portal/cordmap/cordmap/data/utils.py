@@ -1,5 +1,6 @@
-import numpy as np
 import pathlib
+
+import numpy as np
 import pandas as pd
 
 from cordmap.register.constants import segments_df
@@ -47,8 +48,18 @@ def get_atlas_z_position_from_segment(data_z_coordinate, segment_z_values):
     return cum_atlas_cord_length + segment_slice_index
 
 
-def cumulative_cord_length(segment_label):
+def cumulative_cord_length(segment_label, include_this_segment=False):
+    """
+    Returns the axial position (Z) in the atlas up to the lower or upper
+    boundary of given segment label (C1, C2 etc).
+
+    :param segment_label:
+    :param include_this_segment:
+    :return:
+    """
     idx = segments_df.index[segments_df["Segment"] == segment_label].values[0]
+    if include_this_segment:
+        return segments_df.iloc[: idx + 1].sum().values[1]
     return segments_df.iloc[:idx].sum().values[1]
 
 

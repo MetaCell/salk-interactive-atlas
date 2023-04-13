@@ -18,7 +18,7 @@ pip install cordmap
 ```
 
 ### For developers:
-To download, first fork the [repository](https://github.com/adamltyson/cordmap) 
+To download, first fork the [repository](https://github.com/MetaCell/cordmap) 
 to your own account, then clone your fork.
 ```bash
 git clone https://github.com/USERNAME/cordmap
@@ -99,6 +99,9 @@ in addition to the image-based registration.
 * `--use-cord-for-reg False` Don't use the cord outline for registration
 * `--use-gm-for-reg False` Don't use the grey matter outline for registration
 
+* `--population_upsampling_factor` Set the number of slices to
+interpolate for visualisation. Default value of 1 skips upsampling.
+
 Probability map options:
 * `--save-prob-map False` Don't save the probability map as tiff
 * `--mask-prob-map False` Don't mask the probability map, outside of the atlas
@@ -110,6 +113,13 @@ N.B. There are other options, details of which can be found by running:
 ```bash
 cordmap -h
 ```
+
+### To run fiducial marker based registration
+
+```bash
+cordmap-fiducial /path/to/csv_file.csv /path/to/output/directory/
+```
+
 
 ### To visualise data
 **Raw data**

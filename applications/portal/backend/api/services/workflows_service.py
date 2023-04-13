@@ -1,11 +1,5 @@
-import os
 import uuid
-from pathlib import PosixPath
 from typing import Tuple
-
-from django.conf import settings
-
-from api.models import Population
 
 # this import only works when running in kubernetes
 # for django collect static in a Docker build we
@@ -21,7 +15,8 @@ GENERATE_IMAGES_OP = "salk-generate-population-static-files-tasks-op"
 VOLUME_FOLDER = "/usr/src/app/persistent"
 GENERATE_CELLS_IMAGE = "portal"
 GENERATE_CELLS_OP = "salk-generate-population-cells-tasks-op"
-UPLOAD_FILES_OP = "salk-upload-files-tasks-op"
+UPLOAD_PAIR_FILES_OP = "salk-upload-pair-files-tasks-op"
+UPLOAD_SINGLE_FILES_OP = "salk-upload-single-file-tasks-op"
 
 
 def create_custom_task(image_name, **kwargs):
@@ -65,17 +60,26 @@ def execute_generate_population_cells_workflow(tasks_tuple: Tuple):
     ).execute()
 
 
-def execute_upload_files_workflow(experiment_id: int, key_filepath: str, data_filepath: str):
+def execute_upload_workflow(operation_name: str, command: list):
     current_app = get_current_configuration()
     operations.PipelineOperation(
-        basename=UPLOAD_FILES_OP,
+        basename=operation_name,
         tasks=(
             create_custom_task(
                 BASE_IMAGE,
-                command=["python", "manage.py", "initialize_files_upload", f"{experiment_id}", f"{key_filepath}",
-                         f"{data_filepath}"],
+                command=["python", "manage.py"] + command,
             ),
         ),
         shared_directory=_get_shared_directory(current_app),
         pod_context=_get_pod_context(current_app),
     ).execute()
+
+
+def execute_upload_pair_files_workflow(experiment_id: int, key_filepath: str, data_filepath: str):
+    command = ["initialize_pair_files_upload",  f"{experiment_id}", f"{key_filepath}", f"{data_filepath}"]
+    execute_upload_workflow(UPLOAD_PAIR_FILES_OP, command)
+
+
+def execute_upload_single_file_workflow(experiment_id: int, filepath: str):
+    command = ["initialize_single_file_upload", f"{experiment_id}", f"{filepath}"]
+    execute_upload_workflow(UPLOAD_SINGLE_FILES_OP, command)

@@ -1,34 +1,30 @@
+import logging
 import pathlib
+import random
+from datetime import datetime
+from pathlib import Path
 
 import numpy as np
 import pandas as pd
-
-import random
-import logging
-import ray
 import psutil
-import cordmap as program_for_log
-
-from fancylog import fancylog
-from pathlib import Path
-from datetime import datetime
-
+import ray
 from bg_atlasapi import BrainGlobeAtlas
+from fancylog import fancylog
 
-from cordmap.data.io import load_data, save_output
-from cordmap.data.utils import get_data_segments
+import cordmap as program_for_log
 from cordmap.atlas.utils import load_create_cord_gm_atlas_volume_image
+from cordmap.data.io import load_data, save_output
+from cordmap.data.utils import filter_data_by_type, get_data_segments
 from cordmap.get_all_population_keys import get_populations_from_file
-from cordmap.register.constants import population_ignore_set
-
-from cordmap.utils.misc import ensure_directory_exists
-from cordmap.data.utils import filter_data_by_type
-from cordmap.register.register_sections import (
-    register_single_section_serial,
-    register_single_section_ray,
-)
 from cordmap.napari.vis import visualise_results
 from cordmap.postprocessing.prob_map import generate_prob_map
+from cordmap.register.constants import population_ignore_set
+from cordmap.register.register_sections import (
+    register_single_section_ray,
+    register_single_section_serial,
+)
+from cordmap.utils.misc import ensure_directory_exists
+from cordmap.utils.upsample_cells import upsample_population
 
 
 def register_sections_3D(
@@ -58,6 +54,7 @@ def register_sections_3D(
     mask_prob_map=True,
     prob_map_normalise=True,
     prob_map_smoothing=100,
+    population_upsampling_factor=1,
 ):
     start_time = datetime.now()
     ensure_directory_exists(output_directory)
@@ -238,6 +235,13 @@ def register_sections_3D(
             save_csv=save_csv,
             save_npy=save_npy,
         )
+
+    if population_upsampling_factor > 1:
+        for k in labeled_cells["population_key"].unique():
+            popdf = labeled_cells[labeled_cells["population_key"] == k]
+            upsample_population(
+                output_directory, popdf, k, None, population_upsampling_factor
+            )
 
     if prob_map:
         probability_map = generate_prob_map(

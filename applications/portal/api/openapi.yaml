@@ -331,6 +331,34 @@ paths:
           description: ''
       tags:
       - api
+  /api/experiments/{id}/download_populations/{active_populations}/:
+    get:
+      operationId: downloadPopulationsExperiment
+      description: 'This viewset automatically provides `list`, `create`, `retrieve`,
+
+        `update` and `destroy` actions.'
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: A unique integer value identifying this experiment.
+        schema:
+          type: string
+      - name: active_populations
+        in: path
+        required: true
+        description: ''
+        schema:
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DownloadPopulations'
+          description: ''
+      tags:
+      - api
   /api/population/:
     get:
       operationId: listPopulations
@@ -977,9 +1005,9 @@ paths:
           description: ''
       tags:
       - api
-  /api/experiments/{id}/upload-files/:
+  /api/experiments/{id}/upload-pair-files/:
     post:
-      operationId: uploadFilesExperiment
+      operationId: uploadPairFilesExperiment
       description: 'This viewset automatically provides `list`, `create`, `retrieve`,
 
         `update` and `destroy` actions.'
@@ -994,13 +1022,40 @@ paths:
         content:
           multipart/form-data:
             schema:
-              $ref: '#/components/schemas/ExperimentFileUpload'
+              $ref: '#/components/schemas/ExperimentPairFileUpload'
       responses:
         '201':
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ExperimentFileUpload'
+                $ref: '#/components/schemas/ExperimentPairFileUpload'
+          description: ''
+      tags:
+      - api
+  /api/experiments/{id}/upload-single-file/:
+    post:
+      operationId: uploadSingleFileExperiment
+      description: 'This viewset automatically provides `list`, `create`, `retrieve`,
+
+        `update` and `destroy` actions.'
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: A unique integer value identifying this experiment.
+        schema:
+          type: string
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ExperimentSingleFileUpload'
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExperimentSingleFileUpload'
           description: ''
       tags:
       - api
@@ -1250,7 +1305,6 @@ components:
               atlas:
                 enum:
                 - salk_cord_10um
-                - allen_cord_20um
                 type: string
               cells:
                 type: string
@@ -1285,6 +1339,15 @@ components:
       required:
       - name
       - description
+    DownloadPopulations:
+      type: object
+      properties:
+        active_populations:
+          type: array
+          items:
+            type: integer
+      required:
+      - active_populations
     Population:
       type: object
       properties:
@@ -1302,7 +1365,6 @@ components:
         atlas:
           enum:
           - salk_cord_10um
-          - allen_cord_20um
           type: string
         cells:
           type: string
@@ -1428,7 +1490,7 @@ components:
             type: string
       required:
       - tags
-    ExperimentFileUpload:
+    ExperimentPairFileUpload:
       type: object
       properties:
         key_file:
@@ -1440,6 +1502,14 @@ components:
       required:
       - key_file
       - data_file
+    ExperimentSingleFileUpload:
+      type: object
+      properties:
+        file:
+          type: string
+          format: binary
+      required:
+      - file
     Member:
       type: object
       properties:

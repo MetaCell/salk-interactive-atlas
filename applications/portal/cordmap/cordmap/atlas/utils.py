@@ -1,6 +1,6 @@
 import logging
-import numpy as np
 
+import numpy as np
 from scipy.ndimage.measurements import center_of_mass
 
 from cordmap.constants import GM_REGIONS

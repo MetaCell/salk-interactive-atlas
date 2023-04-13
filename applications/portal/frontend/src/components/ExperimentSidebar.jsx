@@ -12,8 +12,11 @@ import {
     FormControl,
     RadioGroup,
     Radio,
-    Button, Popover
+    Button,
+    Popover,
+    Tooltip
 } from '@material-ui/core';
+
 import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown';
 import {canvasIconColor, headerBg, headerBorderColor} from "../theme";
 import TOGGLE from "../assets/images/icons/toggle.svg";
@@ -25,6 +28,11 @@ import {atlasMap, POPULATION_FINISHED_STATE} from "../utilities/constants";
 import {getRGBAFromHexAlpha, getRGBAString} from "../utilities/functions";
 import ColorPicker from "./common/ColorPicker";
 import SwitchLabel from "./common/SwitchLabel";
+import {faDownload} from '@fortawesome/free-solid-svg-icons';
+import workspaceService from "../service/WorkspaceService";
+import {useParams} from "react-router";
+import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
+import {downloadFile} from "../utils";
 
 const useStyles = makeStyles({
     sidebar: {
@@ -152,6 +160,11 @@ const useStyles = makeStyles({
             cursor: 'default',
         },
     },
+    downloadButton: {
+        marginRight: '6px',
+        display: 'flex',
+        justifyContent: 'end'
+    }
 });
 
 
@@ -170,6 +183,11 @@ const ExperimentSidebar = ({
     const [shrink, setShrink] = useState(false);
     const [popoverAnchorEl, setPopoverAnchorEl] = React.useState(null);
     const [selectedPopoverId, setSelectedPopoverId] = React.useState(null);
+    const params = useParams();
+
+
+    const api = workspaceService.getApi()
+
 
     const handlePopoverClick = (event, id) => {
         if (!hasEditPermission) {
@@ -199,6 +217,10 @@ const ExperimentSidebar = ({
             .reduce((acc, pId) => populations[pId].selected && acc, true)
     }
 
+    const activePopulations = Object.keys(populations).filter(
+        (populationID) => populations[populationID].selected
+    );
+
 
     const sidebarClass = `${classes.sidebar} scrollbar ${shrink ? `${classes.shrink}` : ``}`;
     const PopulationLabel = ({population}) => {
@@ -210,8 +232,24 @@ const ExperimentSidebar = ({
             <SwitchLabel label={labelText}/>
         )
     }
-    const populationTextStyle = (disabled) => hasEditPermission && !disabled? {} : {marginLeft: "8px"}
+    const populationTextStyle = (disabled) => hasEditPermission && !disabled ? {} : {marginLeft: "8px"}
+    const downloadTooltipTitle = activePopulations.length
+        ? 'Download active populations data'
+        : 'No active populations to download';
 
+
+    const downloadPopulationsData = async () => {
+        try {
+            const response = await api.downloadPopulationsExperiment(params.id, activePopulations.join(','), {
+                responseType: 'arraybuffer',
+            })
+            downloadFile(response)
+        }catch (error){
+            console.error('Error while fetching the file:', error);
+        }
+
+
+    }
     return (
         <Box className={sidebarClass}>
             <Box className="sidebar-header">
@@ -281,22 +319,24 @@ const ExperimentSidebar = ({
                                         <Box style={{backgroundColor: getRGBAString(getRGBAColor(pId))}}
                                              component="span"
                                              className='square'/>
-                                        {hasEditPermission && populations[pId].status === POPULATION_FINISHED_STATE && <ArrowDropDownIcon fontSize='small'
-                                                                                                                                          style={{opacity: POPULATION_ICONS_OPACITY}}/>}
+                                        {hasEditPermission && populations[pId].status === POPULATION_FINISHED_STATE &&
+                                            <ArrowDropDownIcon fontSize='small'
+                                                               style={{opacity: POPULATION_ICONS_OPACITY}}/>}
                                     </span>
-                                    {hasEditPermission && populations[pId].status === POPULATION_FINISHED_STATE && <Popover
-                                        open={pId === selectedPopoverId}
-                                        anchorEl={popoverAnchorEl}
-                                        onClose={handlePopoverClose}
-                                        anchorOrigin={{
-                                            vertical: 'bottom',
-                                            horizontal: 'left',
-                                        }}
-                                    >
-                                        <ColorPicker selectedColor={getRGBAColor(pId)} handleColorChange={
-                                            (color, opacity) => handlePopulationColorChange(pId, color, opacity)
-                                        }/>
-                                    </Popover>
+                                    {hasEditPermission && populations[pId].status === POPULATION_FINISHED_STATE &&
+                                        <Popover
+                                            open={pId === selectedPopoverId}
+                                            anchorEl={popoverAnchorEl}
+                                            onClose={handlePopoverClose}
+                                            anchorOrigin={{
+                                                vertical: 'bottom',
+                                                horizontal: 'left',
+                                            }}
+                                        >
+                                            <ColorPicker selectedColor={getRGBAColor(pId)} handleColorChange={
+                                                (color, opacity) => handlePopulationColorChange(pId, color, opacity)
+                                            }/>
+                                        </Popover>
                                     }
                                     <FormControlLabel
                                         className={'population-label'}
@@ -310,6 +350,19 @@ const ExperimentSidebar = ({
                                     />
                                 </span>
                             )}
+                            <Tooltip title={downloadTooltipTitle}>
+                                  <span className={classes.downloadButton}>
+                                    <IconButton
+                                        edge="end"
+                                        color="inherit"
+                                        onClick={() => downloadPopulationsData()}
+                                        disabled={!activePopulations.length}
+                                        style={{fontSize: '1rem'}}
+                                    >
+                                        <FontAwesomeIcon icon={faDownload}/>
+                                    </IconButton>
+                                  </span>
+                            </Tooltip>
                         </AccordionDetails>
                     </Accordion>
                 </>

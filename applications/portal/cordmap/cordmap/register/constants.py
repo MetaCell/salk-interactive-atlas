@@ -1,28 +1,7 @@
 import pandas as pd
 
-segment_keys = [
-    "C1",
-    "C2",
-    "C3",
-    "C4",
-    "C5",
-    "C6",
-    "C7",
-    "C8",
-    "T1",
-]
+from cordmap.register_fiducial import bgatlasapi_wrapper
 
-segment_lengths = [
-    79,
-    89,
-    99,
-    99,
-    89,
-    89,
-    89,
-    89,
-    49,
-]
 population_ignore_set = [
     "Contour Name 1",
     "Grey",
@@ -34,6 +13,18 @@ population_ignore_set = [
     "Ignore",
 ]
 
-segment_dict = {"Segment": segment_keys, "Length": segment_lengths}
-segments_df = pd.DataFrame.from_dict(segment_dict)
-# segments_df = pd.DataFrame.from_dict(segment_dict).set_index("Segment").T
+atlas = bgatlasapi_wrapper.SalkAtlas("salk_cord_10um")
+
+
+def get_atlas_segment_lengths(atlas):
+    segment_lengths = []
+    segment_keys = []
+    for x in atlas.metadata["atlas_segments"]:
+        segment_lengths.append(x["End"] - x["Start"])
+        segment_keys.append(x["Segment"])
+    segment_dict = {"Segment": segment_keys, "Length": segment_lengths}
+    segments_df = pd.DataFrame.from_dict(segment_dict)
+    return segment_dict, segments_df
+
+
+segment_dict, segments_df = get_atlas_segment_lengths(atlas)

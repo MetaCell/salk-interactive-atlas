@@ -1,10 +1,10 @@
 import os
-import itk
 import tempfile
+from pathlib import Path
 
+import itk
 import numpy as np
 
-from pathlib import Path
 from cordmap.utils.misc import ensure_directory_exists
 
 TEMP_DIRECTORY = Path(tempfile.mkdtemp(prefix="cordmap_elastix_"))

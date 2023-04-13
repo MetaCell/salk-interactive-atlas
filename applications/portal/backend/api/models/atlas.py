@@ -3,11 +3,11 @@ from django.db import models
 
 from api.helpers.ICustomAtlas import ICustomAtlas
 
-
 # Get an instance of a logger
 logger = logging.getLogger(__name__)
 
 salkAtlasses = {}
+
 
 # Create your models here.
 class AtlasesChoice(models.TextChoices):
@@ -25,8 +25,10 @@ def add_atlas(atlas_id: str) -> ICustomAtlas:
     salkAtlasses.update({atlas_id: salkAtlas})
     return salkAtlas
 
+
 def get_atlas(atlas_id: str) -> ICustomAtlas:
     return salkAtlasses.get(atlas_id, add_atlas(atlas_id))
+
 
 for atlas_id in (e.value for e in AtlasesChoice):
     logger.info(f"adding atlas {atlas_id}")

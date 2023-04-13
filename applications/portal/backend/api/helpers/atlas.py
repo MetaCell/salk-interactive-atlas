@@ -15,6 +15,7 @@ split_segments = lambda seg: [
 def get_subdivisions(bg_atlas: ICustomAtlas) -> list:
     return flat_map(split_segments, bg_atlas.metadata["atlas_segments"])
 
+
 def get_subdivision_boundaries(bg_atlas: ICustomAtlas) -> tuple:
     segments_metadata = bg_atlas.metadata["atlas_segments"]
 
@@ -30,8 +31,10 @@ def get_subdivision_boundaries(bg_atlas: ICustomAtlas) -> tuple:
         subdivision.append(f"{seg['Segment']}-{CAUDAL}")
     return breakpoints, subdivision
 
+
 def get_bg_atlas(atlas_id: str) -> ICustomAtlas:
     return get_atlas(atlas_id)
+
 
 def get_img_min_y(img: np.array) -> int:
     item_index = np.where(img > 0)

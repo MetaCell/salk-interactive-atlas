@@ -10,7 +10,7 @@ class PopulationPersistentFiles(Enum):
     CENTROIDS_IMG = "_centroids.png"
 
 
-CORDMAP_DATA = "cordmap_data"
+EXPERIMENTS_DATA = "experiments"
 POPULATIONS_DATA = "populations"
 POPULATIONS_SPLIT_DATA = "split"
 
