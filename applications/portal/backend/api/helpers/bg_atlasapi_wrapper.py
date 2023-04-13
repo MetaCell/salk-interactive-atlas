@@ -1,6 +1,6 @@
 import numpy as np
 
-from api.helpers.ICustomAtlas import ICustomAtlas
+from api.helpers.icustom_atlas import ICustomAtlas
 
 
 class SalkAtlas(ICustomAtlas):

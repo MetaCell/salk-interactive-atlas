@@ -12,6 +12,8 @@ from ..constants import (
     PopulationPersistentFiles,
 )
 from ..helpers.generate_population_cells import get_cells_filepath
+from ..helpers.population_registration.population_registration_strategy_factory import \
+    get_population_registration_strategy
 from ..services.filesystem_service import create_dir_if_not_exists, remove_dir, remove_file_if_exists
 from ..services.population_service import generate_images, split_cells_per_segment
 from ..utils import has_property, is_valid_hex_str
@@ -111,7 +113,8 @@ class Population(models.Model):
         self.status = PopulationStatus.RUNNING
         self.save()
         try:
-            self.cells.name = get_cells_filepath(self.name, data_filepath, self.storage_path, self.is_fiducial)
+            strategy = get_population_registration_strategy(self.is_fiducial)
+            self.cells.name = get_cells_filepath(self.name, data_filepath, self.storage_path, strategy)
         except Exception as e:
             logging.exception(e)
             self.status = PopulationStatus.ERROR

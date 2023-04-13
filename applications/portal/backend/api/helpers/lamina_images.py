@@ -1,12 +1,12 @@
 import os
 
 from api.constants import LaminasImages
-from api.helpers import ICustomAtlas
 from api.helpers.atlas import get_img_min_y
 from api.helpers.density_map.generate_image import (
     generate_image_contour,
     generate_lamina_image,
 )
+from api.helpers.icustom_atlas import ICustomAtlas
 from api.services.atlas_service import save_image
 from workspaces.settings import LAMINAS_PATH
 

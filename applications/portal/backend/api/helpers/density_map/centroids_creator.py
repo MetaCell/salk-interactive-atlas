@@ -9,7 +9,7 @@ from api.helpers.density_map.common_density_helpers import get_subdivision_limit
 from api.helpers.density_map.generate_image import get_annotation_array, shift_image_array, get_canal_offset, \
     get_pad_from_offset
 from api.helpers.density_map.ipopulation_image_creator import IPopulationImageCreator
-from api.helpers.ICustomAtlas import ICustomAtlas
+from api.helpers.icustom_atlas import ICustomAtlas
 from api.helpers.image_manipulation import fig_to_img, fig_to_numpy, get_image_from_array, black_to_transparent, \
     pad_image
 from workspaces.settings import FIGURE_DPI

@@ -3,7 +3,7 @@ from abc import ABC, abstractmethod
 import numpy as np
 from PIL import Image
 
-from api.helpers.ICustomAtlas import ICustomAtlas
+from api.helpers.icustom_atlas import ICustomAtlas
 
 
 class IPopulationImageCreator(ABC):

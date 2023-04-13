@@ -5,7 +5,7 @@ from PIL import Image
 from matplotlib import pyplot as plt
 from matplotlib import rcParams
 
-from api.helpers.ICustomAtlas import ICustomAtlas
+from api.helpers.icustom_atlas import ICustomAtlas
 from api.helpers.atlas import get_subdivision_boundaries
 from api.helpers.image_manipulation import fig_to_img, pad_image
 from api.utils import get_closest_multiple

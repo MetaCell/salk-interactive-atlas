@@ -6,7 +6,7 @@ from api.constants import FULLY_OPAQUE, WHITE
 from api.helpers.density_map.common_density_helpers import get_subdivision_limits, get_img_array_offset
 from api.helpers.density_map.grid_creator import get_grid_images
 from api.helpers.exceptions import NoImageDataError
-from api.helpers.ICustomAtlas import ICustomAtlas
+from api.helpers.icustom_atlas import ICustomAtlas
 from api.helpers.image_manipulation import black_to_transparent, get_image_from_array
 from workspaces.settings import (
     CANAL_IMAGE_OPACITY,
