@@ -233,15 +233,3 @@ POSITION_WITHIN_SUBSEGMENT = 0.5  # Position (in percentage) of the slice to pic
 
 FILE_UPLOAD_MAX_MEMORY_SIZE = 0  # Forces all uploaded files to be of type TemporaryUploadedFile opposed to InMemoryUploadedFile
 
-# copied from cordmap
-MARKER_LABELS = [
-    "L1",
-    "L2",
-    "L3",
-    "L4",
-    "L5",
-    "L6",
-    "L7",
-    "L8",
-    "L9",
-]

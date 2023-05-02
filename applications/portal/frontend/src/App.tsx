@@ -40,13 +40,17 @@ export const App = (props: any) => {
   const classes = useStyles();
   const [latestExperimentId, setLatestExperimentId] = useState(null)
 
+  const onExperimentCreation = (id: string) => {
+    setLatestExperimentId(id)
+  }
+
   return (
       <ThemeProvider theme={theme}>
         <CssBaseline />
         {!props.error &&
           <Router>
             <div className={classes.mainContainer}>
-              <Header onExperimentCreation={(id: string) => setLatestExperimentId(id)}/>
+              <Header onExperimentCreation={(id: string) => onExperimentCreation(id)}/>
               <Switch>
                 <ProtectedRoute exact={true} path="/">
                   <HomePage latestExperimentId={latestExperimentId} />
