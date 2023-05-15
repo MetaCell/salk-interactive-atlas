@@ -190,7 +190,7 @@ const ExperimentSidebar = ({
     const api = workspaceService.getApi()
 
 
-    const handlePopoverClick = (event, id) => {
+    const handlePopoverClick = (event, id, hasEditPermission) => {
         if (!hasEditPermission) {
             return
         }

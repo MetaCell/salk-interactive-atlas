@@ -4,7 +4,6 @@ import os
 from shutil import copy2
 
 from django.conf import settings
-from django.core.files import File
 from django.db import migrations
 
 from api.constants import POPULATIONS_DATA
@@ -19,9 +18,10 @@ def create_residential_populations(apps, schema_editor):
     directory = os.path.join(HERE, '../../data/resident_populations')
 
     for index, filename in enumerate(os.listdir(directory)):
+        name, _ = os.path.splitext(filename)  # This splits the filename and the extension
         with open(os.path.join(directory, filename), 'rb') as f:
             population = Population(
-                name=filename,
+                name=name,
                 color=COLORS[index % len(COLORS)],
                 opacity=1.0,
                 is_fiducial=False,

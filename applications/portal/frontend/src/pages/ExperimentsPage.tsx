@@ -86,12 +86,21 @@ const ExperimentsPage: React.FC<{ residentialPopulations: any }> = ({ residentia
     const getPopulations = (e: Experiment, sa: AtlasChoice) => {
         const nextPopulations: any = {}
         const filteredPopulations = e.populations.filter((p: Population) => p.atlas === sa)
-        // @ts-ignore
         filteredPopulations.forEach(p => nextPopulations[p.id] = {
             ...p,
             status: p.status,
             selected: populations[p.id]?.selected || false
         })
+
+        Object.values(residentialPopulations).forEach((p: any) => {
+            if (!nextPopulations[p.id]) {
+                nextPopulations[p.id] = {
+                    ...p,
+                    selected: populations[p.id]?.selected || false
+                }
+            }
+        })
+
         return nextPopulations
     }
 
@@ -198,10 +207,6 @@ const ExperimentsPage: React.FC<{ residentialPopulations: any }> = ({ residentia
             dispatch(addWidget(DetailsWidget(false, null)));
         }
     }, [experiment])
-
-    useEffect(() => {
-        setPopulations({...populations, ...residentialPopulations})
-    }, [residentialPopulations])
 
     // TODO: Handle selectedAtlas changes
 
