@@ -25,7 +25,7 @@ import ADD from "../assets/images/icons/add.svg";
 import UP_ICON from "../assets/images/icons/up.svg";
 import POPULATION from "../assets/images/icons/population.svg";
 import {atlasMap, POPULATION_FINISHED_STATE} from "../utilities/constants";
-import {getRGBAFromHexAlpha, getRGBAString} from "../utilities/functions";
+import {getRGBAFromHexAlpha, getRGBAString, isResidentialPopulation} from "../utilities/functions";
 import ColorPicker from "./common/ColorPicker";
 import SwitchLabel from "./common/SwitchLabel";
 import {faDownload} from '@fortawesome/free-solid-svg-icons';
@@ -190,12 +190,20 @@ const ExperimentSidebar = ({
     const api = workspaceService.getApi()
 
 
-    const handlePopoverClick = (event, id, hasEditPermission) => {
-        if (!hasEditPermission) {
+    const canEdit = (population) => {
+        return hasEditPermission && !isResidentialPopulation(population)
+    }
+
+    const isPopulationReady = (population) => {
+        return population.status === POPULATION_FINISHED_STATE
+    }
+
+    const handlePopoverClick = (event, population) => {
+        if (!canEdit(population)) {
             return
         }
         setPopoverAnchorEl(event.currentTarget);
-        setSelectedPopoverId(id);
+        setSelectedPopoverId(population.id);
     };
 
     const handlePopoverClose = () => {
@@ -214,7 +222,7 @@ const ExperimentSidebar = ({
 
     const areAllPopulationsSelected = () => {
         return Object.keys(populations)
-            .filter(pId => populations[pId].status === POPULATION_FINISHED_STATE)
+            .filter(pId => isPopulationReady(populations[pId]))
             .reduce((acc, pId) => populations[pId].selected && acc, true)
     }
 
@@ -226,14 +234,14 @@ const ExperimentSidebar = ({
     const sidebarClass = `${classes.sidebar} scrollbar ${shrink ? `${classes.shrink}` : ``}`;
     const PopulationLabel = ({population}) => {
         let labelText = population.name;
-        if (population.status != POPULATION_FINISHED_STATE) {
+        if (!isPopulationReady(population)) {
             labelText += `- ${population.status}`
         }
         return (
             <SwitchLabel label={labelText}/>
         )
     }
-    const populationTextStyle = (disabled) => hasEditPermission && !disabled ? {} : {marginLeft: "8px"}
+    const populationTextStyle = (population) => canEdit(population) && isPopulationReady(population) ? {} : {marginLeft: "8px"}
     const downloadTooltipTitle = activePopulations.length
         ? 'Download active populations data'
         : 'No active populations to download';
@@ -251,6 +259,7 @@ const ExperimentSidebar = ({
 
 
     }
+
     return (
         <Box className={sidebarClass}>
             <Box className="sidebar-header">
@@ -316,15 +325,15 @@ const ExperimentSidebar = ({
                             {Object.keys(populations).map(pId =>
                                 <span className='population-entry' key={pId}>
                                     <span className='population-color'
-                                          onClick={(event) => handlePopoverClick(event, pId)}>
+                                          onClick={(event) => handlePopoverClick(event, populations[pId])}>
                                         <Box style={{backgroundColor: getRGBAString(getRGBAColor(pId))}}
                                              component="span"
                                              className='square'/>
-                                        {hasEditPermission && populations[pId].status === POPULATION_FINISHED_STATE &&
+                                        {canEdit(populations[pId]) && isPopulationReady(populations[pId]) &&
                                             <ArrowDropDownIcon fontSize='small'
                                                                style={{opacity: POPULATION_ICONS_OPACITY}}/>}
                                     </span>
-                                    {hasEditPermission && populations[pId].status === POPULATION_FINISHED_STATE &&
+                                    {canEdit(populations[pId]) && isPopulationReady(populations[pId]) &&
                                         <Popover
                                             open={pId === selectedPopoverId}
                                             anchorEl={popoverAnchorEl}
@@ -346,8 +355,8 @@ const ExperimentSidebar = ({
                                         labelPlacement="start"
                                         onChange={() => handlePopulationSwitch(pId)}
                                         checked={populations[pId].selected}
-                                        style={populationTextStyle(populations[pId].status !== POPULATION_FINISHED_STATE)}
-                                        disabled={populations[pId].status !== POPULATION_FINISHED_STATE}
+                                        style={populationTextStyle(populations[pId])}
+                                        disabled={!isPopulationReady(populations[pId])}
                                     />
                                 </span>
                             )}

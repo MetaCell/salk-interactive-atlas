@@ -134,3 +134,7 @@ export function dictZip(keys: string[], values: any[]) {
     }
     return keys.reduce((o, currentValue, currentIndex) => ({...o, [currentValue]: values[currentIndex]}), {})
 }
+
+export function isResidentialPopulation(p: any) {
+    return p.experiment === null
+}
