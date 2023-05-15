@@ -41,7 +41,7 @@ class PopulationStatus(models.TextChoices):
 
 class Population(models.Model):
     DEFAULT_COLOR = "#000000"
-    experiment = models.ForeignKey(Experiment, on_delete=models.CASCADE)
+    experiment = models.ForeignKey(Experiment, on_delete=models.CASCADE, null=True, blank=True)
     atlas = models.CharField(
         max_length=100, choices=AtlasesChoice.choices, default=AtlasesChoice.SLK10
     )
@@ -165,17 +165,17 @@ class Population(models.Model):
             return True
 
     def has_object_read_permission(self, request):
-        return self.experiment.has_object_read_permission(request)
+        return self.experiment is None or self.experiment.has_object_read_permission(request)
 
     def has_object_write_permission(self, request):
-        return self.experiment.has_object_write_permission(request)
+        return self.experiment and self.experiment.has_object_write_permission(request)
 
     def update_color(self):
         if not is_valid_hex_str(self.color):
             self.color = Population.DEFAULT_COLOR
 
     def __str__(self):
-        return f"{self.experiment} {self.name}"
+        return f"{self.experiment} {self.name}" if self.experiment else f"Residential {self.name}"
 
     class Meta:
         unique_together = [["experiment", "name"]]

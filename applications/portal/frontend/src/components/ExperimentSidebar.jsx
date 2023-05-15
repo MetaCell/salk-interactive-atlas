@@ -184,6 +184,7 @@ const ExperimentSidebar = ({
     const [popoverAnchorEl, setPopoverAnchorEl] = React.useState(null);
     const [selectedPopoverId, setSelectedPopoverId] = React.useState(null);
     const params = useParams();
+    // todo: split populations into resident and normal
 
 
     const api = workspaceService.getApi()
