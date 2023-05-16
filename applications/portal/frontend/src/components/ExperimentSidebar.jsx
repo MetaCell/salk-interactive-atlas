@@ -335,7 +335,7 @@ const ExperimentSidebar = ({
                                     </span>
                                     {canEdit(populations[pId]) && isPopulationReady(populations[pId]) &&
                                         <Popover
-                                            open={pId === selectedPopoverId}
+                                            open={parseInt(pId) === selectedPopoverId}
                                             anchorEl={popoverAnchorEl}
                                             onClose={handlePopoverClose}
                                             anchorOrigin={{
