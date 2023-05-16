@@ -1,5 +1,5 @@
 import {getAtlas} from "../service/AtlasService";
-import {ARROW_KEY_LEFT, ARROW_KEY_RIGHT, AtlasChoice} from "./constants";
+import {ARROW_KEY_LEFT, ARROW_KEY_RIGHT, AtlasChoice, POPULATION_FINISHED_STATE} from "./constants";
 import Range from "../models/Range";
 
 
@@ -137,4 +137,8 @@ export function dictZip(keys: string[], values: any[]) {
 
 export function isResidentialPopulation(p: any) {
     return p.experiment === null
+}
+
+export const isPopulationReady = (population: any) => {
+    return population.status === POPULATION_FINISHED_STATE
 }
