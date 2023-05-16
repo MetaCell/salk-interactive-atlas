@@ -11,6 +11,8 @@ import {EXPERIMENTS_ROUTE} from "./utilities/constants";
 import workspaceService from "./service/WorkspaceService";
 import {Population} from "./apiclient/workspaces";
 import {getCells} from "./helpers/CellsHelper";
+// @ts-ignore
+import Loader from "@metacell/geppetto-meta-ui/loader/Loader";
 
 const GEPPETTO = {};
 // @ts-ignore
@@ -42,6 +44,7 @@ const useStyles = makeStyles(() => ({
 export const App = (props: any) => {
   const classes = useStyles();
   const [latestExperimentId, setLatestExperimentId] = useState(null)
+  const [loading, setLoading] = useState(true);
   const [residentialPopulations, setResidentialPopulations] = useState({});
 
   const api = workspaceService.getApi()
@@ -64,6 +67,7 @@ export const App = (props: any) => {
           return obj;
         }, {});
         setResidentialPopulations(residentialPopulationsObject);
+        setLoading(false);
       });
     });
   }, []);
@@ -82,12 +86,16 @@ export const App = (props: any) => {
             <div className={classes.mainContainer}>
               <Header onExperimentCreation={(id: string) => onExperimentCreation(id)}/>
               <Switch>
-                <ProtectedRoute exact={true} path="/">
-                  <HomePage latestExperimentId={latestExperimentId} />
-                </ProtectedRoute>
-                <ProtectedRoute exact={true} path={EXPERIMENTS_ROUTE}>
-                  <ExperimentsPage residentialPopulations={residentialPopulations} />
-                </ProtectedRoute>
+                {loading ? <Loader/> : (
+                    <>
+                      <ProtectedRoute exact={true} path="/">
+                        <HomePage latestExperimentId={latestExperimentId} />
+                      </ProtectedRoute>
+                      <ProtectedRoute exact={true} path={EXPERIMENTS_ROUTE}>
+                        <ExperimentsPage residentialPopulations={residentialPopulations} />
+                      </ProtectedRoute>
+                    </>
+                )}
               </Switch>
 
             </div>
