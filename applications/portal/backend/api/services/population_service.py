@@ -9,7 +9,7 @@ from api.constants import PopulationPersistentFiles
 from api.helpers.atlas import get_bg_atlas, get_subdivision_boundaries, get_subdivisions
 from api.helpers.density_map.centroids_creator import CentroidsCreator
 from api.helpers.density_map.ipopulation_image_creator import IPopulationImageCreator
-from api.helpers.density_map.probability_map_creator import ProbabilityMapCreator
+from api.helpers.density_map.contour_plot_creator import ContourPlotCreator
 
 
 def split_cells_per_segment(population):
@@ -96,7 +96,7 @@ def generate_images(population):
                 s,
             )
             _store_image(
-                ProbabilityMapCreator(),
+                ContourPlotCreator(),
                 PopulationPersistentFiles.PROBABILITY_MAP_IMG,
                 bg_atlas,
                 cells,

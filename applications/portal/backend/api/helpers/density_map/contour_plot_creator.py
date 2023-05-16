@@ -1,5 +1,7 @@
 import numpy as np
 from PIL import Image
+from matplotlib import pyplot as plt
+from matplotlib_inline.backend_inline import FigureCanvas
 from skimage.filters import gaussian
 
 from api.helpers.density_map.common_density_helpers import (
@@ -14,16 +16,19 @@ from api.helpers.image_manipulation import (
     get_image_from_array,
 )
 
+CONTOUR_LEVELS = [0.1470, 0.2940, 0.4410, 0.5881, 0.7351, 0.8821,
+                  1.0292, 1.1762, 1.3232]
 
-class ProbabilityMapCreator(IPopulationImageCreator):
+
+class ContourPlotCreator(IPopulationImageCreator):
     def create(
-        self, bg_atlas: ICustomAtlas, subdivision: str, points: np.array
+            self, bg_atlas: ICustomAtlas, subdivision: str, points: np.array
     ) -> Image:
-        return _generate_probability_map(bg_atlas, subdivision, points)
+        return _generate_contour_plot(bg_atlas, subdivision, points)
 
 
-def _generate_probability_map(
-    bg_atlas: ICustomAtlas, subdivision: str, points: np.array
+def _generate_contour_plot(
+        bg_atlas: ICustomAtlas, subdivision: str, points: np.array
 ) -> Image:
     prob_map_smoothing = 50
     prob_map_normalise = True
@@ -35,19 +40,45 @@ def _generate_probability_map(
         smoothing=prob_map_smoothing,
         normalise=prob_map_normalise,
     )
-    img_data = _get_accumulated_probability_map(probability_map)
-    scaled_image_data = 256 / np.max(img_data) * img_data
-    shifted_img_array = shift_image_array(scaled_image_data, get_canal_offset(bg_atlas, subdivision))
+
+    subdivision_middle = int((bin_limits[0][0] - bin_limits[0][1]) // 2)
+    probability_map_2d = probability_map[subdivision_middle, :, :]
+
+    fig, ax = plt.subplots()
+
+    _ = ax.contour(
+        probability_map_2d,
+        levels=CONTOUR_LEVELS,
+        colors="k",
+        linewidths=1, )
+
+    # Set the background to white
+    ax.axis('off')
+
+    plt.show()
+
+    # Convert plot to numpy array
+    canvas = FigureCanvas(fig)
+    canvas.draw()  # draw the canvas, cache the renderer
+
+    # Get the image data and reshape it
+    image = np.frombuffer(canvas.tostring_rgb(), dtype='uint8')
+    image = image.reshape(canvas.get_width_height()[::-1] + (3,))
+
+    # Convert the image to grayscale
+    image = np.dot(image[..., :3], [0.2989, 0.5870, 0.1140])
+
+    shifted_img_array = shift_image_array(image, get_canal_offset(bg_atlas, subdivision))
     img = get_image_from_array(shifted_img_array)
     return apply_greyscale_alpha_mask(img)
 
 
 def _generate_prob_map(
-    points: np.array,
-    bg_atlas: ICustomAtlas,
-    bin_limits: tuple = (None, None, None),
-    normalise: bool = True,
-    smoothing: int = None,
+        points: np.array,
+        bg_atlas: ICustomAtlas,
+        bin_limits: tuple = (None, None, None),
+        normalise: bool = True,
+        smoothing: int = None,
 ) -> np.array:
     bins = get_bins(bg_atlas.annotation.shape, (1, 1, 1), bin_limits)
     probability_map, _ = np.histogramdd(points, bins=bins, density=normalise)
