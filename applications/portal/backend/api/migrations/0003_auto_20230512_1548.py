@@ -41,7 +41,6 @@ def create_residential_populations(apps, schema_editor):
         population.cells.name = os.path.join(storage_path, csv_file)
         population.status = PopulationStatus.FINISHED
         population.save()
-        print(f"Created population {name}")
 
 
 def delete_residential_populations(apps, schema_editor):
