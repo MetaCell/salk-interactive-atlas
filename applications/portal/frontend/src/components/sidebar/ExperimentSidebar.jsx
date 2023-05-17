@@ -28,7 +28,7 @@ import PopulationsAccordion from "./PopulationsAccordion";
 const useStyles = makeStyles({
     sidebar: {
         height: 'calc(100vh - 3rem)',
-        width: '15rem',
+        width: '16rem',
         flexShrink: 0,
         borderRight: `0.0625rem solid ${headerBorderColor}`,
         background: headerBg,
