@@ -31,23 +31,16 @@ def _generate_contour_plot(
         bg_atlas: ICustomAtlas, subdivision: str, points: np.array
 ) -> Image:
     prob_map_smoothing = 50
-    prob_map_normalise = True
-    bin_limits = get_subdivision_bin_limits(bg_atlas, subdivision)
     probability_map = _generate_prob_map(
         points,
         bg_atlas,
-        bin_limits=bin_limits,
         smoothing=prob_map_smoothing,
-        normalise=prob_map_normalise,
     )
-
-    subdivision_middle = int((bin_limits[0][0] - bin_limits[0][1]) // 2)
-    probability_map_2d = probability_map[subdivision_middle, :, :]
 
     fig, ax = plt.subplots()
 
     _ = ax.contour(
-        probability_map_2d,
+        probability_map,
         levels=CONTOUR_LEVELS,
         colors="k",
         linewidths=1, )
@@ -76,16 +69,20 @@ def _generate_contour_plot(
 def _generate_prob_map(
         points: np.array,
         bg_atlas: ICustomAtlas,
-        bin_limits: tuple = (None, None, None),
-        normalise: bool = True,
+        segment: str = None,
         smoothing: int = None,
+        upsample_factor: int = 4,
 ) -> np.array:
-    bins = get_bins(bg_atlas.annotation.shape, (1, 1, 1), bin_limits)
-    probability_map, _ = np.histogramdd(points, bins=bins, density=normalise)
-    if smoothing is not None:
-        smoothing = [int(round(smoothing / res)) for res in bg_atlas.resolution]
-        probability_map = gaussian(probability_map, sigma=smoothing)
-    return probability_map
+    image = bg_atlas.annotation[bg_atlas.get_section_idx(segment, 0.25)]
+    bins = get_bins(image.shape, (1, 1))
+    probability_map, _ = np.histogramdd(
+        points_in_segment, bins=bins, density=False
+    )
+    probability_map = gaussian(probability_map, sigma=smoothing)
+    if upsample_factor > 1:
+        probability_map = zoom(probability_map, (4,4), order=0, prefilter=False)
+        image = interpolate_atlas_section(image, order=1, upsample_factor=4)
+    return image, probability_map
 
 
 def _get_accumulated_probability_map(probability_map: np.array) -> np.array:

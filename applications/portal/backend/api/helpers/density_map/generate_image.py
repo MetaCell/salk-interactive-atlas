@@ -3,7 +3,7 @@ import numpy as np
 from PIL import Image
 from typing import Tuple
 from api.constants import FULLY_OPAQUE, WHITE
-from api.helpers.density_map.common_density_helpers import get_subdivision_limits, get_img_array_offset
+from api.helpers.density_map.common_density_helpers import get_img_array_offset
 from api.helpers.density_map.grid_creator import get_grid_images
 from api.helpers.exceptions import NoImageDataError
 from api.helpers.icustom_atlas import ICustomAtlas
@@ -73,12 +73,7 @@ def _generate_shifted_image(
 
 
 def _get_img_array(bg_atlas, subdivision, image_data):
-    segment_start, segment_end = get_subdivision_limits(
-        bg_atlas, subdivision
-    )
-    image_idx = int(
-        (segment_end - segment_start) * POSITION_WITHIN_SUBSEGMENT + segment_start
-    )
+    image_idx = bg_atlas.get_section_idx(subdivision)
     return image_data[image_idx]
 
 

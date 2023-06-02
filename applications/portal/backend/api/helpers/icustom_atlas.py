@@ -19,3 +19,11 @@ class ICustomAtlas(ABC, BrainGlobeAtlas):
     @abstractmethod
     def get_annotation(self, structure_key_list):
         pass
+
+    @abstractmethod
+    def get_subdivision_limits(self, subdivision: str) -> tuple:
+        pass
+
+    @abstractmethod
+    def get_section_idx(self, subdivision, position_within_segment):
+        pass
