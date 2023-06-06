@@ -6,26 +6,17 @@ from api.helpers.icustom_atlas import ICustomAtlas
 from typing import Tuple
 
 
-def get_bins(image_size: tuple, bin_sizes: tuple, bin_limits: tuple) -> list:
+def get_bins(image_size: tuple, bin_sizes: tuple):
     """
-    Given an image size, and bin size, return a list of the bin boundaries.
-
-    Args:
-        image_size (tuple): Size of the final image.
-        bin_sizes (tuple): Bin sizes corresponding to the dimensions of "image_size".
-        bin_limits (tuple): Bin limits corresponding to the dimensions of "image_size".
-
-    Returns:
-        list: List of arrays of bin boundaries.
+    Given an image size, and bin size, return a list of the bin boundaries
+    :param image_size: Size of the final image (tuple/list)
+    :param bin_sizes: Bin sizes corresponding to the dimensions of
+    "image_size" (tuple/list)
+    :return: List of arrays of bin boundaries
     """
     bins = []
     for dim in range(0, len(image_size)):
-        if bin_limits[dim]:
-            bins.append(
-                np.arange(bin_limits[dim][0], bin_limits[dim][1] + 1, bin_sizes[dim])
-            )
-        else:
-            bins.append(np.arange(0, image_size[dim] + 1, bin_sizes[dim]))
+        bins.append(np.arange(0, image_size[dim] + 1, bin_sizes[dim]))
     return bins
 
 
