@@ -1,7 +1,7 @@
 from django.core.management.base import BaseCommand
 
 from api.helpers.atlas import get_bg_atlas, get_subdivisions
-from api.helpers.density_map.generate_image import generate_annotation_image
+from api.helpers.density_map.generate_image import generate_grey_and_white_matter_image
 from api.management.utilities import get_valid_atlases
 from api.services.atlas_service import save_annotation_image
 
@@ -23,6 +23,6 @@ class Command(BaseCommand):
             bg_atlas = get_bg_atlas(atlas_id)
             subdivisions = get_subdivisions(bg_atlas)
             for s in subdivisions:
-                _, img = generate_annotation_image(bg_atlas, s)
+                _, img = generate_grey_and_white_matter_image(bg_atlas, s)
                 save_annotation_image(img, s)
         self.stdout.write(self.style.SUCCESS("Generate annotations finished"))

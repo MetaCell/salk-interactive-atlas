@@ -20,13 +20,6 @@ class SalkAtlas(ICustomAtlas):
         annotation_copy[self._get_atlas_merge_layers_1_to_4()] = self._get_structure_annotation_value('1-4Sp')
         return annotation_copy
 
-    @property
-    def canal(self):
-        """
-        Generates an image volume of the central canal
-        """
-        return self.get_image_volume(self.structures["CC"]["id"])
-
     def get_image_volume(self, region_key):
         """
         Generates 3D numpy array mask of the input region.
@@ -36,14 +29,6 @@ class SalkAtlas(ICustomAtlas):
         for child in self.hierarchy.children(region_id):
             img = np.logical_or(img, self.annotation == (child.identifier - 1))
         return img
-
-    def get_annotation(self, structure_key_list):
-        new_annotation = np.empty_like(self.annotation)
-        for region_key in structure_key_list:
-            img = self.get_image_volume(region_key)
-            locs = np.where(img)
-            new_annotation[locs] = self.structures[region_key]["id"] - 1
-        return new_annotation
 
     def _get_structure_annotation_value(self, structure_key: str) -> int:
         structure_id = self.structures[structure_key]["id"]

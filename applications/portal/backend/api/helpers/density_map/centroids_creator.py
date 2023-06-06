@@ -1,17 +1,14 @@
 import matplotlib.image as mimage
 import numpy as np
+from PIL import Image
 from matplotlib import pyplot as plt
 from matplotlib import rcParams
-from PIL import Image
 
-from api.constants import FULLY_OPAQUE
-from api.helpers.density_map.common_density_helpers import get_subdivision_limits
-from api.helpers.density_map.generate_image import get_annotation_array, shift_image_array, get_canal_offset, \
+from api.helpers.density_map.generate_image import get_grey_and_white_matter_image_array, get_canal_offset, \
     get_pad_from_offset
 from api.helpers.density_map.ipopulation_image_creator import IPopulationImageCreator
 from api.helpers.icustom_atlas import ICustomAtlas
-from api.helpers.image_manipulation import fig_to_img, fig_to_numpy, get_image_from_array, black_to_transparent, \
-    pad_image
+from api.helpers.image_manipulation import fig_to_img, pad_image
 from workspaces.settings import FIGURE_DPI
 
 
@@ -25,14 +22,14 @@ class CentroidsCreator(IPopulationImageCreator):
 def _generate_centroids(
         bg_atlas: ICustomAtlas, subdivision: str, points: np.array
 ) -> Image:
-    subdivision_limits = get_subdivision_limits(bg_atlas, subdivision)
+    subdivision_limits = bg_atlas.get_subdivision_limits(subdivision)
     points_slice = points[
         np.logical_and(
             subdivision_limits[0] <= points[:, 0], points[:, 0] <= subdivision_limits[1]
         )
     ]
     points_slice = points_slice[:, 1:]
-    im = get_annotation_array(bg_atlas, subdivision)
+    im = get_grey_and_white_matter_image_array(bg_atlas, subdivision)
     dpi = FIGURE_DPI
     h, w = im.shape
     xmin, xmax, ymin, ymax = -0.5, w + 0.5, -0.5, h + 0.5

@@ -9,7 +9,7 @@ from PIL import Image
 from api.constants import HALF_OPAQUE
 
 
-def get_image_from_array(img_array: np.array, mode: str = "RGBA") -> Image:
+def get_image_from_image_array(img_array: np.array, mode: str = "RGBA") -> Image:
     i = Image.fromarray(img_array)
     return i.convert(mode)
 

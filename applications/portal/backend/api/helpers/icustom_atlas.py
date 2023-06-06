@@ -2,22 +2,19 @@ from abc import ABC, abstractmethod
 
 from bg_atlasapi import BrainGlobeAtlas
 
+from workspaces.settings import POSITION_WITHIN_SUBSEGMENT
+
 
 class ICustomAtlas(ABC, BrainGlobeAtlas):
     def __init__(self, atlas_name):
         super().__init__(atlas_name)
 
-    @property
-    @abstractmethod
-    def canal(self):
-        pass
+    def get_id(self):
+        return self.atlas_name
+
 
     @abstractmethod
     def get_image_volume(self, region_key):
-        pass
-
-    @abstractmethod
-    def get_annotation(self, structure_key_list):
         pass
 
     @abstractmethod
@@ -25,5 +22,5 @@ class ICustomAtlas(ABC, BrainGlobeAtlas):
         pass
 
     @abstractmethod
-    def get_section_idx(self, subdivision, position_within_segment):
+    def get_section_idx(self, subdivision, position_within_segment=POSITION_WITHIN_SUBSEGMENT):
         pass

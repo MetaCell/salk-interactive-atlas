@@ -13,7 +13,7 @@ from api.helpers.density_map.ipopulation_image_creator import IPopulationImageCr
 from api.helpers.icustom_atlas import ICustomAtlas
 from api.helpers.image_manipulation import (
     apply_greyscale_alpha_mask,
-    get_image_from_array,
+    get_image_from_image_array,
 )
 
 CONTOUR_LEVELS = [0.1470, 0.2940, 0.4410, 0.5881, 0.7351, 0.8821,
@@ -62,7 +62,7 @@ def _generate_contour_plot(
     image = np.dot(image[..., :3], [0.2989, 0.5870, 0.1140])
 
     shifted_img_array = shift_image_array(image, get_canal_offset(bg_atlas, subdivision))
-    img = get_image_from_array(shifted_img_array)
+    img = get_image_from_image_array(shifted_img_array)
     return apply_greyscale_alpha_mask(img)
 
 
