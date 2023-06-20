@@ -12,12 +12,12 @@ class SalkAtlas(ICustomAtlas):
         self._annotation = self._get_annotation_with_merged_layers_1_to_4()
 
     def _get_atlas_merge_layers_1_to_4(self):
-        return np.logical_and(self.annotation >= self._get_structure_annotation_value('1Sp'),
-                              self.annotation <= self._get_structure_annotation_value('4Sp'))
+        return np.logical_and(self.annotation >= self.get_structure_annotation_value('1Sp'),
+                              self.annotation <= self.get_structure_annotation_value('4Sp'))
 
     def _get_annotation_with_merged_layers_1_to_4(self):
         annotation_copy = self.annotation.copy()
-        annotation_copy[self._get_atlas_merge_layers_1_to_4()] = self._get_structure_annotation_value('1-4Sp')
+        annotation_copy[self._get_atlas_merge_layers_1_to_4()] = self.get_structure_annotation_value('1-4Sp')
         return annotation_copy
 
     def get_image_volume(self, region_key):
@@ -25,12 +25,12 @@ class SalkAtlas(ICustomAtlas):
         Generates 3D numpy array mask of the input region.
         """
         region_id = self.structures[region_key]["id"]
-        img = self.annotation == self._get_structure_annotation_value(region_key)
+        img = self.annotation == self.get_structure_annotation_value(region_key)
         for child in self.hierarchy.children(region_id):
             img = np.logical_or(img, self.annotation == (child.identifier - 1))
         return img
 
-    def _get_structure_annotation_value(self, structure_key: str) -> int:
+    def get_structure_annotation_value(self, structure_key: str) -> int:
         structure_id = self.structures[structure_key]["id"]
         return structure_id - 1
 

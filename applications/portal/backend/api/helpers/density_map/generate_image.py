@@ -14,7 +14,8 @@ from api.services.atlas_upscale_service import get_upsampled_atlas_image_array, 
 from workspaces.settings import (
     GREY_SCALE_MAX_ANNOTATION,
     GREY_SCALE_MAX_CANAL,
-    GREY_SCALE_MAX_DEFAULT, POSITION_WITHIN_SUBSEGMENT, CANAL_IMAGE_OPACITY,
+    GREY_SCALE_MAX_DEFAULT, POSITION_WITHIN_SUBSEGMENT, CANAL_IMAGE_OPACITY, WHITE_MATTER_REGION_KEY,
+    GREY_MATTER_REGION_KEY, CENTRAL_CANAL_REGION_KEY,
 )
 
 
@@ -69,10 +70,14 @@ def get_grey_and_white_matter_image_array(bg_atlas: ICustomAtlas, subdivision: s
     atlas_subdivision_upscaled_image_array = get_upsampled_atlas_image_array(bg_atlas, subdivision,
                                                                              POSITION_WITHIN_SUBSEGMENT)
 
+    grey_white_matter_subdivision_image_array = _get_upscaled_grey_white_matter_image_array(
+        atlas_subdivision_upscaled_image_array, bg_atlas)
+
     colored_img_array = np.select(
         [
-            atlas_subdivision_upscaled_image_array == bg_atlas.structures["WM"]["id"] - 1,
-            atlas_subdivision_upscaled_image_array == bg_atlas.structures["GM"]["id"] - 1,
+            grey_white_matter_subdivision_image_array == bg_atlas.get_structure_annotation_value(
+                WHITE_MATTER_REGION_KEY),
+            grey_white_matter_subdivision_image_array == bg_atlas.get_structure_annotation_value(GREY_MATTER_REGION_KEY)
         ],
         [
             np.uint32(GREY_SCALE_MAX_DEFAULT),
@@ -81,6 +86,25 @@ def get_grey_and_white_matter_image_array(bg_atlas: ICustomAtlas, subdivision: s
         0,
     )
     return colored_img_array
+
+
+def _get_upscaled_grey_white_matter_image_array(upscaled_image_array, bg_atlas):
+    grey_white_matter_image = np.zeros_like(upscaled_image_array)
+    for region_key in [GREY_MATTER_REGION_KEY, WHITE_MATTER_REGION_KEY]:
+        region_id = bg_atlas.structures[region_key]["id"]
+        region_value = bg_atlas.get_structure_annotation_value(region_key)
+
+        # Set the values in the image for the main region
+        grey_white_matter_image[upscaled_image_array == region_value] = region_value
+
+        # Process each child
+        for child in bg_atlas.hierarchy.children(region_id):
+            child_value = child.identifier - 1
+
+            # Set the values in the image for the child region to the parent region value
+            grey_white_matter_image[upscaled_image_array == child_value] = region_value
+
+    return grey_white_matter_image
 
 
 def get_color_scaled_image_array(image_array, grey_scale_max: int = GREY_SCALE_MAX_DEFAULT):
@@ -121,7 +145,8 @@ def get_canal_offset(bg_atlas: ICustomAtlas, subdivision: str) -> Tuple[int, int
         return result
 
     upscaled_atlas_image_array = get_upsampled_atlas_image_array(bg_atlas, subdivision, POSITION_WITHIN_SUBSEGMENT)
-    canal_subdivision_image_array = get_2d_mask(bg_atlas, [bg_atlas.structures["CC"]["id"]], upscaled_atlas_image_array)
+    canal_subdivision_image_array = get_2d_mask(bg_atlas, [bg_atlas.structures[CENTRAL_CANAL_REGION_KEY]["id"]],
+                                                upscaled_atlas_image_array)
 
     offset = get_image_array_geometric_vs_centroid_offset(canal_subdivision_image_array)
     cache_canal_offsets[key] = offset
@@ -229,7 +254,7 @@ def generate_canal_image(bg_atlas: ICustomAtlas, subdivision: str) -> (np.array,
 
     atlas_subdivision_upscaled_image_array = get_upsampled_atlas_image_array(bg_atlas, subdivision,
                                                                              POSITION_WITHIN_SUBSEGMENT)
-    canal_subdivision_image_array = get_2d_mask(bg_atlas, [bg_atlas.structures["CC"]["id"]],
+    canal_subdivision_image_array = get_2d_mask(bg_atlas, [bg_atlas.structures[CENTRAL_CANAL_REGION_KEY]["id"]],
                                                 atlas_subdivision_upscaled_image_array)
     shifted_img_array = shift_image_array(canal_subdivision_image_array, get_canal_offset(bg_atlas, subdivision))
 

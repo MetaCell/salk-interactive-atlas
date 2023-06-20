@@ -233,3 +233,6 @@ POSITION_WITHIN_SUBSEGMENT = 0.5  # Position (in percentage) of the slice to pic
 
 FILE_UPLOAD_MAX_MEMORY_SIZE = 0  # Forces all uploaded files to be of type TemporaryUploadedFile opposed to InMemoryUploadedFile
 UPSCALE_FACTOR = 4
+GREY_MATTER_REGION_KEY = "GM"
+WHITE_MATTER_REGION_KEY = "WM"
+CENTRAL_CANAL_REGION_KEY = "CC"

@@ -12,7 +12,6 @@ class ICustomAtlas(ABC, BrainGlobeAtlas):
     def get_id(self):
         return self.atlas_name
 
-
     @abstractmethod
     def get_image_volume(self, region_key):
         pass
@@ -23,4 +22,8 @@ class ICustomAtlas(ABC, BrainGlobeAtlas):
 
     @abstractmethod
     def get_section_idx(self, subdivision, position_within_segment=POSITION_WITHIN_SUBSEGMENT):
+        pass
+
+    @abstractmethod
+    def get_structure_annotation_value(self, structure_key: str) -> int:
         pass
