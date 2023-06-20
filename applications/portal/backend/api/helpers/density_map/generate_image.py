@@ -234,7 +234,9 @@ def generate_canal_image(bg_atlas: ICustomAtlas, subdivision: str) -> (np.array,
                                                                              POSITION_WITHIN_SUBSEGMENT)
     canal_subdivision_image_array = get_2d_mask(bg_atlas, [bg_atlas.structures["CC"]["id"]],
                                                 atlas_subdivision_upscaled_image_array)
-    color_scaled_canal_subdivision_image_array = get_color_scaled_image_array(canal_subdivision_image_array,
+    shifted_img_array = shift_image_array(canal_subdivision_image_array, get_canal_offset(bg_atlas, subdivision))
+
+    color_scaled_canal_subdivision_image_array = get_color_scaled_image_array(shifted_img_array,
                                                                               GREY_SCALE_MAX_CANAL)
     img = get_image_from_image_array(color_scaled_canal_subdivision_image_array, "RGB")
     return color_scaled_canal_subdivision_image_array, black_to_transparent(img, CANAL_IMAGE_OPACITY)
