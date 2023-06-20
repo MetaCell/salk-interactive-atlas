@@ -321,7 +321,7 @@ const TwoDViewer = (props: {
         }
 
         // Get annotation
-        const background = atlas.getImageSrc(DensityImages.ANNOTATION, segments[selectedValueIndex])
+        const background = atlas.getImageSrc(DensityImages.GREY_AND_WHITE_MATTER, segments[selectedValueIndex])
         if (background) {
             imagesToLoad.push({src: background, draw: drawImageCallback})
         }

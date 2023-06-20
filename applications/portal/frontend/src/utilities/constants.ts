@@ -46,7 +46,7 @@ export const POPULATION_FINISHED_STATE = "finished"
 export const MAX_STR_LENGTH_SIDEBAR = 15
 
 export enum DensityImages {
-    ANNOTATION = "annotation",
+    GREY_AND_WHITE_MATTER = "background",
     CANAL = "canal",
     GRID = "grid",
 }
