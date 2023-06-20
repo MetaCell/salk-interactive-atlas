@@ -18,14 +18,20 @@ def get_upsampled_atlas_image_array(atlas, subdivision, segment_position=0.25):
 
 
 def interpolate_atlas_section(img, order, upsample_factor=8):
+    img = img.astype(float)
     smoothed_all_labels = np.zeros(
         (
             int(img.shape[0]) * upsample_factor,
             int(img.shape[1]) * upsample_factor,
         )
     )
-    for label in np.unique(img) + 1:
+    for label in np.unique(img):
+
+        if label == 0:
+            continue
+
         new_img = np.zeros_like(img)
+
         if label < 11:
             mask = img >= label
         else:
@@ -42,7 +48,7 @@ def interpolate_atlas_section(img, order, upsample_factor=8):
         new_img = new_img > 0.3
         new_img = skimage.morphology.binary_opening(new_img.astype(int))
         smoothed_all_labels[new_img] = label
-    return smoothed_all_labels
+    return smoothed_all_labels.astype(int)
 
 
 def get_2d_mask(atlas, region_keys, upscaled_image_array):
