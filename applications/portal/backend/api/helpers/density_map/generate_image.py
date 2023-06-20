@@ -68,14 +68,11 @@ def get_grey_and_white_matter_image_array(bg_atlas: ICustomAtlas, subdivision: s
     """
     atlas_subdivision_upscaled_image_array = get_upsampled_atlas_image_array(bg_atlas, subdivision,
                                                                              POSITION_WITHIN_SUBSEGMENT)
-    grey_and_white_matter_image_array = get_2d_mask(bg_atlas,
-                                                    [bg_atlas.structures["WM"]["id"], bg_atlas.structures["GM"]["id"]],
-                                                    atlas_subdivision_upscaled_image_array)
 
     colored_img_array = np.select(
         [
-            grey_and_white_matter_image_array == bg_atlas.structures["WM"]["id"] - 1,
-            grey_and_white_matter_image_array == bg_atlas.structures["GM"]["id"] - 1,
+            atlas_subdivision_upscaled_image_array == bg_atlas.structures["WM"]["id"] - 1,
+            atlas_subdivision_upscaled_image_array == bg_atlas.structures["GM"]["id"] - 1,
         ],
         [
             np.uint32(GREY_SCALE_MAX_DEFAULT),
