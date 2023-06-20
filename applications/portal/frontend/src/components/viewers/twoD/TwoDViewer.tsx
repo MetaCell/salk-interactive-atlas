@@ -691,7 +691,8 @@ const TwoDViewer = (props: {
                 </Snackbar>
             </Box>
             <Box className={classes.densityMapImageContainer} ref={canvasContainerRef} tabIndex="0">
-                <canvas hidden={true} ref={hiddenCanvasRef}/>
+                <canvas hidden={true} ref={hiddenCanvasRef} width={atlas.gridDimensions.width}
+                        height={atlas.gridDimensions.height}/>
                 <canvas hidden={isDrawing} className={classes.densityMapImage} ref={canvasRef}
                         width={atlas.gridDimensions.width} height={atlas.gridDimensions.height}/>
             </Box>
