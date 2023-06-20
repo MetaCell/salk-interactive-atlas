@@ -4,6 +4,8 @@ import scipy
 import skimage
 from scipy.ndimage import zoom
 
+from workspaces.settings import UPSCALE_FACTOR
+
 cached_results = cachetools.LRUCache(maxsize=100)
 
 
@@ -12,7 +14,7 @@ def get_upsampled_atlas_image_array(atlas, subdivision, segment_position=0.25):
     if key in cached_results:
         return cached_results[key]
     image_idx = atlas.get_section_idx(subdivision, segment_position)
-    image_array = interpolate_atlas_section(atlas.annotation[image_idx], order=1, upsample_factor=4)
+    image_array = interpolate_atlas_section(atlas.annotation[image_idx], order=1, upsample_factor=UPSCALE_FACTOR)
     cached_results[key] = image_array
     return image_array
 
