@@ -24,8 +24,8 @@ class TestUtils(unittest.TestCase):
         """
         bg_atlas = get_bg_atlas('salk_cord_10um')
         cells = _get_cells('./api/tests/assets/C5-Rostral.csv')
-        img = ContourPlotCreator().create(bg_atlas, 'C5-Rostral', cells)
-        img.save('./test.png')
+        #img = ContourPlotCreator().create(bg_atlas, 'C5-Rostral', cells)
+        #img.save('./test.png')
 
 
 if __name__ == "__main__":

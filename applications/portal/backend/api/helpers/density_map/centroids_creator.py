@@ -9,7 +9,7 @@ from api.helpers.density_map.generate_image import get_grey_and_white_matter_ima
 from api.helpers.density_map.ipopulation_image_creator import IPopulationImageCreator
 from api.helpers.icustom_atlas import ICustomAtlas
 from api.helpers.image_manipulation import fig_to_img, pad_image
-from workspaces.settings import FIGURE_DPI
+from workspaces.settings import FIGURE_DPI, UPSCALE_FACTOR
 
 
 class CentroidsCreator(IPopulationImageCreator):
@@ -28,7 +28,7 @@ def _generate_centroids(
             subdivision_limits[0] <= points[:, 0], points[:, 0] <= subdivision_limits[1]
         )
     ]
-    points_slice = points_slice[:, 1:]
+    points_slice = points_slice[:, 1:] * UPSCALE_FACTOR
     im = get_grey_and_white_matter_image_array(bg_atlas, subdivision)
     dpi = FIGURE_DPI
     h, w = im.shape
