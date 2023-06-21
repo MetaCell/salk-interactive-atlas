@@ -41,7 +41,7 @@ def _generate_centroids(
     fig.add_axes(ax)
     fig.set_facecolor((0, 0, 0, 0))
     _imshow(ax, im)
-    plt.scatter(x=points_slice[:, 1], y=points_slice[:, 0], c="y", s=1)
+    plt.scatter(x=points_slice[:, 1], y=points_slice[:, 0], c="y", s=1 * UPSCALE_FACTOR)
     plt.grid(False)
     plt.axis("off")
     img = fig_to_img(fig)
