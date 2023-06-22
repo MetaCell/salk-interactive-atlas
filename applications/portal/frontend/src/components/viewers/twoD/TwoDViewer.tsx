@@ -19,7 +19,7 @@ import {
     DensityImages,
     DensityMapTypes, GridTypes, LaminaImageTypes,
     NEURONAL_LOCATIONS_ID,
-    OVERLAYS, PROBABILITY_MAP_ID,
+    OVERLAYS, CONTOUR_PLOT_ID,
     RequestState,
     ROSTRAL,
     alphanumericCollator,
@@ -203,7 +203,7 @@ const TwoDViewer = (props: {
 
 
     const fetchData = async (population: Population, apiMethod: (id: string, subdivision: string, options: any) => Promise<any>) => {
-        // Fetches either probability map or centroids image from the backend
+        // Fetches either contour plot or centroids image from the backend
 
         const response = await apiMethod(population.id.toString(), segments[selectedValueIndex], {responseType: 'blob'})
         if (response.status === 200) {
@@ -235,11 +235,11 @@ const TwoDViewer = (props: {
     }
 
     function updateProbabilityMap() {
-        // If probability maps switch is active and there are populations active fetches data for the populations not in cache
-        // Updates the cache variable on the probability map key
+        // If contour plots switch is active and there are populations active fetches data for the populations not in cache
+        // Updates the cache variable on the contour plot key
 
         if (activePopulations.length > 0) {
-            if (overlaysSwitchState[PROBABILITY_MAP_ID]) {
+            if (overlaysSwitchState[CONTOUR_PLOT_ID]) {
                 return Promise.all(activePopulations.filter((p: Population) => !isInCache(p, DensityMapTypes.PROBABILITY_DATA)).map(p =>
                     fetchData(p, (id, subdivision, options) => api.probabilityMapPopulation(id, subdivision, options))))
                     .then(probabilityMapResponses => {
@@ -330,8 +330,8 @@ const TwoDViewer = (props: {
             // @ts-ignore
             const color = activePopulationsColorMap[pId]
 
-            // Get probability map
-            if (overlaysSwitchState[PROBABILITY_MAP_ID]) {
+            // Get contour plot
+            if (overlaysSwitchState[CONTOUR_PLOT_ID]) {
                 // @ts-ignore
                 const pData = content[pId][DensityMapTypes.PROBABILITY_DATA]
                 if (hasColoredImageData(pData)) {
@@ -403,7 +403,7 @@ const TwoDViewer = (props: {
         } else {
             setContent(getActiveContent())
         }
-    }, [overlaysSwitchState[PROBABILITY_MAP_ID]])
+    }, [overlaysSwitchState[CONTOUR_PLOT_ID]])
 
     useDidUpdateEffect(() => {
         setIsDrawing(true)

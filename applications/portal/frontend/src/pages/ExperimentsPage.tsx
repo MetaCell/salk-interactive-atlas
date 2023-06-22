@@ -18,7 +18,7 @@ import {
     AtlasChoice,
     NEURONAL_LOCATIONS_ID,
     POPULATION_FINISHED_STATE,
-    PROBABILITY_MAP_ID,
+    CONTOUR_PLOT_ID,
     PULL_TIME_MS
 } from "../utilities/constants"
 import {getAtlas} from "../service/AtlasService";

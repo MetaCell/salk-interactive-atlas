@@ -19,11 +19,11 @@ export const ACME_TEAM = 'acmeteam';
 export const SALK_TEAM = 'salkteam';
 export const COMMUNITY_HASH = 'community';
 
-export const PROBABILITY_MAP_ID = 'probabilityMap'
+export const CONTOUR_PLOT_ID = 'contourPlot'
 export const NEURONAL_LOCATIONS_ID = 'neuronalLocations'
 
 export const OVERLAYS = {
-    [PROBABILITY_MAP_ID]: new OverlayMetadata(PROBABILITY_MAP_ID, "Probability Map"),
+    [CONTOUR_PLOT_ID]: new OverlayMetadata(CONTOUR_PLOT_ID, "Contour Plot"),
     [NEURONAL_LOCATIONS_ID]:  new OverlayMetadata(NEURONAL_LOCATIONS_ID, "Neuronal Locations"),
 } as any
 
