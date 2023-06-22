@@ -10,7 +10,7 @@ from rest_framework.decorators import action
 from rest_framework.parsers import MultiPartParser
 from rest_framework.response import Response
 
-from api.helpers.exceptions import InvalidInputError
+from api.helpers.exceptions import InvalidPopulationFile, DuplicatedPopulationError, InvalidInputError
 from api.models import Experiment
 from api.serializers import (
     ExperimentPairFileUploadSerializer,
@@ -20,7 +20,7 @@ from api.serializers import (
 )
 from api.services.experiment_service import add_tag, delete_tag, upload_pair_files, upload_single_file
 from api.services.filesystem_service import move_files
-from api.validators.upload_files import validate_input_files
+from api.validators.upload_files import validate_multiple_files_input, validate_singlefile_input
 
 log = logging.getLogger("__name__")
 
@@ -125,17 +125,22 @@ class ExperimentViewSet(viewsets.ModelViewSet):
         key_file = request.FILES.get("key_file")
         data_file = request.FILES.get("data_file")
         try:
-            validate_input_files(key_file, data_file)
+            validate_multiple_files_input(key_file, data_file, instance.id)
         except InvalidInputError:
             return Response(status=status.HTTP_400_BAD_REQUEST)
+        except DuplicatedPopulationError as e:
+            return Response(data={'detail': str(e)}, status=status.HTTP_409_CONFLICT)
+        except InvalidPopulationFile as e:
+            return Response(data={'detail': str(e)}, status=status.HTTP_422_UNPROCESSABLE_ENTITY)
         try:
             filepaths = move_files([key_file, data_file], instance.storage_path)
         except Exception as e:
+            print(e)
             return Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR)
         try:
             created = upload_pair_files(instance, filepaths[KEY_INDEX], filepaths[DATA_INDEX])
             response_status = status.HTTP_201_CREATED if created else status.HTTP_200_OK
-        except InvalidInputError:
+        except InvalidPopulationFile:
             response_status = status.HTTP_400_BAD_REQUEST
         return Response(status=response_status)
 
@@ -149,8 +154,12 @@ class ExperimentViewSet(viewsets.ModelViewSet):
     def upload_single_file(self, request, **kwargs):
         instance = self.get_object()
         file = request.FILES.get("file")
-        if file is None:
+        try:
+            validate_singlefile_input(file, instance.id)
+        except InvalidInputError:
             return Response(status=status.HTTP_400_BAD_REQUEST)
+        except DuplicatedPopulationError as e:
+            return Response(data={'detail': str(e)}, status=status.HTTP_409_CONFLICT)
         try:
             filepaths = move_files([file], instance.storage_path)
         except Exception as e:
@@ -158,7 +167,7 @@ class ExperimentViewSet(viewsets.ModelViewSet):
         try:
             created = upload_single_file(instance, filepaths[0])
             response_status = status.HTTP_201_CREATED if created else status.HTTP_200_OK
-        except InvalidInputError:
+        except InvalidPopulationFile:
             response_status = status.HTTP_400_BAD_REQUEST
         return Response(status=response_status)
 
