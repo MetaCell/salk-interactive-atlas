@@ -115,3 +115,5 @@ def _store_image(
 ):
     img = creator.create(bg_atlas=bg_atlas, subdivision=s, points=cells)
     img.save(population.get_subdivision_storage_path(s, extension))
+
+
