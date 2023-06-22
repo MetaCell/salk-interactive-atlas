@@ -1,21 +1,18 @@
 import numpy as np
 from PIL import Image
+import matplotlib as mpl
 from matplotlib import pyplot as plt
-from matplotlib_inline.backend_inline import FigureCanvas
 from scipy.ndimage import zoom
 from skimage.filters import gaussian
 
 from api.helpers.density_map.common_density_helpers import get_bins
 from api.helpers.density_map.common_plot_helpers import setup_matplotlib_figure
-from api.helpers.density_map.generate_image import shift_image_array, get_canal_offset, get_pad_from_offset
+from api.helpers.density_map.generate_image import get_canal_offset, get_pad_from_offset
 from api.helpers.density_map.ipopulation_image_creator import IPopulationImageCreator
 from api.helpers.icustom_atlas import ICustomAtlas
 from api.helpers.image_manipulation import (
-    apply_greyscale_alpha_mask,
-    get_image_from_image_array, fig_to_img, pad_image,
+    fig_to_img, pad_image,
 )
-from api.services.atlas_upscale_service import get_upsampled_atlas_image_array
-from workspaces.settings import POSITION_WITHIN_SUBDIVISION, FIGURE_DPI
 
 CONTOUR_LEVELS = [0.04162026, 0.08324051, 0.12486076, 0.16648102, 0.20810127, 0.24972153, 0.29134178, 0.33296203,
                   0.37458229, 0.41620254, 0.4578228, 0.49944305, 0.5410633, 0.58268356]
@@ -40,6 +37,7 @@ def _generate_contour_plot(
     )
 
     fig, ax = setup_matplotlib_figure(probability_map)
+    _plot_overlay_heatmap(probability_map, CONTOUR_LEVELS[0])
     plt.contour(
         probability_map,
         corner_mask=False,
@@ -74,3 +72,10 @@ def _get_subdivision_probability_map(
     smoothing_factor = [x * upsample_factor for x in smoothing]
     probability_map = gaussian(probability_map, sigma=smoothing_factor)
     return probability_map
+
+
+def _plot_overlay_heatmap(img, threshold):
+    masked_data = np.ma.masked_where(img < threshold, img)
+    plt.imshow(
+        masked_data, cmap=mpl.colormaps["hot"], interpolation="none", alpha=0.5
+    )
