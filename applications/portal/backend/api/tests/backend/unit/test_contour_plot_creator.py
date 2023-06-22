@@ -4,7 +4,6 @@ import unittest
 import numpy as np
 
 from api.helpers.atlas import get_bg_atlas
-from api.helpers.density_map.centroids_creator import CentroidsCreator
 from api.helpers.density_map.contour_plot_creator import ContourPlotCreator
 
 
@@ -23,9 +22,9 @@ class TestUtils(unittest.TestCase):
         Tests if no exception is raised
         """
         bg_atlas = get_bg_atlas('salk_cord_10um')
-        cells = _get_cells('./api/tests/assets/C5-Rostral.csv')
-        #img = ContourPlotCreator().create(bg_atlas, 'C5-Rostral', cells)
-        #img.save('./test.png')
+        cells = _get_cells('./api/tests/assets/C1-Rostral.csv')
+        img = ContourPlotCreator().create(bg_atlas, 'C1-Rostral', cells)
+        img.save('./test.png')
 
 
 if __name__ == "__main__":

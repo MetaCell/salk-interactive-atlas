@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 
 from bg_atlasapi import BrainGlobeAtlas
 
-from workspaces.settings import POSITION_WITHIN_SUBSEGMENT
+from workspaces.settings import POSITION_WITHIN_SUBDIVISION
 
 
 class ICustomAtlas(ABC, BrainGlobeAtlas):
@@ -21,7 +21,7 @@ class ICustomAtlas(ABC, BrainGlobeAtlas):
         pass
 
     @abstractmethod
-    def get_section_idx(self, subdivision, position_within_segment=POSITION_WITHIN_SUBSEGMENT):
+    def get_section_idx(self, subdivision, position_within_segment=POSITION_WITHIN_SUBDIVISION):
         pass
 
     @abstractmethod

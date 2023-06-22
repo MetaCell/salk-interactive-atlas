@@ -2,7 +2,7 @@ import numpy as np
 
 from api.constants import ROSTRAL
 from api.helpers.icustom_atlas import ICustomAtlas
-from workspaces.settings import POSITION_WITHIN_SUBSEGMENT
+from workspaces.settings import POSITION_WITHIN_SUBDIVISION
 
 
 class SalkAtlas(ICustomAtlas):
@@ -43,7 +43,7 @@ class SalkAtlas(ICustomAtlas):
                 else:
                     return (s["Start"] + s["End"]) / 2, s["End"]
 
-    def get_section_idx(self, subdivision, position_within_segment=POSITION_WITHIN_SUBSEGMENT):
+    def get_section_idx(self, subdivision, position_within_segment=POSITION_WITHIN_SUBDIVISION):
         segment_start, segment_end = self.get_subdivision_limits(subdivision)
         return int(
             (segment_end - segment_start) * position_within_segment + segment_start

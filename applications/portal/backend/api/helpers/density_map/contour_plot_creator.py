@@ -6,16 +6,19 @@ from scipy.ndimage import zoom
 from skimage.filters import gaussian
 
 from api.helpers.density_map.common_density_helpers import get_bins
-from api.helpers.density_map.generate_image import shift_image_array, get_canal_offset
+from api.helpers.density_map.common_plot_helpers import setup_matplotlib_figure
+from api.helpers.density_map.generate_image import shift_image_array, get_canal_offset, get_pad_from_offset
 from api.helpers.density_map.ipopulation_image_creator import IPopulationImageCreator
 from api.helpers.icustom_atlas import ICustomAtlas
 from api.helpers.image_manipulation import (
     apply_greyscale_alpha_mask,
-    get_image_from_image_array,
+    get_image_from_image_array, fig_to_img, pad_image,
 )
+from api.services.atlas_upscale_service import get_upsampled_atlas_image_array
+from workspaces.settings import POSITION_WITHIN_SUBDIVISION, FIGURE_DPI
 
-CONTOUR_LEVELS = [0.1470, 0.2940, 0.4410, 0.5881, 0.7351, 0.8821,
-                  1.0292, 1.1762, 1.3232]
+CONTOUR_LEVELS = [0.04162026, 0.08324051, 0.12486076, 0.16648102, 0.20810127, 0.24972153, 0.29134178, 0.33296203,
+                  0.37458229, 0.41620254, 0.4578228, 0.49944305, 0.5410633, 0.58268356]
 
 SMOOTHING = 40
 
@@ -30,9 +33,13 @@ class ContourPlotCreator(IPopulationImageCreator):
 def _generate_contour_plot(
         bg_atlas: ICustomAtlas, subdivision: str, points: np.array
 ) -> Image:
-    probability_map = _get_segment_probability_map(
-        bg_atlas.annotation.shape[1:], points, smoothing=SMOOTHING,
+    smoothing = [int(round(SMOOTHING / res)) for res in bg_atlas.resolution[1:]]
+
+    probability_map = _get_subdivision_probability_map(
+        bg_atlas.annotation.shape[1:], points, smoothing=smoothing,
     )
+
+    fig, ax = setup_matplotlib_figure(probability_map)
     plt.contour(
         probability_map,
         corner_mask=False,
@@ -41,10 +48,8 @@ def _generate_contour_plot(
         zorder=100,
         linewidths=2,
     )
-
-    plt.show()
-
-    # todo: convert plot to image (should be shifted according to the canal offset)
+    img = fig_to_img(fig)
+    return pad_image(img, *get_pad_from_offset(get_canal_offset(bg_atlas, subdivision)))
 
 
 def _get_accumulated_probability_map(probability_map: np.array) -> np.array:
@@ -54,17 +59,18 @@ def _get_accumulated_probability_map(probability_map: np.array) -> np.array:
     return acc / len(probability_map)
 
 
-def _get_segment_probability_map(
-        atlas_shape, points, smoothing, upsample_factor=4,
+def _get_subdivision_probability_map(
+        atlas_shape, points, smoothing, upsample_factor=4, density=False,
+
 ):
     bins = get_bins(atlas_shape, (1, 1))
     probability_map, _ = np.histogramdd(
-        points[:, 1:], bins=bins, density=False
+        points[:, 1:], bins=bins, density=density
     )
-    probability_map = gaussian(probability_map, sigma=smoothing)
     if upsample_factor > 1:
         probability_map = zoom(
-            probability_map, (4, 4), order=0, prefilter=False
+            probability_map, (upsample_factor, upsample_factor), order=0, prefilter=False
         )
-
+    smoothing_factor = [x * upsample_factor for x in smoothing]
+    probability_map = gaussian(probability_map, sigma=smoothing_factor)
     return probability_map

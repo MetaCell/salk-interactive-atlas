@@ -22,9 +22,8 @@ class TestUtils(unittest.TestCase):
         Tests if no exception is raised
         """
         bg_atlas = get_bg_atlas('salk_cord_10um')
-        cells = _get_cells('./api/tests/assets/C5-Rostral.csv')
-        img = CentroidsCreator().create(bg_atlas, 'C5-Rostral', cells)
-        img.save('./test.png')
+        cells = _get_cells('./api/tests/assets/C1-Rostral.csv')
+        CentroidsCreator().create(bg_atlas, 'C1-Rostral', cells)
 
 
 if __name__ == "__main__":

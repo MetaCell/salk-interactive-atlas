@@ -223,7 +223,7 @@ FIGURE_DPI = 100
 
 UM_TO_MM = 10
 
-POSITION_WITHIN_SUBSEGMENT = 0.5  # Position (in percentage) of the slice to pick from a subsegment
+POSITION_WITHIN_SUBDIVISION = 0.5  # Position (in percentage) of the slice to pick from a subdivision
 
 # for postgres configure to use the database pool
 # if DATABASES.get("default", None) and DATABASES.get("default").get("ENGINE", None) == "django.db.backends.postgresql":

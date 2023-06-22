@@ -95,15 +95,14 @@ def generate_images(population):
                 population,
                 s,
             )
-            # todo: complete 243
-            # _store_image(
-            #     ContourPlotCreator(),
-            #     PopulationPersistentFiles.PROBABILITY_MAP_IMG,
-            #     bg_atlas,
-            #     cells,
-            #     population,
-            #     s,
-            # )
+            _store_image(
+                ContourPlotCreator(),
+                PopulationPersistentFiles.PROBABILITY_MAP_IMG,
+                bg_atlas,
+                cells,
+                population,
+                s,
+            )
 
 
 def _store_image(
