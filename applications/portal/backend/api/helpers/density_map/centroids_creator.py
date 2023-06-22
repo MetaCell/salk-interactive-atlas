@@ -48,6 +48,7 @@ def _generate_centroids(
     plt.grid(False)
     plt.axis("off")
     img = fig_to_img(fig)
+    plt.close(fig)
     return pad_image(img, *get_pad_from_offset(get_canal_offset(bg_atlas, subdivision)))
 
 

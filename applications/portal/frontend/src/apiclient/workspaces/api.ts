@@ -346,7 +346,7 @@ export interface ExperimentPopulationsInner {
      * @type {number}
      * @memberof ExperimentPopulationsInner
      */
-    'experiment': number;
+    'experiment': number | null;
     /**
      * 
      * @type {string}
@@ -447,7 +447,7 @@ export interface Population {
      * @type {number}
      * @memberof Population
      */
-    'experiment': number;
+    'experiment': number | null;
     /**
      * 
      * @type {string}
@@ -2073,6 +2073,39 @@ export const ApiApiAxiosParamCreator = function (configuration?: Configuration) 
         },
         /**
          * This viewset automatically provides `list` actions.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        residentialPopulation: async (options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/api/population/residential/`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication bearerAuth required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * This viewset automatically provides `list` actions.
          * @param {string} id A unique integer value identifying this collaborator.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -3036,6 +3069,15 @@ export const ApiApiFp = function(configuration?: Configuration) {
         },
         /**
          * This viewset automatically provides `list` actions.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async residentialPopulation(options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<Population>>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.residentialPopulation(options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * This viewset automatically provides `list` actions.
          * @param {string} id A unique integer value identifying this collaborator.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -3520,6 +3562,14 @@ export const ApiApiFactory = function (configuration?: Configuration, basePath?:
          */
         publicExperiment(options?: any): AxiosPromise<Experiment> {
             return localVarFp.publicExperiment(options).then((request) => request(axios, basePath));
+        },
+        /**
+         * This viewset automatically provides `list` actions.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        residentialPopulation(options?: any): AxiosPromise<Array<Population>> {
+            return localVarFp.residentialPopulation(options).then((request) => request(axios, basePath));
         },
         /**
          * This viewset automatically provides `list` actions.
@@ -4061,6 +4111,16 @@ export class ApiApi extends BaseAPI {
      */
     public publicExperiment(options?: AxiosRequestConfig) {
         return ApiApiFp(this.configuration).publicExperiment(options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * This viewset automatically provides `list` actions.
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof ApiApi
+     */
+    public residentialPopulation(options?: AxiosRequestConfig) {
+        return ApiApiFp(this.configuration).residentialPopulation(options).then((request) => request(this.axios, this.basePath));
     }
 
     /**

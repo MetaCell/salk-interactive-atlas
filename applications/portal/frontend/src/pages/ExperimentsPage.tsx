@@ -12,7 +12,7 @@ import {addWidget, deleteWidget, updateWidget} from '@metacell/geppetto-meta-cli
 import Loader from '@metacell/geppetto-meta-ui/loader/Loader'
 import {Box} from "@material-ui/core";
 import {bodyBgColor, font} from "../theme";
-import Sidebar from "../components/ExperimentSidebar";
+import Sidebar from "../components/sidebar/ExperimentSidebar";
 // @ts-ignore
 import {
     AtlasChoice,
@@ -25,10 +25,17 @@ import {getAtlas} from "../service/AtlasService";
 import {Experiment, ExperimentPopulationsInner, Population} from "../apiclient/workspaces";
 import {areAllSelected} from "../utilities/functions";
 import workspaceService from "../service/WorkspaceService";
-import Cell from "../models/Cell";
 import {DetailsWidget, threeDViewerWidget, twoDViewerWidget, widgetIds} from "../widgets";
 import {useInterval} from "../utilities/hooks/useInterval";
 import {useParams} from "react-router";
+import {getCells} from "../helpers/CellsHelper";
+
+type PopulationDataType = {
+    [key: string]: {
+        selected: boolean;
+        status: string;
+    };
+};
 
 const useStyles = makeStyles({
     layoutContainer: {
@@ -63,7 +70,7 @@ const getSubdivisions = (sa: AtlasChoice) => {
 /**
  * The component that renders the FlexLayout component of the LayoutManager.
  */
-const ExperimentsPage = () => {
+const ExperimentsPage: React.FC<{ residentialPopulations: any }> = ({ residentialPopulations }) => {
 
     const api = workspaceService.getApi()
     const classes = useStyles();
@@ -71,10 +78,8 @@ const ExperimentsPage = () => {
     const params = useParams();
     const [experiment, setExperiment] = useState(null)
     const [selectedAtlas, setSelectedAtlas] = useState(getDefaultAtlas());
-    const [subdivisions, setSubdivisions] = useState(getSubdivisions(selectedAtlas));
-    const [populations, setPopulations] = useState({} as any);
-    const [sidebarPopulations, setSidebarPopulations] = useState({} as any);
-
+    const [populations, setPopulations] = useState<PopulationDataType>({});
+    const subdivisions = getSubdivisions(selectedAtlas);
 
     const dispatch = useDispatch();
     const [LayoutComponent, setLayoutManager] = useState(undefined);
@@ -82,36 +87,45 @@ const ExperimentsPage = () => {
     const getPopulations = (e: Experiment, sa: AtlasChoice) => {
         const nextPopulations: any = {}
         const filteredPopulations = e.populations.filter((p: Population) => p.atlas === sa)
-        // @ts-ignore
         filteredPopulations.forEach(p => nextPopulations[p.id] = {
             ...p,
             status: p.status,
             selected: populations[p.id]?.selected || false
         })
+
+        Object.values(residentialPopulations).forEach((p: any) => {
+            if (!nextPopulations[p.id]) {
+                nextPopulations[p.id] = {
+                    ...p,
+                    selected: populations[p.id]?.selected || false
+                }
+            }
+        })
+
         return nextPopulations
     }
 
     const handleAtlasChange = (atlasId: AtlasChoice) => {
         setSelectedAtlas(atlasId)
     };
-    const handleShowAllPopulations = () => {
-        const areAllPopulationsActive = areAllSelected(sidebarPopulations)
-        const nextPopulations: any = {}
-        Object.keys(populations)
-            .forEach(pId => nextPopulations[pId] = {
-                ...sidebarPopulations[pId],
-                selected: sidebarPopulations[pId].status !== POPULATION_FINISHED_STATE ? false : !areAllPopulationsActive
-            })
-        setSidebarPopulations(nextPopulations)
-        setPopulations(nextPopulations)
-    }
+    const handleShowAllPopulations = (pops: { [p: string]: { selected: any } }) => {
+        const areAllPopulationsActive = areAllSelected(pops);
+        const nextPopulations = { ...populations };
+
+        Object.keys(pops).forEach(pId => {
+            if (nextPopulations[pId].status === POPULATION_FINISHED_STATE) {
+                nextPopulations[pId].selected = !areAllPopulationsActive;
+            }
+        });
+
+        setPopulations(nextPopulations);
+    };
 
 
     const handlePopulationSwitch = (populationId: string) => {
         const nextPopulations: any = {...populations}
         nextPopulations[populationId].selected = !nextPopulations[populationId].selected
         setPopulations(nextPopulations)
-        setSidebarPopulations(nextPopulations)
     };
 
     const handlePopulationColorChange = async (id: string, color: string, opacity: string) => {
@@ -122,7 +136,6 @@ const ExperimentsPage = () => {
         // @ts-ignore
         nextPopulations[id] = {...nextPopulations[id], color, opacity}
         setPopulations(nextPopulations)
-        setSidebarPopulations(nextPopulations)
     }
 
 
@@ -135,18 +148,6 @@ const ExperimentsPage = () => {
             return obj;
         }, {});
 
-    async function getCells(p: ExperimentPopulationsInner) {
-        const cellsFile = await api.cellsPopulation(`${p.id}`);
-        // @ts-ignore
-        const cellsFileArray = cellsFile.data.split(/\r?\n/)
-        if (cellsFileArray[cellsFileArray.length - 1] === '') {
-            cellsFileArray.pop()
-        }
-        const header = cellsFileArray.shift().split(',')
-        return cellsFileArray.map((csv: string) => new Cell(csv, header))
-    }
-
-
 
     useInterval(() => {
         const fetchData = async () => {
@@ -157,7 +158,7 @@ const ExperimentsPage = () => {
                 if (p.status !== POPULATION_FINISHED_STATE) return [];
                 const existingPopulation = experiment.populations.find((e: ExperimentPopulationsInner) => e.id === p.id)
                 if (existingPopulation !== undefined && typeof existingPopulation.cells !== "string" && existingPopulation.cells.length > 0) return existingPopulation.cells
-                return getCells(p);
+                return getCells(api, p);
             }));
             let shouldUpdateExperiment = false;
             fetchedExperiment.populations.forEach((p, i) => {
@@ -172,7 +173,6 @@ const ExperimentsPage = () => {
                 setExperiment(fetchedExperiment)
                 const experimentPopulations = getPopulations(fetchedExperiment, selectedAtlas)
                 setPopulations(experimentPopulations)
-                setSidebarPopulations(experimentPopulations)
                 // TODO: Handle error status on populations
             }
         }
@@ -188,7 +188,7 @@ const ExperimentsPage = () => {
             const data = response.data;
             const cells = await Promise.all(data.populations.map(async (p) => {
                 if (p.status !== POPULATION_FINISHED_STATE) return [];
-                return getCells(p);
+                return getCells(api, p);
             }));
             data.populations.forEach((p, i) => {
                 data.populations[i].cells = cells[i]
@@ -204,7 +204,6 @@ const ExperimentsPage = () => {
         if (experiment != null) {
             const experimentPopulations = getPopulations(experiment, selectedAtlas)
             setPopulations(experimentPopulations)
-            setSidebarPopulations(experimentPopulations)
             dispatch(addWidget(threeDViewerWidget(selectedAtlas, {})));
             dispatch(addWidget(twoDViewerWidget(Object.keys(subdivisions), [], selectedAtlas,
                 WidgetStatus.ACTIVE)));
@@ -250,7 +249,7 @@ const ExperimentsPage = () => {
     return experiment != null ? (
         <Box display="flex">
             <Sidebar selectedAtlas={selectedAtlas}
-                     populations={sidebarPopulations}
+                     populations={populations}
                      handleAtlasChange={handleAtlasChange}
                      handlePopulationSwitch={handlePopulationSwitch}
                      handleShowAllPopulations={handleShowAllPopulations}
