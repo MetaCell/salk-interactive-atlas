@@ -7,6 +7,7 @@ import HomePage from "./pages/HomePage";
 import theme from "./theme";
 import { Header, ProtectedRoute, } from "./components";
 import ExperimentsPage from "./pages/ExperimentsPage";
+import {EXPERIMENTS_ROUTE} from "./utilities/constants";
 
 const GEPPETTO = {};
 // @ts-ignore
@@ -45,13 +46,12 @@ export const App = (props: any) => {
         {!props.error &&
           <Router>
             <div className={classes.mainContainer}>
-              <Header onExperimentCreation={setLatestExperimentId}/>
-
+              <Header onExperimentCreation={(id: string) => setLatestExperimentId(id)}/>
               <Switch>
                 <ProtectedRoute exact={true} path="/">
                   <HomePage latestExperimentId={latestExperimentId} />
                 </ProtectedRoute>
-                <ProtectedRoute exact={true} path="/experiments/:id">
+                <ProtectedRoute exact={true} path={EXPERIMENTS_ROUTE}>
                   <ExperimentsPage />
                 </ProtectedRoute>
               </Switch>

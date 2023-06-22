@@ -13,7 +13,7 @@ import CHECK_FILLED from "../../../assets/images/icons/check_filled.svg";
 import workspaceService from "../../../service/WorkspaceService";
 import * as Yup from 'yup'
 // @ts-ignore
-import {ExperimentTagsInner} from "../../../apiclient/workspaces";
+import {ExperimentOwner, ExperimentTagsInner} from "../../../apiclient/workspaces";
 // @ts-ignore
 import Loader from "@metacell/geppetto-meta-ui/loader/Loader";
 import {common} from "./Common";
@@ -102,17 +102,45 @@ const SINGLE_FILE_KEY = "singleFile"
 const KEY_DATA_TAB = 0
 const SINGLE_FILE_TAB = 1
 
+interface CreateUpdateExperimentDialogProps {
+    open: boolean;
+    handleClose: () => void;
+    user: {
+        username: string;
+        avatarUrl: string | null;
+    };
+    onExperimentAction: (id: string) => void;
+    onError: (error: any) => void;
+    experimentId?: string;
+}
 
-export const CreateExperimentDialog = (props: any) => {
+/**
+ * CreateUpdateExperimentDialog component for creating or updating an experiment.
+ *
+ * @param {Object} props - The component props.
+ * @param {boolean} props.open - Whether the dialog is open or not.
+ * @param {Function} props.handleClose - Function to handle dialog close action.
+ * @param {Object} props.user - The user object.
+ * @param {Function} props.onExperimentAction - Function to handle experiment creation.
+ * @param {string} props.experimentId - The experiment ID.
+ */
+
+export const CreateUpdateExperimentDialog = ({
+                                                 open,
+                                                 handleClose,
+                                                 user,
+                                                 onExperimentAction,
+                                                 onError,
+                                                 experimentId,
+                                             }: CreateUpdateExperimentDialogProps) => {
     const classes = useStyles();
     const commonClasses = common();
     const api = workspaceService.getApi()
-    const {open, handleClose, user, onExperimentCreation} = props;
     const [name, setName] = useState<string>(null);
     const [description, setDescription] = useState<string>(null);
     const [tags, setTags] = useState<string[]>([]);
     const [tagsOptions, setTagsOptions] = useState<ExperimentTagsInner[]>([]);
-    const [errors, setErrors] = useState(new Set([]));
+    const [validationErrors, setValidationErrors] = useState(new Set([]));
     const [isLoading, setIsLoading] = useState(false);
     const [activeTab, setActiveTab] = useState<number>(KEY_DATA_TAB);
     const [files, setFiles] = useState<any>({
@@ -120,23 +148,43 @@ export const CreateExperimentDialog = (props: any) => {
         [DATA_FILE_KEY]: null,
         [SINGLE_FILE_KEY]: null,
     });
-    const validationSchema = Yup.object().shape({
-        [NAME_KEY]: Yup.string().required(),
-        [DESCRIPTION_KEY]: Yup.string().required(),
-    })
+    const validationSchema = !experimentId
+        ? Yup.object().shape({
+            [NAME_KEY]: Yup.string().required(),
+            [DESCRIPTION_KEY]: Yup.string().required(),
+        })
+        : Yup.object().shape({});
 
 
+    /**
+     * Handles form field value changes and updates the corresponding state and error set.
+     *
+     * @param {any} newValue - The new value of the form field.
+     * @param {Function} setState - The state setter function.
+     * @param {string} errorKey - The error key for the form field.
+     */
     const handleFormChange = (newValue: any, setState: any, errorKey: string) => {
         setState(newValue)
-        errors.delete(errorKey)
-        setErrors(errors)
+        validationErrors.delete(errorKey)
+        setValidationErrors(validationErrors)
     }
 
 
+    /**
+     * Handles tags change event.
+     *
+     * @param {Event} _ - The event object (not used).
+     * @param {any} value - The new value of the tags.
+     */
     const handleTagsChange = (_: any, value: any) => {
         setTags(value)
     }
 
+    /**
+     * Returns an object containing the current form data.
+     *
+     * @returns {Object} An object with keys 'name', 'description', and 'tags'.
+     */
     const getCurrentFormDataObject = () => {
         return {
             name,
@@ -145,6 +193,11 @@ export const CreateExperimentDialog = (props: any) => {
         }
     }
 
+    /**
+     * Validates the current form data and returns a set of error keys.
+     *
+     * @returns {Promise<Set<string>>} A promise that resolves to a set of error keys.
+     */
     const getValidationErrors = async () => {
         const errorsSet = new Set()
         try {
@@ -170,40 +223,75 @@ export const CreateExperimentDialog = (props: any) => {
         return errorsSet
     }
 
+    /**
+     * Handles file addition event.
+     *
+     * @param {string} type - The type of file (KEY_FILE_KEY, DATA_FILE_KEY, or SINGLE_FILE_KEY).
+     * @param {any} value - The file data.
+     */
     const handleAddFile = (type: string, value: any) => {
         setFiles({...files, [type]: value})
-        errors.delete(type)
-        setErrors(errors)
+        validationErrors.delete(type)
+        setValidationErrors(validationErrors)
     }
 
 
+    /**
+     * Handles the main action (create or update) for the experiment.
+     */
     const handleAction = async () => {
         setIsLoading(true)
         const errorsSet = await getValidationErrors()
         if (errorsSet.size > 0) {
-            setErrors(errorsSet)
+            setValidationErrors(errorsSet)
             setIsLoading(false)
             return
         }
+        let id = experimentId
+        if (!experimentId) {
+            id = (await handleCreateAction()).toString();
+        }
+        try {
+            if (activeTab === KEY_DATA_TAB) {
+                await api.uploadPairFilesExperiment(id, files[KEY_FILE_KEY], files[DATA_FILE_KEY]);
+            } else if (activeTab === SINGLE_FILE_TAB) {
+                await api.uploadSingleFileExperiment(id, files[SINGLE_FILE_KEY]);
+            }
+        } catch (error) {
+            onError(error)
+        }
+        onExperimentAction(experimentId)
+        handleClose()
+        setIsLoading(false)
+    };
+
+    /**
+     * Handles the creation action for the experiment.
+     */
+    const handleCreateAction = async () => {
+        const experimentOwner: ExperimentOwner = {
+            username: user.username,
+            avatar: user.avatarUrl,
+        };
+
         const res = await api.createExperiment(name, description, null, true,
-            null, null, user, null, null, null, null)
+            null, null, experimentOwner, null, null, null, null)
         const experiment = res.data
         if (tags.length > 0) {
             await api.addTagsExperiment(experiment.id.toString(), tags)
         }
-        if (activeTab === KEY_DATA_TAB) {
-            await api.uploadPairFilesExperiment(experiment.id.toString(), files[KEY_FILE_KEY], files[DATA_FILE_KEY])
-        } else if (activeTab === SINGLE_FILE_TAB) {
-            await api.uploadSingleFileExperiment(experiment.id.toString(), files[SINGLE_FILE_KEY])
-        }
-
-        onExperimentCreation(experiment.id)
-        handleClose()
+        return experiment.id
     }
 
+    /**
+     * Handles the tab change event.
+     *
+     * @param {Event} event - The event object.
+     * @param {any} newValue - The new value of the active tab.
+     */
     const handleTabChange = (event: any, newValue: any) => {
         setActiveTab(newValue)
-        setErrors(new Set())
+        setValidationErrors(new Set())
     }
 
     useEffect(() => {
@@ -215,16 +303,18 @@ export const CreateExperimentDialog = (props: any) => {
         fetchTagOptions().catch(console.error)
     }, []);
 
+    const modalTitle = experimentId ? "Add populations to experiment" : "Create a new experiment"
+    const actionText = experimentId ? "Update" : "Create"
     // @ts-ignore
     return !isLoading ? (
         <Modal
             dialogActions={true}
-            actionText="Create"
+            actionText={actionText}
             disableGutter={true}
             open={open}
             handleClose={handleClose}
             handleAction={handleAction}
-            title="Create a new experiment"
+            title={modalTitle}
         >
             <Box display={'flex'}>
                 <Tabs value={activeTab} onChange={handleTabChange} className={classes.tabs}>
@@ -236,33 +326,33 @@ export const CreateExperimentDialog = (props: any) => {
             <Box display={'flex'} alignItems="center" justifyContent={'center'} className={classes.fileDrop}>
                 {activeTab === KEY_DATA_TAB &&
                     <KeyDataFileDrop keyFile={files[KEY_FILE_KEY]} dataFile={files[DATA_FILE_KEY]}
-                                     setKeyFile={(value: any) => handleAddFile(KEY_FILE_KEY, value) }
+                                     setKeyFile={(value: any) => handleAddFile(KEY_FILE_KEY, value)}
                                      setDataFile={(value: any) => handleAddFile(DATA_FILE_KEY, value)}
-                                     hasKeyErrors={errors.has(KEY_FILE_KEY)}
-                                     hasDataErrors={errors.has(DATA_FILE_KEY)}
+                                     hasKeyErrors={validationErrors.has(KEY_FILE_KEY)}
+                                     hasDataErrors={validationErrors.has(DATA_FILE_KEY)}
 
                     />}
                 {activeTab === SINGLE_FILE_TAB && <SingleFileDrop file={files[SINGLE_FILE_KEY]}
                                                                   setFile={(value: any) => handleAddFile(SINGLE_FILE_KEY, value)}
-                                                                  hasErrors={errors.has(SINGLE_FILE_KEY)}
+                                                                  hasErrors={validationErrors.has(SINGLE_FILE_KEY)}
                 />}
             </Box>
 
-            <Box p={2} pb={5}>
+            {!experimentId && (<Box p={2} pb={5}>
                 <Box display="flex" alignItems={"center"} className={classes.formGroup}>
                     <Typography component="label">Name</Typography>
                     <TextField placeholder="Name" variant="outlined"
                                onChange={(e) =>
                                    handleFormChange(e.target.value, setName, NAME_KEY)}
                                required={true}
-                               error={errors.has(NAME_KEY)}
+                               error={validationErrors.has(NAME_KEY)}
                     />
                 </Box>
 
                 <Box display="flex" alignItems={"center"} className={classes.formGroup}>
                     <Typography component="label">Description</Typography>
                     <TextEditor
-                        wrapperClassName={`${errors.has(DESCRIPTION_KEY) ? commonClasses.errorBorder : classes.editorWrapper}`}
+                        wrapperClassName={`${validationErrors.has(DESCRIPTION_KEY) ? commonClasses.errorBorder : classes.editorWrapper}`}
                         onChange={(editorState: any) =>
                             handleFormChange(editorState.getCurrentContent().getPlainText(), setDescription, DESCRIPTION_KEY)}
                         required={true}
@@ -278,6 +368,6 @@ export const CreateExperimentDialog = (props: any) => {
                     <Typography component="label">Owner</Typography>
                     <OwnerInfo user={user}/>
                 </Box>
-            </Box>
+            </Box>)}
         </Modal>) : <Loader/>
 };

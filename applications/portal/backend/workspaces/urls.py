@@ -16,14 +16,13 @@ Including another URLconf
 from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib import admin
-from django.urls import include, path, re_path, reverse
+from django.urls import include, path, re_path
 from django.views.generic import TemplateView
-from django.views.generic.base import RedirectView
-from rest_framework import permissions
 from rest_framework.schemas import get_schema_view
 from rest_framework.schemas.openapi import SchemaGenerator
 
 from workspaces.views import index
+
 
 # import mozilla_django_oidc
 
@@ -46,8 +45,6 @@ class SecuredOpenApiGenerator(SchemaGenerator):
         schema["servers"] = [{"url": "/backend"},{"url": "/"}]
         return schema
 
-
-from django.views.static import serve
 
 urlpatterns = [
     # path('openid/', include('mozilla_django_oidc.urls')),

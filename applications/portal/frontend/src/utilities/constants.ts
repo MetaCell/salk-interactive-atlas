@@ -76,3 +76,8 @@ export const POPULATION_V1 = "V1"
 export const POPULATION_V2A = "V2a"
 export const alphanumericCollator = new Intl.Collator(undefined, {numeric: true, sensitivity: 'base'});
 export const COMING_SOON = "(coming soon)"
+
+export const HEADER_TITLE = "Salk Mouse Cord Atlas";
+export const EXPERIMENTS_ROUTE = '/experiments/:id'
+
+export const SNACKBAR_TIMEOUT = 5000
