@@ -8,7 +8,8 @@ RUN mkdir -p ${APP_DIR}
 
 WORKDIR ${APP_DIR}/..
 COPY cordmap ./cordmap
-RUN python3 -m pip install -e cordmap --no-cache-dir --upgrade --disable-pip-version-check
+RUN python3 -m pip install itk==5.2.1.post1 --no-cache-dir --upgrade
+RUN python3 -m pip install -e cordmap --no-cache-dir --upgrade
 
 ADD local-atlas/salk_cord_10um_v1.0.tar.gz /root/.brainglobe/
 
