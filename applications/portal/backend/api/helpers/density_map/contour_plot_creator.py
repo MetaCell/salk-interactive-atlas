@@ -1,18 +1,14 @@
+import matplotlib.cm as cm
 import numpy as np
 from PIL import Image
-import matplotlib as mpl
 from matplotlib import pyplot as plt
 from scipy.ndimage import zoom
 from skimage.filters import gaussian
 
 from api.helpers.density_map.common_density_helpers import get_bins
-from api.helpers.density_map.common_plot_helpers import setup_matplotlib_figure
-from api.helpers.density_map.generate_image import get_canal_offset, get_pad_from_offset
+from api.helpers.density_map.common_plot_helpers import setup_matplotlib_figure, plot_to_shifted_image
 from api.helpers.density_map.ipopulation_image_creator import IPopulationImageCreator
 from api.helpers.icustom_atlas import ICustomAtlas
-from api.helpers.image_manipulation import (
-    fig_to_img, pad_image,
-)
 
 CONTOUR_LEVELS = [0.04162026, 0.08324051, 0.12486076, 0.16648102, 0.20810127, 0.24972153, 0.29134178, 0.33296203,
                   0.37458229, 0.41620254, 0.4578228, 0.49944305, 0.5410633, 0.58268356]
@@ -37,17 +33,16 @@ def _generate_contour_plot(
     )
 
     fig, ax = setup_matplotlib_figure(probability_map)
-    _plot_overlay_heatmap(probability_map, CONTOUR_LEVELS[0])
+    #_plot_overlay_heatmap(probability_map, CONTOUR_LEVELS[0])
     plt.contour(
         probability_map,
         corner_mask=False,
         levels=CONTOUR_LEVELS,
-        colors="k",
+        cmap=cm.gray,
         zorder=100,
         linewidths=2,
     )
-    img = fig_to_img(fig)
-    return pad_image(img, *get_pad_from_offset(get_canal_offset(bg_atlas, subdivision)))
+    return plot_to_shifted_image(fig, bg_atlas, subdivision)
 
 
 def _get_accumulated_probability_map(probability_map: np.array) -> np.array:
@@ -77,5 +72,5 @@ def _get_subdivision_probability_map(
 def _plot_overlay_heatmap(img, threshold):
     masked_data = np.ma.masked_where(img < threshold, img)
     plt.imshow(
-        masked_data, cmap=mpl.colormaps["hot"], interpolation="none", alpha=0.5
+        masked_data, cmap=cm.gray, interpolation="none", alpha=0.5
     )

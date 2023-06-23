@@ -29,4 +29,5 @@ def setup_matplotlib_figure(image_array: np.array) -> Tuple[Figure, Any]:
 
 def plot_to_shifted_image(fig: Figure, bg_atlas: ICustomAtlas, subdivision: str) -> Image:
     img = fig_to_img(fig)
+    plt.close('all')
     return pad_image(img, *get_pad_from_offset(get_canal_offset(bg_atlas, subdivision)))
