@@ -240,14 +240,14 @@ const TwoDViewer = (props: {
 
         if (activePopulations.length > 0) {
             if (overlaysSwitchState[CONTOUR_PLOT_ID]) {
-                return Promise.all(activePopulations.filter((p: Population) => !isInCache(p, DensityMapTypes.PROBABILITY_DATA)).map(p =>
+                return Promise.all(activePopulations.filter((p: Population) => !isInCache(p, DensityMapTypes.CONTOUR_DATA)).map(p =>
                     fetchData(p, (id, subdivision, options) => api.probabilityMapPopulation(id, subdivision, options))))
                     .then(probabilityMapResponses => {
                         const probData = probabilityMapResponses.reduce((acc, res) => {
                             const {id, data} = res;
                             return {...acc, [id]: data};
                         }, {});
-                        updateData(probData, DensityMapTypes.PROBABILITY_DATA)
+                        updateData(probData, DensityMapTypes.CONTOUR_DATA)
                     })
             }
         }
@@ -326,6 +326,17 @@ const TwoDViewer = (props: {
             imagesToLoad.push({src: background, draw: drawImageCallback})
         }
 
+        // Get laminas
+        for (const lId of Object.keys(laminas)) {
+            // @ts-ignore
+            if (laminas[lId].selected) {
+                const laminaData = atlas.getLaminaSrc(lId, segments[selectedValueIndex], laminaType)
+                if (laminaData) {
+                    imagesToLoad.push({src: laminaData, draw: (drawColoredImageCallback(laminas[lId].color))})
+                }
+            }
+        }
+
         for (const pId of Object.keys(content)) {
             // @ts-ignore
             const color = activePopulationsColorMap[pId]
@@ -333,7 +344,7 @@ const TwoDViewer = (props: {
             // Get contour plot
             if (overlaysSwitchState[CONTOUR_PLOT_ID]) {
                 // @ts-ignore
-                const pData = content[pId][DensityMapTypes.PROBABILITY_DATA]
+                const pData = content[pId][DensityMapTypes.CONTOUR_DATA]
                 if (hasColoredImageData(pData)) {
                     imagesToLoad.push({src: pData, draw: (drawColoredImageCallback(color))})
                 }
@@ -345,17 +356,6 @@ const TwoDViewer = (props: {
                 const cData = content[pId][DensityMapTypes.CENTROIDS_DATA]
                 if (hasColoredImageData(cData)) {
                     imagesToLoad.push({src: cData, draw: (drawColoredImageCallback(color))})
-                }
-            }
-        }
-
-        // Get laminas
-        for (const lId of Object.keys(laminas)) {
-            // @ts-ignore
-            if (laminas[lId].selected) {
-                const laminaData = atlas.getLaminaSrc(lId, segments[selectedValueIndex], laminaType)
-                if (laminaData) {
-                    imagesToLoad.push({src: laminaData, draw: (drawColoredImageCallback(laminas[lId].color))})
                 }
             }
         }

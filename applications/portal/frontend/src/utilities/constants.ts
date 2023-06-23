@@ -37,7 +37,7 @@ export const ROSTRAL = "Rostral"
 export const CAUDAL = "Caudal"
 
 export enum DensityMapTypes {
-    PROBABILITY_DATA = "probabilityData",
+    CONTOUR_DATA = "contourData",
     CENTROIDS_DATA = "centroidsData"
 }
 
