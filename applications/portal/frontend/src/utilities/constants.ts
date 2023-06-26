@@ -81,3 +81,4 @@ export const HEADER_TITLE = "Salk Mouse Cord Atlas";
 export const EXPERIMENTS_ROUTE = '/experiments/:id'
 
 export const SNACKBAR_TIMEOUT = 5000
+export const POPULATION_ICONS_OPACITY = 0.4

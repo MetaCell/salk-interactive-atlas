@@ -12,7 +12,7 @@ import {addWidget, deleteWidget, updateWidget} from '@metacell/geppetto-meta-cli
 import Loader from '@metacell/geppetto-meta-ui/loader/Loader'
 import {Box} from "@material-ui/core";
 import {bodyBgColor, font} from "../theme";
-import Sidebar from "../components/ExperimentSidebar";
+import Sidebar from "../components/sidebar/ExperimentSidebar";
 // @ts-ignore
 import {
     AtlasChoice,
@@ -36,6 +36,7 @@ type PopulationDataType = {
         status: string;
     };
 };
+
 const useStyles = makeStyles({
     layoutContainer: {
         position: 'relative',
@@ -107,16 +108,18 @@ const ExperimentsPage: React.FC<{ residentialPopulations: any }> = ({ residentia
     const handleAtlasChange = (atlasId: AtlasChoice) => {
         setSelectedAtlas(atlasId)
     };
-    const handleShowAllPopulations = () => {
-        const areAllPopulationsActive = areAllSelected(populations)
-        const nextPopulations: any = {}
-        Object.keys(populations)
-            .forEach(pId => nextPopulations[pId] = {
-                ...populations[pId],
-                selected: populations[pId].status !== POPULATION_FINISHED_STATE ? false : !areAllPopulationsActive
-            })
-        setPopulations(nextPopulations)
-    }
+    const handleShowAllPopulations = (pops: { [p: string]: { selected: any } }) => {
+        const areAllPopulationsActive = areAllSelected(pops);
+        const nextPopulations = { ...populations };
+
+        Object.keys(pops).forEach(pId => {
+            if (nextPopulations[pId].status === POPULATION_FINISHED_STATE) {
+                nextPopulations[pId].selected = !areAllPopulationsActive;
+            }
+        });
+
+        setPopulations(nextPopulations);
+    };
 
 
     const handlePopulationSwitch = (populationId: string) => {

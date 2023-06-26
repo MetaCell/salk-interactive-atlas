@@ -50,7 +50,7 @@ class Population(models.Model):
     opacity = models.FloatField(
         validators=[MinValueValidator(0.0), MaxValueValidator(1.0)], default=1.0
     )
-    cells = models.FileField(upload_to=POPULATIONS_DATA)
+    cells = models.FileField(upload_to=POPULATIONS_DATA, max_length=255)
     status = models.CharField(
         choices=PopulationStatus.choices,
         editable=False,
