@@ -33,10 +33,8 @@ steps:
     working_directory: .
     commands:
     - bash cloud-harness/install.sh
-    - harness-deployment cloud-harness . -d ${{DOMAIN}} -r ${{REGISTRY}} -rs ${{REGISTRY_SECRET}}
-      -n ${{NAMESPACE}} -e dev -i portal
-    - cat deployment/.env >> ${{CF_VOLUME_PATH}}/env_vars_to_export
-    - cat ${{CF_VOLUME_PATH}}/env_vars_to_export
+    - harness-deployment cloud-harness . -t ${{CF_BUILD_ID}} -d ${{DOMAIN}} -r ${{REGISTRY}}
+      -rs ${{REGISTRY_SECRET}} -n ${{NAMESPACE}} -e dev -i portal
   prepare_deployment_view:
     commands:
     - helm template ./deployment/helm --debug -n ${{NAMESPACE}}
@@ -54,24 +52,18 @@ steps:
       cloudharness-base-debian:
         type: build
         stage: build
+        tag: '${{CF_BUILD_ID}}'
         dockerfile: infrastructure/base-images/cloudharness-base-debian/Dockerfile
         registry: '${{CODEFRESH_REGISTRY}}'
         buildkit: true
         build_arguments:
+        - TAG=${{CF_BUILD_ID}}
         - DOMAIN=${{DOMAIN}}
         - NOCACHE=${{CF_BUILD_ID}}
         - REGISTRY=${{REGISTRY}}/salk/
         image_name: salk/cloudharness-base-debian
         title: Cloudharness base debian
         working_directory: ./cloud-harness
-        tag: '${{CLOUDHARNESS_BASE_DEBIAN_TAG}}'
-        when:
-          condition:
-            any:
-              buildDoesNotExist: includes('${{CLOUDHARNESS_BASE_DEBIAN_TAG_EXISTS}}',
-                '{{CLOUDHARNESS_BASE_DEBIAN_TAG_EXISTS}}') == true
-              forceNoCache: includes('${{CLOUDHARNESS_BASE_DEBIAN_TAG_FORCE_BUILD}}',
-                '{{CLOUDHARNESS_BASE_DEBIAN_TAG_FORCE_BUILD}}') == false
   build_static_images:
     title: Build static images
     type: parallel
@@ -80,25 +72,19 @@ steps:
       cloudharness-django:
         type: build
         stage: build
+        tag: '${{CF_BUILD_ID}}'
         dockerfile: Dockerfile
         registry: '${{CODEFRESH_REGISTRY}}'
         buildkit: true
         build_arguments:
+        - TAG=${{CF_BUILD_ID}}
         - DOMAIN=${{DOMAIN}}
         - NOCACHE=${{CF_BUILD_ID}}
         - REGISTRY=${{REGISTRY}}/salk/
-        - CLOUDHARNESS_BASE_DEBIAN=${{REGISTRY}}/salk/cloudharness-base-debian:${{CLOUDHARNESS_BASE_DEBIAN_TAG}}
+        - CLOUDHARNESS_BASE_DEBIAN=${{REGISTRY}}/salk/cloudharness-base-debian:${{CF_BUILD_ID}}
         image_name: salk/cloudharness-django
         title: Cloudharness django
         working_directory: ./cloud-harness/infrastructure/common-images/cloudharness-django
-        tag: '${{CLOUDHARNESS_DJANGO_TAG}}'
-        when:
-          condition:
-            any:
-              buildDoesNotExist: includes('${{CLOUDHARNESS_DJANGO_TAG_EXISTS}}', '{{CLOUDHARNESS_DJANGO_TAG_EXISTS}}')
-                == true
-              forceNoCache: includes('${{CLOUDHARNESS_DJANGO_TAG_FORCE_BUILD}}', '{{CLOUDHARNESS_DJANGO_TAG_FORCE_BUILD}}')
-                == false
   build_application_images:
     type: parallel
     stage: build
@@ -106,67 +92,34 @@ steps:
       accounts:
         type: build
         stage: build
+        tag: '${{CF_BUILD_ID}}'
         dockerfile: Dockerfile
         registry: '${{CODEFRESH_REGISTRY}}'
         buildkit: true
         build_arguments:
+        - TAG=${{CF_BUILD_ID}}
         - DOMAIN=${{DOMAIN}}
         - NOCACHE=${{CF_BUILD_ID}}
         - REGISTRY=${{REGISTRY}}/salk/
         image_name: salk/accounts
         title: Accounts
         working_directory: ./.overrides/applications/accounts
-        tag: '${{ACCOUNTS_TAG}}'
-        when:
-          condition:
-            any:
-              buildDoesNotExist: includes('${{ACCOUNTS_TAG_EXISTS}}', '{{ACCOUNTS_TAG_EXISTS}}')
-                == true
-              forceNoCache: includes('${{ACCOUNTS_TAG_FORCE_BUILD}}', '{{ACCOUNTS_TAG_FORCE_BUILD}}')
-                == false
       portal:
         type: build
         stage: build
+        tag: '${{CF_BUILD_ID}}'
         dockerfile: Dockerfile
         registry: '${{CODEFRESH_REGISTRY}}'
         buildkit: true
         build_arguments:
+        - TAG=${{CF_BUILD_ID}}
         - DOMAIN=${{DOMAIN}}
         - NOCACHE=${{CF_BUILD_ID}}
         - REGISTRY=${{REGISTRY}}/salk/
-        - CLOUDHARNESS_DJANGO=${{REGISTRY}}/salk/cloudharness-django:${{CLOUDHARNESS_DJANGO_TAG}}
+        - CLOUDHARNESS_DJANGO=${{REGISTRY}}/salk/cloudharness-django:${{CF_BUILD_ID}}
         image_name: salk/portal
         title: Portal
         working_directory: ./applications/portal
-        tag: '${{PORTAL_TAG}}'
-        when:
-          condition:
-            any:
-              buildDoesNotExist: includes('${{PORTAL_TAG_EXISTS}}', '{{PORTAL_TAG_EXISTS}}')
-                == true
-              forceNoCache: includes('${{PORTAL_TAG_FORCE_BUILD}}', '{{PORTAL_TAG_FORCE_BUILD}}')
-                == false
-      portal-frontend-geppetto-meta:
-        type: build
-        stage: build
-        dockerfile: Dockerfile
-        registry: '${{CODEFRESH_REGISTRY}}'
-        buildkit: true
-        build_arguments:
-        - DOMAIN=${{DOMAIN}}
-        - NOCACHE=${{CF_BUILD_ID}}
-        - REGISTRY=${{REGISTRY}}/salk/
-        image_name: salk/portal-frontend-geppetto-meta
-        title: Portal frontend geppetto meta
-        working_directory: ./applications/portal/frontend/geppetto-meta
-        tag: '${{PORTAL_FRONTEND_GEPPETTO_META_TAG}}'
-        when:
-          condition:
-            any:
-              buildDoesNotExist: includes('${{PORTAL_FRONTEND_GEPPETTO_META_TAG_EXISTS}}',
-                '{{PORTAL_FRONTEND_GEPPETTO_META_TAG_EXISTS}}') == true
-              forceNoCache: includes('${{PORTAL_FRONTEND_GEPPETTO_META_TAG_FORCE_BUILD}}',
-                '{{PORTAL_FRONTEND_GEPPETTO_META_TAG_FORCE_BUILD}}') == false
   deployment:
     stage: deploy
     type: helm
@@ -179,10 +132,27 @@ steps:
       kube_context: '${{CLUSTER_NAME}}'
       namespace: '${{NAMESPACE}}'
       chart_version: '${{CF_BUILD_ID}}'
-      cmd_ps: --wait --timeout 600s --create-namespace
+      cmd_ps: --wait --timeout 600s
       custom_value_files:
       - ./deployment/helm/values.yaml
       custom_values: []
+  wait_deployment:
+    stage: qa
+    title: Wait deployment to be ready
+    image: codefresh/kubectl
+    commands:
+    - kubectl config use-context ${{CLUSTER_NAME}}
+    - kubectl config set-context --current --namespace=${{NAMESPACE}}
+    - kubectl rollout status deployment/accounts
+    - kubectl rollout status deployment/events-ui-gk
+    - kubectl rollout status deployment/argo-server-gk
+    - kubectl rollout status deployment/portal
+    - kubectl rollout status deployment/portal-gk
+    - sleep 60
+    when:
+      condition:
+        all:
+          whenVarExists: includes("${{SKIP_TESTS}}", "{{SKIP_TESTS}}") == true
   approval:
     type: pending-approval
     stage: publish
@@ -199,7 +169,7 @@ steps:
         stage: publish
         type: push
         title: Cloudharness base debian
-        candidate: '${{REGISTRY}}/salk/cloudharness-base-debian:${{CLOUDHARNESS_BASE_DEBIAN_TAG}}'
+        candidate: '${{REGISTRY}}/salk/cloudharness-base-debian:${{CF_BUILD_ID}}'
         tags:
         - '${{DEPLOYMENT_PUBLISH_TAG}}'
         registry: '${{REGISTRY_PUBLISH_URL}}'
@@ -207,7 +177,7 @@ steps:
         stage: publish
         type: push
         title: Cloudharness django
-        candidate: '${{REGISTRY}}/salk/cloudharness-django:${{CLOUDHARNESS_DJANGO_TAG}}'
+        candidate: '${{REGISTRY}}/salk/cloudharness-django:${{CF_BUILD_ID}}'
         tags:
         - '${{DEPLOYMENT_PUBLISH_TAG}}'
         registry: '${{REGISTRY_PUBLISH_URL}}'
@@ -215,7 +185,7 @@ steps:
         stage: publish
         type: push
         title: Accounts
-        candidate: '${{REGISTRY}}/salk/accounts:${{ACCOUNTS_TAG}}'
+        candidate: '${{REGISTRY}}/salk/accounts:${{CF_BUILD_ID}}'
         tags:
         - '${{DEPLOYMENT_PUBLISH_TAG}}'
         registry: '${{REGISTRY_PUBLISH_URL}}'
@@ -223,15 +193,7 @@ steps:
         stage: publish
         type: push
         title: Portal
-        candidate: '${{REGISTRY}}/salk/portal:${{PORTAL_TAG}}'
-        tags:
-        - '${{DEPLOYMENT_PUBLISH_TAG}}'
-        registry: '${{REGISTRY_PUBLISH_URL}}'
-      publish_portal-frontend-geppetto-meta:
-        stage: publish
-        type: push
-        title: Portal frontend geppetto meta
-        candidate: '${{REGISTRY}}/salk/portal-frontend-geppetto-meta:${{PORTAL_FRONTEND_GEPPETTO_META_TAG}}'
+        candidate: '${{REGISTRY}}/salk/portal:${{CF_BUILD_ID}}'
         tags:
         - '${{DEPLOYMENT_PUBLISH_TAG}}'
         registry: '${{REGISTRY_PUBLISH_URL}}'
