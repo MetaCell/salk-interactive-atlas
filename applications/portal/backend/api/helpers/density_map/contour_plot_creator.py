@@ -13,8 +13,11 @@ from api.helpers.density_map.common_plot_helpers import setup_matplotlib_figure,
 from api.helpers.density_map.ipopulation_image_creator import IPopulationImageCreator
 from api.helpers.icustom_atlas import ICustomAtlas
 
-CONTOUR_LEVELS = [0.04162026, 0.08324051, 0.12486076, 0.16648102, 0.20810127, 0.24972153, 0.29134178, 0.33296203,
-                  0.37458229, 0.41620254, 0.4578228, 0.49944305, 0.5410633, 0.58268356]
+RESIDENTIAL_CONTOUR_LEVELS = [0.04162026, 0.08324051, 0.12486076, 0.16648102, 0.20810127, 0.24972153, 0.29134178,
+                              0.33296203, 0.37458229, 0.41620254, 0.4578228, 0.49944305, 0.5410633, 0.58268356]
+
+CONTOUR_LEVELS = [0.0258, 0.0516, 0.0775, 0.1033, 0.1291, 0.1549, 0.1807, 0.2066, 0.2324, 0.2582, 0.2840, 0.3098,
+                  0.3356, 0.3615]
 
 SMOOTHING = 40
 
