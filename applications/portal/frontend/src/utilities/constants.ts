@@ -23,7 +23,6 @@ export const CONTOUR_PLOT_ID = 'contourPlot'
 export const NEURONAL_LOCATIONS_ID = 'neuronalLocations'
 
 export const OVERLAYS = {
-    [CONTOUR_PLOT_ID]: new OverlayMetadata(CONTOUR_PLOT_ID, "Contour Plot"),
     [NEURONAL_LOCATIONS_ID]:  new OverlayMetadata(NEURONAL_LOCATIONS_ID, "Neuronal Locations"),
 } as any
 
@@ -36,9 +35,10 @@ export enum RequestState {
 export const ROSTRAL = "Rostral"
 export const CAUDAL = "Caudal"
 
-export enum DensityMapTypes {
-    CONTOUR_DATA = "contourData",
-    CENTROIDS_DATA = "centroidsData"
+export const ContourImageTypes = {
+    OFF : {label: "Contours Off", value: ''},
+    CONTOUR : {label: "Contours On", value: 'base'},
+    HEATMAP : {label: "Heatmap On", value: 'heatmap'},
 }
 
 export const PULL_TIME_MS = 30 * 1000

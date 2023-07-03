@@ -75,12 +75,23 @@ class PopulationViewSet(viewsets.ModelViewSet):
 
     @action(
         detail=True,
-        url_path="probability_map/(?P<subdivision>[^/.]+)",
-        url_name="probability_map",
+        url_path="contour_plot/(?P<subdivision>[^/.]+)/(?P<type>base|heatmap)",
+        url_name="contour_plot",
     )
-    def probability_map(self, request, **kwargs):
+    def contour_plot(self, request, **kwargs):
+        file_type_map = {
+            'base': PopulationPersistentFiles.CONTOUR_PLOT_IMG,
+            'heatmap': PopulationPersistentFiles.CONTOUR_PLOT_WITH_OVERLAY_IMG,
+        }
+        try:
+            file_type = file_type_map[kwargs.get('type')]
+        except KeyError:
+            return Response(
+                {"detail": "Invalid 'type' value. Must be either 'base' or 'heatmap'."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
         return self._handle_get_image_request(
-            PopulationPersistentFiles.CONTOUR_PLOT_IMG, request, **kwargs
+            file_type, request, **kwargs
         )
 
     @action(

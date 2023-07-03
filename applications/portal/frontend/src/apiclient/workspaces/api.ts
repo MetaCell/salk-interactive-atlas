@@ -843,6 +843,51 @@ export const ApiApiAxiosParamCreator = function (configuration?: Configuration) 
         },
         /**
          * This viewset automatically provides `list` actions.
+         * @param {string} id A unique integer value identifying this population.
+         * @param {string} subdivision 
+         * @param {string} type 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        contourPlotPopulation: async (id: string, subdivision: string, type: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'id' is not null or undefined
+            assertParamExists('contourPlotPopulation', 'id', id)
+            // verify required parameter 'subdivision' is not null or undefined
+            assertParamExists('contourPlotPopulation', 'subdivision', subdivision)
+            // verify required parameter 'type' is not null or undefined
+            assertParamExists('contourPlotPopulation', 'type', type)
+            const localVarPath = `/api/population/{id}/contour_plot/{subdivision}/{type}/`
+                .replace(`{${"id"}}`, encodeURIComponent(String(id)))
+                .replace(`{${"subdivision"}}`, encodeURIComponent(String(subdivision)))
+                .replace(`{${"type"}}`, encodeURIComponent(String(type)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication bearerAuth required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * This viewset automatically provides `list` actions.
          * @param {Collaborator} [collaborator] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -1998,47 +2043,6 @@ export const ApiApiAxiosParamCreator = function (configuration?: Configuration) 
             };
         },
         /**
-         * This viewset automatically provides `list` actions.
-         * @param {string} id A unique integer value identifying this population.
-         * @param {string} subdivision 
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        probabilityMapPopulation: async (id: string, subdivision: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
-            // verify required parameter 'id' is not null or undefined
-            assertParamExists('probabilityMapPopulation', 'id', id)
-            // verify required parameter 'subdivision' is not null or undefined
-            assertParamExists('probabilityMapPopulation', 'subdivision', subdivision)
-            const localVarPath = `/api/population/{id}/probability_map/{subdivision}/`
-                .replace(`{${"id"}}`, encodeURIComponent(String(id)))
-                .replace(`{${"subdivision"}}`, encodeURIComponent(String(subdivision)));
-            // use dummy base URL string because the URL constructor only accepts absolute URLs.
-            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
-            let baseOptions;
-            if (configuration) {
-                baseOptions = configuration.baseOptions;
-            }
-
-            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
-            const localVarHeaderParameter = {} as any;
-            const localVarQueryParameter = {} as any;
-
-            // authentication bearerAuth required
-            // http bearer authentication required
-            await setBearerAuthToObject(localVarHeaderParameter, configuration)
-
-
-    
-            setSearchParams(localVarUrlObj, localVarQueryParameter);
-            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
-
-            return {
-                url: toPathString(localVarUrlObj),
-                options: localVarRequestOptions,
-            };
-        },
-        /**
          * This viewset automatically provides `list`, `create`, `retrieve`, `update` and `destroy` actions.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -2749,6 +2753,18 @@ export const ApiApiFp = function(configuration?: Configuration) {
         },
         /**
          * This viewset automatically provides `list` actions.
+         * @param {string} id A unique integer value identifying this population.
+         * @param {string} subdivision 
+         * @param {string} type 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async contourPlotPopulation(id: string, subdivision: string, type: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Population>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.contourPlotPopulation(id, subdivision, type, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * This viewset automatically provides `list` actions.
          * @param {Collaborator} [collaborator] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -3048,17 +3064,6 @@ export const ApiApiFp = function(configuration?: Configuration) {
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
-         * This viewset automatically provides `list` actions.
-         * @param {string} id A unique integer value identifying this population.
-         * @param {string} subdivision 
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        async probabilityMapPopulation(id: string, subdivision: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Population>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.probabilityMapPopulation(id, subdivision, options);
-            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
-        },
-        /**
          * This viewset automatically provides `list`, `create`, `retrieve`, `update` and `destroy` actions.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -3272,6 +3277,17 @@ export const ApiApiFactory = function (configuration?: Configuration, basePath?:
          */
         centroidsPopulation(id: string, subdivision: string, options?: any): AxiosPromise<Population> {
             return localVarFp.centroidsPopulation(id, subdivision, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * This viewset automatically provides `list` actions.
+         * @param {string} id A unique integer value identifying this population.
+         * @param {string} subdivision 
+         * @param {string} type 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        contourPlotPopulation(id: string, subdivision: string, type: string, options?: any): AxiosPromise<Population> {
+            return localVarFp.contourPlotPopulation(id, subdivision, type, options).then((request) => request(axios, basePath));
         },
         /**
          * This viewset automatically provides `list` actions.
@@ -3546,16 +3562,6 @@ export const ApiApiFactory = function (configuration?: Configuration, basePath?:
             return localVarFp.partialUpdateUserDetail(id, userDetail, options).then((request) => request(axios, basePath));
         },
         /**
-         * This viewset automatically provides `list` actions.
-         * @param {string} id A unique integer value identifying this population.
-         * @param {string} subdivision 
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        probabilityMapPopulation(id: string, subdivision: string, options?: any): AxiosPromise<Population> {
-            return localVarFp.probabilityMapPopulation(id, subdivision, options).then((request) => request(axios, basePath));
-        },
-        /**
          * This viewset automatically provides `list`, `create`, `retrieve`, `update` and `destroy` actions.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -3761,6 +3767,19 @@ export class ApiApi extends BaseAPI {
      */
     public centroidsPopulation(id: string, subdivision: string, options?: AxiosRequestConfig) {
         return ApiApiFp(this.configuration).centroidsPopulation(id, subdivision, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * This viewset automatically provides `list` actions.
+     * @param {string} id A unique integer value identifying this population.
+     * @param {string} subdivision 
+     * @param {string} type 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof ApiApi
+     */
+    public contourPlotPopulation(id: string, subdivision: string, type: string, options?: AxiosRequestConfig) {
+        return ApiApiFp(this.configuration).contourPlotPopulation(id, subdivision, type, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
@@ -4089,18 +4108,6 @@ export class ApiApi extends BaseAPI {
      */
     public partialUpdateUserDetail(id: string, userDetail?: UserDetail, options?: AxiosRequestConfig) {
         return ApiApiFp(this.configuration).partialUpdateUserDetail(id, userDetail, options).then((request) => request(this.axios, this.basePath));
-    }
-
-    /**
-     * This viewset automatically provides `list` actions.
-     * @param {string} id A unique integer value identifying this population.
-     * @param {string} subdivision 
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     * @memberof ApiApi
-     */
-    public probabilityMapPopulation(id: string, subdivision: string, options?: AxiosRequestConfig) {
-        return ApiApiFp(this.configuration).probabilityMapPopulation(id, subdivision, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
