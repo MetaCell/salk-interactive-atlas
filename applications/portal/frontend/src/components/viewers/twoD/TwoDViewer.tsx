@@ -353,7 +353,7 @@ const TwoDViewer = (props: {
             // Get neuron centroids
             if (overlaysSwitchState[NEURONAL_LOCATIONS_ID]) {
                 // @ts-ignore
-                const cData = content[pId][DensityMapTypes.CENTROIDS_DATA]
+                const cData = content[pId][NEURONAL_LOCATIONS_ID]
                 if (hasColoredImageData(cData)) {
                     imagesToLoad.push({src: cData, draw: (drawColoredImageCallback(color))})
                 }
