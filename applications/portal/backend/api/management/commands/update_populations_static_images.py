@@ -15,6 +15,8 @@ class Command(BaseCommand):
                 generate_images(p)
             except Exception as e:
                 self.stdout.write(self.style.WARNING(f"{p.pk}: {e}. Skipped"))
+            self.stdout.write(self.style.SUCCESS('Successfully updated Population "%s"' % p.id))
+
         self.stdout.write(
             self.style.SUCCESS("Generate population static files finished")
         )
