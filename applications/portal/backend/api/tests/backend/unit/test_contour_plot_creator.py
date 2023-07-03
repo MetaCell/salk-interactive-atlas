@@ -26,7 +26,7 @@ class TestUtils(unittest.TestCase):
         images_dict = ContourPlotCreator().create(bg_atlas, 'C1-Rostral', cells)
         for key in images_dict:
             img = images_dict[key]
-            img.save(f'./api/tests/assets/{key}.png')
+            img.save(f'./{key}.png')
 
 
 if __name__ == "__main__":

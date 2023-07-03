@@ -29,13 +29,12 @@ class ContourPlotCreator(IPopulationImageCreator):
         )
 
         fig, ax = setup_matplotlib_figure(probability_map)
-
         # Generate the base plot
-        _plot_contours(probability_map)
+        _plot_contours(ax, probability_map)
         image_without_overlay = plot_to_shifted_image(fig, bg_atlas, subdivision)
 
-        # Now add the overlay and save the image again
-        _plot_overlay_heatmap(probability_map, CONTOUR_LEVELS[0])
+        # Now add the overlay
+        _plot_overlay_heatmap(ax, probability_map, CONTOUR_LEVELS[0])
         image_with_overlay = plot_to_shifted_image(fig, bg_atlas, subdivision)
 
         return {
@@ -44,8 +43,8 @@ class ContourPlotCreator(IPopulationImageCreator):
         }
 
 
-def _plot_contours(probability_map):
-    plt.contour(
+def _plot_contours(ax, probability_map):
+    ax.contour(
         probability_map,
         corner_mask=False,
         levels=CONTOUR_LEVELS,
@@ -79,8 +78,8 @@ def _get_subdivision_probability_map(
     return probability_map
 
 
-def _plot_overlay_heatmap(img, threshold):
+def _plot_overlay_heatmap(ax, img, threshold):
     masked_data = np.ma.masked_where(img < threshold, img)
-    plt.imshow(
-        masked_data, cmap=cm.gray, interpolation="none", alpha=0.5
-    )
+
+    # Now plot the overlay on the existing axis, the 'alpha' parameter controls the transparency
+    ax.imshow(masked_data, cmap=cm.gray, interpolation="none", alpha=0.5)
