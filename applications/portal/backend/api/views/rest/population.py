@@ -80,7 +80,7 @@ class PopulationViewSet(viewsets.ModelViewSet):
     )
     def probability_map(self, request, **kwargs):
         return self._handle_get_image_request(
-            PopulationPersistentFiles.PROBABILITY_MAP_IMG, request, **kwargs
+            PopulationPersistentFiles.CONTOUR_PLOT_IMG, request, **kwargs
         )
 
     @action(

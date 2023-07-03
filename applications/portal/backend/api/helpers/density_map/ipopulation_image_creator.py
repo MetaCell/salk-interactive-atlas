@@ -1,8 +1,10 @@
 from abc import ABC, abstractmethod
+from typing import Dict
 
 import numpy as np
-from PIL import Image
+from PIL.Image import Image
 
+from api.constants import PopulationPersistentFiles
 from api.helpers.icustom_atlas import ICustomAtlas
 
 
@@ -10,5 +12,5 @@ class IPopulationImageCreator(ABC):
     @abstractmethod
     def create(
         self, bg_atlas: ICustomAtlas, subdivision: str, points: np.array
-    ) -> Image:
+    ) -> Dict[PopulationPersistentFiles, Image]:
         pass

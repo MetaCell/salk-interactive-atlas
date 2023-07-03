@@ -1,10 +1,13 @@
+from typing import Dict
+
 import matplotlib.cm as cm
 import numpy as np
-from PIL import Image
+from PIL.Image import Image
 from matplotlib import pyplot as plt
 from scipy.ndimage import zoom
 from skimage.filters import gaussian
 
+from api.constants import PopulationPersistentFiles
 from api.helpers.density_map.common_density_helpers import get_bins
 from api.helpers.density_map.common_plot_helpers import setup_matplotlib_figure, plot_to_shifted_image
 from api.helpers.density_map.ipopulation_image_creator import IPopulationImageCreator
@@ -19,21 +22,29 @@ SMOOTHING = 40
 class ContourPlotCreator(IPopulationImageCreator):
     def create(
             self, bg_atlas: ICustomAtlas, subdivision: str, points: np.array
-    ) -> Image:
-        return _generate_contour_plot(bg_atlas, subdivision, points)
+    ) -> Dict[PopulationPersistentFiles, Image]:
+        smoothing = [int(round(SMOOTHING / res)) for res in bg_atlas.resolution[1:]]
+        probability_map = _get_subdivision_probability_map(
+            bg_atlas.annotation.shape[1:], points, smoothing=smoothing,
+        )
+
+        fig, ax = setup_matplotlib_figure(probability_map)
+
+        # Generate the base plot
+        _plot_contours(probability_map)
+        image_without_overlay = plot_to_shifted_image(fig, bg_atlas, subdivision)
+
+        # Now add the overlay and save the image again
+        _plot_overlay_heatmap(probability_map, CONTOUR_LEVELS[0])
+        image_with_overlay = plot_to_shifted_image(fig, bg_atlas, subdivision)
+
+        return {
+            PopulationPersistentFiles.CONTOUR_PLOT_IMG: image_without_overlay,
+            PopulationPersistentFiles.CONTOUR_PLOT_WITH_OVERLAY_IMG: image_with_overlay
+        }
 
 
-def _generate_contour_plot(
-        bg_atlas: ICustomAtlas, subdivision: str, points: np.array
-) -> Image:
-    smoothing = [int(round(SMOOTHING / res)) for res in bg_atlas.resolution[1:]]
-
-    probability_map = _get_subdivision_probability_map(
-        bg_atlas.annotation.shape[1:], points, smoothing=smoothing,
-    )
-
-    fig, ax = setup_matplotlib_figure(probability_map)
-    #_plot_overlay_heatmap(probability_map, CONTOUR_LEVELS[0])
+def _plot_contours(probability_map):
     plt.contour(
         probability_map,
         corner_mask=False,
@@ -42,7 +53,6 @@ def _generate_contour_plot(
         zorder=100,
         linewidths=2,
     )
-    return plot_to_shifted_image(fig, bg_atlas, subdivision)
 
 
 def _get_accumulated_probability_map(probability_map: np.array) -> np.array:
