@@ -3,6 +3,7 @@ import os
 import tempfile
 import zipfile
 
+from django.db.models import Q
 from django.http import HttpResponse
 from dry_rest_permissions.generics import DRYPermissions
 from rest_framework import status, viewsets
@@ -11,7 +12,7 @@ from rest_framework.parsers import MultiPartParser
 from rest_framework.response import Response
 
 from api.helpers.exceptions import InvalidPopulationFile, DuplicatedPopulationError, InvalidInputError
-from api.models import Experiment
+from api.models import Experiment, Population
 from api.serializers import (
     ExperimentPairFileUploadSerializer,
     ExperimentSerializer,
@@ -188,11 +189,12 @@ class ExperimentViewSet(viewsets.ModelViewSet):
         if not active_populations or len(active_populations) == 0:
             return Response(status=status.HTTP_204_NO_CONTENT)
 
-        filename_prefix = f'{experiment.name}'
+        filename_prefix = f'{experiment.name}' if experiment else 'population'
         filename_suffix = 's' if len(active_populations) > 1 else ''
         with tempfile.TemporaryFile() as temp_file:
             with zipfile.ZipFile(temp_file, 'w') as zip_file:
-                for population in experiment.population_set.filter(id__in=active_populations):
+                for population in Population.objects.filter(Q(experiment=experiment) | Q(experiment=None),
+                                                            id__in=active_populations):
                     if population.cells:
                         zip_file.write(population.cells.path, arcname=os.path.basename(population.cells.path))
                         filename_prefix += f"_{population.name}"
