@@ -9,16 +9,6 @@ class SalkAtlas(ICustomAtlas):
 
     def __init__(self, atlas_name):
         super().__init__(atlas_name)
-        self._annotation = self._get_annotation_with_merged_layers_1_to_4()
-
-    def _get_atlas_merge_layers_1_to_4(self):
-        return np.logical_and(self.annotation >= self.get_structure_annotation_value('1Sp'),
-                              self.annotation <= self.get_structure_annotation_value('4Sp'))
-
-    def _get_annotation_with_merged_layers_1_to_4(self):
-        annotation_copy = self.annotation.copy()
-        annotation_copy[self._get_atlas_merge_layers_1_to_4()] = self.get_structure_annotation_value('1-4Sp')
-        return annotation_copy
 
     def get_image_volume(self, region_key):
         """
