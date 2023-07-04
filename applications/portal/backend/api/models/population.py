@@ -1,11 +1,13 @@
 import logging
 import os
 
+from PIL import Image
 from django.conf import settings
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
-from PIL import Image
 
+from .atlas import AtlasesChoice
+from .experiment import Experiment
 from ..constants import (
     POPULATIONS_DATA,
     POPULATIONS_SPLIT_DATA,
@@ -14,11 +16,9 @@ from ..constants import (
 from ..helpers.generate_population_cells import get_cells_filepath
 from ..helpers.population_registration.population_registration_strategy_factory import \
     get_population_registration_strategy
-from ..services.filesystem_service import create_dir_if_not_exists, remove_dir, remove_file_if_exists
+from ..services.filesystem_service import create_dir_if_not_exists, remove_dir
 from ..services.population_service import generate_images, split_cells_per_segment
 from ..utils import has_property, is_valid_hex_str
-from .atlas import AtlasesChoice
-from .experiment import Experiment
 
 
 class PopulationObjectsManager(models.Manager):
@@ -93,9 +93,9 @@ class Population(models.Model):
             )
             execute_generate_population_static_files_workflow(self.id)
 
-    def delete(self, using=None, keep_parents=False):
-        remove_file_if_exists(self.cells.path)
-        super(Population, self).delete(using, keep_parents)
+    def delete(self, *args, **kwargs):
+        remove_dir(self.storage_path)
+        super(Population, self).delete(*args, **kwargs)
 
     def _has_file_changed(self):
         try:

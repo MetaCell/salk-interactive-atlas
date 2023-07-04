@@ -75,8 +75,7 @@ def get_grey_and_white_matter_image_array(bg_atlas: ICustomAtlas, subdivision: s
 
     colored_img_array = np.select(
         [
-            grey_white_matter_subdivision_image_array == bg_atlas.get_structure_annotation_value(
-                WHITE_MATTER_REGION_KEY),
+            grey_white_matter_subdivision_image_array == bg_atlas.get_structure_annotation_value(WHITE_MATTER_REGION_KEY),
             grey_white_matter_subdivision_image_array == bg_atlas.get_structure_annotation_value(GREY_MATTER_REGION_KEY)
         ],
         [
