@@ -110,7 +110,8 @@ def _store_image(
         population,
         s,
 ):
-    images_dict = creator.create(bg_atlas=bg_atlas, subdivision=s, points=cells)
+    is_residential = population.experiment is None
+    images_dict = creator.create(bg_atlas=bg_atlas, subdivision=s, points=cells, is_residential=is_residential)
     for key in images_dict:
         img = images_dict[key]
         img.save(population.get_subdivision_storage_path(s, key))

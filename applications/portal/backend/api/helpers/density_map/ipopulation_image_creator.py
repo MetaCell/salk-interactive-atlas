@@ -11,6 +11,6 @@ from api.helpers.icustom_atlas import ICustomAtlas
 class IPopulationImageCreator(ABC):
     @abstractmethod
     def create(
-        self, bg_atlas: ICustomAtlas, subdivision: str, points: np.array
+        self, bg_atlas: ICustomAtlas, subdivision: str, points: np.array, is_residential: bool
     ) -> Dict[PopulationPersistentFiles, Image]:
         pass

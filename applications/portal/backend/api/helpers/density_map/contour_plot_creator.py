@@ -24,7 +24,7 @@ SMOOTHING = 40
 
 class ContourPlotCreator(IPopulationImageCreator):
     def create(
-            self, bg_atlas: ICustomAtlas, subdivision: str, points: np.array
+            self, bg_atlas: ICustomAtlas, subdivision: str, points: np.array, is_residential: bool
     ) -> Dict[PopulationPersistentFiles, Image]:
         smoothing = [int(round(SMOOTHING / res)) for res in bg_atlas.resolution[1:]]
         probability_map = _get_subdivision_probability_map(
@@ -33,7 +33,7 @@ class ContourPlotCreator(IPopulationImageCreator):
 
         fig, ax = setup_matplotlib_figure(probability_map)
         # Generate the base plot
-        _plot_contours(ax, probability_map)
+        _plot_contours(ax, probability_map, is_residential)
         image_without_overlay = plot_to_shifted_image(fig, bg_atlas, subdivision)
 
         # Now add the overlay
@@ -46,11 +46,12 @@ class ContourPlotCreator(IPopulationImageCreator):
         }
 
 
-def _plot_contours(ax, probability_map):
+def _plot_contours(ax, probability_map, is_residential):
+    contour_levels = RESIDENTIAL_CONTOUR_LEVELS if is_residential else CONTOUR_LEVELS
     ax.contour(
         probability_map,
         corner_mask=False,
-        levels=CONTOUR_LEVELS,
+        levels=contour_levels,
         cmap=cm.gray,
         zorder=100,
         linewidths=2,
@@ -85,4 +86,4 @@ def _plot_overlay_heatmap(ax, img, threshold):
     masked_data = np.ma.masked_where(img < threshold, img)
 
     # Now plot the overlay on the existing axis, the 'alpha' parameter controls the transparency
-    ax.imshow(masked_data, cmap=cm.gray, interpolation="none", alpha=0.5)
+    ax.imshow(masked_data, cmap=cm.gray_r, interpolation="none", alpha=0.5)
