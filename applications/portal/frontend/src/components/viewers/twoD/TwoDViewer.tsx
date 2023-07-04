@@ -311,7 +311,7 @@ const TwoDViewer = (props: {
 
         const imagesToLoad = []
         const drawImageCallback = (img: HTMLImageElement) => drawImage(canvas, img)
-        const drawColoredImageCallback = (color: string) => (img: HTMLImageElement) => drawColoredImage(canvas, hiddenCanvas, img, color)
+        const drawColoredImageCallback = (color: string, considersIntensity: boolean) => (img: HTMLImageElement) => drawColoredImage(canvas, hiddenCanvas, img, color, considersIntensity)
 
 
         // Get grid
@@ -332,7 +332,7 @@ const TwoDViewer = (props: {
             if (laminas[lId].selected) {
                 const laminaData = atlas.getLaminaSrc(lId, segments[selectedValueIndex], laminaType)
                 if (laminaData) {
-                    imagesToLoad.push({src: laminaData, draw: (drawColoredImageCallback(laminas[lId].color))})
+                    imagesToLoad.push({src: laminaData, draw: (drawColoredImageCallback(laminas[lId].color, false))})
                 }
             }
         }
@@ -346,7 +346,7 @@ const TwoDViewer = (props: {
                 // @ts-ignore
                 const pData = content[pId][contourType.value]
                 if (hasColoredImageData(pData)) {
-                    imagesToLoad.push({src: pData, draw: (drawColoredImageCallback(color))})
+                    imagesToLoad.push({src: pData, draw: (drawColoredImageCallback(color, true))})
                 }
             }
 
@@ -355,7 +355,7 @@ const TwoDViewer = (props: {
                 // @ts-ignore
                 const cData = content[pId][NEURONAL_LOCATIONS_ID]
                 if (hasColoredImageData(cData)) {
-                    imagesToLoad.push({src: cData, draw: (drawColoredImageCallback(color))})
+                    imagesToLoad.push({src: cData, draw: (drawColoredImageCallback(color, true))})
                 }
             }
         }
@@ -572,55 +572,55 @@ const TwoDViewer = (props: {
                         paper: `${classes.popover} scrollbar`
                     }}
                 >
-                        <Box className={`${classes.cordImageContainer}`}>
-                            <CordImageMapper
-                                segments={segments}
-                                selected={selectedValueIndex}
-                                onChange={handleSegmentChange}
-                            />
-                        </Box>
+                    <Box className={`${classes.cordImageContainer}`}>
+                        <CordImageMapper
+                            segments={segments}
+                            selected={selectedValueIndex}
+                            onChange={handleSegmentChange}
+                        />
+                    </Box>
 
-                        <FormControl className={`${classes.dropdownContainer}`}>
-                            <Select
-                                className={`${classes.menuFontSize}`}
-                                disableUnderline={true}
-                                value={selectedValueIndex}
-                                onOpen={() => handleSnackbarOpen()}
-                                onChange={(event) => handleSegmentChange(event.target.value as number)}
-                                MenuProps={{classes: {paper: classes.selectMenu}}}
-                            >
-                                {segments.map((segment, idx) =>
-                                    <MenuItem key={segment} value={idx}> {segment} </MenuItem>
-                                )}
-                            </Select>
-                        </FormControl>
+                    <FormControl className={`${classes.dropdownContainer}`}>
+                        <Select
+                            className={`${classes.menuFontSize}`}
+                            disableUnderline={true}
+                            value={selectedValueIndex}
+                            onOpen={() => handleSnackbarOpen()}
+                            onChange={(event) => handleSegmentChange(event.target.value as number)}
+                            MenuProps={{classes: {paper: classes.selectMenu}}}
+                        >
+                            {segments.map((segment, idx) =>
+                                <MenuItem key={segment} value={idx}> {segment} </MenuItem>
+                            )}
+                        </Select>
+                    </FormControl>
 
-                        {Object.keys(laminas).length > 0 &&
-                            <Fragment>
-                                <Box onClick={() => setIsSubRegionsOpen(!isSubRegionsOpen)}
-                                     className={`${classes.menuButtonContainer}`}>
-                                    <Typography className={classes.menuFontSize}>Subregions</Typography>
-                                    {isSubRegionsOpen ? <ArrowDropUpIcon/> : <ArrowDropDownIcon/>}
+                    {Object.keys(laminas).length > 0 &&
+                        <Fragment>
+                            <Box onClick={() => setIsSubRegionsOpen(!isSubRegionsOpen)}
+                                 className={`${classes.menuButtonContainer}`}>
+                                <Typography className={classes.menuFontSize}>Subregions</Typography>
+                                {isSubRegionsOpen ? <ArrowDropUpIcon/> : <ArrowDropDownIcon/>}
+                            </Box>
+                            <Collapse in={isSubRegionsOpen} timeout="auto" unmountOnExit={true}
+                                      className={`${classes.collapse}`}>
+                                <Box className={classes.laminaTopLabelContainer}>
+                                    <LaminaPicker onLaminaStyleChange={(v: string) => handleLaminaTypeChange(v)}
+                                                  onLaminaBaseColorChange={(hexColor: string) => handleLaminaBaseColorChange(hexColor)}
+                                                  baseColor={laminaBaseColor}/>
+                                    <FormControlLabel
+                                        className={`${classes.entryPadding} ${classes.laminaLabel}`}
+                                        control={
+                                            <Switch/>
+                                        }
+                                        label={"All subregions"}
+                                        labelPlacement="start"
+                                        onChange={() => handleShowAllLaminaSwitch()}
+                                        checked={areAllSelected(laminas)}
+                                    />
                                 </Box>
-                                <Collapse in={isSubRegionsOpen} timeout="auto" unmountOnExit={true}
-                                          className={`${classes.collapse}`}>
-                                    <Box className={classes.laminaTopLabelContainer}>
-                                        <LaminaPicker onLaminaStyleChange={(v: string) => handleLaminaTypeChange(v)}
-                                                      onLaminaBaseColorChange={(hexColor: string) => handleLaminaBaseColorChange(hexColor)}
-                                                      baseColor={laminaBaseColor}/>
-                                        <FormControlLabel
-                                            className={`${classes.entryPadding} ${classes.laminaLabel}`}
-                                            control={
-                                                <Switch/>
-                                            }
-                                            label={"All subregions"}
-                                            labelPlacement="start"
-                                            onChange={() => handleShowAllLaminaSwitch()}
-                                            checked={areAllSelected(laminas)}
-                                        />
-                                    </Box>
-                                    {Object.keys(laminas).sort(alphanumericCollator.compare).map(lId =>
-                                            <span key={lId} className={`${classes.entryPadding} ${classes.laminaEntry}`}>
+                                {Object.keys(laminas).sort(alphanumericCollator.compare).map(lId =>
+                                    <span key={lId} className={`${classes.entryPadding} ${classes.laminaEntry}`}>
                                         <span className={classes.laminaColor}
                                               onClick={(event) => handleLaminaPopoverClick(event, lId)}>
                                             <Box
@@ -654,47 +654,47 @@ const TwoDViewer = (props: {
                                             checked={laminas[lId].selected}
                                         />
                                     </span>
-                                    )}
-                                </Collapse>
-                            </Fragment>
-                        }
-                        <FormControl className={`${classes.dropdownContainer}`}>
-                            <Select
-                                className={`${classes.menuFontSize}`}
-                                disableUnderline={true}
-                                value={gridType}
-                                onChange={(event) => handleGridTypeChange(event.target.value)}
-                                MenuProps={{classes: {paper: classes.selectMenu}}}
-                            >
-                                {Object.values(GridTypes).map((type, idx) =>
-                                    <MenuItem key={idx} value={type}> {type.value} </MenuItem>
                                 )}
-                            </Select>
-                        </FormControl>
-                        <FormControl className={`${classes.dropdownContainer}`}>
+                            </Collapse>
+                        </Fragment>
+                    }
+                    <FormControl className={`${classes.dropdownContainer}`}>
+                        <Select
+                            className={`${classes.menuFontSize}`}
+                            disableUnderline={true}
+                            value={gridType}
+                            onChange={(event) => handleGridTypeChange(event.target.value)}
+                            MenuProps={{classes: {paper: classes.selectMenu}}}
+                        >
+                            {Object.values(GridTypes).map((type, idx) =>
+                                <MenuItem key={idx} value={type}> {type.value} </MenuItem>
+                            )}
+                        </Select>
+                    </FormControl>
+                    <FormControl className={`${classes.dropdownContainer}`}>
 
-                            <Select
-                                className={`${classes.menuFontSize}`}
-                                disableUnderline={true}
-                                value={contourType}
-                                onChange={(event) => handleContourTypeChange(event.target.value)}
-                                MenuProps={{classes: {paper: classes.selectMenu}}}
-                            >
-                                {Object.values(ContourImageTypes).map((type, idx) =>
-                                    <MenuItem key={idx} value={type}> {type.label} </MenuItem>
-                                )}
-                            </Select>
-                        </FormControl>
-                        {Object.keys(OVERLAYS).map(oId =>
-                            <FormControlLabel
-                                key={oId}
-                                control={<Switch/>}
-                                label={<OverlayLabel label={OVERLAYS[oId].name}/>}
-                                labelPlacement="start"
-                                onChange={() => handleOverlaySwitch(oId)}
-                                checked={overlaysSwitchState[oId]}
-                            />
-                        )}
+                        <Select
+                            className={`${classes.menuFontSize}`}
+                            disableUnderline={true}
+                            value={contourType}
+                            onChange={(event) => handleContourTypeChange(event.target.value)}
+                            MenuProps={{classes: {paper: classes.selectMenu}}}
+                        >
+                            {Object.values(ContourImageTypes).map((type, idx) =>
+                                <MenuItem key={idx} value={type}> {type.label} </MenuItem>
+                            )}
+                        </Select>
+                    </FormControl>
+                    {Object.keys(OVERLAYS).map(oId =>
+                        <FormControlLabel
+                            key={oId}
+                            control={<Switch/>}
+                            label={<OverlayLabel label={OVERLAYS[oId].name}/>}
+                            labelPlacement="start"
+                            onChange={() => handleOverlaySwitch(oId)}
+                            checked={overlaysSwitchState[oId]}
+                        />
+                    )}
                 </Popover>
                 <Snackbar
                     open={isSnackbarOpen}

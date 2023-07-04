@@ -10,7 +10,7 @@ export function drawImage(canvas: { getContext: (arg0: string) => any; width: nu
 
 export const drawColoredImage = (canvas: { getContext: (arg0: string) => any; width: number; height: number; },
                                  hiddenCanvas: { getContext: (arg0: string) => any; width: any; height: any; },
-                                 img: HTMLImageElement, color: string) => {
+                                 img: HTMLImageElement, color: string, considersIntensity: boolean = false) => {
 
     const ctx = canvas.getContext('2d')
     const hctx = hiddenCanvas.getContext('2d')
@@ -32,8 +32,14 @@ export const drawColoredImage = (canvas: { getContext: (arg0: string) => any; wi
             const r = opacityIndex - 3
             const g = opacityIndex - 2
             const b = opacityIndex - 1
-            const intensity = data[r] / 255; // In greyscale image rgb have the same values
-            data[opacityIndex] = 255 * (1 - intensity);  // where 255 is the maximum alpha value
+            if (considersIntensity){
+                const intensity = data[r] / 255; // In greyscale image rgb have the same values
+                data[opacityIndex] = 255 * (1 - intensity);  // where 255 is the maximum alpha value
+            }
+            else{
+                data[opacityIndex] = 255
+            }
+
             data[r] = colorRGB.r
             data[g] = colorRGB.g
             data[b] = colorRGB.b
