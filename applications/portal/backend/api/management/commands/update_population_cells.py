@@ -1,10 +1,9 @@
 import os
-from django.core.management.base import BaseCommand, CommandError
-from django.core.files.base import ContentFile
 
-from api.constants import POPULATIONS_DATA
+from django.core.files.base import ContentFile
+from django.core.management.base import BaseCommand, CommandError
+
 from api.models import Population
-from workspaces import settings
 
 
 class Command(BaseCommand):
