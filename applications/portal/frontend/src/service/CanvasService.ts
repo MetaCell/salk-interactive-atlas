@@ -29,9 +29,14 @@ export const drawColoredImage = (canvas: { getContext: (arg0: string) => any; wi
             if (data[opacityIndex] === 0) {
                 continue
             }
-            data[opacityIndex - 3] = colorRGB.r
-            data[opacityIndex - 2] = colorRGB.g
-            data[opacityIndex - 1] = colorRGB.b
+            const r = opacityIndex - 3
+            const g = opacityIndex - 2
+            const b = opacityIndex - 1
+            const intensity = data[r] / 255; // In greyscale image rgb have the same values
+            data[opacityIndex] = 255 * (1 - intensity);  // where 255 is the maximum alpha value
+            data[r] = colorRGB.r
+            data[g] = colorRGB.g
+            data[b] = colorRGB.b
         }
         hctx.putImageData(imageData, 0, 0);
 
