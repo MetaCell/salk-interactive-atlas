@@ -52,7 +52,7 @@ def _plot_contours(ax, probability_map, is_residential):
         probability_map,
         corner_mask=False,
         levels=contour_levels,
-        cmap=cm.gray,
+        cmap=cm.gray_r,
         zorder=100,
         linewidths=2,
     )
