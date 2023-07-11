@@ -7,12 +7,12 @@ The SALK Mouse Cord Atlas
 ### Prerequisites
 
 The SALK deployment is built on top of [CloudHarness](https://github.com/MetaCell/cloud-harness).
-The deployment process is based on Python 3.7+ scripts. It is recommended to setup a virtual 
+The deployment process is based on Python 3.9 scripts. It is recommended to setup a virtual 
 environment first.
 
 With conda: 
 ```bash
-conda create --name salk python=3.7
+conda create --name salk python=3.9
 conda activate salk
 ```
 
