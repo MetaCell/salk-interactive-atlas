@@ -341,34 +341,36 @@ const ExperimentCard = ({
                 </Menu>
                 <CardActionArea>
                     <CardContent>
-                        <Box className={classes.tagsWrapper}>
-                          <Tooltip
-                            placement="top-start"
-                            title={type != COMMUNITY_HASH ? (
-                              <Box className={classes.tagsTooltip}>
-                                {experiment.tags?.map((tag, i) => (
-                                   <Chip
-                                    key={`${experiment.name}_${i}_${tag.name}`} label={tag.name}
-                                    color={i == 1 ? 'primary' : i === 2 ? 'secondary' : 'default'}
-                                  />
-                                ))}
-                              </Box>
-                            ) : ''}
-                          >
-                            <Box className={classes.ellipsesWrapper}>
-                              {type != COMMUNITY_HASH &&
-                                <Box className={classes.tagsEllipses}>
-                                  {experiment.tags?.map((tag, i) =>(
-                                    <Chip
+                        {
+                            experiment.tags.lenght && <Box className={classes.tagsWrapper}>
+                            <Tooltip
+                              placement="top-start"
+                              title={type != COMMUNITY_HASH ? (
+                                <Box className={classes.tagsTooltip}>
+                                  {experiment.tags?.map((tag, i) => (
+                                     <Chip
                                       key={`${experiment.name}_${i}_${tag.name}`} label={tag.name}
                                       color={i == 1 ? 'primary' : i === 2 ? 'secondary' : 'default'}
                                     />
                                   ))}
                                 </Box>
-                              }
-                            </Box>
-                          </Tooltip>
-                        </Box>
+                              ) : ''}
+                            >
+                              <Box className={classes.ellipsesWrapper}>
+                                {type != COMMUNITY_HASH &&
+                                  <Box className={classes.tagsEllipses}>
+                                    {experiment.tags?.map((tag, i) =>(
+                                      <Chip
+                                        key={`${experiment.name}_${i}_${tag.name}`} label={tag.name}
+                                        color={i == 1 ? 'primary' : i === 2 ? 'secondary' : 'default'}
+                                      />
+                                    ))}
+                                  </Box>
+                                }
+                              </Box>
+                            </Tooltip>
+                          </Box>
+                        }
 
                         <Box>
                           <Typography component="h3" onClick={handleClick}>
