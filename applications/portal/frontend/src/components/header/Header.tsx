@@ -20,6 +20,7 @@ import {UserAccountDialog} from "./UserAccountDialog";
 import {CreateUpdateExperimentDialog} from "./ExperimentDialog/CreateUpdateExperimentDialog";
 import {EXPERIMENTS_ROUTE, HEADER_TITLE, SNACKBAR_TIMEOUT} from "../../utilities/constants";
 import {Alert} from "@material-ui/lab";
+import workspaceService from "../../service/WorkspaceService";
 
 interface RouteParams {
     id: string;
@@ -107,7 +108,7 @@ export const Header = ({
                            user,
                        }: HeaderProps) => {
     const classes = useStyles();
-
+    const api = workspaceService.getApi();
     const match = useRouteMatch<RouteParams>(EXPERIMENTS_ROUTE);
     const experimentId = match ? match.params.id : null;
 
@@ -115,7 +116,15 @@ export const Header = ({
     const [dialogOpen, setDialogOpen] = React.useState(false);
     const [experimentDialogOpen, setExperimentDialogOpen] = React.useState(false);
     const [errorMessage, setErrorMessage] = React.useState(undefined);
+    const [experiments, setExperiments] =  React.useState([]);
     const menuAnchorRef = React.useRef(null);
+
+    const fetchExperiments = async () => {
+        const response = await api.listExperiments()
+        setExperiments(response.data)
+    }
+
+    const experiment = experiments.find((experiment) => experiment.id == experimentId);
 
     /**
      * Toggles the experiment dialog open or closed.
@@ -176,6 +185,9 @@ export const Header = ({
         setErrorMessage(undefined);
     };
 
+    React.useEffect(() => {
+        fetchExperiments().catch(console.error);
+      }, [experimentId])
 
     const headerText =
         user === null ? (
@@ -256,7 +268,7 @@ export const Header = ({
                         <Link color="inherit" href="/">
                             My experiments
                         </Link>
-                        <Typography color="textPrimary">Exploration of the spinal cord</Typography>
+                        <Typography color="textPrimary">{experiment.name}</Typography>
                     </Breadcrumbs>
                 </Box>)}
                 <Box>
