@@ -117,15 +117,9 @@ export const Header = ({
     const [dialogOpen, setDialogOpen] = React.useState(false);
     const [experimentDialogOpen, setExperimentDialogOpen] = React.useState(false);
     const [errorMessage, setErrorMessage] = React.useState(undefined);
-    const [experiments, setExperiments] = React.useState([]);
     const [fetchedExperiment, setFetchedExperiment] = React.useState<Experiment>(null);
     const menuAnchorRef = React.useRef(null);
 
-    const fetchExperiments = async () => {
-        const response = await api.listExperiments()
-
-        setExperiments(response.data)
-    }
 
     const fetchExperiment = async () => {
         const response = await api.retrieveExperiment(experimentId)
@@ -192,7 +186,6 @@ export const Header = ({
     };
 
     React.useEffect(() => {
-        fetchExperiments().catch(console.error);
         fetchExperiment().catch(console.error);
     }, [experimentId])
 
