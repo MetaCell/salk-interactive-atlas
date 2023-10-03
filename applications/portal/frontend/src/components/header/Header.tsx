@@ -1,5 +1,5 @@
 import * as React from "react";
-import {useRouteMatch} from 'react-router-dom';
+import { useRouteMatch } from 'react-router-dom';
 
 import {
     Toolbar,
@@ -11,16 +11,17 @@ import {
     Link,
     Avatar, Snackbar,
 } from "@material-ui/core";
-import {headerBorderColor, headerButtonBorderColor, headerBg} from "../../theme";
+import { headerBorderColor, headerButtonBorderColor, headerBg } from "../../theme";
 // @ts-ignore
 import LOGO from "../../assets/images/logo.svg";
 // @ts-ignore
 import USER from "../../assets/images/icons/user.svg";
-import {UserAccountDialog} from "./UserAccountDialog";
-import {CreateUpdateExperimentDialog} from "./ExperimentDialog/CreateUpdateExperimentDialog";
-import {EXPERIMENTS_ROUTE, HEADER_TITLE, SNACKBAR_TIMEOUT} from "../../utilities/constants";
-import {Alert} from "@material-ui/lab";
+import { UserAccountDialog } from "./UserAccountDialog";
+import { CreateUpdateExperimentDialog } from "./ExperimentDialog/CreateUpdateExperimentDialog";
+import { EXPERIMENTS_ROUTE, HEADER_TITLE, SNACKBAR_TIMEOUT } from "../../utilities/constants";
+import { Alert } from "@material-ui/lab";
 import workspaceService from "../../service/WorkspaceService";
+import { Experiment } from "../../apiclient/workspaces";
 
 interface RouteParams {
     id: string;
@@ -102,11 +103,11 @@ interface HeaderProps {
  * @param {Object} props.user - The user object.
  */
 export const Header = ({
-                           login,
-                           logout,
-                           onExperimentCreation,
-                           user,
-                       }: HeaderProps) => {
+    login,
+    logout,
+    onExperimentCreation,
+    user,
+}: HeaderProps) => {
     const classes = useStyles();
     const api = workspaceService.getApi();
     const match = useRouteMatch<RouteParams>(EXPERIMENTS_ROUTE);
@@ -116,15 +117,20 @@ export const Header = ({
     const [dialogOpen, setDialogOpen] = React.useState(false);
     const [experimentDialogOpen, setExperimentDialogOpen] = React.useState(false);
     const [errorMessage, setErrorMessage] = React.useState(undefined);
-    const [experiments, setExperiments] =  React.useState([]);
+    const [experiments, setExperiments] = React.useState([]);
+    const [fetchedExperiment, setFetchedExperiment] = React.useState<Experiment>(null);
     const menuAnchorRef = React.useRef(null);
 
     const fetchExperiments = async () => {
         const response = await api.listExperiments()
+
         setExperiments(response.data)
     }
 
-    const experiment = experiments.find((experiment) => experiment.id == experimentId);
+    const fetchExperiment = async () => {
+        const response = await api.retrieveExperiment(experimentId)
+        setFetchedExperiment(response.data)
+    }
 
     /**
      * Toggles the experiment dialog open or closed.
@@ -161,7 +167,7 @@ export const Header = ({
      */
     const handleAction = (id: string) => {
         setModalKey(modalKey + 1)
-        if (!experimentId){
+        if (!experimentId) {
             onExperimentCreation(id)
         }
     }
@@ -187,7 +193,8 @@ export const Header = ({
 
     React.useEffect(() => {
         fetchExperiments().catch(console.error);
-      }, [experimentId])
+        fetchExperiment().catch(console.error);
+    }, [experimentId])
 
     const headerText =
         user === null ? (
@@ -222,7 +229,7 @@ export const Header = ({
                             My account
                         </Button>
 
-                        <Avatar alt={user.username} title={user.username} src={user.avatarUrl ? user.avatarUrl : USER}/>
+                        <Avatar alt={user.username} title={user.username} src={user.avatarUrl ? user.avatarUrl : USER} />
                     </>
                 ) : (
                     <>
@@ -268,7 +275,7 @@ export const Header = ({
                         <Link color="inherit" href="/">
                             My experiments
                         </Link>
-                        <Typography color="textPrimary">{experiment.name}</Typography>
+                        <Typography color="textPrimary">{fetchedExperiment?.name}</Typography>
                     </Breadcrumbs>
                 </Box>)}
                 <Box>
@@ -276,7 +283,7 @@ export const Header = ({
                 </Box>
             </Toolbar>
 
-            <UserAccountDialog open={dialogOpen} handleClose={handleDialogToggle} user={user}/>
+            <UserAccountDialog open={dialogOpen} handleClose={handleDialogToggle} user={user} />
             <CreateUpdateExperimentDialog
                 key={modalKey}
                 open={experimentDialogOpen}
