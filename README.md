@@ -25,6 +25,12 @@ cd cloud-harness
 pip install -r requirements.txt
 ```
 
+
+Generate SALK Cord images 
+```
+./generate_images.sh
+```
+
 ## Deploy to a K8s cluster
 
 Make sure that you are using the correct K8s context (check `kubectl config get-contexts`)
