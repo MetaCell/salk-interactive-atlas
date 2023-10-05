@@ -186,7 +186,9 @@ export const Header = ({
     };
 
     React.useEffect(() => {
-        fetchExperiment().catch(console.error);
+        if (experimentId){
+            fetchExperiment().catch(console.error);
+        }
     }, [experimentId])
 
     const headerText =
@@ -263,14 +265,14 @@ export const Header = ({
                         />
                     </a>
                 </Box>
-                {experimentId && (<Box>
+                <Box>
                     <Breadcrumbs aria-label="breadcrumb">
                         <Link color="inherit" href="/">
                             My experiments
                         </Link>
                         <Typography color="textPrimary">{fetchedExperiment?.name}</Typography>
                     </Breadcrumbs>
-                </Box>)}
+                </Box>
                 <Box>
                     {headerText}
                 </Box>
