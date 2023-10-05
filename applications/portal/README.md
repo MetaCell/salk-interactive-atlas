@@ -35,6 +35,15 @@ sudo ln -s "$NVM_DIR/versions/node/$(nvm version)/bin/npm" "/usr/local/bin/npm"
 The local webpack dev server uses [keycloak_dev.json](src/assets/keycloak_dev.json) for connecting to the keycloak accounts system.
 Please check this file and change the domain according to your setup.
 
+
+### Generate SALK Cord images
+
+To generate SALK Cord images, once all the requirements for backend is installed, activate the virtual environment. And run the following command to generate the Salk Cord images .
+```
+./generate_images.sh
+```
+
+
 ### Self Signed Certificates
 
 When running on a local minikube please make sure you import the generated cacert certificates. The certificate file is most likely to be found here ./deployment/helm/resources/certs/cacert.crt

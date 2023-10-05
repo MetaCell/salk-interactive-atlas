@@ -26,10 +26,6 @@ pip install -r requirements.txt
 ```
 
 
-Generate SALK Cord images 
-```
-./generate_images.sh
-```
 
 ## Deploy to a K8s cluster
 
