@@ -121,9 +121,11 @@ export const Header = ({
     const menuAnchorRef = React.useRef(null);
 
 
-    const fetchExperiment = async () => {
-        const response = await api.retrieveExperiment(experimentId)
-        setFetchedExperiment(response.data)
+    const fetchExperiment = async (id: string) => {
+        if (id){
+            const response = await api.retrieveExperiment(id)
+            setFetchedExperiment(response.data)
+        }
     }
 
     /**
@@ -186,9 +188,7 @@ export const Header = ({
     };
 
     React.useEffect(() => {
-        if (experimentId){
-            fetchExperiment().catch(console.error);
-        }
+        fetchExperiment(experimentId).catch(console.error);
     }, [experimentId])
 
     const headerText =
@@ -265,14 +265,14 @@ export const Header = ({
                         />
                     </a>
                 </Box>
-                <Box>
+                {experimentId && (<Box>
                     <Breadcrumbs aria-label="breadcrumb">
                         <Link color="inherit" href="/">
                             My experiments
                         </Link>
                         <Typography color="textPrimary">{fetchedExperiment?.name}</Typography>
                     </Breadcrumbs>
-                </Box>
+                </Box>)}
                 <Box>
                     {headerText}
                 </Box>
