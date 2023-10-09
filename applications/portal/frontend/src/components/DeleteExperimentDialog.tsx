@@ -1,9 +1,6 @@
 import * as React from "react";
-import { Button, Dialog, DialogActions, DialogContent, DialogTitle, IconButton } from "@material-ui/core";
-import CLOSE from "../assets/images/icons/close.svg";
-import { Modal as IModal } from "../types/modal";
 import { Box, makeStyles, Typography } from "@material-ui/core";
-import { headerBorderColor, headerButtonBorderColor, secondaryColor, switchActiveColor } from "../theme";
+import { headerButtonBorderColor, secondaryColor } from "../theme";
 import workspaceService from "../service/WorkspaceService";
 import DeleteDialog from "./common/ExperimentDialogs/DeleteModal";
 

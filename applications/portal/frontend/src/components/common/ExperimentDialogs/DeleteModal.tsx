@@ -1,8 +1,7 @@
 import * as React from "react";
-import { Button, Dialog, DialogActions, DialogContent, DialogTitle, IconButton } from "@material-ui/core";
+import { Button, Dialog, DialogActions, DialogContent, makeStyles, Typography, DialogTitle, IconButton } from "@material-ui/core";
 import CLOSE from "../../../assets/images/icons/close.svg";
 import { Modal as IModal } from "../../../types/modal";
-import { makeStyles, Typography } from "@material-ui/core";
 
 const useStyles = makeStyles(() => ({
   customButton: {
