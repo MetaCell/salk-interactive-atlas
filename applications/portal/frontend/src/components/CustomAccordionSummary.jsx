@@ -23,7 +23,7 @@ const CustomAccordionSummary = ({
     data,
     pId,
     isExpanded,
-    populations,
+    population,
     isParent,
     isChild,
     handlePopulationSwitch,
@@ -36,9 +36,6 @@ const CustomAccordionSummary = ({
 
 
     const handlePopoverClick = (event, id) => {
-        if (!hasEditPermission) {
-            return
-        }
         setPopoverAnchorEl(event.currentTarget);
         setSelectedPopoverId(id);
     };
@@ -49,7 +46,7 @@ const CustomAccordionSummary = ({
     };
 
     const getRGBAColor = (pId) => {
-        const { color, opacity } = populations[pId]
+        const { color, opacity } = population
         return getRGBAFromHexAlpha(color, opacity)
     }
 
@@ -80,10 +77,10 @@ const CustomAccordionSummary = ({
                 <Box style={{ backgroundColor: getRGBAString(getRGBAColor(pId)) }}
                     component="span"
                     className='square' />
-                {hasEditPermission && populations[pId].status === POPULATION_FINISHED_STATE &&
+                {hasEditPermission && population.status === POPULATION_FINISHED_STATE &&
                     <ArrowDropDownIcon fontSize='small' style={{ opacity: POPULATION_ICONS_OPACITY }} />}
             </span>
-            {hasEditPermission && populations[pId].status === POPULATION_FINISHED_STATE &&
+            {hasEditPermission && population.status === POPULATION_FINISHED_STATE &&
                 <Popover
                     open={pId === selectedPopoverId}
                     anchorEl={popoverAnchorEl}
@@ -102,12 +99,12 @@ const CustomAccordionSummary = ({
             <FormControlLabel
                 className={'population-label'}
                 key={pId} control={<Switch />}
-                label={<PopulationLabel population={populations[pId]} />}
+                label={<PopulationLabel population={population} />}
                 labelPlacement="start"
                 onChange={() => handlePopulationSwitch(pId)}
-                checked={populations[pId].selected}
-                style={populationTextStyle(populations[pId].status !== POPULATION_FINISHED_STATE)}
-                disabled={populations[pId].status !== POPULATION_FINISHED_STATE}
+                checked={population.pId}
+                style={populationTextStyle(population.status !== POPULATION_FINISHED_STATE)}
+                disabled={population.status !== POPULATION_FINISHED_STATE}
             />
         </AccordionSummary>
     )

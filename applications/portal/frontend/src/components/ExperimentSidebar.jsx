@@ -332,7 +332,7 @@ const ExperimentSidebar = ({
                                         <CustomAccordionSummary
                                             pId={pId}
                                             isExpanded={expanded}
-                                            populations={populations}
+                                            population={populations[pId]}
                                             isParent={populations[pId].children !== undefined}
                                             isChild={false}
                                             handlePopulationSwitch={handlePopulationSwitch}
@@ -352,7 +352,7 @@ const ExperimentSidebar = ({
                                                                     isExpanded={false}
                                                                     isParent={false}
                                                                     isChild={true}
-                                                                    populations={populations[pId].children}
+                                                                    population={populations[pId].children[nestedPId]}
                                                                     handlePopulationSwitch={handlePopulationSwitch}
                                                                     handlePopulationColorChange={handlePopulationColorChange}
                                                                     hasEditPermission={hasEditPermission}
