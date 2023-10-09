@@ -66,8 +66,14 @@ export const CodeBranchIcon = (props: SvgIconProps) => (
     </SvgIcon>
 );
 
-export const TailIcon = (props: SvgIconProps) => (
-    <SvgIcon width="9" height="32" viewBox="0 0 9 32" fill="none">
+export const TrailIcon = (props: SvgIconProps) => (
+    <SvgIcon width="9" height="32" viewBox="0 0 9 32" fill="none" {...props}>
         <path d="M9.00001 16V16C4.58173 16 1.00001 12.4183 1.00001 8L1.00001 0L1 32" fill="none" stroke="#505050" />
     </SvgIcon>
-)
+);
+
+export const TrailEndIcon = (props: SvgIconProps) => (
+    <SvgIcon width="9" height="28" viewBox="0 0 9 28" fill="none" {...props}>
+        <path d="M1 0L1 7.99988C1 12.4182 4.58172 15.9999 9 15.9999V15.9999" fill="none" stroke="#505050" />
+    </SvgIcon>
+);

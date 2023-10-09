@@ -13,34 +13,23 @@ import {
     RadioGroup,
     Radio,
     Button,
-    Popover,
     Tooltip
 } from '@material-ui/core';
 
-import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown';
 import { canvasIconColor, headerBg, headerBorderColor } from "../theme";
 import TOGGLE from "../assets/images/icons/toggle.svg";
 import ATLAS from "../assets/images/icons/atlas.svg";
 import ADD from "../assets/images/icons/add.svg";
 import UP_ICON from "../assets/images/icons/up.svg";
-import TRAIL_ICON from "../assets/images/icons/trail_icon.svg";
-import TRAIL_END_ICON from "../assets/images/icons/trail_end_icon.svg";
 import POPULATION from "../assets/images/icons/population.svg";
+import DOWNLOAD_ICON from "../assets/images/icons/download_icon.svg";
 import { atlasMap, POPULATION_FINISHED_STATE } from "../utilities/constants";
-import { getRGBAFromHexAlpha, getRGBAString } from "../utilities/functions";
-import ColorPicker from "./common/ColorPicker";
-import SwitchLabel from "./common/SwitchLabel";
-import { faDownload } from '@fortawesome/free-solid-svg-icons';
-import workspaceService from "../service/WorkspaceService";
-import { useParams } from "react-router";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { downloadFile } from "../utils";
-import { TailIcon } from './icons';
+import CustomAccordionSummary from './CustomAccordionSummary';
 
 const useStyles = makeStyles({
     sidebar: {
         height: 'calc(100vh - 3rem)',
-        width: '15rem',
+        width: '15.313rem',
         flexShrink: 0,
         borderRight: `0.0625rem solid ${headerBorderColor}`,
         background: headerBg,
@@ -58,7 +47,7 @@ const useStyles = makeStyles({
         },
 
         '& .sidebar-header': {
-            padding: '4px 4px 4px 1rem',
+            padding: '0.25rem 0.25rem 0.25rem 1rem',
             background: headerBorderColor,
             position: 'sticky',
             top: 0,
@@ -74,6 +63,12 @@ const useStyles = makeStyles({
             lineHeight: '0.938rem',
             fontWeight: 400,
             fontSize: '0.75rem',
+            '& .trail-icon:path': {
+                stroke: 'red'
+            },
+            '& .nav_control': {
+                display: 'none'
+            },
             '& .MuiAccordion-root': {
                 '&:before': {
                     display: 'none !important'
@@ -81,24 +76,52 @@ const useStyles = makeStyles({
             },
             '& .MuiAccordionSummary-expandIcon': {
                 padding: 0,
-                marginRight: '20px'
+                marginRight: '1.188rem'
+            },
+            '& .ellipsis': {
+                textOverflow: 'ellipsis',
+                display: 'inline-block',
+                whiteSpace: 'nowrap',
+                overflow: 'hidden',
+                width: '100%'
             },
             '& .MuiAccordionSummary-root': {
                 padding: '0 !important',
                 flexDirection: 'row-reverse',
-                padding: '8px 16px 8px 48px',
+                padding: '0.5rem 1rem 0.5rem 3rem',
+                '&:hover': {
+                    background: 'rgba(255, 255, 255, 0.05)',
+                    '& .nav_control': {
+                        display: 'block'
+                    },
+                    '& .ellipsis': {
+                        width: '5.25rem'
+                    }
+                },
                 '&.nested': {
-                    padding: '8px 16px 8px 12px',
+                    padding: '0.5rem 1rem 0.5rem 0.75rem',
                 },
                 '&.nested_child_element': {
-                    padding: '0px 16px 0px 20px'
+                    padding: '0 1rem 0 1.1875rem',
+                    '& .MuiAccordionSummary-expandIcon.Mui-expanded': {
+                        transform: 'none'
+                    },
+                    '&:hover': {
+                        '& .trail-icon path': {
+                            stroke: '#7B61FF'
+                        }
+                    },
+                    '& .trail-icon': {
+                        width: 'auto',
+                        height: 'auto'
+                    }
                 }
             },
             '& .MuiCollapse-root': {
                 borderTop: 'none'
             },
-            '& .MuiDialogActions-root': {
-                padding: '1rem 1rem 1rem 0.75rem'
+            '& .MuiAccordionDetails-root': {
+                paddingBottom: 0
             },
             '& .MuiFormControlLabel-root': {
                 padding: 0
@@ -111,7 +134,7 @@ const useStyles = makeStyles({
             justifyContent: 'space-between',
             lineHeight: '0.938rem',
             fontWeight: 400,
-            fontSize: '0.75rem',
+            fontSize: '0.75rem'
         },
 
         '& .population-color': {
@@ -122,6 +145,9 @@ const useStyles = makeStyles({
             fontSize: '0.75rem',
         },
 
+        '& .population-icon': {
+            padding: '10px'
+        },
         '& .square': {
             width: '0.75rem',
             height: '0.75rem',
@@ -134,7 +160,7 @@ const useStyles = makeStyles({
         },
 
         '& .MuiFormControlLabel-root': {
-            padding: '8px 16px 8px 48px',
+            padding: '0.5rem 1rem 0.5rem 3rem',
 
             '&.bold': {
                 backgroundColor: headerBg,
@@ -169,7 +195,7 @@ const useStyles = makeStyles({
             '&:hover': {
                 backgroundColor: headerBg,
             },
-        },
+        }
     },
 
     shrink: {
@@ -198,9 +224,6 @@ const useStyles = makeStyles({
     }
 });
 
-
-const POPULATION_ICONS_OPACITY = 0.4
-
 const ExperimentSidebar = ({
     selectedAtlas,
     // populations,
@@ -212,35 +235,11 @@ const ExperimentSidebar = ({
 }) => {
     const classes = useStyles();
     const [shrink, setShrink] = useState(false);
-    const [popoverAnchorEl, setPopoverAnchorEl] = React.useState(null);
-    const [selectedPopoverId, setSelectedPopoverId] = React.useState(null);
-    const params = useParams();
 
-
-    const api = workspaceService.getApi()
-
-
-    const handlePopoverClick = (event, id) => {
-        if (!hasEditPermission) {
-            return
-        }
-        setPopoverAnchorEl(event.currentTarget);
-        setSelectedPopoverId(id);
-    };
-
-    const handlePopoverClose = () => {
-        setPopoverAnchorEl(null);
-        setSelectedPopoverId(null);
-    };
 
     const toggleSidebar = () => {
         setShrink((prevState) => !prevState)
     };
-
-    const getRGBAColor = (pId) => {
-        const { color, opacity } = populations[pId]
-        return getRGBAFromHexAlpha(color, opacity)
-    }
 
     const areAllPopulationsSelected = () => {
         return Object.keys(populations)
@@ -252,37 +251,13 @@ const ExperimentSidebar = ({
         (populationID) => populations[populationID].selected
     );
 
-
-    const sidebarClass = `${classes.sidebar} scrollbar ${shrink ? `${classes.shrink}` : ``}`;
-    const PopulationLabel = ({ population }) => {
-        let labelText = population.name;
-        if (population.status != POPULATION_FINISHED_STATE) {
-            labelText += `- ${population.status}`
-        }
-        return (
-            <SwitchLabel label={labelText} />
-        )
-    }
-    const populationTextStyle = (disabled) => hasEditPermission && !disabled ? {} : { marginLeft: "8px" }
     const downloadTooltipTitle = activePopulations.length
         ? 'Download active populations data'
         : 'No active populations to download';
 
+    const [expanded, setExpanded] = React.useState(false);
+    const sidebarClass = `${classes.sidebar} scrollbar ${shrink ? `${classes.shrink}` : ``}`;
 
-    const downloadPopulationsData = async () => {
-        try {
-            const response = await api.downloadPopulationsExperiment(params.id, activePopulations.join(','), {
-                responseType: 'arraybuffer',
-            })
-            downloadFile(response)
-        } catch (error) {
-            console.error('Error while fetching the file:', error);
-        }
-
-
-    }
-    const lastElement = populations[100].children.length
-    console.log("last el: ", lastElement)
     return (
         <Box className={sidebarClass}>
             <Box className="sidebar-header" display="flex" alignItems="center">
@@ -300,10 +275,10 @@ const ExperimentSidebar = ({
                         <AccordionSummary
                             expandIcon={<img src={UP_ICON} alt="" />}
                         >
-                            <IconButton>
+                            <IconButton className='population-icon'>
                                 <img src={ATLAS} alt="" />
                             </IconButton>
-                            <Typography sx={{ ml: '4px' }}>
+                            <Typography>
                                 Atlas
                             </Typography>
                         </AccordionSummary>
@@ -331,10 +306,10 @@ const ExperimentSidebar = ({
                         <AccordionSummary
                             expandIcon={<img src={UP_ICON} alt="" />}
                         >
-                            <IconButton>
+                            <IconButton className='population-icon'>
                                 <img src={POPULATION} alt="" />
                             </IconButton>
-                            <Typography sx={{ ml: '4px' }}>
+                            <Typography>
                                 Experimental Populations
                             </Typography>
                         </AccordionSummary>
@@ -351,69 +326,37 @@ const ExperimentSidebar = ({
                             />
                             {Object.keys(populations).map(pId =>
                                 <span className='population-entry' key={pId}>
-                                    <Accordion elevation={0}>
-                                        <AccordionSummary expandIcon={populations[pId].children !== undefined && <img src={UP_ICON} alt="" />} className={populations[pId].children !== undefined && 'nested'}>
-                                            <span className='population-color'
-                                                onClick={(event) => handlePopoverClick(event, pId)}>
-                                                <Box style={{ backgroundColor: getRGBAString(getRGBAColor(pId)) }}
-                                                    component="span"
-                                                    className='square' />
-                                                {hasEditPermission && populations[pId].status === POPULATION_FINISHED_STATE &&
-                                                    <ArrowDropDownIcon fontSize='small'
-                                                        style={{ opacity: POPULATION_ICONS_OPACITY }} />}
-                                            </span>
-                                            {hasEditPermission && populations[pId].status === POPULATION_FINISHED_STATE &&
-                                                <Popover
-                                                    open={pId === selectedPopoverId}
-                                                    anchorEl={popoverAnchorEl}
-                                                    onClose={handlePopoverClose}
-                                                    anchorOrigin={{
-                                                        vertical: 'bottom',
-                                                        horizontal: 'left',
-                                                    }}
-                                                >
-                                                    <ColorPicker selectedColor={getRGBAColor(pId)} handleColorChange={
-                                                        (color, opacity) => handlePopulationColorChange(pId, color, opacity)
-                                                    } />
-                                                </Popover>
-                                            }
-                                            <FormControlLabel
-                                                className={'population-label nested'}
-                                                key={pId} control={<Switch />}
-                                                label={<PopulationLabel population={populations[pId]} />}
-                                                labelPlacement="start"
-                                                onChange={() => handlePopulationSwitch(pId)}
-                                                checked={populations[pId].selected}
-                                                style={populationTextStyle(populations[pId].status !== POPULATION_FINISHED_STATE)}
-                                                disabled={populations[pId].status !== POPULATION_FINISHED_STATE}
-                                            />
-                                        </AccordionSummary>
+                                    <Accordion elevation={0} onChange={(e, expanded) => {
+                                        setExpanded(expanded)
+                                    }}>
+                                        <CustomAccordionSummary
+                                            pId={pId}
+                                            isExpanded={expanded}
+                                            populations={populations}
+                                            isParent={populations[pId].children !== undefined}
+                                            isChild={false}
+                                            handlePopulationSwitch={handlePopulationSwitch}
+                                            handlePopulationColorChange={handlePopulationColorChange}
+                                            hasEditPermission={hasEditPermission}
+                                        />
                                         {
                                             populations[pId].children !== undefined && <AccordionDetails>
                                                 {
-                                                    Object.keys(populations[pId].children).map((nestedPId, index, array) =>
+                                                    Object.keys(populations[pId].children).map((nestedPId, index, arr) =>
                                                         <span className='population-entry' key={nestedPId}>
                                                             <Accordion elevation={0}>
-                                                                <AccordionSummary
-                                                                    className='nested_child_element'
-                                                                    expandIcon={index === array.length - 1 ? <img src={TRAIL_END_ICON} alt="" /> : <img src={TRAIL_ICON} alt="" />}
-                                                                >
-                                                                    <span className='population-color'>
-                                                                        <Box
-                                                                            style={{ backgroundColor: getRGBAString(getRGBAColor(pId)) }}
-                                                                            component="span"
-                                                                            className='square'
-                                                                        />
-                                                                    </span>
-                                                                    <FormControlLabel
-                                                                        className={'population-label'}
-                                                                        key={nestedPId} control={<Switch />}
-                                                                        label={"Label"}
-                                                                        labelPlacement="start"
-                                                                        style={populationTextStyle(populations[pId].status !== POPULATION_FINISHED_STATE)}
-                                                                        disabled={populations[pId].status !== POPULATION_FINISHED_STATE}
-                                                                    />
-                                                                </AccordionSummary>
+                                                                <CustomAccordionSummary
+                                                                    id={index}
+                                                                    data={arr}
+                                                                    pId={nestedPId}
+                                                                    isExpanded={false}
+                                                                    isParent={false}
+                                                                    isChild={true}
+                                                                    populations={populations[pId].children}
+                                                                    handlePopulationSwitch={handlePopulationSwitch}
+                                                                    handlePopulationColorChange={handlePopulationColorChange}
+                                                                    hasEditPermission={hasEditPermission}
+                                                                />
                                                             </Accordion>
                                                         </span>
                                                     )
@@ -423,19 +366,17 @@ const ExperimentSidebar = ({
                                     </Accordion>
                                 </span>
                             )}
-                            {/* <Tooltip title={downloadTooltipTitle}>
-                                <span className={classes.downloadButton}>
-                                    <IconButton
-                                        edge="end"
-                                        color="inherit"
-                                        onClick={() => downloadPopulationsData()}
-                                        disabled={!activePopulations.length}
-                                        style={{ fontSize: '1rem' }}
-                                    >
-                                        <FontAwesomeIcon icon={faDownload} />
-                                    </IconButton>
-                                </span>
-                            </Tooltip> */}
+                            <Tooltip title={downloadTooltipTitle}>
+                                <Button
+                                    disableRipple
+                                    onClick={() => downloadPopulationsData()}
+                                    disabled={!activePopulations.length}
+                                    style={{ fontWeight: 400 }}
+                                >
+                                    Download actives
+                                    <img src={DOWNLOAD_ICON} alt="" />
+                                </Button>
+                            </Tooltip>
                         </AccordionDetails>
                     </Accordion>
                 </>
@@ -468,6 +409,7 @@ const populations = {
                 selected: false,
                 status: "finished",
                 cells: [],
+                children: undefined
             },
             102: {
                 id: 102,
@@ -479,6 +421,7 @@ const populations = {
                 selected: false,
                 status: "finished",
                 cells: [],
+                children: undefined
             },
             103: {
                 id: 103,
@@ -490,6 +433,7 @@ const populations = {
                 selected: false,
                 status: "finished",
                 cells: [],
+                children: undefined
             }
         }
     },
