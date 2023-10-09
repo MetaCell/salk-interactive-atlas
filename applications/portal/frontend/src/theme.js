@@ -101,7 +101,7 @@ const theme = {
       default: bgDarker,
       paper: bgRegular
     },
-    button: { main: primaryColor },
+    button: { main: primaryColor, danger: '#F24822' },
   },
   typography: {
     fontFamily: font,
@@ -246,7 +246,6 @@ const theme = {
             backgroundColor: switchActiveColor,
           },
       },
-
       outlinedPrimary: {
         borderColor: secondaryColor,
         color: secondaryColor,
