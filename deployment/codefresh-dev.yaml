@@ -146,27 +146,6 @@ steps:
                 == true
               forceNoCache: includes('${{PORTAL_TAG_FORCE_BUILD}}', '{{PORTAL_TAG_FORCE_BUILD}}')
                 == false
-      portal-frontend-geppetto-meta:
-        type: build
-        stage: build
-        dockerfile: Dockerfile
-        registry: '${{CODEFRESH_REGISTRY}}'
-        buildkit: true
-        build_arguments:
-        - DOMAIN=${{DOMAIN}}
-        - NOCACHE=${{CF_BUILD_ID}}
-        - REGISTRY=${{REGISTRY}}/salk/
-        image_name: salk/portal-frontend-geppetto-meta
-        title: Portal frontend geppetto meta
-        working_directory: ./applications/portal/frontend/geppetto-meta
-        tag: '${{PORTAL_FRONTEND_GEPPETTO_META_TAG}}'
-        when:
-          condition:
-            any:
-              buildDoesNotExist: includes('${{PORTAL_FRONTEND_GEPPETTO_META_TAG_EXISTS}}',
-                '{{PORTAL_FRONTEND_GEPPETTO_META_TAG_EXISTS}}') == true
-              forceNoCache: includes('${{PORTAL_FRONTEND_GEPPETTO_META_TAG_FORCE_BUILD}}',
-                '{{PORTAL_FRONTEND_GEPPETTO_META_TAG_FORCE_BUILD}}') == false
   deployment:
     stage: deploy
     type: helm
@@ -224,14 +203,6 @@ steps:
         type: push
         title: Portal
         candidate: '${{REGISTRY}}/salk/portal:${{PORTAL_TAG}}'
-        tags:
-        - '${{DEPLOYMENT_PUBLISH_TAG}}'
-        registry: '${{REGISTRY_PUBLISH_URL}}'
-      publish_portal-frontend-geppetto-meta:
-        stage: publish
-        type: push
-        title: Portal frontend geppetto meta
-        candidate: '${{REGISTRY}}/salk/portal-frontend-geppetto-meta:${{PORTAL_FRONTEND_GEPPETTO_META_TAG}}'
         tags:
         - '${{DEPLOYMENT_PUBLISH_TAG}}'
         registry: '${{REGISTRY_PUBLISH_URL}}'
