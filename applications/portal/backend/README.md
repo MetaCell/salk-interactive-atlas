@@ -75,7 +75,7 @@ for local development you need to do the migration via executing the django mana
 
 ```
 cd applications/workspaces/backend
-export CH_CURRENT_APP_NAME=workspaces # this sets the current app for the cloudharness common library
+export CH_CURRENT_APP_NAME=portal # this sets the current app for the cloudharness common library
 
 python3 manage.py migrate
 

@@ -2,7 +2,7 @@
 
 # Setup script for creating a minikube instance and build the needed applications
 
-minikube start --profile salk
+minikube start --profile salk --memory 8000 --cpus 4 --disk-size 60g --driver=docker
 
 minikube --profile salk addons enable ingress
 minikube --profile salk addons enable metrics-server
@@ -15,7 +15,7 @@ kubectl create rolebinding salk-admin-default --clusterrole=admin --serviceaccou
 eval $(minikube --profile salk docker-env)
 kubectl config use-context salk
 
-harness-deployment cloud-harness . -l -u -dtls -N -d salk.local -n salk -e local -i portal
+harness-deployment cloud-harness . -l -d salk.local -dtls -n salk -e dev -i portal
 #cp deployment/helm/values.yaml /opt/cloudharness/resources/allvalues.yaml
 
 kubectl config use-context salk

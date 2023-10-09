@@ -7,3 +7,5 @@ SQLAlchemy<2
 psycopg2-binary==2.9.3
 uritemplate==4.1.1
 cachetools==5.2.0
+matplotlib==3.8.0
+scikit-image==0.21.0
