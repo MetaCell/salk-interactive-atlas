@@ -134,3 +134,70 @@ export function dictZip(keys: string[], values: any[]) {
     }
     return keys.reduce((o, currentValue, currentIndex) => ({...o, [currentValue]: values[currentIndex]}), {})
 }
+
+export const addPopulationsChildren = (populations: any) => {
+    if (populations === undefined) {
+        return
+    }
+    const newPopulation = {} as any;
+    // Creating another object and check if the parentName is already in the object
+    //  then add it to that one... if not create a new one in newPopulation
+    // const populationValues = Object.values(populations);
+    const populationCheck = {} as any;
+    const populationKeys = Object.keys(populations);
+    populationKeys.forEach((key) => {
+        const population = populations[key];
+        const name = population.name;
+        const nameSplit = name.split('@');
+        if (nameSplit.length === 1) {
+            newPopulation[name] = population;
+            newPopulation[name].children = {
+                [population.id]: {
+                    id: population.id,
+                    name: 'unknown',
+                    color: population.color,
+                    experiment: population.experiment,
+                    atlas: population.atlas,
+                    cells: population.cells,
+                    opacity: population.opacity,
+                    status: population.status
+                }
+            }
+            populationCheck[name] = true;
+        } else {
+            const parentName = nameSplit[0];
+            const childName = nameSplit[1];
+            // if (populationCheck[parentName] === undefined) {
+
+            if (newPopulation[parentName] === undefined) {
+                newPopulation[parentName] = {
+                    ...population,
+                    name: parentName,
+                    children: {
+                        [key]: {
+                            ...population,
+                            name: childName
+                        }
+                    }
+                }
+            } else {
+                newPopulation[parentName].children = {
+                    ...newPopulation[parentName].children,
+                    [key]: {
+                        ...population,
+                        name: childName
+                    }
+                }
+            }
+        }
+    });
+    // Go through it again and change the keys to its id
+    const updatedPopulation = {} as any;
+    Object.keys(newPopulation).forEach((key) => {
+        const population = newPopulation[key];
+        const newKey = population.id;
+        updatedPopulation[newKey] = { ...population };
+    });
+    console.log(updatedPopulation);
+    return newPopulation;
+}

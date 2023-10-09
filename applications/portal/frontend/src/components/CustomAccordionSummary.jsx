@@ -22,6 +22,7 @@ const CustomAccordionSummary = ({
     id,
     data,
     pId,
+    individualPopulation,
     isExpanded,
     populations,
     isParent,
@@ -102,7 +103,7 @@ const CustomAccordionSummary = ({
             <FormControlLabel
                 className={'population-label'}
                 key={pId} control={<Switch />}
-                label={<PopulationLabel population={populations[pId]} />}
+                label={<PopulationLabel population={individualPopulation} />}
                 labelPlacement="start"
                 onChange={() => handlePopulationSwitch(pId)}
                 checked={populations[pId].selected}

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import {
     Box,
@@ -25,6 +25,7 @@ import POPULATION from "../assets/images/icons/population.svg";
 import DOWNLOAD_ICON from "../assets/images/icons/download_icon.svg";
 import { atlasMap, POPULATION_FINISHED_STATE } from "../utilities/constants";
 import CustomAccordionSummary from './CustomAccordionSummary';
+import { addPopulationsChildren } from '../utilities/functions';
 
 const useStyles = makeStyles({
     sidebar: {
@@ -226,7 +227,7 @@ const useStyles = makeStyles({
 
 const ExperimentSidebar = ({
     selectedAtlas,
-    // populations,
+    populations,
     handleAtlasChange,
     handlePopulationSwitch,
     handleShowAllPopulations,
@@ -257,6 +258,15 @@ const ExperimentSidebar = ({
 
     const [expanded, setExpanded] = React.useState(false);
     const sidebarClass = `${classes.sidebar} scrollbar ${shrink ? `${classes.shrink}` : ``}`;
+
+
+    const [populationWithChildren, setPopulationWithChildren] = useState({});
+    useEffect(() => {
+        console.log('populations activated');
+        setPopulationWithChildren(addPopulationsChildren(populations));
+        // addPopulationsChildren(populations)
+        console.log('populations', populations);
+    }, [populations]);
 
     return (
         <Box className={sidebarClass}>
@@ -324,35 +334,37 @@ const ExperimentSidebar = ({
                                 onChange={handleShowAllPopulations}
                                 checked={areAllPopulationsSelected()}
                             />
-                            {Object.keys(populations).map(pId =>
+                            {Object.keys(populationWithChildren).length > 0 && Object.keys(populationWithChildren).map(pId => 
                                 <span className='population-entry' key={pId}>
                                     <Accordion elevation={0} onChange={(e, expanded) => {
                                         setExpanded(expanded)
                                     }}>
                                         <CustomAccordionSummary
-                                            pId={pId}
+                                            pId={populationWithChildren[pId].id}
                                             isExpanded={expanded}
                                             populations={populations}
-                                            isParent={populations[pId].children !== undefined}
+                                            individualPopulation={populationWithChildren[pId]}
+                                            isParent={populationWithChildren[pId]?.children ? true : false}
                                             isChild={false}
                                             handlePopulationSwitch={handlePopulationSwitch}
                                             handlePopulationColorChange={handlePopulationColorChange}
                                             hasEditPermission={hasEditPermission}
                                         />
                                         {
-                                            populations[pId].children !== undefined && <AccordionDetails>
+                                            populationWithChildren[pId]?.children && <AccordionDetails>
                                                 {
-                                                    Object.keys(populations[pId].children).map((nestedPId, index, arr) =>
+                                                    Object.keys(populationWithChildren[pId]?.children).map((nestedPId, index, arr) =>
                                                         <span className='population-entry' key={nestedPId}>
                                                             <Accordion elevation={0}>
                                                                 <CustomAccordionSummary
                                                                     id={index}
                                                                     data={arr}
-                                                                    pId={nestedPId}
+                                                                    pId={populationWithChildren[pId]?.children[nestedPId].id}
+                                                                    individualPopulation={populationWithChildren[pId]?.children[nestedPId]}
                                                                     isExpanded={false}
                                                                     isParent={false}
                                                                     isChild={true}
-                                                                    populations={populations[pId].children}
+                                                                    populations={populations}
                                                                     handlePopulationSwitch={handlePopulationSwitch}
                                                                     handlePopulationColorChange={handlePopulationColorChange}
                                                                     hasEditPermission={hasEditPermission}
@@ -386,92 +398,3 @@ const ExperimentSidebar = ({
 };
 
 export default ExperimentSidebar;
-
-const populations = {
-    100: {
-        id: 100,
-        name: 'V1',
-        color: '#9FEE9A',
-        experiment: 133,
-        atlas: 'salk_cord_10um',
-        opacity: 1,
-        selected: false,
-        status: "finished",
-        cells: [],
-        children: {
-            101: {
-                id: 100,
-                name: 'MafA',
-                color: '#9FEE9A',
-                experiment: 133,
-                atlas: 'salk_cord_10um',
-                opacity: 1,
-                selected: false,
-                status: "finished",
-                cells: [],
-                children: undefined
-            },
-            102: {
-                id: 102,
-                name: 'ab',
-                color: '#9FEE9A',
-                experiment: 133,
-                atlas: 'salk_cord_10um',
-                opacity: 1,
-                selected: false,
-                status: "finished",
-                cells: [],
-                children: undefined
-            },
-            103: {
-                id: 103,
-                name: 'Lnz',
-                color: '#9FEE9A',
-                experiment: 133,
-                atlas: 'salk_cord_10um',
-                opacity: 1,
-                selected: false,
-                status: "finished",
-                cells: [],
-                children: undefined
-            }
-        }
-    },
-    200: {
-        id: 200,
-        name: 'Population XYZ',
-        color: '#44C9C9',
-        experiment: 133,
-        atlas: 'salk_cord_10um',
-        opacity: 1,
-        selected: false,
-        status: "finished",
-        cells: [],
-        children: undefined
-    },
-    300: {
-        id: 300,
-        name: 'Population 123',
-        color: '#9B3E8B',
-        experiment: 133,
-        atlas: 'salk_cord_10um',
-        opacity: 1,
-        selected: false,
-        status: "finished",
-        cells: [],
-        children: undefined
-    },
-    400: {
-        id: 400,
-        name: 'Population 789',
-        color: '#C99444',
-        experiment: 133,
-        atlas: 'salk_cord_10um',
-        opacity: 1,
-        selected: false,
-        status: "finished",
-        cells: [],
-        children: undefined
-    }
-}
-
