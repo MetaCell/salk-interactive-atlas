@@ -54,15 +54,15 @@ export const DeleteExperimentDialog = (props: any) => {
   return (
     <DeleteDialog open={Boolean(open)}
       handleClose={handleClose}
-      title="Delete this experiment"
+      title="Are you sure you want to delete the experiment?"
       dialogActions={true}
       actionText="Delete"
       handleAction={() => deleteExperiment(experimentId)}
     >
       <Box display="flex" className={classes.delete}>
         <Box className="details">
-          <Typography>It will also be deleted from workspaces where it has been shared.
-            Duplicated experiments will not be affected. </Typography>
+          <Typography>The experiment and all the data will be permanently deleted. It will also be deleted from workspaces where it has been shared.
+          </Typography>
         </Box>
 
       </Box>
