@@ -5,7 +5,7 @@ import { Modal as IModal } from "../types/modal";
 import { Box, makeStyles, Typography } from "@material-ui/core";
 import { headerBorderColor, headerButtonBorderColor, secondaryColor, switchActiveColor } from "../theme";
 import workspaceService from "../service/WorkspaceService";
-import DeleteDialog from "./common/ExperimentDialogs/DeleteDialog";
+import DeleteDialog from "./common/ExperimentDialogs/DeleteModal";
 
 
 const useStyles = makeStyles(() => ({
