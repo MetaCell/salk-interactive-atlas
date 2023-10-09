@@ -330,7 +330,6 @@ const ExperimentSidebar = ({
                                         setExpanded(expanded)
                                     }}>
                                         <CustomAccordionSummary
-                                            pId={pId}
                                             isExpanded={expanded}
                                             population={populations[pId]}
                                             isParent={populations[pId].children !== undefined}
@@ -348,7 +347,6 @@ const ExperimentSidebar = ({
                                                                 <CustomAccordionSummary
                                                                     id={index}
                                                                     data={arr}
-                                                                    pId={nestedPId}
                                                                     isExpanded={false}
                                                                     isParent={false}
                                                                     isChild={true}

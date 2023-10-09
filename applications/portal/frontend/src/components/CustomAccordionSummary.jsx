@@ -21,7 +21,6 @@ const POPULATION_ICONS_OPACITY = 0.4
 const CustomAccordionSummary = ({
     id,
     data,
-    pId,
     isExpanded,
     population,
     isParent,
@@ -45,7 +44,7 @@ const CustomAccordionSummary = ({
         setSelectedPopoverId(null);
     };
 
-    const getRGBAColor = (pId) => {
+    const getRGBAColor = () => {
         const { color, opacity } = population
         return getRGBAFromHexAlpha(color, opacity)
     }
@@ -73,8 +72,8 @@ const CustomAccordionSummary = ({
             }
             className={isParent ? 'nested' : isChild ? 'nested_child_element' : ''}
         >
-            <span className='population-color' onClick={(event) => handlePopoverClick(event, pId)}>
-                <Box style={{ backgroundColor: getRGBAString(getRGBAColor(pId)) }}
+            <span className='population-color' onClick={(event) => handlePopoverClick(event, population.pId)}>
+                <Box style={{ backgroundColor: getRGBAString(getRGBAColor(population.pId)) }}
                     component="span"
                     className='square' />
                 {hasEditPermission && population.status === POPULATION_FINISHED_STATE &&
@@ -82,26 +81,26 @@ const CustomAccordionSummary = ({
             </span>
             {hasEditPermission && population.status === POPULATION_FINISHED_STATE &&
                 <Popover
-                    open={pId === selectedPopoverId}
+                    open={population.pId === selectedPopoverId}
                     anchorEl={popoverAnchorEl}
                     onClose={handlePopoverClose}
                     anchorOrigin={{
                         vertical: 'bottom',
-                        horizontal: 'left',
+                        horizontal: 'left'
                     }}
                 >
-                    <ColorPicker selectedColor={getRGBAColor(pId)} handleColorChange={
-                        (color, opacity) => handlePopulationColorChange(pId, color, opacity)
+                    <ColorPicker selectedColor={getRGBAColor(population.pId)} handleColorChange={
+                        (color, opacity) => handlePopulationColorChange(population.pId, color, opacity)
                     } />
                 </Popover>
             }
            
             <FormControlLabel
                 className={'population-label'}
-                key={pId} control={<Switch />}
+                key={population.pId} control={<Switch />}
                 label={<PopulationLabel population={population} />}
                 labelPlacement="start"
-                onChange={() => handlePopulationSwitch(pId)}
+                onChange={() => handlePopulationSwitch(population.pId)}
                 checked={population.pId}
                 style={populationTextStyle(population.status !== POPULATION_FINISHED_STATE)}
                 disabled={population.status !== POPULATION_FINISHED_STATE}
