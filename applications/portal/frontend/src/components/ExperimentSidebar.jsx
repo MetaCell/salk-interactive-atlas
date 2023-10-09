@@ -334,16 +334,15 @@ const ExperimentSidebar = ({
                                 onChange={handleShowAllPopulations}
                                 checked={areAllPopulationsSelected()}
                             />
-                            {Object.keys(populationWithChildren).length > 0 && Object.keys(populationWithChildren).map(pId => 
+                            {Object.keys(populationWithChildren).length > 0 && Object.keys(populationWithChildren).map(pId =>
                                 <span className='population-entry' key={pId}>
                                     <Accordion elevation={0} onChange={(e, expanded) => {
                                         setExpanded(expanded)
                                     }}>
                                         <CustomAccordionSummary
-                                            pId={populationWithChildren[pId].id}
                                             isExpanded={expanded}
-                                            populations={populations}
-                                            individualPopulation={populationWithChildren[pId]}
+                                            population={populationWithChildren[pId]}
+                                            // individualPopulation={populationWithChildren[pId]}
                                             isParent={populationWithChildren[pId]?.children ? true : false}
                                             isChild={false}
                                             handlePopulationSwitch={handlePopulationSwitch}
@@ -359,12 +358,12 @@ const ExperimentSidebar = ({
                                                                 <CustomAccordionSummary
                                                                     id={index}
                                                                     data={arr}
-                                                                    pId={populationWithChildren[pId]?.children[nestedPId].id}
-                                                                    individualPopulation={populationWithChildren[pId]?.children[nestedPId]}
+                                                                    // pId={populationWithChildren[pId]?.children[nestedPId].id}
+                                                                    // individualPopulation={populationWithChildren[pId]?.children[nestedPId]}
                                                                     isExpanded={false}
                                                                     isParent={false}
                                                                     isChild={true}
-                                                                    populations={populations}
+                                                                    population={populationWithChildren[pId]?.children[nestedPId]}
                                                                     handlePopulationSwitch={handlePopulationSwitch}
                                                                     handlePopulationColorChange={handlePopulationColorChange}
                                                                     hasEditPermission={hasEditPermission}

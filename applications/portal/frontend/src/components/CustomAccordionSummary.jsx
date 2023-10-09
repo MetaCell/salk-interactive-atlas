@@ -21,10 +21,8 @@ const POPULATION_ICONS_OPACITY = 0.4
 const CustomAccordionSummary = ({
     id,
     data,
-    pId,
-    individualPopulation,
     isExpanded,
-    populations,
+    population,
     isParent,
     isChild,
     handlePopulationSwitch,
@@ -37,9 +35,6 @@ const CustomAccordionSummary = ({
 
 
     const handlePopoverClick = (event, id) => {
-        if (!hasEditPermission) {
-            return
-        }
         setPopoverAnchorEl(event.currentTarget);
         setSelectedPopoverId(id);
     };
@@ -49,8 +44,8 @@ const CustomAccordionSummary = ({
         setSelectedPopoverId(null);
     };
 
-    const getRGBAColor = (pId) => {
-        const { color, opacity } = populations[pId]
+    const getRGBAColor = () => {
+        const { color, opacity } = population
         return getRGBAFromHexAlpha(color, opacity)
     }
 
@@ -61,7 +56,7 @@ const CustomAccordionSummary = ({
         }
         const isParentLabel = isParent && isExpanded
         return (
-            <SwitchLabel label={labelText} isParentLabel={isParentLabel}/>
+            <SwitchLabel label={labelText} isParentLabel={isParentLabel} />
         )
     }
 
@@ -72,43 +67,43 @@ const CustomAccordionSummary = ({
         <AccordionSummary
             expandIcon={
                 isParent ? <img src={UP_ICON} alt="" /> :
-                    isChild && !lastElement ? <TrailIcon className='trail-icon'/> :
-                        lastElement ? <TrailEndIcon className='trail-icon'/>: null
+                    isChild && !lastElement ? <TrailIcon className='trail-icon' /> :
+                        lastElement ? <TrailEndIcon className='trail-icon' /> : null
             }
             className={isParent ? 'nested' : isChild ? 'nested_child_element' : ''}
         >
-            <span className='population-color' onClick={(event) => handlePopoverClick(event, pId)}>
-                <Box style={{ backgroundColor: getRGBAString(getRGBAColor(pId)) }}
+            <span className='population-color' onClick={(event) => handlePopoverClick(event, population.id)}>
+                <Box style={{ backgroundColor: getRGBAString(getRGBAColor(population.id)) }}
                     component="span"
                     className='square' />
-                {hasEditPermission && populations[pId].status === POPULATION_FINISHED_STATE &&
+                {hasEditPermission && population.status === POPULATION_FINISHED_STATE &&
                     <ArrowDropDownIcon fontSize='small' style={{ opacity: POPULATION_ICONS_OPACITY }} />}
             </span>
-            {hasEditPermission && populations[pId].status === POPULATION_FINISHED_STATE &&
+            {hasEditPermission && population.status === POPULATION_FINISHED_STATE &&
                 <Popover
-                    open={pId === selectedPopoverId}
+                    open={population.id === selectedPopoverId}
                     anchorEl={popoverAnchorEl}
                     onClose={handlePopoverClose}
                     anchorOrigin={{
                         vertical: 'bottom',
-                        horizontal: 'left',
+                        horizontal: 'left'
                     }}
                 >
-                    <ColorPicker selectedColor={getRGBAColor(pId)} handleColorChange={
-                        (color, opacity) => handlePopulationColorChange(pId, color, opacity)
+                    <ColorPicker selectedColor={getRGBAColor(population.id)} handleColorChange={
+                        (color, opacity) => handlePopulationColorChange(population.id, color, opacity)
                     } />
                 </Popover>
             }
-           
+
             <FormControlLabel
                 className={'population-label'}
-                key={pId} control={<Switch />}
-                label={<PopulationLabel population={individualPopulation} />}
+                key={population.id} control={<Switch />}
+                label={<PopulationLabel population={population} />}
                 labelPlacement="start"
-                onChange={() => handlePopulationSwitch(pId)}
-                checked={populations[pId].selected}
-                style={populationTextStyle(populations[pId].status !== POPULATION_FINISHED_STATE)}
-                disabled={populations[pId].status !== POPULATION_FINISHED_STATE}
+                onChange={() => handlePopulationSwitch(population.id)}
+                checked={population.selected}
+                style={populationTextStyle(population.status !== POPULATION_FINISHED_STATE)}
+                disabled={population.status !== POPULATION_FINISHED_STATE}
             />
         </AccordionSummary>
     )
