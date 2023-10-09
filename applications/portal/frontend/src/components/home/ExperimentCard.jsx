@@ -277,7 +277,8 @@ const ExperimentCard = ({
     handleDialogToggle,
     handleExplorationDialogToggle,
     handleShareDialogToggle,
-    handleShareMultipleDialogToggle
+    handleShareMultipleDialogToggle,
+    refreshExperimentList
 }) => {
     const classes = useStyles();
     const history = useHistory()
@@ -296,6 +297,10 @@ const ExperimentCard = ({
         setExperimentMenuEl(null);
     };
 
+    const handleDeleteDialog = () => {
+        closeFilter();
+        setOpenDeleteDialog(!openDeleteDialog);
+    };
     return (
         <Grid item xs={12} md={3} key={`${experiment.name}experiment_${experiment.id}`}>
             <Card className={classes.card} elevation={0}>
@@ -337,7 +342,7 @@ const ExperimentCard = ({
                     </ListItem>
                     <Divider />
                     <ListItem button>
-                        {type === EXPERIMENTS_HASH ? <ListItemText primary="Delete" onClick={() => setOpenDeleteDialog(!openDeleteDialog)} /> :
+                        {type === EXPERIMENTS_HASH ? <ListItemText primary="Delete" onClick={() => handleDeleteDialog()} /> :
                             <ListItemText primary="Clone this experiment" onClick={handleDialogToggle}/>}
                     </ListItem>
                 </Menu>
@@ -394,7 +399,11 @@ const ExperimentCard = ({
                     </CardContent>
                 </CardActionArea>
             </Card>
-            <DeleteExperimentDialog open={openDeleteDialog} handleClose={() => setOpenDeleteDialog(false)} />
+            <DeleteExperimentDialog
+                experimentId={experiment.id} open={openDeleteDialog}
+                handleClose={() => setOpenDeleteDialog(false)}
+                refreshExperimentList={refreshExperimentList}
+            />
 
         </Grid>
     );
