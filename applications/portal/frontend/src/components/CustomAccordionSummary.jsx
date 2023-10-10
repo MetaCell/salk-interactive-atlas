@@ -72,7 +72,7 @@ const CustomAccordionSummary = ({
             }
             className={isParent ? 'nested' : isChild ? 'nested_child_element' : ''}
         >
-            <span className='population-color' onClick={(event) => handlePopoverClick(event, population.id)}>
+            <span className='population-color' onClick={(event) => isChild ? null : handlePopoverClick(event, population.id)}>
                 <Box style={{ backgroundColor: getRGBAString(getRGBAColor(population.id)) }}
                     component="span"
                     className='square' />
@@ -88,6 +88,7 @@ const CustomAccordionSummary = ({
                         vertical: 'bottom',
                         horizontal: 'left'
                     }}
+                    disabled={isChild ? true : false}
                 >
                     <ColorPicker selectedColor={getRGBAColor(population.id)} handleColorChange={
                         (color, opacity) => handlePopulationColorChange(population.id, color, opacity)

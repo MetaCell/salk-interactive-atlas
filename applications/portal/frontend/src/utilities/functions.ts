@@ -182,7 +182,7 @@ function sortSubpopulation(populationKeys: string[], populations: any, newPopula
                     name: parentName,
                     children: {
                         [key]: {
-                            ...population,
+                            ...population, // subpopulation also takes the color of the parent population
                             name: childName
                         }
                     }
