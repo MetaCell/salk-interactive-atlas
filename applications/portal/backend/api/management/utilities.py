@@ -21,4 +21,4 @@ def handle_populations_upload(experiment_id, populations, filepath, is_fiducial=
                                         f"{population.id}",
                                         f"{filepath}"])
         )
-        execute_generate_population_cells_workflow(tuple(tasks_list))
+    execute_generate_population_cells_workflow(tuple(tasks_list))
