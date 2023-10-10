@@ -7,27 +7,16 @@ import {
     FormControlLabel,
     Switch,
     Tooltip,
-    IconButton
+    IconButton, Button
 } from '@material-ui/core';
-import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
-import {faDownload} from '@fortawesome/free-solid-svg-icons';
-import PopulationEntry from './PopulationEntry';
+
 
 import UP_ICON from "../../assets/images/icons/up.svg";
-import {isPopulationReady} from "../../utilities/functions";
+import CustomAccordionSummary from "../CustomAccordionSummary";
+import DOWNLOAD_ICON from "../../assets/images/icons/download_icon.svg";
+import {POPULATION_FINISHED_STATE} from "../../utilities/constants";
 import {makeStyles} from "@material-ui/core/styles";
-import {downloadFile} from "../../utils";
-import workspaceService from "../../service/WorkspaceService";
-import {useParams} from "react-router";
-
-const useStyles = makeStyles({
-    downloadButton: {
-        marginRight: '6px',
-        display: 'flex',
-        justifyContent: 'end'
-    }
-});
-
+import {canvasIconColor, headerBg, headerBorderColor} from "../../theme";
 
 const PopulationsAccordion = ({
                                  populations,
@@ -35,31 +24,15 @@ const PopulationsAccordion = ({
                                  title,
                                  handleShowAllPopulations,
                                  hasEditPermission,
-                                 selectedPopoverId,
-                                 handlePopoverClick,
-                                 popoverAnchorEl,
-                                 handlePopoverClose,
                                  handlePopulationColorChange,
                                  handlePopulationSwitch
                              }) => {
 
-    const classes = useStyles();
-    const params = useParams();
-
-    const activePopulations = Object.keys(populations).filter(
-        (populationID) => populations[populationID].selected
-    );
-    const api = workspaceService.getApi()
-
-    const downloadTooltipTitle = activePopulations.length
-        ? 'Download active populations data'
-        : 'No active populations to download';
-
-
+    const [expanded, setExpanded] = React.useState(false);
 
     const areAllPopulationsSelected = () => {
         return Object.keys(populations)
-            .filter(pId => isPopulationReady(populations[pId]))
+            .filter(pId => populations[pId].status === POPULATION_FINISHED_STATE)
             .reduce((acc, pId) => populations[pId].selected && acc, true)
     }
 
@@ -69,57 +42,94 @@ const PopulationsAccordion = ({
                 responseType: 'arraybuffer',
             })
             downloadFile(response)
-        } catch (error) {
+        }catch (error){
             console.error('Error while fetching the file:', error);
         }
+
+
     }
+
+    const activePopulations = Object.keys(populations).filter(
+        (populationID) => populations[populationID].selected
+    );
+
+    const downloadTooltipTitle = activePopulations.length
+        ? 'Download active populations data'
+        : 'No active populations to download';
 
     return (
         <Accordion elevation={0} square defaultExpanded={true}>
             <AccordionSummary
-                expandIcon={<img src={UP_ICON} alt=""/>}
+                expandIcon={<img src={UP_ICON} alt="" />}
             >
+                <IconButton className='population-icon'>
+                    <img src={icon} alt="" />
+                </IconButton>
                 <Typography>
-                    <img src={icon} alt=""/>
                     {title}
                 </Typography>
             </AccordionSummary>
             <AccordionDetails>
                 <FormControlLabel
-                    className='bold'
+                    className='bold lg'
                     control={
-                        <Switch/>
+                        <Switch />
                     }
                     label="Show all"
                     labelPlacement="start"
                     onChange={handleShowAllPopulations}
                     checked={areAllPopulationsSelected()}
                 />
-                {Object.keys(populations).map(pId =>
-                    <PopulationEntry
-                        key={pId}
-                        population={populations[pId]}
-                        hasEditPermissions={hasEditPermission && isPopulationReady(populations[pId])}
-                        isOpenPopover={parseInt(pId) === selectedPopoverId}
-                        handlePopoverClick={handlePopoverClick}
-                        popoverAnchorEl={popoverAnchorEl}
-                        handlePopoverClose={handlePopoverClose}
-                        handlePopulationColorChange={handlePopulationColorChange}
-                        handlePopulationSwitch={handlePopulationSwitch}
-                    />
+                {Object.keys(populations).length > 0 && Object.keys(populations).map(pId =>
+                    <span className='population-entry' key={pId}>
+                                    <Accordion elevation={0} onChange={(e, expanded) => {
+                                        setExpanded(expanded)
+                                    }}>
+                                        <CustomAccordionSummary
+                                            isExpanded={expanded}
+                                            population={populations[pId]}
+                                            isParent={populations[pId]?.children ? true : false}
+                                            isChild={false}
+                                            handlePopulationSwitch={handlePopulationSwitch}
+                                            handlePopulationColorChange={handlePopulationColorChange}
+                                            hasEditPermission={hasEditPermission}
+                                        />
+                                        {
+                                            populations[pId]?.children && <AccordionDetails>
+                                                {
+                                                    Object.keys(populations[pId]?.children).map((nestedPId, index, arr) =>
+                                                        <span className='population-entry' key={nestedPId}>
+                                                            <Accordion elevation={0}>
+                                                                <CustomAccordionSummary
+                                                                    id={index}
+                                                                    data={arr}
+                                                                    isExpanded={false}
+                                                                    isParent={false}
+                                                                    isChild={true}
+                                                                    population={populations[pId]?.children[nestedPId]}
+                                                                    handlePopulationSwitch={handlePopulationSwitch}
+                                                                    handlePopulationColorChange={handlePopulationColorChange}
+                                                                    hasEditPermission={hasEditPermission}
+                                                                />
+                                                            </Accordion>
+                                                        </span>
+                                                    )
+                                                }
+                                            </AccordionDetails>
+                                        }
+                                    </Accordion>
+                                </span>
                 )}
                 <Tooltip title={downloadTooltipTitle}>
-                    <span className={classes.downloadButton}>
-                        <IconButton
-                            edge="end"
-                            color="inherit"
-                            onClick={() => downloadPopulationsData()}
-                            disabled={!activePopulations.length}
-                            style={{fontSize: '1rem'}}
-                        >
-                            <FontAwesomeIcon icon={faDownload}/>
-                        </IconButton>
-                    </span>
+                    <Button
+                        disableRipple
+                        onClick={() => downloadPopulationsData()}
+                        disabled={!activePopulations.length}
+                        style={{ fontWeight: 400 }}
+                    >
+                        Download actives
+                        <img src={DOWNLOAD_ICON} alt="" />
+                    </Button>
                 </Tooltip>
             </AccordionDetails>
         </Accordion>

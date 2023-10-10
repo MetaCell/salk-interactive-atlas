@@ -151,13 +151,6 @@ export const addPopulationsChildren = (populations: any) => {
     const populationKeys = Object.keys(populations);
 
     newPopulation = sortSubpopulation(populationKeys, populations, newPopulation);
-    // Go through it again and change the keys to its id
-    // const updatedPopulation = {} as any;
-    // Object.keys(newPopulation).forEach((key) => {
-    //     const population = newPopulation[key];
-    //     const newKey = population.id;
-    //     updatedPopulation[newKey] = { ...population };
-    // });
     return newPopulation;
 }
 
@@ -207,4 +200,25 @@ function sortSubpopulation(populationKeys: string[], populations: any, newPopula
         }
     });
     return newPopulation;
+}
+
+export function splitPopulationsByType(populationsWithChildren: any) {
+    const experimentPopulationsWithChildren: any = {};
+    const residentialPopulationsWithChildren: any = {};
+
+    Object.keys(populationsWithChildren).forEach((key) => {
+        const population = populationsWithChildren[key];
+        const hasExperimentAssociated = Object.values(population.children).some((child: any) => child.experiment !== null);
+
+        if (hasExperimentAssociated) {
+            experimentPopulationsWithChildren[key] = population;
+        } else {
+            residentialPopulationsWithChildren[key] = population;
+        }
+    });
+
+    return {
+        experimentPopulationsWithChildren,
+        residentialPopulationsWithChildren
+    };
 }

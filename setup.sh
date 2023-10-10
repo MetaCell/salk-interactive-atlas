@@ -2,7 +2,7 @@
 
 # Setup script for creating a minikube instance and build the needed applications
 
-minikube start --profile salk --memory 8000 --cpus 4 --disk-size 60g --driver=docker
+minikube start --profile salk --memory 8000 --cpus 2 --disk-size 60g --driver=docker
 
 minikube --profile salk addons enable ingress
 minikube --profile salk addons enable metrics-server

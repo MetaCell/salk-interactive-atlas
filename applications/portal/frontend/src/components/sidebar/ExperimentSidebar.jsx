@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import { makeStyles } from '@material-ui/core/styles';
+import React, {useEffect, useState} from 'react';
+import {makeStyles} from '@material-ui/core/styles';
 import {
     Box,
     Typography,
@@ -16,16 +16,16 @@ import {
     Tooltip
 } from '@material-ui/core';
 
-import { canvasIconColor, headerBg, headerBorderColor } from "../../theme";
+import {canvasIconColor, headerBg, headerBorderColor} from "../../theme";
 import TOGGLE from "../../assets/images/icons/toggle.svg";
 import ATLAS from "../../assets/images/icons/atlas.svg";
 import ADD from "../../assets/images/icons/add.svg";
 import UP_ICON from "../../assets/images/icons/up.svg";
 import POPULATION from "../../assets/images/icons/population.svg";
-import DOWNLOAD_ICON from "../../assets/images/icons/download_icon.svg";
-import { atlasMap, POPULATION_FINISHED_STATE } from "../../utilities/constants";
-import CustomAccordionSummary from '..//CustomAccordionSummary';
-import { addPopulationsChildren } from '../../utilities/functions';
+import RESIDENTIAL_POPULATION from "../../assets/images/icons/residential_population.svg";
+import {atlasMap} from "../../utilities/constants";
+import {addPopulationsChildren, splitPopulationsByType} from '../../utilities/functions';
+import PopulationsAccordion from "./PopulationsAccordion";
 
 const useStyles = makeStyles({
     sidebar: {
@@ -87,7 +87,7 @@ const useStyles = makeStyles({
                 width: '100%'
             },
             '& .MuiAccordionSummary-root': {
-                padding: '0 !important',
+                padding: '0.5rem 1rem 0.5rem 3rem',
                 flexDirection: 'row-reverse',
                 '&:hover': {
                     background: 'rgba(255, 255, 255, 0.05)',
@@ -216,23 +216,18 @@ const useStyles = makeStyles({
             padding: '1rem 0.9375rem',
             cursor: 'default',
         },
-    },
-    downloadButton: {
-        marginRight: '6px',
-        display: 'flex',
-        justifyContent: 'end'
     }
 });
 
 const ExperimentSidebar = ({
-    selectedAtlas,
-    populations,
-    handleAtlasChange,
-    handlePopulationSwitch,
-    handleShowAllPopulations,
-    handlePopulationColorChange,
-    hasEditPermission
-}) => {
+                               selectedAtlas,
+                               populations,
+                               handleAtlasChange,
+                               handlePopulationSwitch,
+                               handleShowAllPopulations,
+                               handlePopulationColorChange,
+                               hasEditPermission
+                           }) => {
     const classes = useStyles();
     const [shrink, setShrink] = useState(false);
 
@@ -241,35 +236,27 @@ const ExperimentSidebar = ({
         setShrink((prevState) => !prevState)
     };
 
-    const areAllPopulationsSelected = () => {
-        return Object.keys(populations)
-            .filter(pId => populations[pId].status === POPULATION_FINISHED_STATE)
-            .reduce((acc, pId) => populations[pId].selected && acc, true)
-    }
 
-    const activePopulations = Object.keys(populations).filter(
-        (populationID) => populations[populationID].selected
-    );
-
-    const downloadTooltipTitle = activePopulations.length
-        ? 'Download active populations data'
-        : 'No active populations to download';
-
-    const [expanded, setExpanded] = React.useState(false);
     const sidebarClass = `${classes.sidebar} scrollbar ${shrink ? `${classes.shrink}` : ``}`;
 
 
-    const [populationWithChildren, setPopulationWithChildren] = useState({});
+    const [populationsWithChildren, setPopulationsWithChildren] = useState({});
     useEffect(() => {
-        setPopulationWithChildren(addPopulationsChildren(populations));
+        setPopulationsWithChildren(addPopulationsChildren(populations));
     }, [populations]);
+
+    const {
+        experimentPopulationsWithChildren,
+        residentialPopulationsWithChildren
+    } = splitPopulationsByType(populationsWithChildren);
+
 
     return (
         <Box className={sidebarClass}>
             <Box className="sidebar-header" display="flex" alignItems="center">
                 {!shrink && <Typography className='sidebar-title'>Customize Data</Typography>}
                 <IconButton onClick={toggleSidebar} disableRipple>
-                    <img src={TOGGLE} alt="Toggle_Icon" title="" />
+                    <img src={TOGGLE} alt="Toggle_Icon" title=""/>
                 </IconButton>
             </Box>
 
@@ -279,10 +266,10 @@ const ExperimentSidebar = ({
                 <>
                     <Accordion elevation={0} square defaultExpanded={true}>
                         <AccordionSummary
-                            expandIcon={<img src={UP_ICON} alt="" />}
+                            expandIcon={<img src={UP_ICON} alt=""/>}
                         >
                             <IconButton className='population-icon'>
-                                <img src={ATLAS} alt="" />
+                                <img src={ATLAS} alt=""/>
                             </IconButton>
                             <Typography>
                                 Atlas
@@ -291,98 +278,39 @@ const ExperimentSidebar = ({
                         <AccordionDetails>
                             <Button disableRipple>
                                 Add an atlas
-                                <img src={ADD} alt="add" />
+                                <img src={ADD} alt="add"/>
                             </Button>
                             <FormControl component="fieldset">
                                 <RadioGroup aria-label="atlas" name="atlas1" value={selectedAtlas}>
                                     {Array.from(atlasMap.keys()).map(atlasId =>
                                         <FormControlLabel key={atlasId}
-                                            value={atlasId}
-                                            control={<Radio />}
-                                            label={atlasMap.get(atlasId).name}
-                                            labelPlacement='start'
-                                            onChange={(atlasId) => handleAtlasChange(atlasId)} />)
+                                                          value={atlasId}
+                                                          control={<Radio/>}
+                                                          label={atlasMap.get(atlasId).name}
+                                                          labelPlacement='start'
+                                                          onChange={(atlasId) => handleAtlasChange(atlasId)}/>)
                                     }
                                 </RadioGroup>
                             </FormControl>
                         </AccordionDetails>
                     </Accordion>
 
-                    <Accordion elevation={0} square defaultExpanded={true}>
-                        <AccordionSummary
-                            expandIcon={<img src={UP_ICON} alt="" />}
-                        >
-                            <IconButton className='population-icon'>
-                                <img src={POPULATION} alt="" />
-                            </IconButton>
-                            <Typography>
-                                Experimental Populations
-                            </Typography>
-                        </AccordionSummary>
-                        <AccordionDetails>
-                            <FormControlLabel
-                                className='bold lg'
-                                control={
-                                    <Switch />
-                                }
-                                label="Show all"
-                                labelPlacement="start"
-                                onChange={handleShowAllPopulations}
-                                checked={areAllPopulationsSelected()}
-                            />
-                            {Object.keys(populationWithChildren).length > 0 && Object.keys(populationWithChildren).map(pId =>
-                                <span className='population-entry' key={pId}>
-                                    <Accordion elevation={0} onChange={(e, expanded) => {
-                                        setExpanded(expanded)
-                                    }}>
-                                        <CustomAccordionSummary
-                                            isExpanded={expanded}
-                                            population={populationWithChildren[pId]}
-                                            isParent={populationWithChildren[pId]?.children ? true : false}
-                                            isChild={false}
-                                            handlePopulationSwitch={handlePopulationSwitch}
-                                            handlePopulationColorChange={handlePopulationColorChange}
-                                            hasEditPermission={hasEditPermission}
-                                        />
-                                        {
-                                            populationWithChildren[pId]?.children && <AccordionDetails>
-                                                {
-                                                    Object.keys(populationWithChildren[pId]?.children).map((nestedPId, index, arr) =>
-                                                        <span className='population-entry' key={nestedPId}>
-                                                            <Accordion elevation={0}>
-                                                                <CustomAccordionSummary
-                                                                    id={index}
-                                                                    data={arr}
-                                                                    isExpanded={false}
-                                                                    isParent={false}
-                                                                    isChild={true}
-                                                                    population={populationWithChildren[pId]?.children[nestedPId]}
-                                                                    handlePopulationSwitch={handlePopulationSwitch}
-                                                                    handlePopulationColorChange={handlePopulationColorChange}
-                                                                    hasEditPermission={hasEditPermission}
-                                                                />
-                                                            </Accordion>
-                                                        </span>
-                                                    )
-                                                }
-                                            </AccordionDetails>
-                                        }
-                                    </Accordion>
-                                </span>
-                            )}
-                            <Tooltip title={downloadTooltipTitle}>
-                                <Button
-                                    disableRipple
-                                    onClick={() => downloadPopulationsData()}
-                                    disabled={!activePopulations.length}
-                                    style={{ fontWeight: 400 }}
-                                >
-                                    Download actives
-                                    <img src={DOWNLOAD_ICON} alt="" />
-                                </Button>
-                            </Tooltip>
-                        </AccordionDetails>
-                    </Accordion>
+                    <PopulationsAccordion populations={residentialPopulationsWithChildren} icon={RESIDENTIAL_POPULATION}
+                                          title={"Data library"}
+                                          handleShowAllPopulations={handleShowAllPopulations}
+                                          hasEditPermission={hasEditPermission}
+                                          handlePopulationColorChange={handlePopulationColorChange}
+                                          handlePopulationSwitch={handlePopulationSwitch}
+                    />
+
+                    <PopulationsAccordion populations={experimentPopulationsWithChildren} icon={POPULATION}
+                                          title={"Experimental Populations"}
+                                          handleShowAllPopulations={handleShowAllPopulations}
+                                          hasEditPermission={hasEditPermission}
+                                          handlePopulationColorChange={handlePopulationColorChange}
+                                          handlePopulationSwitch={handlePopulationSwitch}
+                    />
+
                 </>
             )}
         </Box>
@@ -390,92 +318,4 @@ const ExperimentSidebar = ({
 };
 
 export default ExperimentSidebar;
-
-const populations = {
-    100: {
-        id: 100,
-        name: 'V1',
-        color: '#9FEE9A',
-        experiment: 133,
-        atlas: 'salk_cord_10um',
-        opacity: 1,
-        selected: false,
-        status: "finished",
-        cells: [],
-        children: {
-            101: {
-                id: 100,
-                name: 'MafA',
-                color: '#9FEE9A',
-                experiment: 133,
-                atlas: 'salk_cord_10um',
-                opacity: 1,
-                selected: false,
-                status: "finished",
-                cells: [],
-                children: undefined
-            },
-            102: {
-                id: 102,
-                name: 'ab',
-                color: '#9FEE9A',
-                experiment: 133,
-                atlas: 'salk_cord_10um',
-                opacity: 1,
-                selected: false,
-                status: "finished",
-                cells: [],
-                children: undefined
-            },
-            103: {
-                id: 103,
-                name: 'Lnz',
-                color: '#9FEE9A',
-                experiment: 133,
-                atlas: 'salk_cord_10um',
-                opacity: 1,
-                selected: false,
-                status: "finished",
-                cells: [],
-                children: undefined
-            }
-        }
-    },
-    200: {
-        id: 200,
-        name: 'Population XYZ',
-        color: '#44C9C9',
-        experiment: 133,
-        atlas: 'salk_cord_10um',
-        opacity: 1,
-        selected: false,
-        status: "finished",
-        cells: [],
-        children: undefined
-    },
-    300: {
-        id: 300,
-        name: 'Population 123',
-        color: '#9B3E8B',
-        experiment: 133,
-        atlas: 'salk_cord_10um',
-        opacity: 1,
-        selected: false,
-        status: "finished",
-        cells: [],
-        children: undefined
-    },
-    400: {
-        id: 400,
-        name: 'Population 789',
-        color: '#C99444',
-        experiment: 133,
-        atlas: 'salk_cord_10um',
-        opacity: 1,
-        selected: false,
-        status: "finished",
-        cells: [],
-        children: undefined
-    }
-}
 
