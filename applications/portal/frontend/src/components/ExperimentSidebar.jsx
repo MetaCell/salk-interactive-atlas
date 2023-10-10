@@ -391,3 +391,92 @@ const ExperimentSidebar = ({
 };
 
 export default ExperimentSidebar;
+
+const populations = {
+    100: {
+        id: 100,
+        name: 'V1',
+        color: '#9FEE9A',
+        experiment: 133,
+        atlas: 'salk_cord_10um',
+        opacity: 1,
+        selected: false,
+        status: "finished",
+        cells: [],
+        children: {
+            101: {
+                id: 100,
+                name: 'MafA',
+                color: '#9FEE9A',
+                experiment: 133,
+                atlas: 'salk_cord_10um',
+                opacity: 1,
+                selected: false,
+                status: "finished",
+                cells: [],
+                children: undefined
+            },
+            102: {
+                id: 102,
+                name: 'ab',
+                color: '#9FEE9A',
+                experiment: 133,
+                atlas: 'salk_cord_10um',
+                opacity: 1,
+                selected: false,
+                status: "finished",
+                cells: [],
+                children: undefined
+            },
+            103: {
+                id: 103,
+                name: 'Lnz',
+                color: '#9FEE9A',
+                experiment: 133,
+                atlas: 'salk_cord_10um',
+                opacity: 1,
+                selected: false,
+                status: "finished",
+                cells: [],
+                children: undefined
+            }
+        }
+    },
+    200: {
+        id: 200,
+        name: 'Population XYZ',
+        color: '#44C9C9',
+        experiment: 133,
+        atlas: 'salk_cord_10um',
+        opacity: 1,
+        selected: false,
+        status: "finished",
+        cells: [],
+        children: undefined
+    },
+    300: {
+        id: 300,
+        name: 'Population 123',
+        color: '#9B3E8B',
+        experiment: 133,
+        atlas: 'salk_cord_10um',
+        opacity: 1,
+        selected: false,
+        status: "finished",
+        cells: [],
+        children: undefined
+    },
+    400: {
+        id: 400,
+        name: 'Population 789',
+        color: '#C99444',
+        experiment: 133,
+        atlas: 'salk_cord_10um',
+        opacity: 1,
+        selected: false,
+        status: "finished",
+        cells: [],
+        children: undefined
+    }
+}
+
