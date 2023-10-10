@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import {
     Box,
@@ -24,7 +24,8 @@ import UP_ICON from "../../assets/images/icons/up.svg";
 import POPULATION from "../../assets/images/icons/population.svg";
 import DOWNLOAD_ICON from "../../assets/images/icons/download_icon.svg";
 import { atlasMap, POPULATION_FINISHED_STATE } from "../../utilities/constants";
-import CustomAccordionSummary from './../CustomAccordionSummary';
+import CustomAccordionSummary from '..//CustomAccordionSummary';
+import { addPopulationsChildren } from '../../utilities/functions';
 
 const useStyles = makeStyles({
     sidebar: {
@@ -224,14 +225,14 @@ const useStyles = makeStyles({
 });
 
 const ExperimentSidebar = ({
-                               selectedAtlas,
-                               // populations,
-                               handleAtlasChange,
-                               handlePopulationSwitch,
-                               handleShowAllPopulations,
-                               handlePopulationColorChange,
-                               hasEditPermission
-                           }) => {
+    selectedAtlas,
+    populations,
+    handleAtlasChange,
+    handlePopulationSwitch,
+    handleShowAllPopulations,
+    handlePopulationColorChange,
+    hasEditPermission
+}) => {
     const classes = useStyles();
     const [shrink, setShrink] = useState(false);
 
@@ -256,6 +257,12 @@ const ExperimentSidebar = ({
 
     const [expanded, setExpanded] = React.useState(false);
     const sidebarClass = `${classes.sidebar} scrollbar ${shrink ? `${classes.shrink}` : ``}`;
+
+
+    const [populationWithChildren, setPopulationWithChildren] = useState({});
+    useEffect(() => {
+        setPopulationWithChildren(addPopulationsChildren(populations));
+    }, [populations]);
 
     return (
         <Box className={sidebarClass}>
@@ -290,11 +297,11 @@ const ExperimentSidebar = ({
                                 <RadioGroup aria-label="atlas" name="atlas1" value={selectedAtlas}>
                                     {Array.from(atlasMap.keys()).map(atlasId =>
                                         <FormControlLabel key={atlasId}
-                                                          value={atlasId}
-                                                          control={<Radio />}
-                                                          label={atlasMap.get(atlasId).name}
-                                                          labelPlacement='start'
-                                                          onChange={(atlasId) => handleAtlasChange(atlasId)} />)
+                                            value={atlasId}
+                                            control={<Radio />}
+                                            label={atlasMap.get(atlasId).name}
+                                            labelPlacement='start'
+                                            onChange={(atlasId) => handleAtlasChange(atlasId)} />)
                                     }
                                 </RadioGroup>
                             </FormControl>
@@ -323,24 +330,24 @@ const ExperimentSidebar = ({
                                 onChange={handleShowAllPopulations}
                                 checked={areAllPopulationsSelected()}
                             />
-                            {Object.keys(populations).map(pId =>
+                            {Object.keys(populationWithChildren).length > 0 && Object.keys(populationWithChildren).map(pId =>
                                 <span className='population-entry' key={pId}>
                                     <Accordion elevation={0} onChange={(e, expanded) => {
                                         setExpanded(expanded)
                                     }}>
                                         <CustomAccordionSummary
                                             isExpanded={expanded}
-                                            population={populations[pId]}
-                                            isParent={populations[pId].children !== undefined}
+                                            population={populationWithChildren[pId]}
+                                            isParent={populationWithChildren[pId]?.children ? true : false}
                                             isChild={false}
                                             handlePopulationSwitch={handlePopulationSwitch}
                                             handlePopulationColorChange={handlePopulationColorChange}
                                             hasEditPermission={hasEditPermission}
                                         />
                                         {
-                                            populations[pId].children !== undefined && <AccordionDetails>
+                                            populationWithChildren[pId]?.children && <AccordionDetails>
                                                 {
-                                                    Object.keys(populations[pId].children).map((nestedPId, index, arr) =>
+                                                    Object.keys(populationWithChildren[pId]?.children).map((nestedPId, index, arr) =>
                                                         <span className='population-entry' key={nestedPId}>
                                                             <Accordion elevation={0}>
                                                                 <CustomAccordionSummary
@@ -349,7 +356,7 @@ const ExperimentSidebar = ({
                                                                     isExpanded={false}
                                                                     isParent={false}
                                                                     isChild={true}
-                                                                    population={populations[pId].children[nestedPId]}
+                                                                    population={populationWithChildren[pId]?.children[nestedPId]}
                                                                     handlePopulationSwitch={handlePopulationSwitch}
                                                                     handlePopulationColorChange={handlePopulationColorChange}
                                                                     hasEditPermission={hasEditPermission}

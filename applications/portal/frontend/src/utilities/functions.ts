@@ -142,3 +142,69 @@ export function isResidentialPopulation(p: any) {
 export const isPopulationReady = (population: any) => {
     return population.status === POPULATION_FINISHED_STATE
 }
+
+export const addPopulationsChildren = (populations: any) => {
+    if (populations === undefined) {
+        return
+    }
+    let newPopulation = {} as any;
+    const populationKeys = Object.keys(populations);
+
+    newPopulation = sortSubpopulation(populationKeys, populations, newPopulation);
+    // Go through it again and change the keys to its id
+    // const updatedPopulation = {} as any;
+    // Object.keys(newPopulation).forEach((key) => {
+    //     const population = newPopulation[key];
+    //     const newKey = population.id;
+    //     updatedPopulation[newKey] = { ...population };
+    // });
+    return newPopulation;
+}
+
+function sortSubpopulation(populationKeys: string[], populations: any, newPopulation: any) {
+    populationKeys.forEach((key) => {
+        const population = populations[key];
+        const name = population.name;
+        const nameSplit = name.split('@');
+        if (nameSplit.length === 1) {
+            newPopulation[name] = population;
+            newPopulation[name].children = {
+                [population.id]: {
+                    id: population.id,
+                    name: 'unknown',
+                    color: population.color,
+                    experiment: population.experiment,
+                    atlas: population.atlas,
+                    cells: population.cells,
+                    opacity: population.opacity,
+                    status: population.status
+                }
+            };
+        } else {
+            const parentName = nameSplit[0];
+            const childName = nameSplit[1];
+
+            if (newPopulation[parentName] === undefined) {
+                newPopulation[parentName] = {
+                    ...population,
+                    name: parentName,
+                    children: {
+                        [key]: {
+                            ...population, // subpopulation also takes the color of the parent population
+                            name: childName
+                        }
+                    }
+                };
+            } else {
+                newPopulation[parentName].children = {
+                    ...newPopulation[parentName].children,
+                    [key]: {
+                        ...population,
+                        name: childName
+                    }
+                };
+            }
+        }
+    });
+    return newPopulation;
+}
