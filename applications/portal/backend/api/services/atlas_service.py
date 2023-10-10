@@ -3,11 +3,11 @@ import os
 
 from api.constants import GridImages
 from api.services.filesystem_service import create_dir_if_not_exists
-from workspaces.settings import ANNOTATIONS_PATH, CANAL_PATH, GRID_PATH, LAMINAS_PATH
+from workspaces.settings import BACKGROUND_PATH, CANAL_PATH, GRID_PATH, LAMINAS_PATH
 
 
-def save_annotation_image(img, subdivision: str):
-    return save_image(img, ANNOTATIONS_PATH, subdivision)
+def save_grey_and_white_matter_image(img, subdivision: str):
+    return save_image(img, BACKGROUND_PATH, subdivision)
 
 
 def save_canal_image(img, subdivision: str):

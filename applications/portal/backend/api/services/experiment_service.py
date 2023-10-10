@@ -1,5 +1,6 @@
-from api.models import Experiment, Tag
-from api.services.workflows_service import execute_upload_pair_files_workflow, execute_upload_single_file_workflow
+from api.models import Experiment, Tag, Population
+from api.services.workflows_service import execute_upload_pair_files_workflow, execute_upload_single_file_workflow, \
+    create_custom_task, BASE_IMAGE, execute_generate_population_cells_workflow
 
 
 def add_tag(experiment: Experiment, tag_name: str, save=True):
@@ -24,9 +25,18 @@ def delete_tag(experiment: Experiment, tag_name: str):
     return True
 
 
-def upload_pair_files(experiment: Experiment, key_filepath: str, data_filepath: str):
-    execute_upload_pair_files_workflow(experiment.id, key_filepath, data_filepath)
+def handle_populations_upload(experiment_id, populations, filepath, is_fiducial=False):
+    tasks_list = []
 
-
-def upload_single_file(experiment: Experiment, filepath: str):
-    execute_upload_single_file_workflow(experiment.id, filepath)
+    for name in populations:
+        population = Population.objects.create(
+            experiment_id=experiment_id, name=name, is_fiducial=is_fiducial
+        )
+        tasks_list.append(
+            create_custom_task(BASE_IMAGE,
+                               command=["python", "manage.py",
+                                        f"generate_population_cells",
+                                        f"{population.id}",
+                                        f"{filepath}"])
+        )
+    execute_generate_population_cells_workflow(tuple(tasks_list))

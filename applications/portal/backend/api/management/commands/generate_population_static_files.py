@@ -4,7 +4,7 @@ from api.models import Population
 
 
 class Command(BaseCommand):
-    help = "Generates density map images (heatmap and centroids) and splits csv for each population provided"
+    help = "Generates density map images (contours and centroids) and splits csv for each population provided"
 
     def add_arguments(self, parser):
         parser.add_argument("population_ids", nargs="+", type=int)

@@ -260,7 +260,7 @@ export const CreateUpdateExperimentDialog = ({
         } catch (error) {
             onError(error)
         }
-        onExperimentAction(experimentId)
+        onExperimentAction(id)
         handleClose()
         setIsLoading(false)
     };

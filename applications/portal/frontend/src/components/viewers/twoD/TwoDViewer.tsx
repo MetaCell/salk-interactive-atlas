@@ -16,13 +16,12 @@ import {
 import {Population} from "../../../apiclient/workspaces";
 import {
     AtlasChoice, CAUDAL,
-    DensityImages,
-    DensityMapTypes, GridTypes, LaminaImageTypes,
+    DensityImages, GridTypes, LaminaImageTypes,
     NEURONAL_LOCATIONS_ID,
-    OVERLAYS, PROBABILITY_MAP_ID,
+    OVERLAYS, CONTOUR_PLOT_ID,
     RequestState,
     ROSTRAL,
-    alphanumericCollator,
+    alphanumericCollator, ContourImageTypes,
 } from "../../../utilities/constants";
 import workspaceService from "../../../service/WorkspaceService";
 import {getAtlas} from "../../../service/AtlasService";
@@ -197,13 +196,14 @@ const TwoDViewer = (props: {
     const [selectedLaminaPopoverId, setSelectedLaminaPopoverId] = React.useState(null);
     const [laminaType, setLaminaType] = React.useState(LaminaImageTypes.FILLED);
     const [gridType, setGridType] = React.useState(GridTypes.FRAME);
+    const [contourType, setContourType] = React.useState(ContourImageTypes.OFF);
     const [laminaBaseColor, setLaminaBaseColor] = React.useState(DARK_GREY_SHADE);
     const [isSnackbarOpen, setIsSnackbarOpen] = React.useState(false);
     const [showSnackbar, setShowSnackbar] = React.useState(true);
 
 
     const fetchData = async (population: Population, apiMethod: (id: string, subdivision: string, options: any) => Promise<any>) => {
-        // Fetches either probability map or centroids image from the backend
+        // Fetches either contour plot or centroids image from the backend
 
         const response = await apiMethod(population.id.toString(), segments[selectedValueIndex], {responseType: 'blob'})
         if (response.status === 200) {
@@ -221,39 +221,39 @@ const TwoDViewer = (props: {
 
         if (activePopulations.length > 0) {
             if (overlaysSwitchState[NEURONAL_LOCATIONS_ID]) {
-                return Promise.all(activePopulations.filter((p: Population) => !isInCache(p, DensityMapTypes.CENTROIDS_DATA)).map(p =>
+                return Promise.all(activePopulations.filter((p: Population) => !isInCache(p, NEURONAL_LOCATIONS_ID)).map(p =>
                     fetchData(p, (id, subdivision, options) => api.centroidsPopulation(id, subdivision, options))))
                     .then(centroidsResponses => {
                         const cData = centroidsResponses.reduce((acc, res) => {
                             const {id, data} = res;
                             return {...acc, [id]: data};
                         }, {});
-                        updateData(cData, DensityMapTypes.CENTROIDS_DATA)
+                        updateData(cData, NEURONAL_LOCATIONS_ID)
                     })
             }
         }
     }
 
-    function updateProbabilityMap() {
-        // If probability maps switch is active and there are populations active fetches data for the populations not in cache
-        // Updates the cache variable on the probability map key
+    function updateContourPlot() {
+        // If contour plots dropdown is not off is active and there are populations active fetches data for the populations not in cache
+        // Updates the cache variable on the contour plot key
 
         if (activePopulations.length > 0) {
-            if (overlaysSwitchState[PROBABILITY_MAP_ID]) {
-                return Promise.all(activePopulations.filter((p: Population) => !isInCache(p, DensityMapTypes.PROBABILITY_DATA)).map(p =>
-                    fetchData(p, (id, subdivision, options) => api.probabilityMapPopulation(id, subdivision, options))))
-                    .then(probabilityMapResponses => {
-                        const probData = probabilityMapResponses.reduce((acc, res) => {
+            if (contourType !== ContourImageTypes.OFF) {
+                return Promise.all(activePopulations.filter((p: Population) => !isInCache(p, contourType.value)).map(p =>
+                    fetchData(p, (id, subdivision, options) => api.contourPlotPopulation(id, subdivision, contourType.value, options))))
+                    .then(contourPlotMapResponses => {
+                        const probData = contourPlotMapResponses.reduce((acc, res) => {
                             const {id, data} = res;
                             return {...acc, [id]: data};
                         }, {});
-                        updateData(probData, DensityMapTypes.PROBABILITY_DATA)
+                        updateData(probData, contourType.value)
                     })
             }
         }
     }
 
-    const updateData = (newData: { [x: string]: any; }, type: DensityMapTypes) => {
+    const updateData = (newData: { [x: string]: any; }, type: string) => {
         // Updates the cache variable on the given key with the given data
         Object.keys(newData).forEach(id => {
             // @ts-ignore
@@ -273,7 +273,7 @@ const TwoDViewer = (props: {
         return activeContent
     }
 
-    const isInCache = (pop: Population, type: DensityMapTypes) => {
+    const isInCache = (pop: Population, type: string) => {
         // Checks if a given population has data in cache for the density map type given
 
         const id = pop.id.toString()
@@ -311,7 +311,7 @@ const TwoDViewer = (props: {
 
         const imagesToLoad = []
         const drawImageCallback = (img: HTMLImageElement) => drawImage(canvas, img)
-        const drawColoredImageCallback = (color: string) => (img: HTMLImageElement) => drawColoredImage(canvas, hiddenCanvas, img, color)
+        const drawColoredImageCallback = (color: string, considersIntensity: boolean) => (img: HTMLImageElement) => drawColoredImage(canvas, hiddenCanvas, img, color, considersIntensity)
 
 
         // Get grid
@@ -321,32 +321,9 @@ const TwoDViewer = (props: {
         }
 
         // Get annotation
-        const background = atlas.getImageSrc(DensityImages.ANNOTATION, segments[selectedValueIndex])
+        const background = atlas.getImageSrc(DensityImages.GREY_AND_WHITE_MATTER, segments[selectedValueIndex])
         if (background) {
             imagesToLoad.push({src: background, draw: drawImageCallback})
-        }
-
-        for (const pId of Object.keys(content)) {
-            // @ts-ignore
-            const color = activePopulationsColorMap[pId]
-
-            // Get probability map
-            if (overlaysSwitchState[PROBABILITY_MAP_ID]) {
-                // @ts-ignore
-                const pData = content[pId][DensityMapTypes.PROBABILITY_DATA]
-                if (hasColoredImageData(pData)) {
-                    imagesToLoad.push({src: pData, draw: (drawColoredImageCallback(color))})
-                }
-            }
-
-            // Get neuron centroids
-            if (overlaysSwitchState[NEURONAL_LOCATIONS_ID]) {
-                // @ts-ignore
-                const cData = content[pId][DensityMapTypes.CENTROIDS_DATA]
-                if (hasColoredImageData(cData)) {
-                    imagesToLoad.push({src: cData, draw: (drawColoredImageCallback(color))})
-                }
-            }
         }
 
         // Get laminas
@@ -355,7 +332,30 @@ const TwoDViewer = (props: {
             if (laminas[lId].selected) {
                 const laminaData = atlas.getLaminaSrc(lId, segments[selectedValueIndex], laminaType)
                 if (laminaData) {
-                    imagesToLoad.push({src: laminaData, draw: (drawColoredImageCallback(laminas[lId].color))})
+                    imagesToLoad.push({src: laminaData, draw: (drawColoredImageCallback(laminas[lId].color, false))})
+                }
+            }
+        }
+
+        for (const pId of Object.keys(content)) {
+            // @ts-ignore
+            const color = activePopulationsColorMap[pId]
+
+            // Get contour plot
+            if (contourType !== ContourImageTypes.OFF) {
+                // @ts-ignore
+                const pData = content[pId][contourType.value]
+                if (hasColoredImageData(pData)) {
+                    imagesToLoad.push({src: pData, draw: (drawColoredImageCallback(color, true))})
+                }
+            }
+
+            // Get neuron centroids
+            if (overlaysSwitchState[NEURONAL_LOCATIONS_ID]) {
+                // @ts-ignore
+                const cData = content[pId][NEURONAL_LOCATIONS_ID]
+                if (hasColoredImageData(cData)) {
+                    imagesToLoad.push({src: cData, draw: (drawColoredImageCallback(color, true))})
                 }
             }
         }
@@ -375,7 +375,7 @@ const TwoDViewer = (props: {
 
     useDidUpdateEffect(() => {
         setIsDrawing(true)
-        const promise1 = updateProbabilityMap()
+        const promise1 = updateContourPlot()
         const promise2 = updateCentroids();
         if (promise1 || promise2) {
             Promise.all([promise1, promise2].filter(p => p != null)).then(() => setContent(getActiveContent()))
@@ -386,7 +386,7 @@ const TwoDViewer = (props: {
 
     useDidUpdateEffect(() => {
         setIsDrawing(true)
-        const promise1 = updateProbabilityMap()
+        const promise1 = updateContourPlot()
         const promise2 = updateCentroids();
         if (promise1 || promise2) {
             Promise.all([promise1, promise2].filter(p => p != null)).then(() => setContent(getActiveContent()))
@@ -397,13 +397,13 @@ const TwoDViewer = (props: {
 
     useDidUpdateEffect(() => {
         setIsDrawing(true)
-        const promise = updateProbabilityMap();
+        const promise = updateContourPlot();
         if (promise) {
             promise.then(() => setContent(getActiveContent()))
         } else {
             setContent(getActiveContent())
         }
-    }, [overlaysSwitchState[PROBABILITY_MAP_ID]])
+    }, [contourType])
 
     useDidUpdateEffect(() => {
         setIsDrawing(true)
@@ -507,6 +507,10 @@ const TwoDViewer = (props: {
         setGridType(value);
     };
 
+    const handleContourTypeChange = (selectedType: { label: string; value: string; }) => {
+        setContourType(selectedType);
+    };
+
     const handleLaminaBaseColorChange = (hexColor: string) => {
         setLaminaBaseColor(hexColor)
         if (areSomeSelected(laminas)) {
@@ -538,7 +542,6 @@ const TwoDViewer = (props: {
     const isMenuOpen = Boolean(anchorEl);
     // @ts-ignore
     const popoverHeight = anchorEl?.parentNode?.parentNode?.clientHeight ? anchorEl.parentNode.parentNode.clientHeight - theme.spacing(1) : 0
-
     return (
         <Box sx={boxStyle}>
             <Box className={classes.buttonContainer}>
@@ -595,7 +598,7 @@ const TwoDViewer = (props: {
                     {Object.keys(laminas).length > 0 &&
                         <Fragment>
                             <Box onClick={() => setIsSubRegionsOpen(!isSubRegionsOpen)}
-                                 className={`${classes.entryPadding} ${classes.menuButtonContainer}`}>
+                                 className={`${classes.menuButtonContainer}`}>
                                 <Typography className={classes.menuFontSize}>Subregions</Typography>
                                 {isSubRegionsOpen ? <ArrowDropUpIcon/> : <ArrowDropDownIcon/>}
                             </Box>
@@ -655,17 +658,6 @@ const TwoDViewer = (props: {
                             </Collapse>
                         </Fragment>
                     }
-                    {Object.keys(OVERLAYS).map(oId =>
-                        <FormControlLabel
-                            className={classes.entryPadding}
-                            key={oId}
-                            control={<Switch/>}
-                            label={<OverlayLabel label={OVERLAYS[oId].name}/>}
-                            labelPlacement="start"
-                            onChange={() => handleOverlaySwitch(oId)}
-                            checked={overlaysSwitchState[oId]}
-                        />
-                    )}
                     <FormControl className={`${classes.dropdownContainer}`}>
                         <Select
                             className={`${classes.menuFontSize}`}
@@ -679,6 +671,30 @@ const TwoDViewer = (props: {
                             )}
                         </Select>
                     </FormControl>
+                    <FormControl className={`${classes.dropdownContainer}`}>
+
+                        <Select
+                            className={`${classes.menuFontSize}`}
+                            disableUnderline={true}
+                            value={contourType}
+                            onChange={(event) => handleContourTypeChange(event.target.value)}
+                            MenuProps={{classes: {paper: classes.selectMenu}}}
+                        >
+                            {Object.values(ContourImageTypes).map((type, idx) =>
+                                <MenuItem key={idx} value={type}> {type.label} </MenuItem>
+                            )}
+                        </Select>
+                    </FormControl>
+                    {Object.keys(OVERLAYS).map(oId =>
+                        <FormControlLabel
+                            key={oId}
+                            control={<Switch/>}
+                            label={<OverlayLabel label={OVERLAYS[oId].name}/>}
+                            labelPlacement="start"
+                            onChange={() => handleOverlaySwitch(oId)}
+                            checked={overlaysSwitchState[oId]}
+                        />
+                    )}
                 </Popover>
                 <Snackbar
                     open={isSnackbarOpen}
@@ -691,7 +707,8 @@ const TwoDViewer = (props: {
                 </Snackbar>
             </Box>
             <Box className={classes.densityMapImageContainer} ref={canvasContainerRef} tabIndex="0">
-                <canvas hidden={true} ref={hiddenCanvasRef}/>
+                <canvas hidden={true} ref={hiddenCanvasRef} width={atlas.gridDimensions.width}
+                        height={atlas.gridDimensions.height}/>
                 <canvas hidden={isDrawing} className={classes.densityMapImage} ref={canvasRef}
                         width={atlas.gridDimensions.width} height={atlas.gridDimensions.height}/>
             </Box>

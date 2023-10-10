@@ -399,6 +399,22 @@ paths:
           description: ''
       tags:
       - api
+  /api/population/residential/:
+    get:
+      operationId: residentialPopulation
+      description: This viewset automatically provides `list` actions.
+      parameters: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Population'
+          description: Successful retrieval of the residential populations
+      tags:
+      - api
   /api/population/{id}/:
     get:
       operationId: retrievePopulation
@@ -540,9 +556,9 @@ paths:
           description: ''
       tags:
       - api
-  /api/population/{id}/probability_map/{subdivision}/:
+  /api/population/{id}/contour_plot/{subdivision}/{type}/:
     get:
-      operationId: probabilityMapPopulation
+      operationId: contourPlotPopulation
       description: This viewset automatically provides `list` actions.
       parameters:
       - name: id
@@ -552,6 +568,12 @@ paths:
         schema:
           type: string
       - name: subdivision
+        in: path
+        required: true
+        description: ''
+        schema:
+          type: string
+      - name: type
         in: path
         required: true
         description: ''
@@ -1302,6 +1324,7 @@ components:
                 maxLength: 7
               experiment:
                 type: integer
+                nullable: true
               atlas:
                 enum:
                 - salk_cord_10um
@@ -1362,6 +1385,7 @@ components:
           maxLength: 7
         experiment:
           type: integer
+          nullable: true
         atlas:
           enum:
           - salk_cord_10um

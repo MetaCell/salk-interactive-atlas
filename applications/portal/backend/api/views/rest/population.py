@@ -1,23 +1,44 @@
 import logging
 
-# import numpy as np
 from django.http import Http404, HttpResponse, FileResponse
-
 from dry_rest_permissions.generics import DRYPermissions
 from rest_framework import status, viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
+from rest_framework.schemas.openapi import AutoSchema
 
 from api.constants import PopulationPersistentFiles
-from api.helpers.atlas import get_bg_atlas
-from api.helpers.exceptions import DensityMapIncorrectSubdivisionError
 from api.models import Experiment, Population
 from api.serializers import PopulationSerializer
 from api.services.population_service import get_cells
 from api.utils import send_file
-from api.validators.density_map import validate_subdivision
 
 log = logging.getLogger("__name__")
+
+
+class CustomPopulationSchema(AutoSchema):
+    def get_responses(self, path, method):
+        view = self.view
+
+        if hasattr(view, 'action') and view.action == 'residential':
+            return {
+                '200': {
+                    'content': {
+                        'application/json': {
+                            'schema': {
+                                'type': 'array',
+                                'items': {
+                                    '$ref': '#/components/schemas/Population'
+                                }
+                            }
+                        }
+                    },
+                    'description': "Successful retrieval of the residential populations",
+                }
+            }
+
+        # For other actions, fall back to the default behavior.
+        return super().get_responses(path, method)
 
 
 class PopulationViewSet(viewsets.ModelViewSet):
@@ -28,10 +49,18 @@ class PopulationViewSet(viewsets.ModelViewSet):
     permission_classes = (DRYPermissions,)
     serializer_class = PopulationSerializer
     queryset = Population.objects.all()
+    schema = CustomPopulationSchema()
+
 
     def list(self, request, **kwargs):
         experiments = Experiment.objects.list_ids(request.user)
         queryset = Population.objects.filter(experiment__in=experiments)
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
+
+    @action(detail=False)
+    def residential(self, request, **kwargs):
+        queryset = Population.objects.filter(experiment__isnull=True)
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
 
@@ -46,12 +75,23 @@ class PopulationViewSet(viewsets.ModelViewSet):
 
     @action(
         detail=True,
-        url_path="probability_map/(?P<subdivision>[^/.]+)",
-        url_name="probability_map",
+        url_path="contour_plot/(?P<subdivision>[^/.]+)/(?P<type>base|heatmap)",
+        url_name="contour_plot",
     )
-    def probability_map(self, request, **kwargs):
+    def contour_plot(self, request, **kwargs):
+        file_type_map = {
+            'base': PopulationPersistentFiles.CONTOUR_PLOT_IMG,
+            'heatmap': PopulationPersistentFiles.CONTOUR_PLOT_WITH_OVERLAY_IMG,
+        }
+        try:
+            file_type = file_type_map[kwargs.get('type')]
+        except KeyError:
+            return Response(
+                {"detail": "Invalid 'type' value. Must be either 'base' or 'heatmap'."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
         return self._handle_get_image_request(
-            PopulationPersistentFiles.PROBABILITY_MAP_IMG, request, **kwargs
+            file_type, request, **kwargs
         )
 
     @action(
@@ -79,7 +119,7 @@ class PopulationViewSet(viewsets.ModelViewSet):
         #     return HttpResponse(status=status.HTTP_400_BAD_REQUEST)
         # except Exception as e:
         #     return HttpResponse(status=status.HTTP_400_BAD_REQUEST)
-        
+
         response = FileResponse(
             open(instance.get_image_path(subdivision, content), 'rb'),
             content_type="image/png"

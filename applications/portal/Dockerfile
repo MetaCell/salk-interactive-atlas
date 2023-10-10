@@ -8,7 +8,6 @@ RUN mkdir -p ${APP_DIR}
 
 WORKDIR ${APP_DIR}/..
 COPY cordmap ./cordmap
-RUN python3 -m pip install itk==5.2.1.post1 --no-cache-dir --upgrade
 RUN python3 -m pip install -e cordmap --no-cache-dir --upgrade
 
 ADD local-atlas/salk_cord_10um_v1.0.tar.gz /root/.brainglobe/
@@ -29,7 +28,7 @@ RUN mkdir -p ${APP_DIR}/static/www
 RUN python3 manage.py generate_canal_images salk_cord_10um
 RUN python3 manage.py generate_grid_images salk_cord_10um
 RUN python3 manage.py generate_lamina_images salk_cord_10um
-RUN python3 manage.py generate_annotation_images salk_cord_10um
+RUN python3 manage.py generate_grey_and_white_matter_images salk_cord_10um
 
 # compile frontend
 FROM node:16-alpine as frontend
