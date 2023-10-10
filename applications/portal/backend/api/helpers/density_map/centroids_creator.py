@@ -75,12 +75,12 @@ def _imshow(
         aspect = rcParams["image.aspect"]
     axis.set_aspect(aspect)
     im = mimage.AxesImage(
-        axis,
-        cmap,
-        norm,
-        interpolation,
-        origin,
-        extent,
+        ax=axis,
+        cmap=cmap,
+        norm=norm,
+        interpolation=interpolation,
+        origin=origin,
+        extent=extent,
         filternorm=filternorm,
         filterrad=filterrad,
         resample=resample,
