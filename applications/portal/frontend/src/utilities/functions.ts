@@ -139,12 +139,21 @@ export const addPopulationsChildren = (populations: any) => {
     if (populations === undefined) {
         return
     }
-    const newPopulation = {} as any;
-    // Creating another object and check if the parentName is already in the object
-    //  then add it to that one... if not create a new one in newPopulation
-    // const populationValues = Object.values(populations);
-    const populationCheck = {} as any;
+    let newPopulation = {} as any;
     const populationKeys = Object.keys(populations);
+
+    newPopulation = sortSubpopulation(populationKeys, populations, newPopulation);
+    // Go through it again and change the keys to its id
+    // const updatedPopulation = {} as any;
+    // Object.keys(newPopulation).forEach((key) => {
+    //     const population = newPopulation[key];
+    //     const newKey = population.id;
+    //     updatedPopulation[newKey] = { ...population };
+    // });
+    return newPopulation;
+}
+
+function sortSubpopulation(populationKeys: string[], populations: any, newPopulation: any) {
     populationKeys.forEach((key) => {
         const population = populations[key];
         const name = population.name;
@@ -162,12 +171,10 @@ export const addPopulationsChildren = (populations: any) => {
                     opacity: population.opacity,
                     status: population.status
                 }
-            }
-            populationCheck[name] = true;
+            };
         } else {
             const parentName = nameSplit[0];
             const childName = nameSplit[1];
-            // if (populationCheck[parentName] === undefined) {
 
             if (newPopulation[parentName] === undefined) {
                 newPopulation[parentName] = {
@@ -179,7 +186,7 @@ export const addPopulationsChildren = (populations: any) => {
                             name: childName
                         }
                     }
-                }
+                };
             } else {
                 newPopulation[parentName].children = {
                     ...newPopulation[parentName].children,
@@ -187,17 +194,9 @@ export const addPopulationsChildren = (populations: any) => {
                         ...population,
                         name: childName
                     }
-                }
+                };
             }
         }
     });
-    // Go through it again and change the keys to its id
-    const updatedPopulation = {} as any;
-    Object.keys(newPopulation).forEach((key) => {
-        const population = newPopulation[key];
-        const newKey = population.id;
-        updatedPopulation[newKey] = { ...population };
-    });
-    console.log(updatedPopulation);
     return newPopulation;
 }

@@ -262,10 +262,7 @@ const ExperimentSidebar = ({
 
     const [populationWithChildren, setPopulationWithChildren] = useState({});
     useEffect(() => {
-        console.log('populations activated');
         setPopulationWithChildren(addPopulationsChildren(populations));
-        // addPopulationsChildren(populations)
-        console.log('populations', populations);
     }, [populations]);
 
     return (
@@ -342,7 +339,6 @@ const ExperimentSidebar = ({
                                         <CustomAccordionSummary
                                             isExpanded={expanded}
                                             population={populationWithChildren[pId]}
-                                            // individualPopulation={populationWithChildren[pId]}
                                             isParent={populationWithChildren[pId]?.children ? true : false}
                                             isChild={false}
                                             handlePopulationSwitch={handlePopulationSwitch}
@@ -358,8 +354,6 @@ const ExperimentSidebar = ({
                                                                 <CustomAccordionSummary
                                                                     id={index}
                                                                     data={arr}
-                                                                    // pId={populationWithChildren[pId]?.children[nestedPId].id}
-                                                                    // individualPopulation={populationWithChildren[pId]?.children[nestedPId]}
                                                                     isExpanded={false}
                                                                     isParent={false}
                                                                     isChild={true}
