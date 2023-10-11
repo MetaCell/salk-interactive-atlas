@@ -14,9 +14,10 @@ import {
 import UP_ICON from "../../assets/images/icons/up.svg";
 import CustomAccordionSummary from "./CustomAccordionSummary";
 import DOWNLOAD_ICON from "../../assets/images/icons/download_icon.svg";
-import {POPULATION_FINISHED_STATE} from "../../utilities/constants";
 import {downloadFile} from "../../utils";
 import {areAllPopulationsWithChildrenSelected} from "../../utilities/functions";
+import workspaceService from "../../service/WorkspaceService";
+import {useParams} from "react-router";
 
 const PopulationsAccordion = ({
                                   populations,
@@ -30,6 +31,8 @@ const PopulationsAccordion = ({
                               }) => {
 
     const [expanded, setExpanded] = React.useState(false);
+    const api = workspaceService.getApi()
+    const params = useParams();
 
     const downloadPopulationsData = async () => {
         try {
@@ -52,9 +55,10 @@ const PopulationsAccordion = ({
         }
     }
 
-    const activePopulations = Object.keys(populations).filter(
-        (populationID) => populations[populationID].selected
-    );
+    const activePopulations = Object.values(populations)
+        .flatMap(population => population.children ? Object.values(population.children) : [])
+        .filter(child => child.selected)
+        .map(child => child.id);
 
     const downloadTooltipTitle = activePopulations.length
         ? 'Download active populations data'
