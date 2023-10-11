@@ -297,15 +297,15 @@ const ExperimentSidebar = ({
 
                     <PopulationsAccordion populations={residentialPopulationsWithChildren} icon={RESIDENTIAL_POPULATION}
                                           title={"Data library"}
-                                          handleShowAllPopulations={handleShowAllPopulations}
-                                          hasEditPermission={hasEditPermission}
-                                          handlePopulationColorChange={handlePopulationColorChange}
+                                          handleShowAllPopulations={() => handleShowAllPopulations(residentialPopulationsWithChildren)}
+                                          hasEditPermission={false}
+                                          handlePopulationColorChange={() => {}}
                                           handlePopulationSwitch={handlePopulationSwitch}
                     />
 
                     <PopulationsAccordion populations={experimentPopulationsWithChildren} icon={POPULATION}
                                           title={"Experimental Populations"}
-                                          handleShowAllPopulations={handleShowAllPopulations}
+                                          handleShowAllPopulations={() => handleShowAllPopulations(experimentPopulationsWithChildren)}
                                           hasEditPermission={hasEditPermission}
                                           handlePopulationColorChange={handlePopulationColorChange}
                                           handlePopulationSwitch={handlePopulationSwitch}

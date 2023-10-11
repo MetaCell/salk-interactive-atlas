@@ -79,7 +79,7 @@ const CustomAccordionSummary = ({
                 {hasEditPermission && population.status === POPULATION_FINISHED_STATE &&
                     <ArrowDropDownIcon fontSize='small' style={{ opacity: POPULATION_ICONS_OPACITY }} />}
             </span>
-            {hasEditPermission && population.status === POPULATION_FINISHED_STATE &&
+            {hasEditPermission && !isChild && population.status === POPULATION_FINISHED_STATE &&
                 <Popover
                     open={population.id === selectedPopoverId}
                     anchorEl={popoverAnchorEl}
