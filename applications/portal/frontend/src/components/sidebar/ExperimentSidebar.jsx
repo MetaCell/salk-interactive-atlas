@@ -223,7 +223,8 @@ const ExperimentSidebar = ({
                                selectedAtlas,
                                populations,
                                handleAtlasChange,
-                               handlePopulationSwitch,
+                               handleChildPopulationSwitch,
+                               handleParentPopulationSwitch,
                                handleShowAllPopulations,
                                handlePopulationColorChange,
                                hasEditPermission
@@ -299,8 +300,9 @@ const ExperimentSidebar = ({
                                           title={"Data library"}
                                           handleShowAllPopulations={() => handleShowAllPopulations(residentialPopulationsWithChildren)}
                                           hasEditPermission={false}
-                                          handlePopulationColorChange={() => {}}
-                                          handlePopulationSwitch={handlePopulationSwitch}
+                                          handlePopulationColorChange={handlePopulationColorChange}
+                                          handleChildPopulationSwitch={handleChildPopulationSwitch}
+                                          handleParentPopulationSwitch={handleParentPopulationSwitch}
                     />
 
                     <PopulationsAccordion populations={experimentPopulationsWithChildren} icon={POPULATION}
@@ -308,7 +310,8 @@ const ExperimentSidebar = ({
                                           handleShowAllPopulations={() => handleShowAllPopulations(experimentPopulationsWithChildren)}
                                           hasEditPermission={hasEditPermission}
                                           handlePopulationColorChange={handlePopulationColorChange}
-                                          handlePopulationSwitch={handlePopulationSwitch}
+                                          handleChildPopulationSwitch={handleChildPopulationSwitch}
+                                          handleParentPopulationSwitch={handleParentPopulationSwitch}
                     />
 
                 </>

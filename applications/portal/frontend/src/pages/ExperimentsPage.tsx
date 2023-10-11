@@ -23,7 +23,7 @@ import {
 } from "../utilities/constants"
 import {getAtlas} from "../service/AtlasService";
 import {Experiment, ExperimentPopulationsInner, Population} from "../apiclient/workspaces";
-import {areAllPopulationsSelected, areAllSelected} from "../utilities/functions";
+import {areAllPopulationsWithChildrenSelected, areAllSelected} from "../utilities/functions";
 import workspaceService from "../service/WorkspaceService";
 import {DetailsWidget, threeDViewerWidget, twoDViewerWidget, widgetIds} from "../widgets";
 import {useInterval} from "../utilities/hooks/useInterval";
@@ -70,7 +70,7 @@ const getSubdivisions = (sa: AtlasChoice) => {
 /**
  * The component that renders the FlexLayout component of the LayoutManager.
  */
-const ExperimentsPage: React.FC<{ residentialPopulations: any }> = ({ residentialPopulations }) => {
+const ExperimentsPage: React.FC<{ residentialPopulations: any }> = ({residentialPopulations}) => {
 
     const api = workspaceService.getApi()
     const classes = useStyles();
@@ -117,29 +117,30 @@ const ExperimentsPage: React.FC<{ residentialPopulations: any }> = ({ residentia
             }
         }
     }) => {
-        const areAllPopulationsActive = areAllPopulationsSelected(pops);
-        const nextPopulations = { ...populations };
+        const areAllPopulationsActive = areAllPopulationsWithChildrenSelected(pops);
+        const nextPopulations = {...populations};
 
-        Object.values(pops).forEach((parentPopulation:any) => {
+        Object.values(pops).forEach((parentPopulation: any) => {
             Object.keys(parentPopulation.children).forEach(pId => {
-            if (nextPopulations[pId].status === POPULATION_FINISHED_STATE) {
-                nextPopulations[pId].selected = !areAllPopulationsActive;
-            }
-        })});
+                if (nextPopulations[pId].status === POPULATION_FINISHED_STATE) {
+                    nextPopulations[pId].selected = !areAllPopulationsActive;
+                }
+            })
+        });
+
+        setPopulations(nextPopulations);
+    };
+
+    const handleChildPopulationSwitch = (populationId: string) => {
+        const nextPopulations: any = {...populations};
+        nextPopulations[populationId].selected = !nextPopulations[populationId].selected;
 
         setPopulations(nextPopulations);
     };
 
 
-    const handlePopulationSwitch = (populationId: string) => {
+    const handleParentPopulationSwitch = (children: any, newSelectedState: boolean) => {
         const nextPopulations: any = {...populations};
-        const newSelectedState = !nextPopulations[populationId].selected;
-
-        // Update the parent's selected state
-        nextPopulations[populationId].selected = newSelectedState;
-
-        // If the population has children, update their selected state to match the parent
-        const children = nextPopulations[populationId].children;
         if (children) {
             Object.keys(children).forEach(childId => {
                 if (nextPopulations[childId]) {
@@ -152,8 +153,10 @@ const ExperimentsPage: React.FC<{ residentialPopulations: any }> = ({ residentia
     };
 
     const handlePopulationColorChange = async (id: string, color: string, opacity: string) => {
-        // @ts-ignore
-        await api.partialUpdatePopulation(id, {color, opacity})
+        if (id) {
+            // @ts-ignore
+            await api.partialUpdatePopulation(id, {color, opacity})
+        }
         // @ts-ignore
         const nextPopulations = {...populations};
         // @ts-ignore
@@ -236,7 +239,7 @@ const ExperimentsPage: React.FC<{ residentialPopulations: any }> = ({ residentia
 
     // TODO: Handle selectedAtlas changes
 
-    const getWidgetStatus = (widgetId : string) => {
+    const getWidgetStatus = (widgetId: string) => {
         return store.getState().widgets[widgetId].status
     }
 
@@ -274,7 +277,8 @@ const ExperimentsPage: React.FC<{ residentialPopulations: any }> = ({ residentia
             <Sidebar selectedAtlas={selectedAtlas}
                      populations={populations}
                      handleAtlasChange={handleAtlasChange}
-                     handlePopulationSwitch={handlePopulationSwitch}
+                     handleChildPopulationSwitch={handleChildPopulationSwitch}
+                     handleParentPopulationSwitch={handleParentPopulationSwitch}
                      handleShowAllPopulations={handleShowAllPopulations}
                      handlePopulationColorChange={handlePopulationColorChange}
                      hasEditPermission={experiment.has_edit_permission}

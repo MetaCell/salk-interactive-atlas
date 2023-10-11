@@ -17,7 +17,7 @@ export const areAllSelected = (obj: {
     return Object.keys(obj).reduce((acc, pId) => obj[pId].selected && acc, true)
 }
 
-export const areAllPopulationsSelected = (obj: {
+export const areAllPopulationsWithChildrenSelected = (obj: {
     [x: string]: {
         children?: {
             [childId: string]: {

@@ -16,7 +16,7 @@ import CustomAccordionSummary from "./CustomAccordionSummary";
 import DOWNLOAD_ICON from "../../assets/images/icons/download_icon.svg";
 import {POPULATION_FINISHED_STATE} from "../../utilities/constants";
 import {downloadFile} from "../../utils";
-import {areAllPopulationsSelected} from "../../utilities/functions";
+import {areAllPopulationsWithChildrenSelected} from "../../utilities/functions";
 
 const PopulationsAccordion = ({
                                   populations,
@@ -25,7 +25,8 @@ const PopulationsAccordion = ({
                                   handleShowAllPopulations,
                                   hasEditPermission,
                                   handlePopulationColorChange,
-                                  handlePopulationSwitch
+                                  handleChildPopulationSwitch,
+                                  handleParentPopulationSwitch
                               }) => {
 
     const [expanded, setExpanded] = React.useState(false);
@@ -42,12 +43,6 @@ const PopulationsAccordion = ({
     }
 
     const handlePopulationsWithChildrenColorChange = (id, color, opacity) => {
-        const { populations, handlePopulationColorChange } = this.props;
-
-        if (!populations[id]) {
-            console.error(`No population found with id: ${id}`);
-            return;
-        }
 
         // Call handlePopulationColorChange for the main population
         handlePopulationColorChange(id, color, opacity);
@@ -90,7 +85,7 @@ const PopulationsAccordion = ({
                     label="Show all"
                     labelPlacement="start"
                     onChange={handleShowAllPopulations}
-                    checked={areAllPopulationsSelected(populations)}
+                    checked={areAllPopulationsWithChildrenSelected(populations)}
                 />
                 {Object.keys(populations).length > 0 && Object.keys(populations).map(pId =>
                     <span className='population-entry' key={pId}>
@@ -101,10 +96,9 @@ const PopulationsAccordion = ({
                                             isExpanded={expanded}
                                             population={populations[pId]}
                                             isParent={populations[pId]?.children !== undefined}
-                                            isChild={false}
-                                            handlePopulationSwitch={handlePopulationSwitch}
+                                            handlePopulationSwitch={handleParentPopulationSwitch}
                                             handlePopulationColorChange={handlePopulationsWithChildrenColorChange}
-                                            hasEditPermission={hasEditPermission}
+                                            hasEditPermission={false}
                                         />
                                         {
                                             populations[pId]?.children && <AccordionDetails>
@@ -117,9 +111,8 @@ const PopulationsAccordion = ({
                                                                     data={arr}
                                                                     isExpanded={false}
                                                                     isParent={false}
-                                                                    isChild={true}
                                                                     population={populations[pId]?.children[nestedPId]}
-                                                                    handlePopulationSwitch={handlePopulationSwitch}
+                                                                    handlePopulationSwitch={handleChildPopulationSwitch}
                                                                     handlePopulationColorChange={handlePopulationColorChange}
                                                                     hasEditPermission={hasEditPermission}
                                                                 />
