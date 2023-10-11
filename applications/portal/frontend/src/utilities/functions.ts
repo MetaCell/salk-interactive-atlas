@@ -172,7 +172,7 @@ export const groupPopulations = (populations: any) => {
 }
 
 function sortSubpopulation(populationKeys: string[], populations: any) {
-    let newPopulations = {} as any;
+    const newPopulations = {} as any;
     populationKeys.forEach((key) => {
         const population = populations[key];
         const {name, color, opacity} = population
