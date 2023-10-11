@@ -23,7 +23,7 @@ import {
 } from "../utilities/constants"
 import {getAtlas} from "../service/AtlasService";
 import {Experiment, ExperimentPopulationsInner, Population} from "../apiclient/workspaces";
-import {areAllSelected} from "../utilities/functions";
+import {areAllPopulationsSelected, areAllSelected} from "../utilities/functions";
 import workspaceService from "../service/WorkspaceService";
 import {DetailsWidget, threeDViewerWidget, twoDViewerWidget, widgetIds} from "../widgets";
 import {useInterval} from "../utilities/hooks/useInterval";
@@ -108,24 +108,47 @@ const ExperimentsPage: React.FC<{ residentialPopulations: any }> = ({ residentia
     const handleAtlasChange = (atlasId: AtlasChoice) => {
         setSelectedAtlas(atlasId)
     };
-    const handleShowAllPopulations = (pops: { [p: string]: { selected: any } }) => {
-        const areAllPopulationsActive = areAllSelected(pops);
+    const handleShowAllPopulations = (pops: {
+        [x: string]: {
+            children?: {
+                [childId: string]: {
+                    selected: any
+                }
+            }
+        }
+    }) => {
+        const areAllPopulationsActive = areAllPopulationsSelected(pops);
         const nextPopulations = { ...populations };
 
-        Object.keys(pops).forEach(pId => {
+        Object.values(pops).forEach((parentPopulation:any) => {
+            Object.keys(parentPopulation.children).forEach(pId => {
             if (nextPopulations[pId].status === POPULATION_FINISHED_STATE) {
                 nextPopulations[pId].selected = !areAllPopulationsActive;
             }
-        });
+        })});
 
         setPopulations(nextPopulations);
     };
 
 
     const handlePopulationSwitch = (populationId: string) => {
-        const nextPopulations: any = {...populations}
-        nextPopulations[populationId].selected = !nextPopulations[populationId].selected
-        setPopulations(nextPopulations)
+        const nextPopulations: any = {...populations};
+        const newSelectedState = !nextPopulations[populationId].selected;
+
+        // Update the parent's selected state
+        nextPopulations[populationId].selected = newSelectedState;
+
+        // If the population has children, update their selected state to match the parent
+        const children = nextPopulations[populationId].children;
+        if (children) {
+            Object.keys(children).forEach(childId => {
+                if (nextPopulations[childId]) {
+                    nextPopulations[childId].selected = newSelectedState;
+                }
+            });
+        }
+
+        setPopulations(nextPopulations);
     };
 
     const handlePopulationColorChange = async (id: string, color: string, opacity: string) => {

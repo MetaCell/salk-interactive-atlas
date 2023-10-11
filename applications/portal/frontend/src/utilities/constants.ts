@@ -43,6 +43,9 @@ export const ContourImageTypes = {
 
 export const PULL_TIME_MS = 30 * 1000
 export const POPULATION_FINISHED_STATE = "finished"
+export const POPULATION_RUNNING_STATE = "running"
+export const POPULATION_PENDING_STATE = "pending"
+export const POPULATION_ERROR_STATE = "error"
 export const MAX_STR_LENGTH_SIDEBAR = 15
 
 export enum DensityImages {
@@ -82,3 +85,5 @@ export const EXPERIMENTS_ROUTE = '/experiments/:id'
 
 export const SNACKBAR_TIMEOUT = 5000
 export const POPULATION_ICONS_OPACITY = 0.4
+
+export const POPULATION_UNKNOWN_CHILD = 'unknown'

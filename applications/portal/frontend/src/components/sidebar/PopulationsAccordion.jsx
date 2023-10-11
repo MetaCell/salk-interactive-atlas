@@ -16,6 +16,7 @@ import CustomAccordionSummary from "./CustomAccordionSummary";
 import DOWNLOAD_ICON from "../../assets/images/icons/download_icon.svg";
 import {POPULATION_FINISHED_STATE} from "../../utilities/constants";
 import {downloadFile} from "../../utils";
+import {areAllPopulationsSelected} from "../../utilities/functions";
 
 const PopulationsAccordion = ({
                                   populations,
@@ -28,12 +29,6 @@ const PopulationsAccordion = ({
                               }) => {
 
     const [expanded, setExpanded] = React.useState(false);
-
-    const areAllPopulationsSelected = () => {
-        return Object.keys(populations)
-            .filter(pId => populations[pId].status === POPULATION_FINISHED_STATE)
-            .reduce((acc, pId) => populations[pId].selected && acc, true)
-    }
 
     const downloadPopulationsData = async () => {
         try {
@@ -95,7 +90,7 @@ const PopulationsAccordion = ({
                     label="Show all"
                     labelPlacement="start"
                     onChange={handleShowAllPopulations}
-                    checked={areAllPopulationsSelected()}
+                    checked={areAllPopulationsSelected(populations)}
                 />
                 {Object.keys(populations).length > 0 && Object.keys(populations).map(pId =>
                     <span className='population-entry' key={pId}>

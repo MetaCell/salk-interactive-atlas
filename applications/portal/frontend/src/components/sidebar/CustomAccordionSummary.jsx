@@ -10,7 +10,7 @@ import {
 import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown';
 import UP_ICON from "../../assets/images/icons/up.svg";
 import {POPULATION_FINISHED_STATE} from "../../utilities/constants";
-import {getRGBAFromHexAlpha, getRGBAString} from "../../utilities/functions";
+import {getParentPopulationStatus, getRGBAFromHexAlpha, getRGBAString} from "../../utilities/functions";
 import ColorPicker from "../common/ColorPicker";
 import SwitchLabel from "../common/SwitchLabel";
 import {TrailIcon, TrailEndIcon} from '../icons';
@@ -51,8 +51,12 @@ const CustomAccordionSummary = ({
 
     const PopulationLabel = ({population}) => {
         let labelText = population.name;
-        if (population.status !== POPULATION_FINISHED_STATE) {
-            labelText += `- ${population.status}`
+        let status = population.status
+        if (isParent){
+            status = getParentPopulationStatus(population)
+        }
+        if (status !== POPULATION_FINISHED_STATE) {
+            labelText += ` - ${status}`
         }
         const isParentLabel = isParent && isExpanded
         return (
