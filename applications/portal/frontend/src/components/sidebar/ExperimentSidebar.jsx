@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {makeStyles} from '@material-ui/core/styles';
 import {
     Box,
@@ -7,28 +7,30 @@ import {
     Accordion,
     AccordionSummary,
     AccordionDetails,
+    Switch,
     FormControlLabel,
     FormControl,
     RadioGroup,
     Radio,
-    Button
+    Button,
+    Tooltip
 } from '@material-ui/core';
 
 import {canvasIconColor, headerBg, headerBorderColor} from "../../theme";
 import TOGGLE from "../../assets/images/icons/toggle.svg";
 import ATLAS from "../../assets/images/icons/atlas.svg";
 import ADD from "../../assets/images/icons/add.svg";
+import UP_ICON from "../../assets/images/icons/up.svg";
 import POPULATION from "../../assets/images/icons/population.svg";
 import RESIDENTIAL_POPULATION from "../../assets/images/icons/residential_population.svg";
-import UP_ICON from "../../assets/images/icons/up.svg";
 import {atlasMap} from "../../utilities/constants";
-import {isResidentialPopulation} from "../../utilities/functions";
+import {addPopulationsChildren, splitPopulationsByType} from '../../utilities/functions';
 import PopulationsAccordion from "./PopulationsAccordion";
 
 const useStyles = makeStyles({
     sidebar: {
         height: 'calc(100vh - 3rem)',
-        width: '16rem',
+        width: '15.313rem',
         flexShrink: 0,
         borderRight: `0.0625rem solid ${headerBorderColor}`,
         background: headerBg,
@@ -46,15 +48,11 @@ const useStyles = makeStyles({
         },
 
         '& .sidebar-header': {
-            padding: '0 .5rem 0 1rem',
-            height: '3rem',
+            padding: '0.25rem 0.25rem 0.25rem 1rem',
             background: headerBorderColor,
-            display: 'flex',
-            alignItems: 'center',
             position: 'sticky',
             top: 0,
             zIndex: 9,
-
             '& button': {
                 transform: 'rotate(0deg)',
             },
@@ -66,6 +64,68 @@ const useStyles = makeStyles({
             lineHeight: '0.938rem',
             fontWeight: 400,
             fontSize: '0.75rem',
+            '& .trail-icon:path': {
+                stroke: 'red'
+            },
+            '& .nav_control': {
+                display: 'none'
+            },
+            '& .MuiAccordion-root': {
+                '&:before': {
+                    display: 'none !important'
+                }
+            },
+            '& .MuiAccordionSummary-expandIcon': {
+                padding: 0,
+                marginRight: '1.188rem'
+            },
+            '& .ellipsis': {
+                textOverflow: 'ellipsis',
+                display: 'inline-block',
+                whiteSpace: 'nowrap',
+                overflow: 'hidden',
+                width: '100%'
+            },
+            '& .MuiAccordionSummary-root': {
+                padding: '0.5rem 1rem 0.5rem 3rem',
+                flexDirection: 'row-reverse',
+                '&:hover': {
+                    background: 'rgba(255, 255, 255, 0.05)',
+                    '& .nav_control': {
+                        display: 'block'
+                    },
+                    '& .ellipsis': {
+                        width: '5.25rem'
+                    }
+                },
+                '&.nested': {
+                    padding: '0.5rem 1rem 0.5rem 0.75rem',
+                },
+                '&.nested_child_element': {
+                    padding: '0 1rem 0 1.1875rem',
+                    '& .MuiAccordionSummary-expandIcon.Mui-expanded': {
+                        transform: 'none'
+                    },
+                    '&:hover': {
+                        '& .trail-icon path': {
+                            stroke: '#7B61FF'
+                        }
+                    },
+                    '& .trail-icon': {
+                        width: 'auto',
+                        height: 'auto'
+                    }
+                }
+            },
+            '& .MuiCollapse-root': {
+                borderTop: 'none'
+            },
+            '& .MuiAccordionDetails-root': {
+                paddingBottom: 0
+            },
+            '& .MuiFormControlLabel-root': {
+                padding: 0
+            }
         },
 
         '& .population-label': {
@@ -74,7 +134,7 @@ const useStyles = makeStyles({
             justifyContent: 'space-between',
             lineHeight: '0.938rem',
             fontWeight: 400,
-            fontSize: '0.75rem',
+            fontSize: '0.75rem'
         },
 
         '& .population-color': {
@@ -85,6 +145,9 @@ const useStyles = makeStyles({
             fontSize: '0.75rem',
         },
 
+        '& .population-icon': {
+            padding: '10px'
+        },
         '& .square': {
             width: '0.75rem',
             height: '0.75rem',
@@ -97,7 +160,7 @@ const useStyles = makeStyles({
         },
 
         '& .MuiFormControlLabel-root': {
-            height: '2rem',
+            padding: '0.5rem 1rem 0.5rem 3rem',
 
             '&.bold': {
                 backgroundColor: headerBg,
@@ -107,17 +170,19 @@ const useStyles = makeStyles({
                 '& .MuiFormControlLabel-label': {
                     fontWeight: 600,
                 },
+            },
+            '&.lg': {
+                padding: '1rem 1rem 1rem 3rem'
             }
         },
 
         '& .MuiButton-text': {
-            padding: 0,
+            padding: '1rem 1rem 1rem 3rem',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'space-between',
             fontWeight: '600',
             fontSize: '0.75rem',
-            height: '2rem',
             textTransform: 'none',
             lineHeight: '0.9375rem',
             color: canvasIconColor,
@@ -126,10 +191,11 @@ const useStyles = makeStyles({
             position: 'sticky',
             borderRadius: 0,
             top: 0,
+
             '&:hover': {
                 backgroundColor: headerBg,
             },
-        },
+        }
     },
 
     shrink: {
@@ -150,14 +216,8 @@ const useStyles = makeStyles({
             padding: '1rem 0.9375rem',
             cursor: 'default',
         },
-    },
-    downloadButton: {
-        marginRight: '6px',
-        display: 'flex',
-        justifyContent: 'end'
     }
 });
-
 
 const ExperimentSidebar = ({
                                selectedAtlas,
@@ -170,25 +230,7 @@ const ExperimentSidebar = ({
                            }) => {
     const classes = useStyles();
     const [shrink, setShrink] = useState(false);
-    const [popoverAnchorEl, setPopoverAnchorEl] = React.useState(null);
-    const [selectedPopoverId, setSelectedPopoverId] = React.useState(null);
 
-    const canEdit = (population) => {
-        return hasEditPermission && !isResidentialPopulation(population)
-    }
-
-    const handlePopoverClick = (event, population) => {
-        if (!canEdit(population)) {
-            return
-        }
-        setPopoverAnchorEl(event.currentTarget);
-        setSelectedPopoverId(population.id);
-    };
-
-    const handlePopoverClose = () => {
-        setPopoverAnchorEl(null);
-        setSelectedPopoverId(null);
-    };
 
     const toggleSidebar = () => {
         setShrink((prevState) => !prevState)
@@ -198,21 +240,20 @@ const ExperimentSidebar = ({
     const sidebarClass = `${classes.sidebar} scrollbar ${shrink ? `${classes.shrink}` : ``}`;
 
 
-    const residentialPopulations = {};
-    let experimentPopulations = {};
+    const [populationsWithChildren, setPopulationsWithChildren] = useState({});
+    useEffect(() => {
+        setPopulationsWithChildren(addPopulationsChildren(populations));
+    }, [populations]);
 
-    Object.keys(populations).forEach((key) => {
-        if (populations[key].experiment !== null) {
-            experimentPopulations[key] = populations[key];
-        } else {
-            residentialPopulations[key] = populations[key];
-        }
-    });
+    const {
+        experimentPopulationsWithChildren,
+        residentialPopulationsWithChildren
+    } = splitPopulationsByType(populationsWithChildren);
 
 
     return (
         <Box className={sidebarClass}>
-            <Box className="sidebar-header">
+            <Box className="sidebar-header" display="flex" alignItems="center">
                 {!shrink && <Typography className='sidebar-title'>Customize Data</Typography>}
                 <IconButton onClick={toggleSidebar} disableRipple>
                     <img src={TOGGLE} alt="Toggle_Icon" title=""/>
@@ -227,8 +268,10 @@ const ExperimentSidebar = ({
                         <AccordionSummary
                             expandIcon={<img src={UP_ICON} alt=""/>}
                         >
-                            <Typography>
+                            <IconButton className='population-icon'>
                                 <img src={ATLAS} alt=""/>
+                            </IconButton>
+                            <Typography>
                                 Atlas
                             </Typography>
                         </AccordionSummary>
@@ -252,34 +295,20 @@ const ExperimentSidebar = ({
                         </AccordionDetails>
                     </Accordion>
 
-                    <PopulationsAccordion
-                        populations={residentialPopulations}
-                        icon={RESIDENTIAL_POPULATION}
-                        title={"Data library"}
-                        handleShowAllPopulations={() => handleShowAllPopulations(residentialPopulations)}
-                        hasEditPermission={false}
-                        selectedPopoverId={null}
-                        handlePopoverClick={() => {
-                        }}
-                        popoverAnchorEl={null}
-                        handlePopoverClose={() => {
-                        }}
-                        handlePopulationColorChange={() => {
-                        }}
-                        handlePopulationSwitch={handlePopulationSwitch}
+                    <PopulationsAccordion populations={residentialPopulationsWithChildren} icon={RESIDENTIAL_POPULATION}
+                                          title={"Data library"}
+                                          handleShowAllPopulations={handleShowAllPopulations}
+                                          hasEditPermission={hasEditPermission}
+                                          handlePopulationColorChange={handlePopulationColorChange}
+                                          handlePopulationSwitch={handlePopulationSwitch}
                     />
-                    <PopulationsAccordion
-                        populations={experimentPopulations}
-                        icon={POPULATION}
-                        title={"Experimental populations"}
-                        handleShowAllPopulations={() => handleShowAllPopulations(experimentPopulations)}
-                        hasEditPermission={hasEditPermission}
-                        selectedPopoverId={selectedPopoverId}
-                        handlePopoverClick={handlePopoverClick}
-                        popoverAnchorEl={popoverAnchorEl}
-                        handlePopoverClose={handlePopoverClick}
-                        handlePopulationColorChange={handlePopulationColorChange}
-                        handlePopulationSwitch={handlePopulationSwitch}
+
+                    <PopulationsAccordion populations={experimentPopulationsWithChildren} icon={POPULATION}
+                                          title={"Experimental Populations"}
+                                          handleShowAllPopulations={handleShowAllPopulations}
+                                          hasEditPermission={hasEditPermission}
+                                          handlePopulationColorChange={handlePopulationColorChange}
+                                          handlePopulationSwitch={handlePopulationSwitch}
                     />
 
                 </>
