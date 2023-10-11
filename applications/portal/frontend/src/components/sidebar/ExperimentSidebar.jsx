@@ -24,7 +24,7 @@ import UP_ICON from "../../assets/images/icons/up.svg";
 import POPULATION from "../../assets/images/icons/population.svg";
 import RESIDENTIAL_POPULATION from "../../assets/images/icons/residential_population.svg";
 import {atlasMap} from "../../utilities/constants";
-import {addPopulationsChildren, splitPopulationsByType} from '../../utilities/functions';
+import {groupPopulations, splitPopulations, splitPopulationsByType} from '../../utilities/functions';
 import PopulationsAccordion from "./PopulationsAccordion";
 
 const useStyles = makeStyles({
@@ -240,16 +240,9 @@ const ExperimentSidebar = ({
 
     const sidebarClass = `${classes.sidebar} scrollbar ${shrink ? `${classes.shrink}` : ``}`;
 
-
-    const [populationsWithChildren, setPopulationsWithChildren] = useState({});
-    useEffect(() => {
-        setPopulationsWithChildren(addPopulationsChildren(populations));
-    }, [populations]);
-
-    const {
-        experimentPopulationsWithChildren,
-        residentialPopulationsWithChildren
-    } = splitPopulationsByType(populationsWithChildren);
+    const { residentialPopulations, experimentalPopulations } = splitPopulations(populations);
+    const experimentPopulationsWithChildren = groupPopulations(experimentalPopulations);
+    const residentialPopulationsWithChildren = groupPopulations(residentialPopulations);
 
 
     return (

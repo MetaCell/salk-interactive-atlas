@@ -161,25 +161,25 @@ export function dictZip(keys: string[], values: any[]) {
 }
 
 
-export const addPopulationsChildren = (populations: any) => {
+export const groupPopulations = (populations: any) => {
     if (populations === undefined) {
         return
     }
-    let newPopulation = {} as any;
+
     const populationKeys = Object.keys(populations);
 
-    newPopulation = sortSubpopulation(populationKeys, populations, newPopulation);
-    return newPopulation;
+    return sortSubpopulation(populationKeys, populations);
 }
 
-function sortSubpopulation(populationKeys: string[], populations: any, newPopulation: any) {
+function sortSubpopulation(populationKeys: string[], populations: any) {
+    let newPopulations = {} as any;
     populationKeys.forEach((key) => {
         const population = populations[key];
         const {name, color, opacity} = population
         const nameSplit = name.split('@');
         if (nameSplit.length === 1) {
-            newPopulation[name] = {name, color, opacity};
-            newPopulation[name].children = {
+            newPopulations[name] = {name, color, opacity};
+            newPopulations[name].children = {
                 [population.id]: {
                     ...population,
                     name: POPULATION_UNKNOWN_CHILD,
@@ -189,8 +189,8 @@ function sortSubpopulation(populationKeys: string[], populations: any, newPopula
             const parentName = nameSplit[0];
             const childName = nameSplit[1];
 
-            if (newPopulation[parentName] === undefined) {
-                newPopulation[parentName] = {
+            if (newPopulations[parentName] === undefined) {
+                newPopulations[parentName] = {
                     name: parentName,
                     color,
                     opacity,
@@ -202,8 +202,8 @@ function sortSubpopulation(populationKeys: string[], populations: any, newPopula
                     }
                 };
             } else {
-                newPopulation[parentName].children = {
-                    ...newPopulation[parentName].children,
+                newPopulations[parentName].children = {
+                    ...newPopulations[parentName].children,
                     [key]: {
                         ...population,
                         name: childName
@@ -212,28 +212,23 @@ function sortSubpopulation(populationKeys: string[], populations: any, newPopula
             }
         }
     });
-    return newPopulation;
+    return newPopulations;
 }
 
-export function splitPopulationsByType(populationsWithChildren: any) {
-    const experimentPopulationsWithChildren: any = {};
-    const residentialPopulationsWithChildren: any = {};
+export function splitPopulations(populations: any) {
+    const residentialPopulations: any = {};
+    const experimentalPopulations: any = {};
 
-    Object.values(populationsWithChildren).forEach((population: any) => {
-        const key = population.name
-        const hasExperimentAssociated = Object.values(population.children).some((child: any) => child.experiment !== null);
-
-        if (hasExperimentAssociated) {
-            experimentPopulationsWithChildren[key] = population;
+    Object.keys(populations).forEach((key) => {
+        const population = populations[key];
+        if (population.experiment === null) {
+            residentialPopulations[key] = population;
         } else {
-            residentialPopulationsWithChildren[key] = population;
+            experimentalPopulations[key] = population;
         }
     });
 
-    return {
-        experimentPopulationsWithChildren,
-        residentialPopulationsWithChildren
-    };
+    return { residentialPopulations, experimentalPopulations };
 }
 
 export function getParentPopulationStatus(population: any) {
