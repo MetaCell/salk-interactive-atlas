@@ -42,13 +42,9 @@ const PopulationsAccordion = ({
         }
     }
 
-    const handlePopulationsWithChildrenColorChange = (id, color, opacity) => {
-
-        // Call handlePopulationColorChange for the main population
-        handlePopulationColorChange(id, color, opacity);
-
+    const handlePopulationsWithChildrenColorChange = (population, color, opacity) => {
         // If the population has children, call handlePopulationColorChange for each child
-        const children = populations[id].children;
+        const children = population.children;
         if (children) {
             Object.keys(children).forEach(childId => {
                 handlePopulationColorChange(childId, color, opacity);
@@ -97,8 +93,9 @@ const PopulationsAccordion = ({
                                             population={populations[pId]}
                                             isParent={populations[pId]?.children !== undefined}
                                             handlePopulationSwitch={handleParentPopulationSwitch}
-                                            handlePopulationColorChange={handlePopulationsWithChildrenColorChange}
-                                            hasEditPermission={false}
+                                            handlePopulationColorChange={(id, color, opacity) =>
+                                                handlePopulationsWithChildrenColorChange(populations[pId], color, opacity)}
+                                            hasEditPermission={hasEditPermission}
                                         />
                                         {
                                             populations[pId]?.children && <AccordionDetails>
