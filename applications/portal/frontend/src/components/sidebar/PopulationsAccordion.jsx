@@ -44,8 +44,26 @@ const PopulationsAccordion = ({
         }catch (error){
             console.error('Error while fetching the file:', error);
         }
+    }
 
+    const handlePopulationsWithChildrenColorChange = (id, color, opacity) => {
+        const { populations, handlePopulationColorChange } = this.props;
 
+        if (!populations[id]) {
+            console.error(`No population found with id: ${id}`);
+            return;
+        }
+
+        // Call handlePopulationColorChange for the main population
+        handlePopulationColorChange(id, color, opacity);
+
+        // If the population has children, call handlePopulationColorChange for each child
+        const children = populations[id].children;
+        if (children) {
+            Object.keys(children).forEach(childId => {
+                handlePopulationColorChange(childId, color, opacity);
+            });
+        }
     }
 
     const activePopulations = Object.keys(populations).filter(
@@ -90,7 +108,7 @@ const PopulationsAccordion = ({
                                             isParent={populations[pId]?.children !== undefined}
                                             isChild={false}
                                             handlePopulationSwitch={handlePopulationSwitch}
-                                            handlePopulationColorChange={handlePopulationColorChange}
+                                            handlePopulationColorChange={handlePopulationsWithChildrenColorChange}
                                             hasEditPermission={hasEditPermission}
                                         />
                                         {

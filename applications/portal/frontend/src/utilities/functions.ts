@@ -135,10 +135,83 @@ export function dictZip(keys: string[], values: any[]) {
     return keys.reduce((o, currentValue, currentIndex) => ({...o, [currentValue]: values[currentIndex]}), {})
 }
 
-export function isResidentialPopulation(p: any) {
-    return p.experiment === null
+
+export const addPopulationsChildren = (populations: any) => {
+    if (populations === undefined) {
+        return
+    }
+    let newPopulation = {} as any;
+    const populationKeys = Object.keys(populations);
+
+    newPopulation = sortSubpopulation(populationKeys, populations, newPopulation);
+    return newPopulation;
 }
 
-export const isPopulationReady = (population: any) => {
-    return population.status === POPULATION_FINISHED_STATE
+function sortSubpopulation(populationKeys: string[], populations: any, newPopulation: any) {
+    populationKeys.forEach((key) => {
+        const population = populations[key];
+        const name = population.name;
+        const nameSplit = name.split('@');
+        if (nameSplit.length === 1) {
+            newPopulation[name] = population;
+            newPopulation[name].children = {
+                [population.id]: {
+                    id: population.id,
+                    name: 'unknown',
+                    color: population.color,
+                    experiment: population.experiment,
+                    atlas: population.atlas,
+                    cells: population.cells,
+                    opacity: population.opacity,
+                    status: population.status
+                }
+            };
+        } else {
+            const parentName = nameSplit[0];
+            const childName = nameSplit[1];
+
+            if (newPopulation[parentName] === undefined) {
+                newPopulation[parentName] = {
+                    ...population,
+                    name: parentName,
+                    children: {
+                        [key]: {
+                            ...population, // subpopulation also takes the color of the parent population
+                            name: childName
+                        }
+                    }
+                };
+            } else {
+                newPopulation[parentName].children = {
+                    ...newPopulation[parentName].children,
+                    [key]: {
+                        ...population,
+                        name: childName
+                    }
+                };
+            }
+        }
+    });
+    return newPopulation;
+}
+
+export function splitPopulationsByType(populationsWithChildren: any) {
+    const experimentPopulationsWithChildren: any = {};
+    const residentialPopulationsWithChildren: any = {};
+
+    Object.keys(populationsWithChildren).forEach((key) => {
+        const population = populationsWithChildren[key];
+        const hasExperimentAssociated = Object.values(population.children).some((child: any) => child.experiment !== null);
+
+        if (hasExperimentAssociated) {
+            experimentPopulationsWithChildren[key] = population;
+        } else {
+            residentialPopulationsWithChildren[key] = population;
+        }
+    });
+
+    return {
+        experimentPopulationsWithChildren,
+        residentialPopulationsWithChildren
+    };
 }
