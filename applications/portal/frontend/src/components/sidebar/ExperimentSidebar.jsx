@@ -1,5 +1,5 @@
-import React, {useEffect, useState} from 'react';
-import {makeStyles} from '@material-ui/core/styles';
+import React, { useEffect, useState } from 'react';
+import { makeStyles } from '@material-ui/core/styles';
 import {
     Box,
     Typography,
@@ -16,15 +16,15 @@ import {
     Tooltip
 } from '@material-ui/core';
 
-import {canvasIconColor, headerBg, headerBorderColor} from "../../theme";
+import { canvasIconColor, headerBg, headerBorderColor } from "../../theme";
 import TOGGLE from "../../assets/images/icons/toggle.svg";
 import ATLAS from "../../assets/images/icons/atlas.svg";
 import ADD from "../../assets/images/icons/add.svg";
 import UP_ICON from "../../assets/images/icons/up.svg";
 import POPULATION from "../../assets/images/icons/population.svg";
 import RESIDENTIAL_POPULATION from "../../assets/images/icons/residential_population.svg";
-import {atlasMap} from "../../utilities/constants";
-import {groupPopulations, splitPopulations, splitPopulationsByType} from '../../utilities/functions';
+import { atlasMap } from "../../utilities/constants";
+import { groupPopulations, splitPopulations, splitPopulationsByType } from '../../utilities/functions';
 import PopulationsAccordion from "./PopulationsAccordion";
 
 const useStyles = makeStyles({
@@ -64,9 +64,6 @@ const useStyles = makeStyles({
             lineHeight: '0.938rem',
             fontWeight: 400,
             fontSize: '0.75rem',
-            '& .trail-icon:path': {
-                stroke: 'red'
-            },
             '& .nav_control': {
                 display: 'none'
             },
@@ -79,13 +76,14 @@ const useStyles = makeStyles({
                 padding: 0,
                 marginRight: '1.188rem'
             },
-            '& .ellipsis': {
+            '& .ellipsis, .ellipsis-parent': {
                 textOverflow: 'ellipsis',
                 display: 'inline-block',
                 whiteSpace: 'nowrap',
                 overflow: 'hidden',
-                width: '100%'
             },
+            '& .ellipsis': { width: '100%' },
+            '& .ellipsis-parent': { width: '3rem' },
             '& .MuiAccordionSummary-root': {
                 padding: '0.5rem 1rem 0.5rem 3rem',
                 flexDirection: 'row-reverse',
@@ -96,6 +94,9 @@ const useStyles = makeStyles({
                     },
                     '& .ellipsis': {
                         width: '5.25rem'
+                    },
+                    '& .ellipsis-parent': {
+                        width: '2rem'
                     }
                 },
                 '&.nested': {
@@ -121,11 +122,15 @@ const useStyles = makeStyles({
                 borderTop: 'none'
             },
             '& .MuiAccordionDetails-root': {
-                paddingBottom: 0
+                paddingBottom: 0,
             },
             '& .MuiFormControlLabel-root': {
                 padding: 0
             }
+        },
+
+        '& .MuiAccordionDetails-root': {
+            overflowX: 'hidden'
         },
 
         '& .population-label': {
@@ -220,15 +225,15 @@ const useStyles = makeStyles({
 });
 
 const ExperimentSidebar = ({
-                               selectedAtlas,
-                               populations,
-                               handleAtlasChange,
-                               handleChildPopulationSwitch,
-                               handleParentPopulationSwitch,
-                               handleShowAllPopulations,
-                               handlePopulationColorChange,
-                               hasEditPermission
-                           }) => {
+    selectedAtlas,
+    populations,
+    handleAtlasChange,
+    handleChildPopulationSwitch,
+    handleParentPopulationSwitch,
+    handleShowAllPopulations,
+    handlePopulationColorChange,
+    hasEditPermission
+}) => {
     const classes = useStyles();
     const [shrink, setShrink] = useState(false);
 
@@ -250,7 +255,7 @@ const ExperimentSidebar = ({
             <Box className="sidebar-header" display="flex" alignItems="center">
                 {!shrink && <Typography className='sidebar-title'>Customize Data</Typography>}
                 <IconButton onClick={toggleSidebar} disableRipple>
-                    <img src={TOGGLE} alt="Toggle_Icon" title=""/>
+                    <img src={TOGGLE} alt="Toggle_Icon" title="" />
                 </IconButton>
             </Box>
 
@@ -260,10 +265,10 @@ const ExperimentSidebar = ({
                 <>
                     <Accordion elevation={0} square defaultExpanded={true}>
                         <AccordionSummary
-                            expandIcon={<img src={UP_ICON} alt=""/>}
+                            expandIcon={<img src={UP_ICON} alt="" />}
                         >
                             <IconButton className='population-icon'>
-                                <img src={ATLAS} alt=""/>
+                                <img src={ATLAS} alt="" />
                             </IconButton>
                             <Typography>
                                 Atlas
@@ -272,17 +277,17 @@ const ExperimentSidebar = ({
                         <AccordionDetails>
                             <Button disableRipple>
                                 Add an atlas
-                                <img src={ADD} alt="add"/>
+                                <img src={ADD} alt="add" />
                             </Button>
                             <FormControl component="fieldset">
                                 <RadioGroup aria-label="atlas" name="atlas1" value={selectedAtlas}>
                                     {Array.from(atlasMap.keys()).map(atlasId =>
                                         <FormControlLabel key={atlasId}
-                                                          value={atlasId}
-                                                          control={<Radio/>}
-                                                          label={atlasMap.get(atlasId).name}
-                                                          labelPlacement='start'
-                                                          onChange={(atlasId) => handleAtlasChange(atlasId)}/>)
+                                            value={atlasId}
+                                            control={<Radio />}
+                                            label={atlasMap.get(atlasId).name}
+                                            labelPlacement='start'
+                                            onChange={(atlasId) => handleAtlasChange(atlasId)} />)
                                     }
                                 </RadioGroup>
                             </FormControl>
@@ -290,21 +295,21 @@ const ExperimentSidebar = ({
                     </Accordion>
 
                     <PopulationsAccordion populations={residentialPopulationsWithChildren} icon={RESIDENTIAL_POPULATION}
-                                          title={"Data library"}
-                                          handleShowAllPopulations={() => handleShowAllPopulations(residentialPopulationsWithChildren)}
-                                          hasEditPermission={false}
-                                          handlePopulationColorChange={handlePopulationColorChange}
-                                          handleChildPopulationSwitch={handleChildPopulationSwitch}
-                                          handleParentPopulationSwitch={handleParentPopulationSwitch}
+                        title={"Data library"}
+                        handleShowAllPopulations={() => handleShowAllPopulations(residentialPopulationsWithChildren)}
+                        hasEditPermission={false}
+                        handlePopulationColorChange={handlePopulationColorChange}
+                        handleChildPopulationSwitch={handleChildPopulationSwitch}
+                        handleParentPopulationSwitch={handleParentPopulationSwitch}
                     />
 
                     <PopulationsAccordion populations={experimentPopulationsWithChildren} icon={POPULATION}
-                                          title={"Experimental Populations"}
-                                          handleShowAllPopulations={() => handleShowAllPopulations(experimentPopulationsWithChildren)}
-                                          hasEditPermission={hasEditPermission}
-                                          handlePopulationColorChange={handlePopulationColorChange}
-                                          handleChildPopulationSwitch={handleChildPopulationSwitch}
-                                          handleParentPopulationSwitch={handleParentPopulationSwitch}
+                        title={"Experimental Populations"}
+                        handleShowAllPopulations={() => handleShowAllPopulations(experimentPopulationsWithChildren)}
+                        hasEditPermission={hasEditPermission}
+                        handlePopulationColorChange={handlePopulationColorChange}
+                        handleChildPopulationSwitch={handleChildPopulationSwitch}
+                        handleParentPopulationSwitch={handleParentPopulationSwitch}
                     />
 
                 </>
