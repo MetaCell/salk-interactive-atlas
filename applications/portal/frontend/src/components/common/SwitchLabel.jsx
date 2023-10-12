@@ -11,21 +11,24 @@ const useStyles = makeStyles({
         lineHeight: '0.938rem',
         fontWeight: 400,
         fontSize: '0.75rem',
-        textOverflow: 'ellipsis'
+        textOverflow: 'ellipsis',
     },
 });
 // @ts-ignore
 const SwitchLabel = ({ label, isParentLabel }) => {
     const classes = useStyles();
+    console.log("isparent: ", isParentLabel)
     return (
         <Tooltip title={label} placement="top">
             <Box display="flex" alignItems="center" justifyContent="space-between">
-                <Typography className={`${classes.label} ellipsis`}>
-                    {label.substr(0, MAX_STR_LENGTH_SIDEBAR)}
-                    {
-                        isParentLabel && <span style={{ color: 'rgba(255, 255, 255, 0.40)', fontWeight: 400 }}> - parent</span>
-                    }
-                </Typography>
+                <div style={{ display: 'flex' }}>
+                    <Typography className={`${classes.label} ${isParentLabel ? 'ellipsis-parent' : 'ellipsis'}`}>
+                        {label.substr(0, MAX_STR_LENGTH_SIDEBAR)}
+                    </Typography>
+                    <Typography>
+                        {isParentLabel && <span style={{ color: 'rgba(255, 255, 255, 0.40)', fontWeight: 400, marginRight: '8px' }}>{` - parent`}</span>}
+                    </Typography>
+                </div>
                 <img src={NavigationControlIcon} className="nav_control" alt='' style={{ marginRight: '0.5rem' }} />
             </Box>
         </Tooltip>

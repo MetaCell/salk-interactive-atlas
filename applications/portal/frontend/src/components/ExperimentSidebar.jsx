@@ -85,6 +85,13 @@ const useStyles = makeStyles({
                 overflow: 'hidden',
                 width: '100%'
             },
+            '& .ellipsis-parent': {
+                textOverflow: 'ellipsis',
+                display: 'inline-block',
+                whiteSpace: 'nowrap',
+                overflow: 'hidden',
+                width: '3rem'
+            },
             '& .MuiAccordionSummary-root': {
                 padding: '0 !important',
                 flexDirection: 'row-reverse',
@@ -96,6 +103,9 @@ const useStyles = makeStyles({
                     },
                     '& .ellipsis': {
                         width: '5.25rem'
+                    },
+                    '& .ellipsis-parent': {
+                        width: '2rem'
                     }
                 },
                 '&.nested': {
@@ -121,7 +131,8 @@ const useStyles = makeStyles({
                 borderTop: 'none'
             },
             '& .MuiAccordionDetails-root': {
-                paddingBottom: 0
+                paddingBottom: 0,
+                overflowX: 'hidden'
             },
             '& .MuiFormControlLabel-root': {
                 padding: 0
@@ -388,7 +399,7 @@ export default ExperimentSidebar;
 const populations = {
     100: {
         id: 100,
-        name: 'V1',
+        name: 'population',
         color: '#9FEE9A',
         experiment: 133,
         atlas: 'salk_cord_10um',
@@ -445,7 +456,20 @@ const populations = {
         selected: false,
         status: "finished",
         cells: [],
-        children: undefined
+        children: {
+            201: {
+                id: 102,
+                name: 'ab',
+                color: '#9FEE9A',
+                experiment: 133,
+                atlas: 'salk_cord_10um',
+                opacity: 1,
+                selected: false,
+                status: "finished",
+                cells: [],
+                children: undefined
+            }
+        }
     },
     300: {
         id: 300,
@@ -457,7 +481,20 @@ const populations = {
         selected: false,
         status: "finished",
         cells: [],
-        children: undefined
+        children: {
+            301: {
+                id: 301,
+                name: 'ab',
+                color: '#9FEE9A',
+                experiment: 133,
+                atlas: 'salk_cord_10um',
+                opacity: 1,
+                selected: false,
+                status: "finished",
+                cells: [],
+                children: undefined
+            }
+        }
     },
     400: {
         id: 400,
@@ -469,7 +506,20 @@ const populations = {
         selected: false,
         status: "finished",
         cells: [],
-        children: undefined
+        children: {
+            401: {
+                id: 401,
+                name: 'ab',
+                color: '#9FEE9A',
+                experiment: 133,
+                atlas: 'salk_cord_10um',
+                opacity: 1,
+                selected: false,
+                status: "finished",
+                cells: [],
+                children: undefined
+            }
+        }
     }
 }
 
