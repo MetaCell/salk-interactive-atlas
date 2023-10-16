@@ -278,7 +278,7 @@ const theme = {
     MuiIcon: { fontSizeLarge: { fontSize: '1.75rem' } },
     MuiAccordionSummary: {
       root: {
-        padding: '0 .5rem 0 1rem !important', margin: 0, minHeight: '3rem !important', display: "flex",
+        padding: '4px', margin: 0, minHeight: 'auto !important', display: "flex"
       },
       content: {
         margin: '0 !important',
@@ -299,7 +299,7 @@ const theme = {
       },
       expandIcon: { marginRight: 0 }
     },
-    MuiAccordionDetails: { root: { padding: '1rem 1rem 1rem 3rem', margin: 0, minHeight: 'unset!important', flexDirection: 'column', } },
+    MuiAccordionDetails: { root: { padding: 0, paddingBottom: '8px', margin: 0, minHeight: 'unset!important', flexDirection: 'column', } },
     MuiAccordion: {
       root: {
         padding: 0, margin: '0 !important', minHeight: 'unset', background: 'transparent',
