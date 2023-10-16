@@ -9,6 +9,7 @@ from rest_framework import status, viewsets
 from rest_framework.decorators import action
 from rest_framework.parsers import MultiPartParser
 from rest_framework.response import Response
+from django.shortcuts import get_object_or_404
 
 from api.helpers.exceptions import InvalidPopulationFile, DuplicatedPopulationError, InvalidInputError
 from api.models import Experiment
@@ -33,7 +34,6 @@ class ExperimentViewSet(viewsets.ModelViewSet):
     This viewset automatically provides `list`, `create`, `retrieve`,
     `update` and `destroy` actions.
     """
-
     permission_classes = (DRYPermissions,)
     queryset = Experiment.objects.all()
     parser_classes = (MultiPartParser,)
@@ -51,6 +51,7 @@ class ExperimentViewSet(viewsets.ModelViewSet):
 
     def retrieve(self, request, *args, **kwargs):
         instance = self.get_object()
+        print(instance)
         serializer = self.get_serializer(instance, context={"request": request})
         return Response(serializer.data)
 
@@ -61,6 +62,16 @@ class ExperimentViewSet(viewsets.ModelViewSet):
             queryset, many=True, context={"request": request}
         )
         return Response(serializer.data)
+    
+    def destroy(self, request, *args, **kwargs):
+        pk = kwargs.get("pk")
+        queryset = self.get_queryset()
+        instance = get_object_or_404(queryset, pk=pk)
+        if request.user==instance.owner:
+            self.perform_destroy(instance)
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        return Response(status=status.HTTP_403_FORBIDDEN)
+
 
     @action(detail=False)
     def mine(self, request):

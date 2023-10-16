@@ -41,9 +41,13 @@ export const DeleteExperimentDialog = (props: any) => {
 
   const deleteExperiment = async (id: string) => {
     if (id) {
-      const response = await api.destroyExperiment(id)
-      if (response) {
-        refreshExperimentList()
+      try {
+        const response = await api.destroyExperiment(id)
+        if (response.status === 204) {
+          refreshExperimentList()
+        }
+      } catch (err) {
+        console.error(err)
       }
     }
     handleClose();
