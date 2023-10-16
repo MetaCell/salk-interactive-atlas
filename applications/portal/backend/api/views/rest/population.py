@@ -34,6 +34,13 @@ class PopulationViewSet(viewsets.ModelViewSet):
         queryset = Population.objects.filter(experiment__in=experiments)
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
+    
+    # # update the name of the population (if the author has access to the experiment)
+    # def update(self, request, *args, **kwargs):
+    #     instance = self.get_object()
+    #     if instance.experiment.author != request.user:
+    #         return Response(status=status.HTTP_403_FORBIDDEN)
+    #     return super().update(request, *args, **kwargs)
 
     @action(detail=True)
     def cells(self, request, **kwargs):

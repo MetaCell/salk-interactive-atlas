@@ -33,6 +33,7 @@ import workspaceService from "../service/WorkspaceService";
 import {useParams} from "react-router";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {downloadFile} from "../utils";
+import DoublePressInput from './common/DoublePressInput';
 
 const useStyles = makeStyles({
     sidebar: {
@@ -85,7 +86,15 @@ const useStyles = makeStyles({
             fontWeight: 400,
             fontSize: '0.75rem',
         },
-
+        '& .population-label-box': {
+            display: 'flex',
+            flex: '1',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            lineHeight: '0.938rem',
+            fontWeight: 400,
+            fontSize: '0.75rem',
+        },
         '& .population-color': {
             display: 'flex',
             alignItems: 'center',
@@ -338,16 +347,26 @@ const ExperimentSidebar = ({
                                             }/>
                                         </Popover>
                                     }
-                                    <FormControlLabel
-                                        className={'population-label'}
-                                        key={pId} control={<Switch/>}
-                                        label={<PopulationLabel population={populations[pId]}/>}
-                                        labelPlacement="start"
-                                        onChange={() => handlePopulationSwitch(pId)}
-                                        checked={populations[pId].selected}
+                                    <Box
+                                        className='population-label-box'
                                         style={populationTextStyle(populations[pId].status !== POPULATION_FINISHED_STATE)}
-                                        disabled={populations[pId].status !== POPULATION_FINISHED_STATE}
-                                    />
+                                    >
+                                        <DoublePressInput
+                                            children={<PopulationLabel population={populations[pId]} />}
+                                            value={populations[pId].name}
+                                            population={populations[pId]}
+                                        />
+                                        <FormControlLabel
+                                            className={'population-label'}
+                                            key={pId} control={<Switch />}
+                                            label={<></>}
+                                            labelPlacement="start"
+                                            onChange={() => handlePopulationSwitch(pId)}
+                                            checked={populations[pId].selected}
+                                            style={populationTextStyle(populations[pId].status !== POPULATION_FINISHED_STATE)}
+                                            disabled={populations[pId].status !== POPULATION_FINISHED_STATE}
+                                        />
+                                    </Box>
                                 </span>
                             )}
                             <Tooltip title={downloadTooltipTitle}>
