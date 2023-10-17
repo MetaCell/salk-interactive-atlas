@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, { forwardRef, useState } from 'react';
 import {makeStyles} from '@material-ui/core/styles';
 import {
     Box,
@@ -32,6 +32,7 @@ import {faDownload} from '@fortawesome/free-solid-svg-icons';
 import workspaceService from "../service/WorkspaceService";
 import {useParams} from "react-router";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
+import { SliderIcon } from './icons';
 import {downloadFile} from "../utils";
 
 const useStyles = makeStyles({
@@ -85,6 +86,14 @@ const useStyles = makeStyles({
             fontWeight: 400,
             fontSize: '0.75rem',
         },
+        '& .population-row': {
+            display: 'flex',
+            alignItems: 'center',
+            lineHeight: '0.938rem',
+            fontWeight: 400,
+            fontSize: '0.75rem',
+            justifyContent: 'space-between',
+        },
 
         '& .population-color': {
             display: 'flex',
@@ -99,6 +108,31 @@ const useStyles = makeStyles({
             height: '0.75rem',
             borderRadius: '0.1rem',
         },
+
+        // Icon button with slider icon styles here
+        '& .MuiIconButton-root': {
+            '&.slider-icon': {
+                padding: '0',
+                width: '1rem',
+                height: '1rem',
+                color: canvasIconColor,
+                marginRight: '10px',
+                '&:hover': {
+                    backgroundColor: headerBg,
+                },
+            },
+        },
+
+        // change whether the slider icon is visible or not on hover
+        '& .MuiSvgIcon-root': {
+            opacity: 0,
+            transition: 'opacity 0.3s',
+            '&:hover': {
+                opacity: 1,
+            },
+        },
+
+
 
         '& .MuiCollapse-wrapperInner': {
             maxHeight: '15.625rem',
@@ -170,15 +204,18 @@ const useStyles = makeStyles({
 
 const POPULATION_ICONS_OPACITY = 0.4
 
-const ExperimentSidebar = ({
-                               selectedAtlas,
-                               populations,
-                               handleAtlasChange,
-                               handlePopulationSwitch,
-                               handleShowAllPopulations,
-                               handlePopulationColorChange,
-                               hasEditPermission
-                           }) => {
+const ExperimentSidebar = forwardRef((props, ref) => {
+    const {
+        selectedAtlas,
+        populations,
+        handleAtlasChange,
+        handlePopulationSwitch,
+        handleShowAllPopulations,
+        handlePopulationColorChange,
+        hasEditPermission,
+        dotDialogOpen,
+        setDotDialogOpen,
+    } = props;
     const classes = useStyles();
     const [shrink, setShrink] = useState(false);
     const [popoverAnchorEl, setPopoverAnchorEl] = React.useState(null);
@@ -250,8 +287,9 @@ const ExperimentSidebar = ({
 
 
     }
+
     return (
-        <Box className={sidebarClass}>
+        <Box className={sidebarClass} ref={ref}>
             <Box className="sidebar-header">
                 {!shrink && <Typography className='sidebar-title'>Customize Data</Typography>}
                 <IconButton onClick={toggleSidebar} disableRipple>
@@ -302,16 +340,27 @@ const ExperimentSidebar = ({
                             </Typography>
                         </AccordionSummary>
                         <AccordionDetails>
-                            <FormControlLabel
-                                className='bold'
-                                control={
-                                    <Switch/>
-                                }
-                                label="Show all"
-                                labelPlacement="start"
-                                onChange={handleShowAllPopulations}
-                                checked={areAllPopulationsSelected()}
-                            />
+                            <Box className='population-row'>
+                                <Typography className='sidebar-title'>Show all</Typography>
+                                <Box className='population-color'>
+                                    <IconButton
+                                        edge="end"
+                                        color="inherit"
+                                        onClick={() => setDotDialogOpen(!dotDialogOpen)}
+                                        // style={{ fontSize: '1rem', marginRight: '10px', padding: '0' }}
+                                        className='slider-icon'
+                                    >
+                                        <SliderIcon fontSize='small' />
+                                    </IconButton>
+                                    <FormControlLabel
+                                        control={
+                                            <Switch />
+                                        }
+                                        onChange={handleShowAllPopulations}
+                                        checked={areAllPopulationsSelected()}
+                                    />
+                                </Box>
+                            </Box>
                             {Object.keys(populations).map(pId =>
                                 <span className='population-entry' key={pId}>
                                     <span className='population-color'
@@ -340,7 +389,10 @@ const ExperimentSidebar = ({
                                     }
                                     <FormControlLabel
                                         className={'population-label'}
-                                        key={pId} control={<Switch/>}
+                                        key={pId}
+                                        control={
+                                            <Switch />
+                                        }
                                         label={<PopulationLabel population={populations[pId]}/>}
                                         labelPlacement="start"
                                         onChange={() => handlePopulationSwitch(pId)}
@@ -369,6 +421,6 @@ const ExperimentSidebar = ({
             )}
         </Box>
     )
-};
+});
 
 export default ExperimentSidebar;

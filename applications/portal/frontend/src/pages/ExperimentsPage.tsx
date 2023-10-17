@@ -29,6 +29,7 @@ import Cell from "../models/Cell";
 import {DetailsWidget, threeDViewerWidget, twoDViewerWidget, widgetIds} from "../widgets";
 import {useInterval} from "../utilities/hooks/useInterval";
 import {useParams} from "react-router";
+import NeuronDotSize from '../components/common/ExperimentDialogs/NeuronDotSize';
 
 const useStyles = makeStyles({
     layoutContainer: {
@@ -74,6 +75,8 @@ const ExperimentsPage = () => {
     const [subdivisions, setSubdivisions] = useState(getSubdivisions(selectedAtlas));
     const [populations, setPopulations] = useState({} as any);
     const [sidebarPopulations, setSidebarPopulations] = useState({} as any);
+    const [dotDialogOpen, setDotDialogOpen] = useState(false);
+    const [dotSize, setDotSize] = useState(0);
 
 
     const dispatch = useDispatch();
@@ -247,17 +250,32 @@ const ExperimentsPage = () => {
         }
     }, [store])
 
+    const SidebarRef = React.useRef(null);
+    console.log("Experiment", SidebarRef)
     return experiment != null ? (
         <Box display="flex">
-            <Sidebar selectedAtlas={selectedAtlas}
-                     populations={sidebarPopulations}
-                     handleAtlasChange={handleAtlasChange}
-                     handlePopulationSwitch={handlePopulationSwitch}
-                     handleShowAllPopulations={handleShowAllPopulations}
-                     handlePopulationColorChange={handlePopulationColorChange}
-                     hasEditPermission={experiment.has_edit_permission}
+            <Sidebar
+                selectedAtlas={selectedAtlas}
+                populations={sidebarPopulations}
+                handleAtlasChange={handleAtlasChange}
+                handlePopulationSwitch={handlePopulationSwitch}
+                handleShowAllPopulations={handleShowAllPopulations}
+                handlePopulationColorChange={handlePopulationColorChange}
+                hasEditPermission={experiment.has_edit_permission}
+                dotDialogOpen={dotDialogOpen}
+                setDotDialogOpen={setDotDialogOpen}
+                ref={SidebarRef}
             />
             <Box className={classes.layoutContainer}>
+                {/* Want to add a popup/dialog-box when something happens. */}
+                <NeuronDotSize
+                    open={dotDialogOpen}
+                    onClose={() => setDotDialogOpen(false)}
+                    value={dotSize}
+                    onValueChange={(e) => setDotSize(e)}
+                    anchorElement={SidebarRef.current}
+
+                />
                 {LayoutComponent === undefined ? <CircularProgress/> : <LayoutComponent/>}
             </Box>
         </Box>
