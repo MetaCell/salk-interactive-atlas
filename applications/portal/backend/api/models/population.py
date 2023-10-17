@@ -1,11 +1,13 @@
 import logging
 import os
 
+from PIL import Image
 from django.conf import settings
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
-from PIL import Image
 
+from .atlas import AtlasesChoice
+from .experiment import Experiment
 from ..constants import (
     POPULATIONS_DATA,
     POPULATIONS_SPLIT_DATA,
@@ -14,11 +16,9 @@ from ..constants import (
 from ..helpers.generate_population_cells import get_cells_filepath
 from ..helpers.population_registration.population_registration_strategy_factory import \
     get_population_registration_strategy
-from ..services.filesystem_service import create_dir_if_not_exists, remove_dir, remove_file_if_exists
+from ..services.filesystem_service import create_dir_if_not_exists, remove_dir
 from ..services.population_service import generate_images, split_cells_per_segment
 from ..utils import has_property, is_valid_hex_str
-from .atlas import AtlasesChoice
-from .experiment import Experiment
 
 
 class PopulationObjectsManager(models.Manager):
@@ -41,7 +41,7 @@ class PopulationStatus(models.TextChoices):
 
 class Population(models.Model):
     DEFAULT_COLOR = "#000000"
-    experiment = models.ForeignKey(Experiment, on_delete=models.CASCADE)
+    experiment = models.ForeignKey(Experiment, on_delete=models.CASCADE, null=True, blank=True)
     atlas = models.CharField(
         max_length=100, choices=AtlasesChoice.choices, default=AtlasesChoice.SLK10
     )
@@ -50,7 +50,7 @@ class Population(models.Model):
     opacity = models.FloatField(
         validators=[MinValueValidator(0.0), MaxValueValidator(1.0)], default=1.0
     )
-    cells = models.FileField(upload_to=POPULATIONS_DATA)
+    cells = models.FileField(upload_to=POPULATIONS_DATA, max_length=255)
     status = models.CharField(
         choices=PopulationStatus.choices,
         editable=False,
@@ -93,9 +93,9 @@ class Population(models.Model):
             )
             execute_generate_population_static_files_workflow(self.id)
 
-    def delete(self, using=None, keep_parents=False):
-        remove_file_if_exists(self.cells.path)
-        super(Population, self).delete(using, keep_parents)
+    def delete(self, *args, **kwargs):
+        remove_dir(self.storage_path)
+        super(Population, self).delete(*args, **kwargs)
 
     def _has_file_changed(self):
         try:
@@ -165,17 +165,17 @@ class Population(models.Model):
             return True
 
     def has_object_read_permission(self, request):
-        return self.experiment.has_object_read_permission(request)
+        return self.experiment is None or self.experiment.has_object_read_permission(request)
 
     def has_object_write_permission(self, request):
-        return self.experiment.has_object_write_permission(request)
+        return self.experiment and self.experiment.has_object_write_permission(request)
 
     def update_color(self):
         if not is_valid_hex_str(self.color):
             self.color = Population.DEFAULT_COLOR
 
     def __str__(self):
-        return f"{self.experiment} {self.name}"
+        return f"{self.experiment} {self.name}" if self.experiment else f"Residential {self.name}"
 
     class Meta:
         unique_together = [["experiment", "name"]]

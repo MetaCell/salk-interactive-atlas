@@ -3,6 +3,7 @@ import os
 import tempfile
 import zipfile
 
+from django.db.models import Q
 from django.http import HttpResponse
 from dry_rest_permissions.generics import DRYPermissions
 from rest_framework import status, viewsets
@@ -11,16 +12,18 @@ from rest_framework.parsers import MultiPartParser
 from rest_framework.response import Response
 
 from api.helpers.exceptions import InvalidPopulationFile, DuplicatedPopulationError, InvalidInputError
-from api.models import Experiment
+from api.models import Experiment, Population
 from api.serializers import (
     ExperimentPairFileUploadSerializer,
     ExperimentSerializer,
     TagSerializer,
     TagsSerializer, ExperimentSingleFileUploadSerializer, DownloadPopulationsSerializer,
 )
-from api.services.experiment_service import add_tag, delete_tag, upload_pair_files, upload_single_file
+from api.services.cordmap_service import get_populations, is_a_population_single_file, SINGLE_FILE_POPULATION_ID_COLUMN, \
+    is_a_population_multiple_files, MULTIPLE_FILE_POPULATION_NAME_COLUMN
+from api.services.experiment_service import add_tag, delete_tag, handle_populations_upload
 from api.services.filesystem_service import move_files
-from api.validators.upload_files import validate_multiple_files_input, validate_singlefile_input
+from api.validators.upload_files import validate_multiple_files_input, validate_single_file_input
 
 log = logging.getLogger("__name__")
 
@@ -134,12 +137,15 @@ class ExperimentViewSet(viewsets.ModelViewSet):
             return Response(data={'detail': str(e)}, status=status.HTTP_422_UNPROCESSABLE_ENTITY)
         try:
             filepaths = move_files([key_file, data_file], instance.storage_path)
-        except Exception as e:
-            print(e)
+        except Exception:
             return Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR)
         try:
-            created = upload_pair_files(instance, filepaths[KEY_INDEX], filepaths[DATA_INDEX])
-            response_status = status.HTTP_201_CREATED if created else status.HTTP_200_OK
+            handle_populations_upload(instance.id,
+                                      get_populations(filepaths[KEY_INDEX], is_a_population_multiple_files,
+                                                      MULTIPLE_FILE_POPULATION_NAME_COLUMN),
+                                      filepaths[DATA_INDEX],
+                                      False)
+            response_status = status.HTTP_201_CREATED
         except InvalidPopulationFile:
             response_status = status.HTTP_400_BAD_REQUEST
         return Response(status=response_status)
@@ -155,23 +161,27 @@ class ExperimentViewSet(viewsets.ModelViewSet):
         instance = self.get_object()
         file = request.FILES.get("file")
         try:
-            validate_singlefile_input(file, instance.id)
+            validate_single_file_input(file, instance.id)
         except InvalidInputError:
             return Response(status=status.HTTP_400_BAD_REQUEST)
         except DuplicatedPopulationError as e:
             return Response(data={'detail': str(e)}, status=status.HTTP_409_CONFLICT)
         try:
             filepaths = move_files([file], instance.storage_path)
-        except Exception as e:
+        except Exception:
             return Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR)
         try:
-            created = upload_single_file(instance, filepaths[0])
-            response_status = status.HTTP_201_CREATED if created else status.HTTP_200_OK
+            handle_populations_upload(instance.id,
+                                      get_populations(filepaths[KEY_INDEX], is_a_population_single_file,
+                                                      SINGLE_FILE_POPULATION_ID_COLUMN),
+                                      filepaths[KEY_INDEX],
+                                      True)
+            response_status = status.HTTP_201_CREATED
         except InvalidPopulationFile:
             response_status = status.HTTP_400_BAD_REQUEST
         return Response(status=response_status)
 
-    @action(detail=True, methods=['get'],  url_path='download_populations/(?P<active_populations>[^/.]+)')
+    @action(detail=True, methods=['get'], url_path='download_populations/(?P<active_populations>[^/.]+)')
     def download_populations(self, request, pk=None, active_populations=None):
         experiment = self.get_object()
 
@@ -179,11 +189,12 @@ class ExperimentViewSet(viewsets.ModelViewSet):
         if not active_populations or len(active_populations) == 0:
             return Response(status=status.HTTP_204_NO_CONTENT)
 
-        filename_prefix = f'{experiment.name}'
+        filename_prefix = f'{experiment.name}' if experiment else 'population'
         filename_suffix = 's' if len(active_populations) > 1 else ''
         with tempfile.TemporaryFile() as temp_file:
             with zipfile.ZipFile(temp_file, 'w') as zip_file:
-                for population in experiment.population_set.filter(id__in=active_populations):
+                for population in Population.objects.filter(Q(experiment=experiment) | Q(experiment=None),
+                                                            id__in=active_populations):
                     if population.cells:
                         zip_file.write(population.cells.path, arcname=os.path.basename(population.cells.path))
                         filename_prefix += f"_{population.name}"
@@ -191,7 +202,8 @@ class ExperimentViewSet(viewsets.ModelViewSet):
             temp_file.seek(0)  # move the file pointer to the beginning of the file
 
             response = HttpResponse(temp_file.read(), content_type='application/octet-stream')
-            response['Content-Disposition'] = f'attachment; filename="{filename_prefix}_population{filename_suffix}.zip"'
+            response[
+                'Content-Disposition'] = f'attachment; filename="{filename_prefix}_population{filename_suffix}.zip"'
             return response
 
     def perform_create(self, serializer):

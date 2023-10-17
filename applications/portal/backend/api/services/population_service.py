@@ -8,8 +8,8 @@ import numpy as np
 from api.constants import PopulationPersistentFiles
 from api.helpers.atlas import get_bg_atlas, get_subdivision_boundaries, get_subdivisions
 from api.helpers.density_map.centroids_creator import CentroidsCreator
+from api.helpers.density_map.contour_plot_creator import ContourPlotCreator
 from api.helpers.density_map.ipopulation_image_creator import IPopulationImageCreator
-from api.helpers.density_map.probability_map_creator import ProbabilityMapCreator
 
 
 def split_cells_per_segment(population):
@@ -89,15 +89,13 @@ def generate_images(population):
         if len(cells) > 0:
             _store_image(
                 CentroidsCreator(),
-                PopulationPersistentFiles.CENTROIDS_IMG,
                 bg_atlas,
                 cells,
                 population,
                 s,
             )
             _store_image(
-                ProbabilityMapCreator(),
-                PopulationPersistentFiles.PROBABILITY_MAP_IMG,
+                ContourPlotCreator(),
                 bg_atlas,
                 cells,
                 population,
@@ -107,11 +105,15 @@ def generate_images(population):
 
 def _store_image(
         creator: IPopulationImageCreator,
-        extension: PopulationPersistentFiles,
         bg_atlas,
         cells,
         population,
         s,
 ):
-    img = creator.create(bg_atlas=bg_atlas, subdivision=s, points=cells)
-    img.save(population.get_subdivision_storage_path(s, extension))
+    is_residential = population.experiment is None
+    images_dict = creator.create(bg_atlas=bg_atlas, subdivision=s, points=cells, is_residential=is_residential)
+    for key in images_dict:
+        img = images_dict[key]
+        img.save(population.get_subdivision_storage_path(s, key))
+
+
