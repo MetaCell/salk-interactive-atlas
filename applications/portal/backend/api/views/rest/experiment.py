@@ -51,7 +51,6 @@ class ExperimentViewSet(viewsets.ModelViewSet):
 
     def retrieve(self, request, *args, **kwargs):
         instance = self.get_object()
-        print(instance)
         serializer = self.get_serializer(instance, context={"request": request})
         return Response(serializer.data)
 
