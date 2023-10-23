@@ -1,5 +1,5 @@
 import {getAtlas} from "../service/AtlasService";
-import {ARROW_KEY_LEFT, ARROW_KEY_RIGHT, AtlasChoice} from "./constants";
+import { ARROW_KEY_LEFT, ARROW_KEY_RIGHT, AtlasChoice, POPULATION_FINISHED_STATE } from "./constants";
 import Range from "../models/Range";
 
 
@@ -56,6 +56,11 @@ export function hexToRgb(hex: string) {
 export function getRGBAFromHexAlpha(hex: string, opacity: number) {
     const rgb = hexToRgb(hex)
     return rgb ? {...rgb, a: opacity} : {r: 0, g: 0, b: 0, a: 1}
+}
+
+export const getRGBAColor = (populations: any, pId: number) => {
+    const { color, opacity } = populations[pId]
+    return getRGBAFromHexAlpha(color, opacity)
 }
 
 export function getRGBAString(rgba: { r: number; g: number; b: number; a: number; }) {
@@ -133,4 +138,10 @@ export function dictZip(keys: string[], values: any[]) {
         return
     }
     return keys.reduce((o, currentValue, currentIndex) => ({...o, [currentValue]: values[currentIndex]}), {})
+}
+
+export const areAllPopulationsSelected = (populations: any) => {
+    return Object.keys(populations)
+        .filter(pId => populations[pId].status === POPULATION_FINISHED_STATE)
+        .reduce((acc, pId) => populations[pId].selected && acc, true)
 }

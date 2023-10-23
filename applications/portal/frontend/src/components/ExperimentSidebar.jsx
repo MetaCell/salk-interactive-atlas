@@ -25,7 +25,7 @@ import ADD from "../assets/images/icons/add.svg";
 import UP_ICON from "../assets/images/icons/up.svg";
 import POPULATION from "../assets/images/icons/population.svg";
 import {atlasMap, POPULATION_FINISHED_STATE} from "../utilities/constants";
-import {getRGBAFromHexAlpha, getRGBAString} from "../utilities/functions";
+import { getRGBAColor, getRGBAString, areAllPopulationsSelected } from "../utilities/functions";
 import ColorPicker from "./common/ColorPicker";
 import SwitchLabel from "./common/SwitchLabel";
 import {faDownload} from '@fortawesome/free-solid-svg-icons';
@@ -80,12 +80,18 @@ const useStyles = makeStyles({
 
         '& .population-label': {
             display: 'flex',
-            flex: '1',
             justifyContent: 'space-between',
             lineHeight: '0.938rem',
             fontWeight: 400,
             fontSize: '0.75rem',
         },
+        '& .population-container': {
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            flex: 1
+        },
+
         '& .population-row': {
             display: 'flex',
             alignItems: 'center',
@@ -109,12 +115,13 @@ const useStyles = makeStyles({
             borderRadius: '0.1rem',
         },
 
-        // Icon button with slider icon styles here
         '& .MuiIconButton-root': {
             '&.slider-icon': {
                 padding: '0',
                 width: '1rem',
                 height: '1rem',
+                display: 'flex',
+                alignItems: 'center',
                 color: canvasIconColor,
                 marginRight: '10px',
                 '&:hover': {
@@ -123,7 +130,6 @@ const useStyles = makeStyles({
             },
         },
 
-        // change whether the slider icon is visible or not on hover
         '& .MuiSvgIcon-root': {
             opacity: 0,
             transition: 'opacity 0.3s',
@@ -213,8 +219,9 @@ const ExperimentSidebar = forwardRef((props, ref) => {
         handleShowAllPopulations,
         handlePopulationColorChange,
         hasEditPermission,
-        dotDialogOpen,
-        setDotDialogOpen,
+        dotSizeDialogOpen,
+        setDotSizeDialogOpen,
+        setDialogPopulationsSelected,
     } = props;
     const classes = useStyles();
     const [shrink, setShrink] = useState(false);
@@ -243,16 +250,6 @@ const ExperimentSidebar = forwardRef((props, ref) => {
         setShrink((prevState) => !prevState)
     };
 
-    const getRGBAColor = (pId) => {
-        const {color, opacity} = populations[pId]
-        return getRGBAFromHexAlpha(color, opacity)
-    }
-
-    const areAllPopulationsSelected = () => {
-        return Object.keys(populations)
-            .filter(pId => populations[pId].status === POPULATION_FINISHED_STATE)
-            .reduce((acc, pId) => populations[pId].selected && acc, true)
-    }
 
     const activePopulations = Object.keys(populations).filter(
         (populationID) => populations[populationID].selected
@@ -284,9 +281,20 @@ const ExperimentSidebar = forwardRef((props, ref) => {
         }catch (error){
             console.error('Error while fetching the file:', error);
         }
-
-
     }
+
+    const DotSizeButton = ({ onClickFunc }) => {
+        return (
+            <IconButton
+                edge="end"
+                color="inherit"
+                onClick={() => onClickFunc()}
+                className='slider-icon'
+            >
+                <SliderIcon style={{ height: '0.90rem' }} />
+            </IconButton>
+        );
+    };
 
     return (
         <Box className={sidebarClass} ref={ref}>
@@ -343,21 +351,25 @@ const ExperimentSidebar = forwardRef((props, ref) => {
                             <Box className='population-row'>
                                 <Typography className='sidebar-title'>Show all</Typography>
                                 <Box className='population-color'>
-                                    <IconButton
-                                        edge="end"
-                                        color="inherit"
-                                        onClick={() => setDotDialogOpen(!dotDialogOpen)}
-                                        // style={{ fontSize: '1rem', marginRight: '10px', padding: '0' }}
-                                        className='slider-icon'
-                                    >
-                                        <SliderIcon fontSize='small' />
-                                    </IconButton>
+                                    {
+                                        areAllPopulationsSelected(populations) && (
+                                            <DotSizeButton
+                                                onClickFunc={() => {
+                                                    setDotSizeDialogOpen(!dotSizeDialogOpen)
+                                                    setDialogPopulationsSelected(Object.values(activePopulations).reduce((acc, pId) => {
+                                                        acc[pId] = populations[pId]
+                                                        return acc
+                                                    }, {}))
+                                                }}
+                                            />
+                                        )
+                                    }
                                     <FormControlLabel
                                         control={
                                             <Switch />
                                         }
                                         onChange={handleShowAllPopulations}
-                                        checked={areAllPopulationsSelected()}
+                                        checked={areAllPopulationsSelected(populations)}
                                     />
                                 </Box>
                             </Box>
@@ -365,7 +377,7 @@ const ExperimentSidebar = forwardRef((props, ref) => {
                                 <span className='population-entry' key={pId}>
                                     <span className='population-color'
                                           onClick={(event) => handlePopoverClick(event, pId)}>
-                                        <Box style={{backgroundColor: getRGBAString(getRGBAColor(pId))}}
+                                        <Box style={{ backgroundColor: getRGBAString(getRGBAColor(populations, pId)) }}
                                              component="span"
                                              className='square'/>
                                         {hasEditPermission && populations[pId].status === POPULATION_FINISHED_STATE &&
@@ -382,24 +394,38 @@ const ExperimentSidebar = forwardRef((props, ref) => {
                                                 horizontal: 'left',
                                             }}
                                         >
-                                            <ColorPicker selectedColor={getRGBAColor(pId)} handleColorChange={
+                                            <ColorPicker selectedColor={getRGBAColor(populations, pId)} handleColorChange={
                                                 (color, opacity) => handlePopulationColorChange(pId, color, opacity)
                                             }/>
                                         </Popover>
                                     }
-                                    <FormControlLabel
-                                        className={'population-label'}
-                                        key={pId}
-                                        control={
-                                            <Switch />
-                                        }
-                                        label={<PopulationLabel population={populations[pId]}/>}
-                                        labelPlacement="start"
-                                        onChange={() => handlePopulationSwitch(pId)}
-                                        checked={populations[pId].selected}
-                                        style={populationTextStyle(populations[pId].status !== POPULATION_FINISHED_STATE)}
-                                        disabled={populations[pId].status !== POPULATION_FINISHED_STATE}
-                                    />
+                                    <Box className='population-container'>
+                                        <Box display='flex' style={{ flex: 1 }}>
+                                            <PopulationLabel population={populations[pId]} />
+                                            {
+                                                populations[pId].selected && (
+                                                    <DotSizeButton
+                                                        onClickFunc={() => {
+                                                            setDotSizeDialogOpen(!dotSizeDialogOpen)
+                                                            setDialogPopulationsSelected({ [pId]: populations[pId] })
+                                                        }}
+                                                    />
+                                                )
+                                            }
+                                        </Box>
+
+                                        <FormControlLabel
+                                            className={'population-label'}
+                                            key={pId}
+                                            control={
+                                                <Switch />
+                                            }
+                                            onChange={() => handlePopulationSwitch(pId)}
+                                            checked={populations[pId].selected}
+                                            style={populationTextStyle(populations[pId].status !== POPULATION_FINISHED_STATE)}
+                                            disabled={populations[pId].status !== POPULATION_FINISHED_STATE}
+                                        />
+                                    </Box>
                                 </span>
                             )}
                             <Tooltip title={downloadTooltipTitle}>

@@ -23,7 +23,7 @@ import {
 } from "../utilities/constants"
 import {getAtlas} from "../service/AtlasService";
 import {Experiment, ExperimentPopulationsInner, Population} from "../apiclient/workspaces";
-import {areAllSelected} from "../utilities/functions";
+import { areAllSelected, areAllPopulationsSelected } from "../utilities/functions";
 import workspaceService from "../service/WorkspaceService";
 import Cell from "../models/Cell";
 import {DetailsWidget, threeDViewerWidget, twoDViewerWidget, widgetIds} from "../widgets";
@@ -75,8 +75,8 @@ const ExperimentsPage = () => {
     const [subdivisions, setSubdivisions] = useState(getSubdivisions(selectedAtlas));
     const [populations, setPopulations] = useState({} as any);
     const [sidebarPopulations, setSidebarPopulations] = useState({} as any);
-    const [dotDialogOpen, setDotDialogOpen] = useState(false);
-    const [dotSize, setDotSize] = useState(0);
+    const [dotSizeDialogOpen, setDotSizeDialogOpen] = useState(false);
+    const [dialogPopulationsSelected, setDialogPopulationsSelected] = useState(null);
 
 
     const dispatch = useDispatch();
@@ -89,7 +89,8 @@ const ExperimentsPage = () => {
         filteredPopulations.forEach(p => nextPopulations[p.id] = {
             ...p,
             status: p.status,
-            selected: populations[p.id]?.selected || false
+            selected: populations[p.id]?.selected || false,
+            size: 1
         })
         return nextPopulations
     }
@@ -109,6 +110,12 @@ const ExperimentsPage = () => {
         setPopulations(nextPopulations)
     }
 
+    const handlePopulationDotSizeChange = (populationId: string, size: number) => {
+        const nextPopulations: any = { ...populations }
+        nextPopulations[populationId].size = size
+        setPopulations(nextPopulations)
+        setSidebarPopulations(nextPopulations)
+    }
 
     const handlePopulationSwitch = (populationId: string) => {
         const nextPopulations: any = {...populations}
@@ -251,7 +258,7 @@ const ExperimentsPage = () => {
     }, [store])
 
     const SidebarRef = React.useRef(null);
-    console.log("Experiment", SidebarRef)
+
     return experiment != null ? (
         <Box display="flex">
             <Sidebar
@@ -262,19 +269,20 @@ const ExperimentsPage = () => {
                 handleShowAllPopulations={handleShowAllPopulations}
                 handlePopulationColorChange={handlePopulationColorChange}
                 hasEditPermission={experiment.has_edit_permission}
-                dotDialogOpen={dotDialogOpen}
-                setDotDialogOpen={setDotDialogOpen}
+                dotSizeDialogOpen={dotSizeDialogOpen}
+                setDotSizeDialogOpen={setDotSizeDialogOpen}
+                setDialogPopulationsSelected={setDialogPopulationsSelected}
                 ref={SidebarRef}
             />
             <Box className={classes.layoutContainer}>
-                {/* Want to add a popup/dialog-box when something happens. */}
                 <NeuronDotSize
-                    open={dotDialogOpen}
-                    onClose={() => setDotDialogOpen(false)}
-                    value={dotSize}
-                    onValueChange={(e) => setDotSize(e)}
+                    open={dotSizeDialogOpen}
+                    onClose={() => setDotSizeDialogOpen(false)}
+                    populations={populations}
                     anchorElement={SidebarRef.current}
-
+                    activePopulations={getActivePopulations()}
+                    handlePopulationDotSizeChange={handlePopulationDotSizeChange}
+                    dialogPopulationsSelected={dialogPopulationsSelected}
                 />
                 {LayoutComponent === undefined ? <CircularProgress/> : <LayoutComponent/>}
             </Box>
