@@ -259,7 +259,8 @@ class ThreeDViewer extends Component {
         const ranges = getAllowedRanges(selectedAtlas, activeSubdivisions)
         const minOffset = ranges.reduce((min, r) => r.start < min ? r.start : min, ranges[0].start)
         // @ts-ignore
-        const geometry = new THREE.SphereGeometry(1, 32, 16);
+        const populationRadius = population?.size ? population.size : 1
+        const geometry = new THREE.SphereGeometry(populationRadius, 32, 16);
         const dummy = new THREE.Object3D();
         const position = new THREE.Vector3();
         const material = new THREE.MeshBasicMaterial(
