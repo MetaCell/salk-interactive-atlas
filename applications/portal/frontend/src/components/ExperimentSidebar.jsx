@@ -91,6 +91,11 @@ const useStyles = makeStyles({
             justifyContent: 'space-between',
             flex: 1
         },
+        '& .dotsize-text-button': {
+            display: 'flex',
+            flex: 1,
+            alignItems: 'center'
+        },
 
         '& .population-row': {
             display: 'flex',
@@ -210,7 +215,7 @@ const useStyles = makeStyles({
 
 const POPULATION_ICONS_OPACITY = 0.4
 
-const ExperimentSidebar = forwardRef((props, ref) => {
+const ExperimentSidebar = (props) => {
     const {
         selectedAtlas,
         populations,
@@ -222,6 +227,7 @@ const ExperimentSidebar = forwardRef((props, ref) => {
         dotSizeDialogOpen,
         setDotSizeDialogOpen,
         setDialogPopulationsSelected,
+        setPopulationRefPosition
     } = props;
     const classes = useStyles();
     const [shrink, setShrink] = useState(false);
@@ -249,6 +255,8 @@ const ExperimentSidebar = forwardRef((props, ref) => {
     const toggleSidebar = () => {
         setShrink((prevState) => !prevState)
     };
+
+    const SidebarRef = React.useRef(null);
 
 
     const activePopulations = Object.keys(populations).filter(
@@ -282,14 +290,19 @@ const ExperimentSidebar = forwardRef((props, ref) => {
             console.error('Error while fetching the file:', error);
         }
     }
-
     const DotSizeButton = ({ onClickFunc }) => {
+        const myRef = React.useRef(null);
+
         return (
             <IconButton
                 edge="end"
                 color="inherit"
-                onClick={() => onClickFunc()}
+                onClick={() => {
+                    onClickFunc()
+                    setPopulationRefPosition(myRef.current.getBoundingClientRect())
+                }}
                 className='slider-icon'
+                ref={myRef} 
             >
                 <SliderIcon style={{ height: '0.90rem' }} />
             </IconButton>
@@ -297,7 +310,7 @@ const ExperimentSidebar = forwardRef((props, ref) => {
     };
 
     return (
-        <Box className={sidebarClass} ref={ref}>
+        <Box className={sidebarClass}>
             <Box className="sidebar-header">
                 {!shrink && <Typography className='sidebar-title'>Customize Data</Typography>}
                 <IconButton onClick={toggleSidebar} disableRipple>
@@ -400,7 +413,7 @@ const ExperimentSidebar = forwardRef((props, ref) => {
                                         </Popover>
                                     }
                                     <Box className='population-container'>
-                                        <Box display='flex' style={{ flex: 1 }}>
+                                        <Box className='dotsize-text-button'>
                                             <PopulationLabel population={populations[pId]} />
                                             {
                                                 populations[pId].selected && (
@@ -447,6 +460,6 @@ const ExperimentSidebar = forwardRef((props, ref) => {
             )}
         </Box>
     )
-});
+};
 
 export default ExperimentSidebar;

@@ -17,6 +17,10 @@ const useStyles = makeStyles((theme) => ({
       fontWeight: 500,
       fontSize: '0.75rem',
     },
+    '& .MuiDivider-root': {
+      margin: '1.5rem 0',
+      borderColor: headerBorderColor
+    },
     '& .MuiTypography-body1': {
       fontWeight: 400,
       fontSize: '0.75rem',
@@ -51,10 +55,7 @@ const useStyles = makeStyles((theme) => ({
       fontSize: '0.75rem',
       color: '#999999',
     },
-    '& .MuiDivider-root': {
-      margin: '1.5rem 0',
-      borderColor: headerBorderColor
-    },
+
   },
   slider: {
     width: '80%',
@@ -65,9 +66,28 @@ const useStyles = makeStyles((theme) => ({
   popupContainer: {
     position: 'absolute',
     width: '100%',
+    maxWidth: '25rem',
+    margin: '0rem',
+    '& .MuiDialogContent-root': {
+      padding: '0rem',
+    },
+    '& .MuiButton-label': {
+      padding: 0,
+    },
+    '& .MuiButton-root': {
+      padding: '0.4rem',
+      minWidth: '40px',
+    },
+    '& .MuiDialogTitle-root': {
+      padding: '0.125rem 0.25rem 0.125rem 0.8rem',
+    },
+
   },
-
-
+  dialogContainer: {
+    '& .MuiDialog-container': {
+      display: 'block',
+    },
+  },
 }));
 
 const NeuronDotSize = ({ open, onClose, populations, anchorElement, activePopulations, handlePopulationDotSizeChange, dialogPopulationsSelected }) => {
@@ -76,34 +96,27 @@ const NeuronDotSize = ({ open, onClose, populations, anchorElement, activePopula
   const marks = [
     {
       value: 0,
-      label: '0',
     },
     {
       value: 25,
-      label: '25%',
     },
     {
       value: 50,
-      label: '50%',
     },
     {
       value: 75,
-      label: '75%',
     },
     {
       value: 100,
-      label: '100%',
     },
   ];
-
   const getPositionStyles = () => {
     if (!anchorElement) {
       return {};
     }
-    const anchorRect = anchorElement.getBoundingClientRect();
     return {
-      top: anchorRect.top + window.scrollY,
-      left: anchorElement.offsetLeft,
+      marginLeft: anchorElement?.left + anchorElement?.width + 60,
+      marginTop: anchorElement?.top,
     };
   };
 
@@ -125,12 +138,18 @@ const NeuronDotSize = ({ open, onClose, populations, anchorElement, activePopula
     }
     return false;
   };
-  console.log('dialogPopulationsSelected', dialogPopulationsSelected);
+
+  // the following styles applied are added to the dialog-paper which is 
+  // inside the dialog container... add the styles to the dialog container
 
   return (
     <Dialog open={open} onClose={onClose}
-      classes={{ paper: classes.popupContainer }}
+      classes={{
+        paper: classes.popupContainer,
+      }}
+      className={classes.dialogContainer}
       fullWidth={true}
+      style={{ ...getPositionStyles() }}
     >
       <DialogTitle>
         Neuron Size
@@ -140,9 +159,7 @@ const NeuronDotSize = ({ open, onClose, populations, anchorElement, activePopula
       </DialogTitle>
       <DialogContent>
 
-      <Box className={classes.dialogContent}
-        style={{ ...getPositionStyles() }}
-      >
+        <Box className={classes.dialogContent}>
           <Box >
             {
               showAllPopulations() && (
@@ -164,7 +181,7 @@ const NeuronDotSize = ({ open, onClose, populations, anchorElement, activePopula
                       max={100}
                     />
                     <Button className='disable-text' onClick={() => changeAllDotSize(100)}>
-                      <Typography className="disable-text" gutterBottom>
+                      <Typography className="disable-text">
                         Reset
                       </Typography>
                     </Button>
@@ -183,7 +200,7 @@ const NeuronDotSize = ({ open, onClose, populations, anchorElement, activePopula
                         component="span"
                         className='square' />
                     </span>
-                    <Typography variant="body1" gutterBottom>
+                    <Typography variant="body1">
                       {dialogPopulationsSelected[pId].name}
                     </Typography>
                   </Box>
@@ -197,7 +214,7 @@ const NeuronDotSize = ({ open, onClose, populations, anchorElement, activePopula
                       max={100}
                     />
                     <Button onClick={() => handlePopulationDotSizeChange(pId, 1)}>
-                      <Typography className="disable-text" gutterBottom>
+                      <Typography className="disable-text">
                         Reset
                       </Typography>
                     </Button>

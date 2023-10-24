@@ -257,7 +257,7 @@ const ExperimentsPage = () => {
         }
     }, [store])
 
-    const SidebarRef = React.useRef(null);
+    const [populationRefPosition, setPopulationRefPosition] = useState(null)
 
     return experiment != null ? (
         <Box display="flex">
@@ -272,14 +272,14 @@ const ExperimentsPage = () => {
                 dotSizeDialogOpen={dotSizeDialogOpen}
                 setDotSizeDialogOpen={setDotSizeDialogOpen}
                 setDialogPopulationsSelected={setDialogPopulationsSelected}
-                ref={SidebarRef}
+                setPopulationRefPosition={setPopulationRefPosition}
             />
             <Box className={classes.layoutContainer}>
                 <NeuronDotSize
                     open={dotSizeDialogOpen}
                     onClose={() => setDotSizeDialogOpen(false)}
                     populations={populations}
-                    anchorElement={SidebarRef.current}
+                    anchorElement={populationRefPosition}
                     activePopulations={getActivePopulations()}
                     handlePopulationDotSizeChange={handlePopulationDotSizeChange}
                     dialogPopulationsSelected={dialogPopulationsSelected}
