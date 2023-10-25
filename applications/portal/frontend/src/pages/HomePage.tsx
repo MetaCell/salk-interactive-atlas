@@ -1,4 +1,4 @@
-import React, {useState, useRef, useEffect} from "react";
+import React, { useState, useRef, useEffect } from "react";
 import Box from "@material-ui/core/Box";
 import { makeStyles } from "@material-ui/core/styles";
 import Sidebar from "../components/ExplorerSidebar";
@@ -14,7 +14,6 @@ import {
   PULL_TIME_MS
 } from "../utilities/constants";
 import { CloneExperimentDialog } from "../components/home/CloneExperimentDialog";
-import { ExplorationSpinalCordDialog } from "../components/home/ExplorationSpinalCordDialog";
 import { ShareExperimentDialog } from "../components/home/ShareExperiment";
 import { ShareMultipleExperimentDialog } from "../components/home/ShareMultipleExperiment";
 import workspaceService from "../service/WorkspaceService";
@@ -38,9 +37,9 @@ export default (props: any) => {
   const salkteam = useRef(null);
   const acmeteam = useRef(null);
   const communityRef = useRef(null);
-  const [selectedRef, setSelectedRef] =  useState(myRef);
-  const [experiments, setExperiments] =  useState([]);
-  const {latestExperimentId} = props;
+  const [selectedRef, setSelectedRef] = useState(myRef);
+  const [experiments, setExperiments] = useState([]);
+  const { latestExperimentId, onExperimentChange } = props;
 
   const fetchExperiments = async () => {
     const response = await api.listExperiments()
@@ -67,12 +66,6 @@ export default (props: any) => {
     setDialogOpen((prevOpen) => !prevOpen);
   };
 
-  const [explorationDialogOpen, setExplorationDialogOpen] = React.useState(false);
-
-  const handleExplorationDialogToggle = () => {
-    setExplorationDialogOpen((prevOpen) => !prevOpen);
-  };
-
   const [shareDialogOpen, setShareDialogOpen] = React.useState(false);
 
   const handleShareDialogToggle = () => {
@@ -87,14 +80,14 @@ export default (props: any) => {
 
   useEffect(() => {
     fetchExperiments().catch(console.error);
-  }, [latestExperimentId])
+  }, [latestExperimentId]);
 
   return (
     <Box display="flex">
       <Sidebar experiments={experiments} executeScroll={(r: string) => executeScroll(r)} />
       <Box className={classes.layoutContainer}>
         <div ref={myRef} id={EXPERIMENTS_HASH}>
-          <ExperimentList experiments={experiments} heading={"My experiments"} description={`${experiments.length} experiments`} type={EXPERIMENTS_HASH} handleExplorationDialogToggle={handleExplorationDialogToggle} infoIcon={false} handleShareDialogToggle={handleShareDialogToggle} handleShareMultipleDialogToggle={handleShareMultipleDialogToggle}/>
+          <ExperimentList experiments={experiments} heading={"My experiments"} description={`${experiments.length} experiments`} type={EXPERIMENTS_HASH} infoIcon={false} handleShareDialogToggle={handleShareDialogToggle} handleShareMultipleDialogToggle={handleShareMultipleDialogToggle} onExperimentChange={onExperimentChange} />
         </div>
         {/*<div ref={shared} id={SHARED_HASH}>*/}
         {/*  <ExperimentList heading={"Shared with me"} description={"28 experiments"} type={SHARED_HASH} handleDialogToggle={handleDialogToggle} handleExplorationDialogToggle={handleExplorationDialogToggle} infoIcon={false} handleShareDialogToggle={handleShareDialogToggle} handleShareMultipleDialogToggle={handleShareMultipleDialogToggle} />*/}
@@ -112,7 +105,6 @@ export default (props: any) => {
         {/*</Box>*/}
       </Box>
       <CloneExperimentDialog open={dialogOpen} handleClose={handleDialogToggle} user={props?.user} />
-      <ExplorationSpinalCordDialog open={explorationDialogOpen} handleClose={handleExplorationDialogToggle} />
       <ShareExperimentDialog open={shareDialogOpen} handleClose={handleShareDialogToggle} />
       <ShareMultipleExperimentDialog open={shareMultipleDialogOpen} handleClose={handleShareMultipleDialogToggle} />
     </Box>

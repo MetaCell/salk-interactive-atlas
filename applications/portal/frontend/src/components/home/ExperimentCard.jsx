@@ -35,6 +35,8 @@ import ListItemText from '@material-ui/core/ListItemText';
 import ArrowRightIcon from '@material-ui/icons/ArrowRight';
 import { CircularProgress } from "@material-ui/core";
 import { getDateFromDateTime } from "../../utils";
+import { ExplorationSpinalCordDialog } from "./ExplorationSpinalCordDialog";
+import WorkspaceService from "../../service/WorkspaceService";
 
 
 const commonStyle = {
@@ -274,9 +276,9 @@ const ExperimentCard = ({
     experiment,
     type,
     handleDialogToggle,
-    handleExplorationDialogToggle,
     handleShareDialogToggle,
-    handleShareMultipleDialogToggle
+    handleShareMultipleDialogToggle,
+    onExperimentChange
 }) => {
     const classes = useStyles();
     const history = useHistory()
@@ -284,7 +286,14 @@ const ExperimentCard = ({
         history.push(`/experiments/${experiment.id}`)
     }
 
+    const api = WorkspaceService.getApi();
     const [experimentMenuEl, setExperimentMenuEl] = React.useState(null);
+    const [explorationDialogOpen, setExplorationDialogOpen] = React.useState(false);
+    const [tagsOptions, setTagsOptions] = React.useState([]);
+
+    const handleExplorationDialogToggle = () => {
+        setExplorationDialogOpen((prevOpen) => !prevOpen);
+    };
 
     const handleCardActions = (event) => {
         setExperimentMenuEl(event.currentTarget);
@@ -293,6 +302,14 @@ const ExperimentCard = ({
     const closeFilter = () => {
         setExperimentMenuEl(null);
     };
+
+    React.useEffect(() => {
+        const fetchTagOptions = async () => {
+            const res = await api.listTags()
+            setTagsOptions(res.data)
+        };
+        fetchTagOptions().catch(console.error);
+    }, []);
 
     return (
         <Grid item xs={12} md={3} key={`${experiment.name}experiment_${experiment.id}`}>
@@ -392,6 +409,13 @@ const ExperimentCard = ({
                     </CardContent>
                 </CardActionArea>
             </Card>
+            <ExplorationSpinalCordDialog
+                experiment={experiment}
+                open={explorationDialogOpen}
+                handleClose={handleExplorationDialogToggle}
+                tagsOptions={tagsOptions}
+                onExperimentChange={onExperimentChange}
+            />
         </Grid>
     );
 }
