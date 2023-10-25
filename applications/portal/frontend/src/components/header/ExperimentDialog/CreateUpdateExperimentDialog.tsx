@@ -1,10 +1,10 @@
-import React, {useEffect, useState, Fragment} from 'react';
-import {Box, makeStyles, TextField, Typography, Tabs, Tab} from "@material-ui/core";
-import {headerBorderColor, headerButtonBorderColor, switchActiveColor} from "../../../theme";
+import React, { useEffect, useState, Fragment } from 'react';
+import { Box, makeStyles, TextField, Typography, Tabs, Tab } from "@material-ui/core";
+import { headerBorderColor, headerButtonBorderColor, switchActiveColor } from "../../../theme";
 import Modal from "../../common/BaseDialog";
-import {TagsAutocomplete} from "../../common/ExperimentDialogs/TagsAutocomplete";
-import {TextEditor} from "../../common/ExperimentDialogs/TextEditor";
-import {OwnerInfo} from "../../common/ExperimentDialogs/OwnerInfo";
+import { TagsAutocomplete } from "../../common/ExperimentDialogs/TagsAutocomplete";
+import { TextEditor } from "../../common/ExperimentDialogs/TextEditor";
+import { OwnerInfo } from "../../common/ExperimentDialogs/OwnerInfo";
 // @ts-ignore
 import UPLOAD from "../../../assets/images/icons/upload.svg";
 // @ts-ignore
@@ -13,12 +13,12 @@ import CHECK_FILLED from "../../../assets/images/icons/check_filled.svg";
 import workspaceService from "../../../service/WorkspaceService";
 import * as Yup from 'yup'
 // @ts-ignore
-import {ExperimentOwner, ExperimentTagsInner} from "../../../apiclient/workspaces";
+import { ExperimentOwner, ExperimentTagsInner } from "../../../apiclient/workspaces";
 // @ts-ignore
 import Loader from "@metacell/geppetto-meta-ui/loader/Loader";
-import {common} from "./Common";
-import {KeyDataFileDrop} from "./KeyDataFileDrop";
-import {SingleFileDrop} from "./SingleFileDrop";
+import { common } from "./Common";
+import { KeyDataFileDrop } from "./KeyDataFileDrop";
+import { SingleFileDrop } from "./SingleFileDrop";
 
 
 const useStyles = makeStyles(() => ({
@@ -34,7 +34,7 @@ const useStyles = makeStyles(() => ({
     },
 
     formGroup: {
-        '&:not(:first-child)': {marginTop: '0.75rem'},
+        '&:not(:first-child)': { marginTop: '0.75rem' },
 
         '& label': {
             fontWeight: 600,
@@ -126,13 +126,13 @@ interface CreateUpdateExperimentDialogProps {
  */
 
 export const CreateUpdateExperimentDialog = ({
-                                                 open,
-                                                 handleClose,
-                                                 user,
-                                                 onExperimentAction,
-                                                 onError,
-                                                 experimentId,
-                                             }: CreateUpdateExperimentDialogProps) => {
+    open,
+    handleClose,
+    user,
+    onExperimentAction,
+    onError,
+    experimentId,
+}: CreateUpdateExperimentDialogProps) => {
     const classes = useStyles();
     const commonClasses = common();
     const api = workspaceService.getApi()
@@ -201,7 +201,7 @@ export const CreateUpdateExperimentDialog = ({
     const getValidationErrors = async () => {
         const errorsSet = new Set()
         try {
-            await validationSchema.validate(getCurrentFormDataObject(), {strict: true, abortEarly: false})
+            await validationSchema.validate(getCurrentFormDataObject(), { strict: true, abortEarly: false })
         } catch (exception) {
             for (const e of exception.inner) {
                 errorsSet.add(e.path)
@@ -230,7 +230,7 @@ export const CreateUpdateExperimentDialog = ({
      * @param {any} value - The file data.
      */
     const handleAddFile = (type: string, value: any) => {
-        setFiles({...files, [type]: value})
+        setFiles({ ...files, [type]: value })
         validationErrors.delete(type)
         setValidationErrors(validationErrors)
     }
@@ -318,23 +318,23 @@ export const CreateUpdateExperimentDialog = ({
         >
             <Box display={'flex'}>
                 <Tabs value={activeTab} onChange={handleTabChange} className={classes.tabs}>
-                    <Tab label="Key + Data"/>
-                    <Tab label="Single File"/>
+                    <Tab label="Key + Data" />
+                    <Tab label="Single File" />
                 </Tabs>
             </Box>
 
             <Box display={'flex'} alignItems="center" justifyContent={'center'} className={classes.fileDrop}>
                 {activeTab === KEY_DATA_TAB &&
                     <KeyDataFileDrop keyFile={files[KEY_FILE_KEY]} dataFile={files[DATA_FILE_KEY]}
-                                     setKeyFile={(value: any) => handleAddFile(KEY_FILE_KEY, value)}
-                                     setDataFile={(value: any) => handleAddFile(DATA_FILE_KEY, value)}
-                                     hasKeyErrors={validationErrors.has(KEY_FILE_KEY)}
-                                     hasDataErrors={validationErrors.has(DATA_FILE_KEY)}
+                        setKeyFile={(value: any) => handleAddFile(KEY_FILE_KEY, value)}
+                        setDataFile={(value: any) => handleAddFile(DATA_FILE_KEY, value)}
+                        hasKeyErrors={validationErrors.has(KEY_FILE_KEY)}
+                        hasDataErrors={validationErrors.has(DATA_FILE_KEY)}
 
                     />}
                 {activeTab === SINGLE_FILE_TAB && <SingleFileDrop file={files[SINGLE_FILE_KEY]}
-                                                                  setFile={(value: any) => handleAddFile(SINGLE_FILE_KEY, value)}
-                                                                  hasErrors={validationErrors.has(SINGLE_FILE_KEY)}
+                    setFile={(value: any) => handleAddFile(SINGLE_FILE_KEY, value)}
+                    hasErrors={validationErrors.has(SINGLE_FILE_KEY)}
                 />}
             </Box>
 
@@ -342,10 +342,10 @@ export const CreateUpdateExperimentDialog = ({
                 <Box display="flex" alignItems={"center"} className={classes.formGroup}>
                     <Typography component="label">Name</Typography>
                     <TextField placeholder="Name" variant="outlined"
-                               onChange={(e) =>
-                                   handleFormChange(e.target.value, setName, NAME_KEY)}
-                               required={true}
-                               error={validationErrors.has(NAME_KEY)}
+                        onChange={(e) =>
+                            handleFormChange(e.target.value, setName, NAME_KEY)}
+                        required={true}
+                        error={validationErrors.has(NAME_KEY)}
                     />
                 </Box>
 
@@ -361,13 +361,13 @@ export const CreateUpdateExperimentDialog = ({
 
                 <Box display="flex" alignItems={"center"} className={classes.formGroup}>
                     <Typography component="label">Tags</Typography>
-                    <TagsAutocomplete tags={tagsOptions.map(t => t.name)} onChange={handleTagsChange}/>
+                    <TagsAutocomplete tagsOptions={tagsOptions.map((t: any) => t.name)} onChange={handleTagsChange} />
                 </Box>
 
                 <Box display="flex" alignItems={"center"} className={classes.formGroup}>
                     <Typography component="label">Owner</Typography>
-                    <OwnerInfo user={user}/>
+                    <OwnerInfo user={user} />
                 </Box>
             </Box>)}
-        </Modal>) : <Loader/>
+        </Modal>) : <Loader />
 };

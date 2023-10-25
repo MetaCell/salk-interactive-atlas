@@ -49,7 +49,7 @@ export const App = (props: any) => {
               <Header onExperimentCreation={(id: string) => setLatestExperimentId(id)}/>
               <Switch>
                 <ProtectedRoute exact={true} path="/">
-                  <HomePage latestExperimentId={latestExperimentId} />
+                  <HomePage latestExperimentId={latestExperimentId} onExperimentChange={(id: string) => setLatestExperimentId(id)}/>
                 </ProtectedRoute>
                 <ProtectedRoute exact={true} path={EXPERIMENTS_ROUTE}>
                   <ExperimentsPage />
