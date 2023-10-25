@@ -110,11 +110,18 @@ class ExperimentViewSet(viewsets.ModelViewSet):
         url_path="tag/(?P<tag_name>[^/.]+)",
         url_name="tag_delete",
     )
-    def delete_tag(self, request, tag_name, **kwargs):
+    def delete_tag(self, request, tag_name=None, **kwargs):
         instance = self.get_object()
-        tag_name = request.data.get("name")
-        delete_tag(instance, tag_name)
-        return Response(status=status.HTTP_204_NO_CONTENT)
+
+        if not tag_name:
+            return Response({"error": "Tag name not provided."}, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            delete_tag(instance, tag_name)
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        except Exception as e:
+            # This will return any error messages if the tag deletion fails
+            return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
     @action(
         detail=True,
