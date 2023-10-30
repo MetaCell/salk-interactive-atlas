@@ -89,7 +89,7 @@ export const App = (props: any) => {
                 {loading ? <Loader/> : (
                     <>
                       <ProtectedRoute exact={true} path="/">
-                        <HomePage latestExperimentId={latestExperimentId} />
+                        <HomePage latestExperimentId={latestExperimentId} onExperimentChange={(id: string) => setLatestExperimentId(id)}/>
                       </ProtectedRoute>
                       <ProtectedRoute exact={true} path={EXPERIMENTS_ROUTE}>
                         <ExperimentsPage residentialPopulations={residentialPopulations} />
