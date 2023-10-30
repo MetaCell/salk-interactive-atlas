@@ -44,7 +44,7 @@ COPY frontend/yarn.lock ${BUILDDIR}/yarn.lock
 WORKDIR ${BUILDDIR}
 RUN yarn install
 COPY frontend $BUILDDIR
-RUN npm run build-dev
+RUN npm run build
 
 #
 
