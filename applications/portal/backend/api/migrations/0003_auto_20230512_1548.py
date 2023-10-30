@@ -6,7 +6,7 @@ from django.core.files import File
 from django.db import migrations
 
 from api.constants import POPULATIONS_DATA
-from api.models import PopulationStatus
+from api.models import PopulationStatus, Population
 
 HERE = os.path.dirname(os.path.realpath(__file__))
 COLORS = ["#0000FF", "#FF0000", "#00FF00", "#FFA500"]
@@ -14,7 +14,6 @@ DATA_DIR = os.path.abspath(os.path.join(HERE, '../../data/residential_population
 
 
 def create_residential_populations(apps, schema_editor):
-    Population = apps.get_model('api', 'Population')
 
     for index, csv_file in enumerate(os.listdir(DATA_DIR)):
         if csv_file.endswith('.csv'):
@@ -26,6 +25,8 @@ def create_residential_populations(apps, schema_editor):
                 is_fiducial=False,
                 status=PopulationStatus.RUNNING
             )
+
+            population.save()
 
             # After the instance is created, assign the cells file and save again
             with open(os.path.join(DATA_DIR, csv_file), 'rb') as file:
