@@ -20,12 +20,14 @@ const SwitchLabel = ({ label, isParentLabel }) => {
     return (
         <Tooltip title={label} placement="top">
             <Box display="flex" alignItems="center" justifyContent="space-between">
-                <Typography className={`${classes.label} ellipsis`}>
-                    {label.substr(0, MAX_STR_LENGTH_SIDEBAR)}
+                <div style={{ display: 'flex' }}>
+                    <Typography className={`${classes.label} ${isParentLabel ? 'ellipsis-parent' : 'ellipsis'}`}>
+                        {label.substr(0, MAX_STR_LENGTH_SIDEBAR)}
+                    </Typography>
                     {
-                        isParentLabel && <span style={{ color: 'rgba(255, 255, 255, 0.40)', fontWeight: 400 }}> - parent</span>
+                        isParentLabel && <span style={{ color: 'rgba(255, 255, 255, 0.40)', fontWeight: 400, marginRight: '0.5rem' }}> - parent</span>
                     }
-                </Typography>
+                </div>
                 <img src={NavigationControlIcon} className="nav_control" alt='' style={{ marginRight: '0.5rem' }} />
             </Box>
         </Tooltip>

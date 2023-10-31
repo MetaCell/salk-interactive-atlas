@@ -37,6 +37,7 @@ import { CircularProgress } from "@material-ui/core";
 import { getDateFromDateTime } from "../../utils";
 import { ExplorationSpinalCordDialog } from "./ExplorationSpinalCordDialog";
 import WorkspaceService from "../../service/WorkspaceService";
+import { DeleteExperimentDialog } from "../DeleteExperimentDialog";
 
 
 const commonStyle = {
@@ -278,7 +279,8 @@ const ExperimentCard = ({
     handleDialogToggle,
     handleShareDialogToggle,
     handleShareMultipleDialogToggle,
-    onExperimentChange
+    onExperimentChange,
+    refreshExperimentList
 }) => {
     const classes = useStyles();
     const history = useHistory()
@@ -294,6 +296,7 @@ const ExperimentCard = ({
     const handleExplorationDialogToggle = () => {
         setExplorationDialogOpen((prevOpen) => !prevOpen);
     };
+    const [openDeleteDialog, setOpenDeleteDialog] = React.useState(false);
 
     const handleCardActions = (event) => {
         setExperimentMenuEl(event.currentTarget);
@@ -311,6 +314,10 @@ const ExperimentCard = ({
         fetchTagOptions().catch(console.error);
     }, []);
 
+    const handleDeleteDialog = () => {
+        closeFilter();
+        setOpenDeleteDialog(!openDeleteDialog);
+    };
     return (
         <Grid item xs={12} md={3} key={`${experiment.name}experiment_${experiment.id}`}>
             <Card className={classes.card} elevation={0}>
@@ -352,8 +359,8 @@ const ExperimentCard = ({
                     </ListItem>
                     <Divider />
                     <ListItem button>
-                        {type === EXPERIMENTS_HASH ? <ListItemText primary="Delete" /> :
-                            <ListItemText primary="Clone this experiment" onClick={handleDialogToggle} />}
+                        {type === EXPERIMENTS_HASH ? <ListItemText primary="Delete" onClick={() => handleDeleteDialog()} /> :
+                            <ListItemText primary="Clone this experiment" onClick={handleDialogToggle}/>}
                     </ListItem>
                 </Menu>
                 <CardActionArea>
@@ -417,6 +424,12 @@ const ExperimentCard = ({
                 onExperimentChange={onExperimentChange}
                 setExperimentMenuEl={setExperimentMenuEl}
             />
+            <DeleteExperimentDialog
+                experimentId={experiment.id} open={openDeleteDialog}
+                handleClose={() => setOpenDeleteDialog(false)}
+                refreshExperimentList={refreshExperimentList}
+            />
+
         </Grid>
     );
 }

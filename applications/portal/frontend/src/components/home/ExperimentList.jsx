@@ -169,7 +169,7 @@ const useStyles = makeStyles(() => ({
 
 const ExperimentList = (props) => {
   const classes = useStyles();
-  const {experiments, onExperimentChange} = props;
+  const {experiments, onExperimentChange, refreshExperimentList} = props;
   const [anchorEl, setAnchorEl] = React.useState(null);
   const [value, setValue] = React.useState('Alphabetical');
   const [filterAnchorEL, setFilterAnchorEL] = React.useState(null);
@@ -293,7 +293,13 @@ const ExperimentList = (props) => {
       <Box p={5}>
         <Grid container item spacing={3}>
           {experiments.map( exp => (
-            <ExperimentCard key={exp.id} experiment={exp} type={type} handleDialogToggle={handleDialogToggle} handleShareDialogToggle={handleShareDialogToggle} handleShareMultipleDialogToggle={handleShareMultipleDialogToggle} onExperimentChange={onExperimentChange} />
+            <ExperimentCard
+              key={exp.id} experiment={exp} type={type} handleDialogToggle={handleDialogToggle}
+              handleShareDialogToggle={handleShareDialogToggle}
+              handleShareMultipleDialogToggle={handleShareMultipleDialogToggle}
+              refreshExperimentList={refreshExperimentList}
+              onExperimentChange={onExperimentChange}
+            />
             ))
           }
         </Grid>

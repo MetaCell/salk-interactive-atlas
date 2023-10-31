@@ -87,7 +87,14 @@ export default (props: any) => {
       <Sidebar experiments={experiments} executeScroll={(r: string) => executeScroll(r)} />
       <Box className={classes.layoutContainer}>
         <div ref={myRef} id={EXPERIMENTS_HASH}>
-          <ExperimentList experiments={experiments} heading={"My experiments"} description={`${experiments.length} experiments`} type={EXPERIMENTS_HASH} infoIcon={false} handleShareDialogToggle={handleShareDialogToggle} handleShareMultipleDialogToggle={handleShareMultipleDialogToggle} onExperimentChange={onExperimentChange} />
+          <ExperimentList
+            experiments={experiments} heading={"My experiments"}
+            description={`${experiments.length} experiments`} type={EXPERIMENTS_HASH}
+            infoIcon={false}
+            handleShareDialogToggle={handleShareDialogToggle} handleShareMultipleDialogToggle={handleShareMultipleDialogToggle}
+            refreshExperimentList={fetchExperiments}
+            onExperimentChange={onExperimentChange}
+          />
         </div>
         {/*<div ref={shared} id={SHARED_HASH}>*/}
         {/*  <ExperimentList heading={"Shared with me"} description={"28 experiments"} type={SHARED_HASH} handleDialogToggle={handleDialogToggle} handleExplorationDialogToggle={handleExplorationDialogToggle} infoIcon={false} handleShareDialogToggle={handleShareDialogToggle} handleShareMultipleDialogToggle={handleShareMultipleDialogToggle} />*/}
