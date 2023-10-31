@@ -415,6 +415,7 @@ const ExperimentCard = ({
                 handleClose={handleExplorationDialogToggle}
                 tagsOptions={tagsOptions}
                 onExperimentChange={onExperimentChange}
+                setExperimentMenuEl={setExperimentMenuEl}
             />
         </Grid>
     );
