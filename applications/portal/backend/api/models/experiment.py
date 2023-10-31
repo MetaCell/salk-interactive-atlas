@@ -1,14 +1,17 @@
 import os
-import zipfile
 
+from django.apps import apps
+from django.conf import settings
 from django.contrib.auth.models import Group, User
 from django.db import models
-from django.conf import settings
 
-from .collaborator_role import CollaboratorRole
+from .text_choices import PopulationStatus, CollaboratorRole
 from .tag import Tag
 from ..constants import EXPERIMENTS_DATA
-from ..services.filesystem_service import create_dir_if_not_exists, remove_file_if_exists
+from ..helpers.experiment_registration.experiment_registration_strategy_factory import \
+    get_registration_strategy
+from ..helpers.population_cells import associate_population_cells_file
+from ..services.filesystem_service import create_dir_if_not_exists
 
 
 # Create your models here.
@@ -78,6 +81,36 @@ class Experiment(models.Model):
         super(Experiment, self).save(force_insert, force_update, using, update_fields)
         create_dir_if_not_exists(self.storage_path)
 
+    def register(self, filepath, populations):
+        if not populations:
+            return
+
+        is_fiducial = populations[0].is_fiducial
+
+        Population = apps.get_model('api', 'Population')
+        # Set status of all provided populations to RUNNING
+        Population.objects.filter(id__in=[pop.id for pop in populations]).update(status=PopulationStatus.RUNNING)
+        try:
+            strategy = get_registration_strategy(is_fiducial)
+
+            # Perform the registration
+            strategy.register(filepath, self.storage_path)
+
+            csv_suffix = strategy.get_csv_suffix()
+
+            # Associate the generated files with the populations and save them
+            for population in populations:
+                associate_population_cells_file(population, csv_suffix)
+
+        except Exception:
+            for population in populations:
+                population.status = PopulationStatus.ERROR
+                population.save()
+
+    @property
+    def storage_path(self) -> str:
+        return os.path.join(settings.PERSISTENT_ROOT, EXPERIMENTS_DATA, str(self.id))
+
     def __str__(self):
         return self.name
 
@@ -120,8 +153,3 @@ class Experiment(models.Model):
 
     def has_object_retrieve_density_map_permission(self, request):
         return self.has_object_read_permission(request)
-
-    @property
-    def storage_path(self) -> str:
-        return os.path.join(settings.PERSISTENT_ROOT, EXPERIMENTS_DATA, str(self.id))
-

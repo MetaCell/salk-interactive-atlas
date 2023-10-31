@@ -6,16 +6,14 @@ from django.conf import settings
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 
-from .atlas import AtlasesChoice
+from . import PopulationStatus
+from .text_choices import AtlasesChoice
 from .experiment import Experiment
 from ..constants import (
     POPULATIONS_DATA,
     POPULATIONS_SPLIT_DATA,
     PopulationPersistentFiles,
 )
-from ..helpers.generate_population_cells import get_cells_filepath
-from ..helpers.population_registration.population_registration_strategy_factory import \
-    get_population_registration_strategy
 from ..services.filesystem_service import create_dir_if_not_exists, remove_dir
 from ..services.population_service import generate_images, split_cells_per_segment
 from ..utils import has_property, is_valid_hex_str
@@ -30,13 +28,6 @@ class PopulationObjectsManager(models.Manager):
                 "experiment",
             )
         )
-
-
-class PopulationStatus(models.TextChoices):
-    ERROR = "error"
-    PENDING = "pending"
-    RUNNING = "running"
-    FINISHED = "finished"
 
 
 class Population(models.Model):
@@ -108,17 +99,6 @@ class Population(models.Model):
             has_property(self.cells, "file")
             and self.cells.file.name != current.cells.file.name
         )
-
-    def generate_cells(self, data_filepath: str):
-        self.status = PopulationStatus.RUNNING
-        self.save()
-        try:
-            strategy = get_population_registration_strategy(self.is_fiducial)
-            self.cells.name = get_cells_filepath(self.name, data_filepath, self.storage_path, strategy)
-        except Exception as e:
-            logging.exception(e)
-            self.status = PopulationStatus.ERROR
-        self.save()
 
     def generate_static_files(self):
         self.status = PopulationStatus.RUNNING

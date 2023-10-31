@@ -1,6 +1,5 @@
-from api.models import Experiment, Tag, Population
-from api.services.workflows_service import execute_upload_pair_files_workflow, execute_upload_single_file_workflow, \
-    create_custom_task, BASE_IMAGE, execute_generate_population_cells_workflow
+from api.models import Experiment, Tag
+from api.services.workflows_service import create_custom_task, BASE_IMAGE, execute_experiment_registration_workflow
 
 
 def add_tag(experiment: Experiment, tag_name: str, save=True):
@@ -25,18 +24,21 @@ def delete_tag(experiment: Experiment, tag_name: str):
     return True
 
 
-def handle_populations_upload(experiment_id, populations, filepath, is_fiducial=False):
-    tasks_list = []
+def register_non_fiducial_experiment(experiment_id, key_filepath, data_filepath):
+    return _register_experiment('register_non_fiducial_experiment', experiment_id, key_filepath, data_filepath)
 
-    for name in populations:
-        population = Population.objects.create(
-            experiment_id=experiment_id, name=name, is_fiducial=is_fiducial
-        )
-        tasks_list.append(
-            create_custom_task(BASE_IMAGE,
-                               command=["python", "manage.py",
-                                        f"generate_population_cells",
-                                        f"{population.id}",
-                                        f"{filepath}"])
-        )
-    execute_generate_population_cells_workflow(tuple(tasks_list))
+
+def register_fiducial_experiment(experiment_id, filepath):
+    return _register_experiment('register_fiducial_experiment', experiment_id, filepath)
+
+
+def _register_experiment(command_name, *args):
+    str_args = [str(arg) for arg in args]
+    command = [
+        "python", "manage.py",
+        command_name,
+        *str_args
+    ]
+    task = create_custom_task(BASE_IMAGE, command=command)
+
+    execute_experiment_registration_workflow((task,))

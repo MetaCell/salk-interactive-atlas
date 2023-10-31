@@ -2,8 +2,6 @@ from django.contrib import admin
 
 from api.models import Collaborator, Experiment, Population, Tag, UserDetail
 
-# Register your models here.
-
 
 class PopulationInline(admin.TabularInline):
     model = Population

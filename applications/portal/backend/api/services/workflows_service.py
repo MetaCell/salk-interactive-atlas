@@ -13,8 +13,7 @@ from cloudharness.applications import get_current_configuration
 BASE_IMAGE = "portal"
 GENERATE_IMAGES_OP = "salk-generate-population-static-files-tasks-op"
 VOLUME_FOLDER = "/usr/src/app/persistent"
-GENERATE_CELLS_IMAGE = "portal"
-GENERATE_CELLS_OP = "salk-generate-population-cells-tasks-op"
+REGISTER_EXPERIMENT_OP = "salk-register-experiment-op"
 UPLOAD_PAIR_FILES_OP = "salk-upload-pair-files-tasks-op"
 UPLOAD_SINGLE_FILES_OP = "salk-upload-single-file-tasks-op"
 
@@ -50,10 +49,10 @@ def execute_generate_population_static_files_workflow(population_id: int):
     ).execute()
 
 
-def execute_generate_population_cells_workflow(tasks_tuple: Tuple):
+def execute_experiment_registration_workflow(tasks_tuple: Tuple):
     current_app = get_current_configuration()
     operations.ParallelOperation(
-        basename=GENERATE_CELLS_OP,
+        basename=REGISTER_EXPERIMENT_OP,
         tasks=tasks_tuple,
         shared_directory=_get_shared_directory(current_app),
         pod_context=_get_pod_context(current_app),
@@ -74,12 +73,3 @@ def execute_upload_workflow(operation_name: str, command: list):
         pod_context=_get_pod_context(current_app),
     ).execute()
 
-
-def execute_upload_pair_files_workflow(experiment_id: int, key_filepath: str, data_filepath: str):
-    command = ["initialize_pair_files_upload",  f"{experiment_id}", f"{key_filepath}", f"{data_filepath}"]
-    execute_upload_workflow(UPLOAD_PAIR_FILES_OP, command)
-
-
-def execute_upload_single_file_workflow(experiment_id: int, filepath: str):
-    command = ["initialize_single_file_upload", f"{experiment_id}", f"{filepath}"]
-    execute_upload_workflow(UPLOAD_SINGLE_FILES_OP, command)

@@ -1,9 +1,9 @@
-from api.helpers.population_registration.ipopulation_registration_strategy import PopulationRegistrationStrategy
+from api.helpers.experiment_registration.iexperiment_registration_strategy import ExperimentRegistrationStrategy
 
 SINGLE_CELLS_CSV_SUFFIX = "transformed_cells"
 
 
-class FiducialPopulationRegistrationStrategy(PopulationRegistrationStrategy):
+class FiducialExperimentRegistrationStrategy(ExperimentRegistrationStrategy):
 
     def register(self, data_filepath: str, out_dir: str):
         from cordmap.entry_points.register_3D_fiducial import register_3D_fiducial

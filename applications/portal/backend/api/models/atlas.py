@@ -1,22 +1,12 @@
 import logging
-from django.db import models
 
 from api.helpers.icustom_atlas import ICustomAtlas
+from api.models import AtlasesChoice
 
 # Get an instance of a logger
 logger = logging.getLogger(__name__)
 
 salkAtlasses = {}
-
-
-# Create your models here.
-class AtlasesChoice(models.TextChoices):
-    @classmethod
-    def to_str(cls, value):
-        return next(v for v in list(AtlasesChoice) if v.value == value).label
-
-    SLK10 = "salk_cord_10um", "Salk cord 10um"
-    # ALN20 = "allen_cord_20um", "Allen cord 20um"  # for now we disable this atlas
 
 
 def add_atlas(atlas_id: str) -> ICustomAtlas:
