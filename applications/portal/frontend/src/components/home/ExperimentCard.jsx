@@ -35,6 +35,7 @@ import ListItemText from '@material-ui/core/ListItemText';
 import ArrowRightIcon from '@material-ui/icons/ArrowRight';
 import { CircularProgress } from "@material-ui/core";
 import { getDateFromDateTime } from "../../utils";
+import { DeleteExperimentDialog } from "../DeleteExperimentDialog";
 
 
 const commonStyle = {
@@ -276,7 +277,8 @@ const ExperimentCard = ({
     handleDialogToggle,
     handleExplorationDialogToggle,
     handleShareDialogToggle,
-    handleShareMultipleDialogToggle
+    handleShareMultipleDialogToggle,
+    refreshExperimentList
 }) => {
     const classes = useStyles();
     const history = useHistory()
@@ -285,6 +287,7 @@ const ExperimentCard = ({
     }
 
     const [experimentMenuEl, setExperimentMenuEl] = React.useState(null);
+    const [openDeleteDialog, setOpenDeleteDialog] = React.useState(false);
 
     const handleCardActions = (event) => {
         setExperimentMenuEl(event.currentTarget);
@@ -294,6 +297,10 @@ const ExperimentCard = ({
         setExperimentMenuEl(null);
     };
 
+    const handleDeleteDialog = () => {
+        closeFilter();
+        setOpenDeleteDialog(!openDeleteDialog);
+    };
     return (
         <Grid item xs={12} md={3} key={`${experiment.name}experiment_${experiment.id}`}>
             <Card className={classes.card} elevation={0}>
@@ -335,8 +342,8 @@ const ExperimentCard = ({
                     </ListItem>
                     <Divider />
                     <ListItem button>
-                        {type === EXPERIMENTS_HASH ? <ListItemText primary="Delete" /> :
-                            <ListItemText primary="Clone this experiment" onClick={handleDialogToggle} />}
+                        {type === EXPERIMENTS_HASH ? <ListItemText primary="Delete" onClick={() => handleDeleteDialog()} /> :
+                            <ListItemText primary="Clone this experiment" onClick={handleDialogToggle}/>}
                     </ListItem>
                 </Menu>
                 <CardActionArea>
@@ -392,6 +399,12 @@ const ExperimentCard = ({
                     </CardContent>
                 </CardActionArea>
             </Card>
+            <DeleteExperimentDialog
+                experimentId={experiment.id} open={openDeleteDialog}
+                handleClose={() => setOpenDeleteDialog(false)}
+                refreshExperimentList={refreshExperimentList}
+            />
+
         </Grid>
     );
 }
