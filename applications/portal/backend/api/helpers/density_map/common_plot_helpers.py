@@ -1,4 +1,4 @@
-from tkinter import Image
+from PIL.Image import Image
 from typing import Tuple, Any
 
 import numpy as np
