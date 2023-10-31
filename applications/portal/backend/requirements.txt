@@ -9,3 +9,5 @@ uritemplate==4.1.1
 cachetools==5.2.0
 matplotlib==3.8.0
 scikit-image==0.21.0
+trimesh==4.0.1
+shapely==2.0.2
