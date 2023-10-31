@@ -17,10 +17,10 @@ import { headerBg, canvasIconColor } from "../../theme";
 import UP_ICON from "../../assets/images/icons/up.svg";
 import CustomAccordionSummary from "./CustomAccordionSummary";
 import DOWNLOAD_ICON from "../../assets/images/icons/download_icon.svg";
-import {downloadFile} from "../../utils";
-import {areAllPopulationsWithChildrenSelected} from "../../utilities/functions";
+import { downloadFile } from "../../utils";
+import { areAllPopulationsWithChildrenSelected } from "../../utilities/functions";
 import workspaceService from "../../service/WorkspaceService";
-import {useParams} from "react-router";
+import { useParams } from "react-router";
 import { SliderIcon } from '../icons';
 
 
@@ -108,7 +108,7 @@ const PopulationsAccordion = ({
                 responseType: 'arraybuffer',
             })
             downloadFile(response)
-        }catch (error){
+        } catch (error) {
             console.error('Error while fetching the file:', error);
         }
     }

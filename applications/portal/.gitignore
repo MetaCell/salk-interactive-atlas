@@ -3,3 +3,4 @@ dist
 node_modules
 .vscode
 backend/static/*
+frontend/src/assets/atlas/*
