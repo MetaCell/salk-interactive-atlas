@@ -7,7 +7,6 @@ import {scrollStop, onWheel} from "../../../utilities/functions";
 
 const useStyles = makeStyles({
     imageMap: {
-        margin: "1rem",
         cursor: "pointer"
     },
 });

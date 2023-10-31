@@ -13,7 +13,7 @@ vars.gutter = vars.gutter.replace('px', '') * 1;
 
 export const {
   primaryColor, secondaryColor, font, fontColor, linkColor, teal, purple, brown, skyBlue, bgLightest, paragraph, bgLightestShade,
-  bgLight, bgRegular, bgDark, bgDarker, bgDarkest, bgInputs, gutter, radius, checkBoxColor, bgLighter, textColor, canvasBg, headerBorderColor,headerButtonBorderColor, bodyBgColor, headerBg, switchActiveColor, canvasIconColor, breadcrumbTextColor, sidebarBadgeBg, sidebarTextColor, defaultChipBg, primaryChipBg, secondaryChipBg, chipTextColor, cardTextColor, inputFocusShadow, backdropBg, logoHoverbg, textDisabled, chipDeleteIcon, filesBg
+  bgLight, bgRegular, bgDark, bgDarker, bgDarkest, bgInputs, gutter, radius, checkBoxColor, bgLighter, textColor, canvasBg, headerBorderColor,headerButtonBorderColor, bodyBgColor, headerBg, switchActiveColor, canvasIconColor, breadcrumbTextColor, sidebarBadgeBg, sidebarTextColor, defaultChipBg, primaryChipBg, secondaryChipBg, chipTextColor, cardTextColor, inputFocusShadow, backdropBg, logoHoverbg, textDisabled, chipDeleteIcon, filesBg, indicatorLabelColor
 } = vars;
 
 const verticalFill = {
