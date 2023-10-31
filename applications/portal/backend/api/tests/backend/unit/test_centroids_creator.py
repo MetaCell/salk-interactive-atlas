@@ -5,7 +5,6 @@ import numpy as np
 
 from api.helpers.atlas import get_bg_atlas
 from api.helpers.density_map.centroids_creator import CentroidsCreator
-from api.helpers.density_map.probability_map_creator import ProbabilityMapCreator
 
 
 def _get_cells(filepath):
@@ -23,8 +22,8 @@ class TestUtils(unittest.TestCase):
         Tests if no exception is raised
         """
         bg_atlas = get_bg_atlas('salk_cord_10um')
-        cells = _get_cells('./api/tests/assets/C5-Rostral.csv')
-        CentroidsCreator().create(bg_atlas, 'C5-Rostral', cells)
+        cells = _get_cells('./api/tests/assets/C1-Rostral.csv')
+        CentroidsCreator().create(bg_atlas, 'C1-Rostral', cells)
 
 
 if __name__ == "__main__":

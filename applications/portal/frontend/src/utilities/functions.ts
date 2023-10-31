@@ -1,5 +1,11 @@
 import {getAtlas} from "../service/AtlasService";
-import { ARROW_KEY_LEFT, ARROW_KEY_RIGHT, AtlasChoice, POPULATION_FINISHED_STATE } from "./constants";
+import {
+    ARROW_KEY_LEFT,
+    ARROW_KEY_RIGHT,
+    AtlasChoice, POPULATION_ERROR_STATE,
+    POPULATION_FINISHED_STATE,
+    POPULATION_PENDING_STATE, POPULATION_RUNNING_STATE, POPULATION_UNKNOWN_CHILD
+} from "./constants";
 import Range from "../models/Range";
 
 
@@ -9,6 +15,25 @@ export const areAllSelected = (obj: {
     }
 }): boolean => {
     return Object.keys(obj).reduce((acc, pId) => obj[pId].selected && acc, true)
+}
+
+export const areAllPopulationsWithChildrenSelected = (obj: {
+    [x: string]: {
+        children?: {
+            [childId: string]: {
+                selected: any
+            }
+        }
+    }
+}): boolean => {
+    return Object.keys(obj).every(pId => {
+        const children = obj[pId].children;
+        if (children) {
+            return Object.keys(children).every(childId => children[childId].selected);
+        }
+
+        return true;
+    });
 }
 
 export const areSomeSelected = (obj: {
@@ -140,8 +165,100 @@ export function dictZip(keys: string[], values: any[]) {
     return keys.reduce((o, currentValue, currentIndex) => ({...o, [currentValue]: values[currentIndex]}), {})
 }
 
-export const areAllPopulationsSelected = (populations: any) => {
-    return Object.keys(populations)
-        .filter(pId => populations[pId].status === POPULATION_FINISHED_STATE)
-        .reduce((acc, pId) => populations[pId].selected && acc, true)
+
+export const groupPopulations = (populations: any) => {
+    if (populations === undefined) {
+        return
+    }
+
+    const populationKeys = Object.keys(populations);
+
+    return sortSubpopulation(populationKeys, populations);
+}
+
+function sortSubpopulation(populationKeys: string[], populations: any) {
+    const newPopulations = {} as any;
+    populationKeys.forEach((key) => {
+        const population = populations[key];
+        const {name, color, opacity} = population
+        const nameSplit = name.split('@');
+        if (nameSplit.length === 1) {
+            newPopulations[name] = {name, color, opacity};
+            newPopulations[name].children = {
+                [population.id]: {
+                    ...population,
+                    name: POPULATION_UNKNOWN_CHILD,
+                }
+            };
+        } else {
+            const parentName = nameSplit[0];
+            const childName = nameSplit[1];
+
+            if (newPopulations[parentName] === undefined) {
+                newPopulations[parentName] = {
+                    name: parentName,
+                    color,
+                    opacity,
+                    children: {
+                        [key]: {
+                            ...population, // subpopulation also takes the color of the parent population
+                            name: childName
+                        }
+                    }
+                };
+            } else {
+                newPopulations[parentName].children = {
+                    ...newPopulations[parentName].children,
+                    [key]: {
+                        ...population,
+                        name: childName
+                    }
+                };
+            }
+        }
+    });
+    return newPopulations;
+}
+
+export function splitPopulations(populations: any) {
+    const residentialPopulations: any = {};
+    const experimentalPopulations: any = {};
+
+    Object.keys(populations).forEach((key) => {
+        const population = populations[key];
+        if (population.experiment === null) {
+            residentialPopulations[key] = population;
+        } else {
+            experimentalPopulations[key] = population;
+        }
+    });
+
+    return { residentialPopulations, experimentalPopulations };
+}
+
+export function getParentPopulationStatus(population: any) {
+    let allFinished = true;
+    let hasRunning = false;
+    let hasPending = false;
+    let status = POPULATION_ERROR_STATE
+
+    Object.values(population.children).forEach((child: any) => {
+        if (child.status !== POPULATION_FINISHED_STATE) {
+            allFinished = false;
+            if (child.status === POPULATION_RUNNING_STATE) {
+                hasRunning = true;
+            } else if (child.status === POPULATION_PENDING_STATE) {
+                hasPending = true;
+            }
+        }
+    });
+
+    if (allFinished) {
+        status = POPULATION_FINISHED_STATE;
+    } else if (hasRunning) {
+        status = POPULATION_RUNNING_STATE;
+    } else if (hasPending) {
+        status = POPULATION_PENDING_STATE;
+    }
+    return status
 }
