@@ -70,10 +70,10 @@ export const ExplorationSpinalCordDialog = (props: any) => {
       console.error(error);
     }
   };
-  
-  const addTags = async (tags: string[]) => {
+
+  const addTags = async (newTags: string[]) => {
     try {
-      await api.addTagsExperiment(experiment.id.toString(), tags);
+      await api.addTagsExperiment(experiment.id.toString(), newTags);
     } catch (error) {
       console.error(error);
     }
@@ -110,8 +110,8 @@ export const ExplorationSpinalCordDialog = (props: any) => {
 
     const deletedTags = experiment.tags.filter((tag: any) => !tags.includes(tag.name));
     const addedTags = tags.filter((tag: any) => !experiment.tags.some((expTag: any) => expTag.name === tag));
-    
-    //API calls tags
+
+    // API calls tags
     if (deletedTags.length > 0) {
       deletedTags.forEach((tag: any) => deleteTag(tag));
     }
@@ -125,7 +125,7 @@ export const ExplorationSpinalCordDialog = (props: any) => {
       return
     }
 
-    if(experimentId) {
+    if (experimentId) {
       try {
         const res = await api.updateExperiment(experimentId.toString(), name, description);
         if (res.status === 200) {
@@ -152,7 +152,7 @@ export const ExplorationSpinalCordDialog = (props: any) => {
       <Box p={2} pb={5}>
         <Box className={classes.formGroup}>
           <Typography component="label">Name</Typography>
-          <TextField 
+          <TextField
             fullWidth={true}
             placeholder="Name"
             variant="outlined"
