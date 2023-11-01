@@ -50,7 +50,6 @@ export const ExplorationSpinalCordDialog = (props: any) => {
   const [name, setName] = React.useState<string>(experiment.name);
   const [description, setDescription] = React.useState<string>(experiment.description);
   const [validationErrors, setValidationErrors] = React.useState(new Set([]));
-  const [initialTags, setInitialTags] = React.useState(experiment.tags.map((t: any) => t.name));
   const [tags, setTags] = React.useState(experiment.tags.map((t: any) => t.name));
 
   const onTagsChange = (e: any, value: string[]) => {
@@ -64,21 +63,21 @@ export const ExplorationSpinalCordDialog = (props: any) => {
     })
     : Yup.object().shape({});
 
-    const deleteTag = async (tag: string) => {
-      try {
-        await api.deleteTagExperiment(experiment.id.toString(), tag);
-      } catch (error) {
-        console.error(error);
-      }
-    };
-  
-    const addTags = async (tags: string[]) => {
-      try {
-        await api.addTagsExperiment(experiment.id.toString(), tags);
-      } catch (error) {
-        console.error(error);
-      }
+  const deleteTag = async (tag: any) => {
+    try {
+      await api.deleteTagExperiment(experiment.id.toString(), tag.name);
+    } catch (error) {
+      console.error(error);
     }
+  };
+  
+  const addTags = async (tags: string[]) => {
+    try {
+      await api.addTagsExperiment(experiment.id.toString(), tags);
+    } catch (error) {
+      console.error(error);
+    }
+  }
 
   const handleFormChange = (newValue: any, setState: any, errorKey: string) => {
     validationErrors.delete(errorKey);
@@ -109,9 +108,9 @@ export const ExplorationSpinalCordDialog = (props: any) => {
 
   const handleAction = async () => {
 
-    const deletedTags = initialTags.filter((tag: any) => !tags.includes(tag));
-    const addedTags = tags.filter((tag: any) => !initialTags.includes(tag));
-
+    const deletedTags = experiment.tags.filter((tag: any) => !tags.includes(tag.name));
+    const addedTags = tags.filter((tag: any) => !experiment.tags.some((expTag: any) => expTag.name === tag));
+    
     //API calls tags
     if (deletedTags.length > 0) {
       deletedTags.forEach((tag: any) => deleteTag(tag));
@@ -136,7 +135,6 @@ export const ExplorationSpinalCordDialog = (props: any) => {
         console.error(err)
       }
     }
-    setInitialTags(tags);
     handleClose();
     setExperimentMenuEl(null)
   };
