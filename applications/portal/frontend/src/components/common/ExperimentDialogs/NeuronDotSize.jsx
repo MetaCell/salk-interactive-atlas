@@ -2,7 +2,7 @@ import React, { useCallback } from 'react';
 import PropTypes from 'prop-types';
 import { makeStyles } from '@material-ui/core/styles';
 import { Box, Typography, Slider, Divider, IconButton, Dialog, DialogTitle, DialogContent, Button } from '@material-ui/core';
-import { getRGBAString, getRGBAColor, areAllPopulationsSelected } from "../../../utilities/functions";
+import { getRGBAString, getRGBAColor, areAllPopulationsWithChildrenSelected } from "../../../utilities/functions";
 import { headerBorderColor } from "../../../theme";
 import CLOSE from "../../../assets/images/icons/close.svg";
 
@@ -120,6 +120,14 @@ const NeuronDotSize = ({ open, onClose, populations, anchorElement, activePopula
     };
   };
 
+  // from the dialogPopulationsSelected, get the populations that have name !== 'unknown'
+  const populationSelected = () => {
+    if (dialogPopulationsSelected) {
+      return Object.keys(dialogPopulationsSelected).filter((pId) => dialogPopulationsSelected[pId].name !== 'unknown');
+    }
+    return [];
+  };
+
 
   const changeAllDotSize = useCallback((newValue) => {
     Object.keys(activePopulations).map((pId) => {
@@ -132,15 +140,12 @@ const NeuronDotSize = ({ open, onClose, populations, anchorElement, activePopula
 
   const showAllPopulations = () => {
     if (dialogPopulationsSelected && activePopulations
-      && areAllPopulationsSelected(populations)
+      && areAllPopulationsWithChildrenSelected(populations)
       && Object.keys(dialogPopulationsSelected).length === Object.keys(activePopulations).length) {
       return true;
     }
     return false;
   };
-
-  // the following styles applied are added to the dialog-paper which is 
-  // inside the dialog container... add the styles to the dialog container
 
   return (
     <Dialog open={open} onClose={onClose}
@@ -192,22 +197,22 @@ const NeuronDotSize = ({ open, onClose, populations, anchorElement, activePopula
               )
             }
             {
-              dialogPopulationsSelected && Object.keys(dialogPopulationsSelected).map((pId) => (
-                <Box key={dialogPopulationsSelected[pId].id}>
+              Object.keys(populationSelected).map((pId) => (
+                <Box key={populationSelected[pId].id}>
                   <Box className='row-container'>
                     <span className='population-color'>
-                      <Box style={{ backgroundColor: getRGBAString(getRGBAColor(dialogPopulationsSelected, pId)) }}
+                      <Box style={{ backgroundColor: getRGBAString(getRGBAColor(populationSelected, pId)) }}
                         component="span"
                         className='square' />
                     </span>
                     <Typography variant="body1">
-                      {dialogPopulationsSelected[pId].name}
+                      {populationSelected[pId].name}
                     </Typography>
                   </Box>
                   <Box className='row-slider'>
                     <Slider
                       className={classes.slider}
-                      value={dialogPopulationsSelected[pId].size * 100}
+                      value={populationSelected[pId].size * 100}
                       onChange={(event, newValue) => handlePopulationDotSizeChange(pId, newValue / 100)}
                       marks={marks}
                       min={0}

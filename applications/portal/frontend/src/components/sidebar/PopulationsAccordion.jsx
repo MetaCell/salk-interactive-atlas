@@ -10,10 +10,8 @@ import {
     IconButton,
     Button,
     Box,
-    makeStyles
 } from '@material-ui/core';
 
-import { headerBg, canvasIconColor } from "../../theme";
 import UP_ICON from "../../assets/images/icons/up.svg";
 import CustomAccordionSummary from "./CustomAccordionSummary";
 import DOWNLOAD_ICON from "../../assets/images/icons/download_icon.svg";
@@ -21,70 +19,7 @@ import { downloadFile } from "../../utils";
 import { areAllPopulationsWithChildrenSelected } from "../../utilities/functions";
 import workspaceService from "../../service/WorkspaceService";
 import { useParams } from "react-router";
-import { SliderIcon } from '../icons';
-
-
-const useStyles = makeStyles({
-    populationAccordion: {
-        // '& .population-icon': {
-        //     padding: '10px'
-        // },
-        // '& .population-row': {
-        //     display: 'flex',
-        //     alignItems: 'center',
-        //     lineHeight: '0.938rem',
-        //     fontWeight: 400,
-        //     fontSize: '0.75rem',
-        //     justifyContent: 'space-between',
-        // },
-        // '& .population-entry': {
-        //     display: 'flex',
-        //     alignItems: 'center',
-        //     lineHeight: '0.938rem',
-        //     fontWeight: 400,
-        // }
-
-        '& .population-color': {
-            display: 'flex',
-            alignItems: 'center',
-            lineHeight: '0.938rem',
-            fontWeight: 400,
-            fontSize: '0.75rem',
-        },
-        '& .population-row': {
-            display: 'flex',
-            alignItems: 'center',
-            lineHeight: '0.938rem',
-            fontWeight: 400,
-            fontSize: '0.75rem',
-            justifyContent: 'space-between',
-        },
-        '& .sidebar-title': {
-            flexGrow: 1,
-            fontWeight: 600,
-            fontSize: '0.75rem',
-            lineHeight: '1rem',
-            letterSpacing: '0.005em',
-            color: canvasIconColor,
-            transition: "all ease-in-out .3s"
-        },
-        '& .MuiIconButton-root': {
-            '&.slider-icon': {
-                padding: '0',
-                width: '1rem',
-                height: '1rem',
-                display: 'flex',
-                alignItems: 'center',
-                color: canvasIconColor,
-                marginRight: '10px',
-                '&:hover': {
-                    backgroundColor: headerBg,
-                },
-            },
-        },
-    },
-
-})
+import { DotSizeButton } from './DotSizeButton';
 
 
 const PopulationsAccordion = ({
@@ -95,10 +30,13 @@ const PopulationsAccordion = ({
     hasEditPermission,
     handlePopulationColorChange,
     handleChildPopulationSwitch,
-    handleParentPopulationSwitch
+    handleParentPopulationSwitch,
+    dotSizeDialogOpen,
+    setDotSizeDialogOpen,
+    setDialogPopulationsSelected,
+    setPopulationRefPosition
 }) => {
-    const classes = useStyles();
-    const [expanded, setExpanded] = React.useState(false);
+    const [expanded, setExpanded] = React.useState({});
     const api = workspaceService.getApi()
     const params = useParams();
 
@@ -122,7 +60,6 @@ const PopulationsAccordion = ({
             });
         }
     }
-
     const activePopulations = Object.values(populations)
         .flatMap(population => population.children ? Object.values(population.children) : [])
         .filter(child => child.selected)
@@ -131,9 +68,8 @@ const PopulationsAccordion = ({
     const downloadTooltipTitle = activePopulations.length
         ? 'Download active populations data'
         : 'No active populations to download';
-
     return (
-        <Accordion className={classes.populationAccordion} elevation={0} square defaultExpanded={true}>
+        <Accordion elevation={0} square defaultExpanded={true}>
             <AccordionSummary
                 expandIcon={<img src={UP_ICON} alt="" />}
             >
@@ -144,10 +80,10 @@ const PopulationsAccordion = ({
                     {title}
                 </Typography>
             </AccordionSummary>
-            <AccordionDetails>
+            <AccordionDetails >
                 <Box className='population-row'>
                     <Typography className='sidebar-title'>Show all</Typography>
-                    <Box className='population-color'>
+                    <Box className='population-switch'>
                         {
                             areAllPopulationsWithChildrenSelected(populations) && (
                                 <DotSizeButton
@@ -158,11 +94,12 @@ const PopulationsAccordion = ({
                                             return acc
                                         }, {}))
                                     }}
+                                    setPopulationRefPosition={setPopulationRefPosition}
                                 />
                             )
                         }
                         <FormControlLabel
-                            className='bold lg'
+                            className='bold lg switch-label'
                             control={
                                 <Switch />
                             }
@@ -171,22 +108,13 @@ const PopulationsAccordion = ({
                         />
                     </Box>
                 </Box>
-                {/* <FormControlLabel
-                    control={
-                        <Switch />
-                    }
-                    label="Show all"
-                    labelPlacement="start"
-                    onChange={handleShowAllPopulations}
-                    checked={ }
-                /> */}
                 {Object.keys(populations).length > 0 && Object.keys(populations).map(pId =>
                     <span className='population-entry' key={pId}>
-                        <Accordion elevation={0} onChange={(e, expanded) => {
-                            setExpanded(expanded)
+                        <Accordion elevation={0} onChange={(e, expand) => {
+                            setExpanded({ ...expanded, [pId]: expand })
                         }}>
                             <CustomAccordionSummary
-                                isExpanded={expanded}
+                                expanded={expanded}
                                 population={populations[pId]}
                                 isParent={populations[pId]?.children !== undefined}
                                 handlePopulationSwitch={handleParentPopulationSwitch}
@@ -194,6 +122,10 @@ const PopulationsAccordion = ({
                                     handlePopulationsWithChildrenColorChange(populations[pId], color, opacity)
                                 }
                                 hasEditPermission={hasEditPermission}
+                                dotSizeDialogOpen={dotSizeDialogOpen}
+                                setDotSizeDialogOpen={setDotSizeDialogOpen}
+                                setDialogPopulationsSelected={setDialogPopulationsSelected}
+                                setPopulationRefPosition={setPopulationRefPosition}
                             />
                             {
                                 populations[pId]?.children && <AccordionDetails>
@@ -204,7 +136,7 @@ const PopulationsAccordion = ({
                                                     <CustomAccordionSummary
                                                         id={index}
                                                         data={arr}
-                                                        isExpanded={false}
+                                                        expanded={{}}
                                                         isParent={false}
                                                         population={populations[pId]?.children[nestedPId]}
                                                         handlePopulationSwitch={handleChildPopulationSwitch}
@@ -236,23 +168,5 @@ const PopulationsAccordion = ({
     );
 };
 
-
-const DotSizeButton = ({ onClickFunc }) => {
-    const myRef = React.useRef(null);
-    return (
-        <IconButton
-            edge="end"
-            color="inherit"
-            onClick={() => {
-                onClickFunc()
-                setPopulationRefPosition(myRef.current.getBoundingClientRect())
-            }}
-            className='slider-icon'
-            ref={myRef}
-        >
-            <SliderIcon style={{ height: '0.90rem' }} />
-        </IconButton>
-    );
-};
 
 export default PopulationsAccordion;

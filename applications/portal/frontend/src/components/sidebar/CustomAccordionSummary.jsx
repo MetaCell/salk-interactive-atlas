@@ -4,8 +4,10 @@ import {
     AccordionSummary,
     Switch,
     FormControlLabel,
-    Popover
+    Popover,
+    IconButton
 } from '@material-ui/core';
+import { SliderIcon } from "../icons";
 
 import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown';
 import UP_ICON from "../../assets/images/icons/up.svg";
@@ -19,24 +21,27 @@ import {
 import ColorPicker from "../common/ColorPicker";
 import SwitchLabel from "../common/SwitchLabel";
 import {TrailIcon, TrailEndIcon} from '../icons';
+import { DotSizeButton } from './DotSizeButton';
 
 
 const POPULATION_ICONS_OPACITY = 0.4
 
 const CustomAccordionSummary = ({
-                                    id,
-                                    data,
-                                    isExpanded,
-                                    population,
-                                    isParent,
-                                    handlePopulationSwitch,
-                                    handlePopulationColorChange,
-                                    hasEditPermission,
-
-                                }) => {
+    id,
+    data,
+    expanded,
+    population,
+    isParent,
+    handlePopulationSwitch,
+    handlePopulationColorChange,
+    hasEditPermission,
+    dotSizeDialogOpen,
+    setDotSizeDialogOpen,
+    setDialogPopulationsSelected,
+    setPopulationRefPosition
+}) => {
     const [popoverAnchorEl, setPopoverAnchorEl] = React.useState(null);
     const [selectedPopoverId, setSelectedPopoverId] = React.useState(null);
-
 
     const handlePopoverClick = (event, id) => {
         setPopoverAnchorEl(event.currentTarget);
@@ -62,6 +67,7 @@ const CustomAccordionSummary = ({
         if (status !== POPULATION_FINISHED_STATE) {
             labelText += ` - ${status}`
         }
+        const isExpanded = expanded[population.name]
         const isParentLabel = isParent && isExpanded
         return (
             <SwitchLabel label={labelText} isParentLabel={isParentLabel}/>
@@ -104,17 +110,50 @@ const CustomAccordionSummary = ({
                 </Popover>
             }
 
-            <FormControlLabel
-                className={'population-label'}
-                key={population.id}
-                control={<Switch/>}
-                label={<PopulationLabel population={population}/>}
-                labelPlacement="start"
-                onChange={() => isParent? handlePopulationSwitch(population.children, !checked) : handlePopulationSwitch(population.id)}
-                checked={checked}
-                style={populationTextStyle(status !== POPULATION_FINISHED_STATE)}
-                disabled={status !== POPULATION_FINISHED_STATE}
-            />
+            {
+                !isParent ? (
+                    <FormControlLabel
+                        className={'population-label-child'}
+                        key={population.id}
+                        control={<Switch />}
+                        label={<PopulationLabel population={population} />}
+                        labelPlacement="start"
+                        onChange={() => isParent ? handlePopulationSwitch(population.children, !checked) : handlePopulationSwitch(population.id)}
+                        checked={checked}
+                        style={populationTextStyle(status !== POPULATION_FINISHED_STATE)}
+                        disabled={status !== POPULATION_FINISHED_STATE}
+                    />
+                ) : (
+                    <Box className='population-container'>
+                        <Box className='dotsize-text-button'>
+                            <PopulationLabel population={population} />
+                            {
+                                checked && (
+                                    <DotSizeButton
+                                        onClickFunc={() => {
+                                            setDotSizeDialogOpen(!dotSizeDialogOpen)
+                                            setDialogPopulationsSelected({ [population.id]: population })
+                                        }}
+                                        setPopulationRefPosition={setPopulationRefPosition}
+                                    />
+                                )
+                            }
+                        </Box>
+
+                        <FormControlLabel
+                            key={population.id}
+                            control={<Switch />}
+                            onChange={() => isParent ? handlePopulationSwitch(population.children, !checked) : handlePopulationSwitch(population.id)}
+                            checked={checked}
+                            disabled={status !== POPULATION_FINISHED_STATE}
+                            labelPlacement="start"
+                            className={'population-label-parent'}
+                            style={populationTextStyle(status !== POPULATION_FINISHED_STATE)}
+                        />
+                    </Box>
+                )
+            }
+
         </AccordionSummary>
     )
 };

@@ -133,13 +133,21 @@ const useStyles = makeStyles({
             overflowX: 'hidden'
         },
 
-        '& .population-label': {
+        '& .population-label-child': {
             display: 'flex',
-            flex: '1',
             justifyContent: 'space-between',
             lineHeight: '0.938rem',
             fontWeight: 400,
-            fontSize: '0.75rem'
+            fontSize: '0.75rem',
+            flex: 1
+        },
+        '& .population-label-parent': {
+            display: 'flex',
+            justifyContent: 'space-between',
+            lineHeight: '0.938rem',
+            fontWeight: 400,
+            fontSize: '0.75rem',
+            marginLeft: '5px'
         },
 
         '& .population-color': {
@@ -148,6 +156,18 @@ const useStyles = makeStyles({
             lineHeight: '0.938rem',
             fontWeight: 400,
             fontSize: '0.75rem',
+            paddingRight: '0.5rem',
+        },
+
+        '& .population-switch': {
+            display: 'flex',
+            alignItems: 'center',
+            lineHeight: '0.938rem',
+            fontWeight: 400,
+            fontSize: '0.75rem',
+            '& .MuiFormControlLabel-root': {
+                padding: 0
+            }
         },
 
         '& .population-icon': {
@@ -178,6 +198,9 @@ const useStyles = makeStyles({
             },
             '&.lg': {
                 padding: '1rem 1rem 1rem 3rem'
+            },
+            '&.switch-label': {
+                marginLeft: '5px'
             }
         },
 
@@ -200,7 +223,43 @@ const useStyles = makeStyles({
             '&:hover': {
                 backgroundColor: headerBg,
             },
-        }
+        },
+        '& .population-row': {
+            display: 'flex',
+            alignItems: 'center',
+            lineHeight: '0.938rem',
+            fontWeight: 400,
+            padding: '1rem 1rem 1rem 3rem',
+            fontSize: '0.75rem',
+            justifyContent: 'space-between',
+        },
+        '& .population-container': {
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            flex: 1
+        },
+        '& .dotsize-text-button': {
+            display: 'flex',
+            flex: 1,
+            alignItems: 'center',
+            justifyContent: 'space-between',
+        },
+        '& .MuiIconButton-root': {
+            '&.slider-icon': {
+                padding: '0',
+                width: '1rem',
+                height: '1rem',
+                display: 'flex',
+                alignItems: 'center',
+                color: canvasIconColor,
+                marginRight: '0px',
+                '&:hover': {
+                    backgroundColor: headerBg,
+                },
+            },
+        },
+
     },
 
     shrink: {
@@ -310,6 +369,10 @@ const ExperimentSidebar = ({
                         handlePopulationColorChange={handlePopulationColorChange}
                         handleChildPopulationSwitch={handleChildPopulationSwitch}
                         handleParentPopulationSwitch={handleParentPopulationSwitch}
+                        dotSizeDialogOpen={dotSizeDialogOpen}
+                        setDotSizeDialogOpen={setDotSizeDialogOpen}
+                        setDialogPopulationsSelected={setDialogPopulationsSelected}
+                        setPopulationRefPosition={setPopulationRefPosition}
                     />
 
                     <PopulationsAccordion populations={experimentPopulationsWithChildren} icon={POPULATION}
@@ -319,6 +382,10 @@ const ExperimentSidebar = ({
                         handlePopulationColorChange={handlePopulationColorChange}
                         handleChildPopulationSwitch={handleChildPopulationSwitch}
                         handleParentPopulationSwitch={handleParentPopulationSwitch}
+                        dotSizeDialogOpen={dotSizeDialogOpen}
+                        setDotSizeDialogOpen={setDotSizeDialogOpen}
+                        setDialogPopulationsSelected={setDialogPopulationsSelected}
+                        setPopulationRefPosition={setPopulationRefPosition}
                     />
 
                 </>
