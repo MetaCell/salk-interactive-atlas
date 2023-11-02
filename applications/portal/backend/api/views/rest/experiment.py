@@ -122,7 +122,6 @@ class ExperimentViewSet(viewsets.ModelViewSet):
     )
     def delete_tag(self, request, tag_name, **kwargs):
         instance = self.get_object()
-        tag_name = request.data.get("name")
         delete_tag(instance, tag_name)
         return Response(status=status.HTTP_204_NO_CONTENT)
 

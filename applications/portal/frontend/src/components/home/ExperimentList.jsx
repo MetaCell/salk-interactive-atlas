@@ -198,7 +198,7 @@ const ExperimentList = (props) => {
   }
 
   const tags = ["Project A", "Tag X", "Label 1"];
-  const { heading, description, type, infoIcon, handleDialogToggle, handleExplorationDialogToggle, handleShareMultipleDialogToggle, handleShareDialogToggle } = props;
+  const { heading, description, type, infoIcon, handleDialogToggle, handleShareMultipleDialogToggle, handleShareDialogToggle } = props;
   const sortOptions = ["Alphabetical", "Date created", "Last viewed"];
   const orderOptions = ["Oldest first", "Newest first"];
 
@@ -295,7 +295,7 @@ const ExperimentList = (props) => {
           {experiments.map( exp => (
             <ExperimentCard
               key={exp.id} experiment={exp} type={type} handleDialogToggle={handleDialogToggle}
-              handleExplorationDialogToggle={handleExplorationDialogToggle} handleShareDialogToggle={handleShareDialogToggle}
+              handleShareDialogToggle={handleShareDialogToggle}
               handleShareMultipleDialogToggle={handleShareMultipleDialogToggle}
               refreshExperimentList={refreshExperimentList}
             />
