@@ -178,6 +178,7 @@ export const CreateUpdateExperimentDialog = ({
      */
     const handleTagsChange = (_: any, value: any) => {
         setTags(value)
+        fetchTagOptions()
     }
 
     /**
@@ -235,6 +236,10 @@ export const CreateUpdateExperimentDialog = ({
         setValidationErrors(validationErrors)
     }
 
+    const fetchTagOptions = async () => {
+        const res = await api.listTags()
+        setTagsOptions(res.data)
+    }
 
     /**
      * Handles the main action (create or update) for the experiment.
@@ -295,11 +300,6 @@ export const CreateUpdateExperimentDialog = ({
     }
 
     useEffect(() => {
-        const fetchTagOptions = async () => {
-            const res = await api.listTags()
-            setTagsOptions(res.data)
-        }
-
         fetchTagOptions().catch(console.error)
     }, []);
 

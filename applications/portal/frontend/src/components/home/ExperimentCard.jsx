@@ -310,11 +310,12 @@ const ExperimentCard = ({
         setOpenDeleteDialog(!openDeleteDialog);
     };
 
+    const fetchTagOptions = async () => {
+        const res = await api.listTags()
+        setTagsOptions(res.data)
+    };
+
     React.useEffect(() => {
-        const fetchTagOptions = async () => {
-            const res = await api.listTags()
-            setTagsOptions(res.data)
-        };
         fetchTagOptions().catch(console.error);
     }, []);
 
@@ -424,6 +425,7 @@ const ExperimentCard = ({
                 handleClose={handleExplorationDialogToggle}
                 refreshExperimentList={refreshExperimentList}
                 setExperimentMenuEl={setExperimentMenuEl}
+                fetchTagOptions={fetchTagOptions}
             />
             <DeleteExperimentDialog
                 experimentId={experiment.id} open={openDeleteDialog}

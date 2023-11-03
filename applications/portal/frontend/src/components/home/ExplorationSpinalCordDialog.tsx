@@ -45,7 +45,7 @@ export const ExplorationSpinalCordDialog = (props: any) => {
   const classes = useStyles();
   const commonClasses = common();
   const api = WorkspaceService.getApi();
-  const { experimentId, experiment, tagsOptions, open, handleClose, refreshExperimentList, setExperimentMenuEl } = props;
+  const { experimentId, experiment, tagsOptions, open, handleClose, refreshExperimentList, setExperimentMenuEl, fetchTagOptions } = props;
 
   const [name, setName] = React.useState<string>(experiment.name);
   const [description, setDescription] = React.useState<string>(experiment.description);
@@ -136,7 +136,8 @@ export const ExplorationSpinalCordDialog = (props: any) => {
       }
     }
     handleClose();
-    setExperimentMenuEl(null)
+    setExperimentMenuEl(null);
+    fetchTagOptions();
   };
 
   return (
