@@ -39,7 +39,7 @@ type PopulationDataType = {
     };
 };
 
-type dotSizeType = {
+type DotSizeType = {
     [key: number]: number;
 };
 
@@ -88,7 +88,7 @@ const ExperimentsPage: React.FC<{ residentialPopulations: any }> = ({residential
     const subdivisions = getSubdivisions(selectedAtlas);
     const [dotSizeDialogOpen, setDotSizeDialogOpen] = useState(false);
     const [dialogPopulationsSelected, setDialogPopulationsSelected] = useState(null);
-    const [populationDotSizes, setPopulationDotSizes] = useState<dotSizeType>({})
+    const [populationDotSizes, setPopulationDotSizes] = useState<DotSizeType>({})
 
     const dispatch = useDispatch();
     const [LayoutComponent, setLayoutManager] = useState(undefined);
@@ -183,7 +183,7 @@ const ExperimentsPage: React.FC<{ residentialPopulations: any }> = ({residential
         setPopulations(nextPopulations)
     }
 
-    const handleSubPopulationDotSizeChange = (newPopulationDotSizes: dotSizeType) => {
+    const handleSubPopulationDotSizeChange = (newPopulationDotSizes: DotSizeType) => {
         setPopulationDotSizes(newPopulationDotSizes)
     }
 
