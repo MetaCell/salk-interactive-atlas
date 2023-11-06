@@ -92,3 +92,35 @@ class PopulationViewSet(viewsets.ModelViewSet):
             content_type="image/png"
         )
         return response
+
+
+    # create a new endpoint to rename the population and another one to rename the subpopulation
+    # @action(
+    #     detail=True, methods=["patch"], 
+    #     url_name="rename_population"
+    # )        
+    # def rename_population(self, request, **kwargs):
+    #     # Check authorizations
+    #     instance = self.get_object()
+    #     new_name = request.data.get("name")
+    #     if new_name is None:
+    #         return Response(status=status.HTTP_400_BAD_REQUEST)
+    #     instance.name = new_name
+    #     instance.save()
+    #     return Response(status=status.HTTP_200_OK)
+    
+
+    # @action(
+    #     detail=True, methods=["patch"], 
+    #     url_name="rename_subpopulation"
+    # )
+    # def rename_subpopulation(self, request, **kwargs):
+    #     # Check authorizations
+    #     instance = self.get_object()
+    #     new_name = request.data.get("name")
+    #     if new_name is None:
+    #         return Response(status=status.HTTP_400_BAD_REQUEST)
+    #     instance.subpopulation_name = new_name
+    #     instance.save()
+    #     return Response(status=status.HTTP_200_OK)
+    

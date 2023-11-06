@@ -65,7 +65,7 @@ const DoublePressInput = (props) => {
       {editPopulation ? (
         <Input
           defaultValue={value}
-          autoFocus
+          autoFocus={true}
           style={{
             width: '100%',
             fontSize: '0.75rem',
