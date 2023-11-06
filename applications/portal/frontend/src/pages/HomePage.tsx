@@ -67,12 +67,6 @@ export default (props: any) => {
     setDialogOpen((prevOpen) => !prevOpen);
   };
 
-  const [explorationDialogOpen, setExplorationDialogOpen] = React.useState(false);
-
-  const handleExplorationDialogToggle = () => {
-    setExplorationDialogOpen((prevOpen) => !prevOpen);
-  };
-
   const [shareDialogOpen, setShareDialogOpen] = React.useState(false);
 
   const handleShareDialogToggle = () => {
@@ -97,7 +91,7 @@ export default (props: any) => {
           <ExperimentList
             experiments={experiments} heading={"My experiments"}
             description={`${experiments.length} experiments`} type={EXPERIMENTS_HASH}
-            handleExplorationDialogToggle={handleExplorationDialogToggle} infoIcon={false}
+            infoIcon={false}
             handleShareDialogToggle={handleShareDialogToggle} handleShareMultipleDialogToggle={handleShareMultipleDialogToggle}
             refreshExperimentList={fetchExperiments}
           />
@@ -118,7 +112,6 @@ export default (props: any) => {
         {/*</Box>*/}
       </Box>
       <CloneExperimentDialog open={dialogOpen} handleClose={handleDialogToggle} user={props?.user} />
-      <ExplorationSpinalCordDialog open={explorationDialogOpen} handleClose={handleExplorationDialogToggle} />
       <ShareExperimentDialog open={shareDialogOpen} handleClose={handleShareDialogToggle} />
       <ShareMultipleExperimentDialog open={shareMultipleDialogOpen} handleClose={handleShareMultipleDialogToggle} />
     </Box>

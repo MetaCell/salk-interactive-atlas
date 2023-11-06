@@ -90,17 +90,16 @@ def correct_raw_coordinates(markers_df_slice):
     :param markers_df_slice:
     :return:
     """
+
     markers_df_slice.loc[markers_df_slice["x"] < 0, "x"] += markers_df_slice[
         markers_df_slice["label"] == 4
-    ]["x"].values
+        ]["x"].values
     markers_df_slice.loc[markers_df_slice["x"] > 0, "x"] -= markers_df_slice[
         markers_df_slice["label"] == 4
-    ]["x"].values
+        ]["x"].values
 
 
-def load_df_preprocessed(
-    sample, z, normalise=True, correct_manually=True, scale_factor=20
-):
+def load_df_preprocessed(sample, z, normalise=True, scale_factor=20):
     """
     Loads single axial slice of a cord sample and applies all
     preprocessing to prepare sample image for registration.
@@ -108,7 +107,6 @@ def load_df_preprocessed(
     :param sample:
     :param z:
     :param normalise:
-    :param correct_manually:
     :param scale_factor:
     :return:
     """
@@ -122,9 +120,13 @@ def load_df_preprocessed(
         else:
             return np.nan
 
+    def correct_single_side_offset(df_slice_z):
+        if np.count_nonzero(df_slice_z.iloc[0:9]["x"] < 0) == 3:
+            return True
+
     df_slice_z["label"] = [get_label(point) for point in df_slice_z["point"]]
 
-    if correct_manually:
+    if correct_single_side_offset(df_slice_z):
         correct_raw_coordinates(df_slice_z)
 
     if normalise:
@@ -207,16 +209,16 @@ def map_points(points):
 
 
 def register_fiducial(
-    fixed_image,
-    moving_image,
-    fixed_points,
-    moving_points,
-    rigid=True,
-    affine=True,
-    bspline=True,
-    use_control_points=False,
-    image_metric_weight=0.9,
-    point_metric_weight=0.1,
+        fixed_image,
+        moving_image,
+        fixed_points,
+        moving_points,
+        rigid=True,
+        affine=True,
+        bspline=True,
+        use_control_points=False,
+        image_metric_weight=0.9,
+        point_metric_weight=0.1,
 ):
     """
     Registration function for the register_fiducial marker pipeline.
@@ -272,11 +274,11 @@ def get_as_image(points, padding=10):
 
 
 def save_output(
-    output_directory,
-    labeled_cells,
-    transformed_cells,
-    save_csv=True,
-    save_npy=True,
+        output_directory,
+        labeled_cells,
+        transformed_cells,
+        save_csv=True,
+        save_npy=True,
 ):
     """
     Saves registration output files to disk.
