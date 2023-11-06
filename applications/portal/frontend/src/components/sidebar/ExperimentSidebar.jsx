@@ -23,7 +23,7 @@ import ADD from "../../assets/images/icons/add.svg";
 import UP_ICON from "../../assets/images/icons/up.svg";
 import POPULATION from "../../assets/images/icons/population.svg";
 import RESIDENTIAL_POPULATION from "../../assets/images/icons/residential_population.svg";
-import { atlasMap } from "../../utilities/constants";
+import { EXPERIMENTAL_POPULATION_NAME, RESIDENTIAL_POPULATION_NAME, atlasMap } from "../../utilities/constants";
 import { groupPopulations, splitPopulations, splitPopulationsByType } from '../../utilities/functions';
 import PopulationsAccordion from "./PopulationsAccordion";
 
@@ -133,13 +133,21 @@ const useStyles = makeStyles({
             overflowX: 'hidden'
         },
 
-        '& .population-label': {
+        '& .population-label-child': {
             display: 'flex',
-            flex: '1',
             justifyContent: 'space-between',
             lineHeight: '0.938rem',
             fontWeight: 400,
-            fontSize: '0.75rem'
+            fontSize: '0.75rem',
+            flex: 1
+        },
+        '& .population-label-parent': {
+            display: 'flex',
+            justifyContent: 'space-between',
+            lineHeight: '0.938rem',
+            fontWeight: 400,
+            fontSize: '0.75rem',
+            marginLeft: '5px'
         },
 
         '& .population-color': {
@@ -148,6 +156,18 @@ const useStyles = makeStyles({
             lineHeight: '0.938rem',
             fontWeight: 400,
             fontSize: '0.75rem',
+            paddingRight: '0.5rem',
+        },
+
+        '& .population-switch': {
+            display: 'flex',
+            alignItems: 'center',
+            lineHeight: '0.938rem',
+            fontWeight: 400,
+            fontSize: '0.75rem',
+            '& .MuiFormControlLabel-root': {
+                padding: 0
+            }
         },
 
         '& .population-icon': {
@@ -178,6 +198,9 @@ const useStyles = makeStyles({
             },
             '&.lg': {
                 padding: '1rem 1rem 1rem 3rem'
+            },
+            '&.switch-label': {
+                marginLeft: '5px'
             }
         },
 
@@ -200,7 +223,51 @@ const useStyles = makeStyles({
             '&:hover': {
                 backgroundColor: headerBg,
             },
-        }
+        },
+        '& .population-row': {
+            display: 'flex',
+            alignItems: 'center',
+            lineHeight: '0.938rem',
+            fontWeight: 400,
+            padding: '1rem 1rem 1rem 3rem',
+            fontSize: '0.75rem',
+            justifyContent: 'space-between',
+        },
+        '& .population-container': {
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            flex: 1
+        },
+        '& .dotsize-text-button': {
+            display: 'flex',
+            flex: 1,
+            alignItems: 'center',
+            justifyContent: 'space-between',
+        },
+        '& .MuiIconButton-root': {
+            '&.slider-icon': {
+                padding: '0',
+                width: '1rem',
+                height: '1rem',
+                display: 'flex',
+                alignItems: 'center',
+                color: canvasIconColor,
+                marginRight: '0px',
+                '&:hover': {
+                    backgroundColor: headerBg,
+                },
+            },
+        },
+
+        '& .MuiSvgIcon-root': {
+            opacity: 0,
+            transition: 'opacity 0.3s',
+            '&:hover': {
+                opacity: 1,
+            },
+        },
+
     },
 
     shrink: {
@@ -232,7 +299,11 @@ const ExperimentSidebar = ({
     handleParentPopulationSwitch,
     handleShowAllPopulations,
     handlePopulationColorChange,
-    hasEditPermission
+    hasEditPermission,
+    dotSizeDialogOpen,
+    setDotSizeDialogOpen,
+    setDialogPopulationsSelected,
+    setPopulationRefPosition
 }) => {
     const classes = useStyles();
     const [shrink, setShrink] = useState(false);
@@ -242,6 +313,10 @@ const ExperimentSidebar = ({
         setShrink((prevState) => !prevState)
     };
 
+    const SidebarRef = React.useRef(null);
+    const activePopulations = Object.keys(populations).filter(
+        (populationID) => populations[populationID].selected
+    );
 
     const sidebarClass = `${classes.sidebar} scrollbar ${shrink ? `${classes.shrink}` : ``}`;
 
@@ -296,20 +371,30 @@ const ExperimentSidebar = ({
 
                     <PopulationsAccordion populations={residentialPopulationsWithChildren} icon={RESIDENTIAL_POPULATION}
                         title={"Data library"}
+                        type={RESIDENTIAL_POPULATION_NAME}
                         handleShowAllPopulations={() => handleShowAllPopulations(residentialPopulationsWithChildren)}
                         hasEditPermission={false}
                         handlePopulationColorChange={handlePopulationColorChange}
                         handleChildPopulationSwitch={handleChildPopulationSwitch}
                         handleParentPopulationSwitch={handleParentPopulationSwitch}
+                        dotSizeDialogOpen={dotSizeDialogOpen}
+                        setDotSizeDialogOpen={setDotSizeDialogOpen}
+                        setDialogPopulationsSelected={setDialogPopulationsSelected}
+                        setPopulationRefPosition={setPopulationRefPosition}
                     />
 
                     <PopulationsAccordion populations={experimentPopulationsWithChildren} icon={POPULATION}
                         title={"Experimental Populations"}
+                        type={EXPERIMENTAL_POPULATION_NAME}
                         handleShowAllPopulations={() => handleShowAllPopulations(experimentPopulationsWithChildren)}
                         hasEditPermission={hasEditPermission}
                         handlePopulationColorChange={handlePopulationColorChange}
                         handleChildPopulationSwitch={handleChildPopulationSwitch}
                         handleParentPopulationSwitch={handleParentPopulationSwitch}
+                        dotSizeDialogOpen={dotSizeDialogOpen}
+                        setDotSizeDialogOpen={setDotSizeDialogOpen}
+                        setDialogPopulationsSelected={setDialogPopulationsSelected}
+                        setPopulationRefPosition={setPopulationRefPosition}
                     />
 
                 </>

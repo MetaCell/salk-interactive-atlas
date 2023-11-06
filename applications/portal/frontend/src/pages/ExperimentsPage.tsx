@@ -1,13 +1,13 @@
-import React, {useEffect, useState} from 'react';
-import {useDispatch, useStore} from 'react-redux';
-import {makeStyles} from '@material-ui/core/styles';
+import React, { useEffect, useState } from 'react';
+import { useDispatch, useStore } from 'react-redux';
+import { makeStyles } from '@material-ui/core/styles';
 import CircularProgress from '@material-ui/core/CircularProgress';
 // @ts-ignore
-import {getLayoutManagerInstance} from "@metacell/geppetto-meta-client/common/layout/LayoutManager";
+import { getLayoutManagerInstance } from "@metacell/geppetto-meta-client/common/layout/LayoutManager";
 // @ts-ignore
-import {WidgetStatus} from "@metacell/geppetto-meta-client/common/layout/model";
+import { WidgetStatus } from "@metacell/geppetto-meta-client/common/layout/model";
 // @ts-ignore
-import {addWidget, deleteWidget, updateWidget} from '@metacell/geppetto-meta-client/common/layout/actions';
+import { addWidget, deleteWidget, updateWidget } from '@metacell/geppetto-meta-client/common/layout/actions';
 // @ts-ignore
 import Loader from '@metacell/geppetto-meta-ui/loader/Loader'
 import {Box} from "@material-ui/core";
@@ -21,20 +21,26 @@ import {
     CONTOUR_PLOT_ID,
     PULL_TIME_MS
 } from "../utilities/constants"
-import {getAtlas} from "../service/AtlasService";
-import {Experiment, ExperimentPopulationsInner, Population} from "../apiclient/workspaces";
-import {areAllPopulationsWithChildrenSelected, areAllSelected} from "../utilities/functions";
+import { getAtlas } from "../service/AtlasService";
+import { Experiment, ExperimentPopulationsInner, Population } from "../apiclient/workspaces";
+import { areAllSelected, areAllPopulationsWithChildrenSelected } from "../utilities/functions";
 import workspaceService from "../service/WorkspaceService";
-import {DetailsWidget, threeDViewerWidget, twoDViewerWidget, widgetIds} from "../widgets";
-import {useInterval} from "../utilities/hooks/useInterval";
-import {useParams} from "react-router";
-import {getCells} from "../helpers/CellsHelper";
+import Cell from "../models/Cell";
+import { DetailsWidget, threeDViewerWidget, twoDViewerWidget, widgetIds } from "../widgets";
+import { useInterval } from "../utilities/hooks/useInterval";
+import { useParams } from "react-router";
+import { getCells } from "../helpers/CellsHelper";
+import NeuronDotSize from '../components/common/ExperimentDialogs/NeuronDotSize';
 
 type PopulationDataType = {
     [key: string]: {
         selected: boolean;
         status: string;
     };
+};
+
+type DotSizeType = {
+    [key: number]: number;
 };
 
 const useStyles = makeStyles({
@@ -62,7 +68,7 @@ const getDefaultAtlas = () => AtlasChoice.slk10
 const getSubdivisions = (sa: AtlasChoice) => {
     const subdivisions: any = {}
     const segments = getAtlas(sa).segments
-    segments.forEach(sd => subdivisions[sd.id] = {selected: true})
+    segments.forEach(sd => subdivisions[sd.id] = { selected: true })
     return subdivisions
 }
 
@@ -80,6 +86,9 @@ const ExperimentsPage: React.FC<{ residentialPopulations: any }> = ({residential
     const [selectedAtlas, setSelectedAtlas] = useState(getDefaultAtlas());
     const [populations, setPopulations] = useState<PopulationDataType>({});
     const subdivisions = getSubdivisions(selectedAtlas);
+    const [dotSizeDialogOpen, setDotSizeDialogOpen] = useState(false);
+    const [dialogPopulationsSelected, setDialogPopulationsSelected] = useState(null);
+    const [populationDotSizes, setPopulationDotSizes] = useState<DotSizeType>({})
 
     const dispatch = useDispatch();
     const [LayoutComponent, setLayoutManager] = useState(undefined);
@@ -90,7 +99,17 @@ const ExperimentsPage: React.FC<{ residentialPopulations: any }> = ({residential
         filteredPopulations.forEach(p => nextPopulations[p.id] = {
             ...p,
             status: p.status,
-            selected: populations[p.id]?.selected || false
+            selected: populations[p.id]?.selected || false,
+        });
+
+
+        Object.values(residentialPopulations).forEach((p: any) => {
+            if (!nextPopulations[p.id]) {
+                nextPopulations[p.id] = {
+                    ...p,
+                    selected: populations[p.id]?.selected || false
+                }
+            }
         })
 
         Object.values(residentialPopulations).forEach((p: any) => {
@@ -164,6 +183,9 @@ const ExperimentsPage: React.FC<{ residentialPopulations: any }> = ({residential
         setPopulations(nextPopulations)
     }
 
+    const handleSubPopulationDotSizeChange = (newPopulationDotSizes: DotSizeType) => {
+        setPopulationDotSizes(newPopulationDotSizes)
+    }
 
     const getActivePopulations = () => Object.keys(populations)
         // @ts-ignore
@@ -207,6 +229,17 @@ const ExperimentsPage: React.FC<{ residentialPopulations: any }> = ({residential
     }, PULL_TIME_MS);
 
 
+    const setInitialPopulationDotSizes = (initialPopulations: any, initialResidentialPopulations: any) => {
+        const dotsizes: any = {}
+        Object.values(initialPopulations).forEach((p: any) => {
+            dotsizes[p.id] = 1
+        })
+        Object.values(initialResidentialPopulations).forEach((p: any) => {
+            dotsizes[p.id] = 1
+        })
+        return dotsizes
+    }
+
     useEffect(() => {
         const fetchData = async () => {
             // @ts-ignore
@@ -219,6 +252,7 @@ const ExperimentsPage: React.FC<{ residentialPopulations: any }> = ({residential
             data.populations.forEach((p, i) => {
                 data.populations[i].cells = cells[i]
             });
+            setPopulationDotSizes(setInitialPopulationDotSizes(data.populations, residentialPopulations))
             setExperiment(data)
         }
 
@@ -230,7 +264,7 @@ const ExperimentsPage: React.FC<{ residentialPopulations: any }> = ({residential
         if (experiment != null) {
             const experimentPopulations = getPopulations(experiment, selectedAtlas)
             setPopulations(experimentPopulations)
-            dispatch(addWidget(threeDViewerWidget(selectedAtlas, {})));
+            dispatch(addWidget(threeDViewerWidget(selectedAtlas, {}, populationDotSizes)));
             dispatch(addWidget(twoDViewerWidget(Object.keys(subdivisions), [], selectedAtlas,
                 WidgetStatus.ACTIVE)));
             dispatch(addWidget(DetailsWidget(false, null)));
@@ -246,13 +280,15 @@ const ExperimentsPage: React.FC<{ residentialPopulations: any }> = ({residential
     function getWidget(widgetId: string) {
         switch (widgetId) {
             case widgetIds.threeDViewer:
-                return threeDViewerWidget(selectedAtlas, getActivePopulations())
+                return threeDViewerWidget(selectedAtlas, getActivePopulations(), populationDotSizes)
             case widgetIds.twoDViewer:
                 return twoDViewerWidget(Object.keys(subdivisions), Object.values(getActivePopulations()), selectedAtlas,
                     getWidgetStatus(widgetId))
         }
 
     }
+
+
 
     useEffect(() => {
         for (const widgetId of Object.keys(store.getState().widgets)) {
@@ -261,7 +297,7 @@ const ExperimentsPage: React.FC<{ residentialPopulations: any }> = ({residential
                 dispatch(updateWidget(widget))
             }
         }
-    }, [populations])
+    }, [populations, populationDotSizes])
 
     useEffect(() => {
         if (LayoutComponent === undefined) {
@@ -272,22 +308,39 @@ const ExperimentsPage: React.FC<{ residentialPopulations: any }> = ({residential
         }
     }, [store])
 
+    const [populationRefPosition, setPopulationRefPosition] = useState(null)
+
     return experiment != null ? (
         <Box display="flex">
+            {/* @ts-ignore */}
             <Sidebar selectedAtlas={selectedAtlas}
-                     populations={populations}
-                     handleAtlasChange={handleAtlasChange}
-                     handleChildPopulationSwitch={handleChildPopulationSwitch}
-                     handleParentPopulationSwitch={handleParentPopulationSwitch}
-                     handleShowAllPopulations={handleShowAllPopulations}
-                     handlePopulationColorChange={handlePopulationColorChange}
-                     hasEditPermission={experiment.has_edit_permission}
+                populations={populations}
+                handleAtlasChange={handleAtlasChange}
+                handleChildPopulationSwitch={handleChildPopulationSwitch}
+                handleParentPopulationSwitch={handleParentPopulationSwitch}
+                handleShowAllPopulations={handleShowAllPopulations}
+                handlePopulationColorChange={handlePopulationColorChange}
+                hasEditPermission={experiment.has_edit_permission}
+                dotSizeDialogOpen={dotSizeDialogOpen}
+                setDotSizeDialogOpen={setDotSizeDialogOpen}
+                setDialogPopulationsSelected={setDialogPopulationsSelected}
+                setPopulationRefPosition={setPopulationRefPosition}
             />
             <Box className={classes.layoutContainer}>
-                {LayoutComponent === undefined ? <CircularProgress/> : <LayoutComponent/>}
+                <NeuronDotSize
+                    open={dotSizeDialogOpen}
+                    onClose={() => setDotSizeDialogOpen(false)}
+                    populations={populations}
+                    anchorElement={populationRefPosition}
+                    activePopulations={getActivePopulations()}
+                    handleSubPopulationDotSizeChange={handleSubPopulationDotSizeChange}
+                    dialogPopulationsSelected={dialogPopulationsSelected}
+                    populationDotSizes={populationDotSizes}
+                />
+                {LayoutComponent === undefined ? <CircularProgress /> : <LayoutComponent />}
             </Box>
         </Box>
-    ) : <Loader/>
+    ) : <Loader />
 }
 
 export default ExperimentsPage;

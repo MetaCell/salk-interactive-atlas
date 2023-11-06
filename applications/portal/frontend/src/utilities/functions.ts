@@ -83,6 +83,11 @@ export function getRGBAFromHexAlpha(hex: string, opacity: number) {
     return rgb ? {...rgb, a: opacity} : {r: 0, g: 0, b: 0, a: 1}
 }
 
+export const getRGBAColor = (populations: any, pId: number) => {
+    const { color, opacity } = populations[pId]
+    return getRGBAFromHexAlpha(color, opacity)
+}
+
 export function getRGBAString(rgba: { r: number; g: number; b: number; a: number; }) {
     return `rgba(${rgba.r},${rgba.g},${rgba.b},${rgba.a})`
 }
@@ -206,7 +211,7 @@ function sortSubpopulation(populationKeys: string[], populations: any) {
                     ...newPopulations[parentName].children,
                     [key]: {
                         ...population,
-                        name: childName
+                        name: childName,
                     }
                 };
             }

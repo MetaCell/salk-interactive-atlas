@@ -87,3 +87,6 @@ export const SNACKBAR_TIMEOUT = 5000
 export const POPULATION_ICONS_OPACITY = 0.4
 
 export const POPULATION_UNKNOWN_CHILD = 'unknown'
+
+export const EXPERIMENTAL_POPULATION_NAME = 'experimental'
+export const RESIDENTIAL_POPULATION_NAME = 'residential'

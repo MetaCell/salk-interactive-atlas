@@ -2,7 +2,6 @@ import { MAX_STR_LENGTH_SIDEBAR, POPULATION_FINISHED_STATE } from "../../utiliti
 import { Tooltip, Typography, Box } from "@material-ui/core";
 import React from "react";
 import { makeStyles } from "@material-ui/core/styles";
-import NavigationControlIcon from "../../assets/images/icons/navigation_control_icon.svg"
 
 
 const useStyles = makeStyles({
@@ -25,10 +24,9 @@ const SwitchLabel = ({ label, isParentLabel }) => {
                         {label.substr(0, MAX_STR_LENGTH_SIDEBAR)}
                     </Typography>
                     {
-                        isParentLabel && <span style={{ color: 'rgba(255, 255, 255, 0.40)', fontWeight: 400, marginRight: '0.5rem' }}> - parent</span>
+                        isParentLabel && <span style={{ color: 'rgba(255, 255, 255, 0.40)', fontWeight: 400, fontSize: '0.65rem' }}> -parent</span>
                     }
                 </div>
-                <img src={NavigationControlIcon} className="nav_control" alt='' style={{ marginRight: '0.5rem' }} />
             </Box>
         </Tooltip>
     )
