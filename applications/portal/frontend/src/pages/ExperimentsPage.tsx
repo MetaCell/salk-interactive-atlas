@@ -88,7 +88,7 @@ const ExperimentsPage: React.FC<{ residentialPopulations: any }> = ({residential
     const subdivisions = getSubdivisions(selectedAtlas);
     const [dotSizeDialogOpen, setDotSizeDialogOpen] = useState(false);
     const [dialogPopulationsSelected, setDialogPopulationsSelected] = useState(null);
-    const [populationDotSizes, setPopulationDotSizes] = useState({} as dotSizeType)
+    const [populationDotSizes, setPopulationDotSizes] = useState<dotSizeType>({})
 
     const dispatch = useDispatch();
     const [LayoutComponent, setLayoutManager] = useState(undefined);
@@ -229,13 +229,12 @@ const ExperimentsPage: React.FC<{ residentialPopulations: any }> = ({residential
     }, PULL_TIME_MS);
 
 
-    const setInitialPopulationDotSizes = (populations: any, residentialPopulations: any) => {
-        console.log(populations, residentialPopulations)
+    const setInitialPopulationDotSizes = (initialPopulations: any, initialResidentialPopulations: any) => {
         const dotsizes: any = {}
-        Object.values(populations).forEach((p: any) => {
+        Object.values(initialPopulations).forEach((p: any) => {
             dotsizes[p.id] = 1
         })
-        Object.values(residentialPopulations).forEach((p: any) => {
+        Object.values(initialResidentialPopulations).forEach((p: any) => {
             dotsizes[p.id] = 1
         })
         return dotsizes
@@ -259,7 +258,6 @@ const ExperimentsPage: React.FC<{ residentialPopulations: any }> = ({residential
 
         fetchData()
             .catch(console.error);
-        // setPopulationDotSizes(setInitialPopulationDotSizes())
     }, [])
 
     useEffect(() => {

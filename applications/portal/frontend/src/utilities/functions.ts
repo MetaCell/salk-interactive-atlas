@@ -188,7 +188,6 @@ function sortSubpopulation(populationKeys: string[], populations: any) {
                 [population.id]: {
                     ...population,
                     name: POPULATION_UNKNOWN_CHILD,
-                    id: population.id
                 }
             };
         } else {
@@ -200,7 +199,6 @@ function sortSubpopulation(populationKeys: string[], populations: any) {
                     name: parentName,
                     color,
                     opacity,
-                    id: population.id,
                     children: {
                         [key]: {
                             ...population, // subpopulation also takes the color of the parent population
@@ -214,7 +212,6 @@ function sortSubpopulation(populationKeys: string[], populations: any) {
                     [key]: {
                         ...population,
                         name: childName,
-                        id: population.id
                     }
                 };
             }
