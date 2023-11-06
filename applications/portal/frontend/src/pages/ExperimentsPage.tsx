@@ -39,6 +39,10 @@ type PopulationDataType = {
     };
 };
 
+type dotSizeType = {
+    [key: number]: number;
+};
+
 const useStyles = makeStyles({
     layoutContainer: {
         position: 'relative',
@@ -84,6 +88,7 @@ const ExperimentsPage: React.FC<{ residentialPopulations: any }> = ({residential
     const subdivisions = getSubdivisions(selectedAtlas);
     const [dotSizeDialogOpen, setDotSizeDialogOpen] = useState(false);
     const [dialogPopulationsSelected, setDialogPopulationsSelected] = useState(null);
+    const [populationDotSizes, setPopulationDotSizes] = useState({} as dotSizeType)
 
     const dispatch = useDispatch();
     const [LayoutComponent, setLayoutManager] = useState(undefined);
@@ -95,7 +100,6 @@ const ExperimentsPage: React.FC<{ residentialPopulations: any }> = ({residential
             ...p,
             status: p.status,
             selected: populations[p.id]?.selected || false,
-            size: 1
         });
 
 
@@ -179,6 +183,9 @@ const ExperimentsPage: React.FC<{ residentialPopulations: any }> = ({residential
         setPopulations(nextPopulations)
     }
 
+    const handleSubPopulationDotSizeChange = (newPopulationDotSizes: dotSizeType) => {
+        setPopulationDotSizes(newPopulationDotSizes)
+    }
 
     const getActivePopulations = () => Object.keys(populations)
         // @ts-ignore
@@ -222,6 +229,18 @@ const ExperimentsPage: React.FC<{ residentialPopulations: any }> = ({residential
     }, PULL_TIME_MS);
 
 
+    const setInitialPopulationDotSizes = (populations: any, residentialPopulations: any) => {
+        console.log(populations, residentialPopulations)
+        const dotsizes: any = {}
+        Object.values(populations).forEach((p: any) => {
+            dotsizes[p.id] = 1
+        })
+        Object.values(residentialPopulations).forEach((p: any) => {
+            dotsizes[p.id] = 1
+        })
+        return dotsizes
+    }
+
     useEffect(() => {
         const fetchData = async () => {
             // @ts-ignore
@@ -234,18 +253,20 @@ const ExperimentsPage: React.FC<{ residentialPopulations: any }> = ({residential
             data.populations.forEach((p, i) => {
                 data.populations[i].cells = cells[i]
             });
+            setPopulationDotSizes(setInitialPopulationDotSizes(data.populations, residentialPopulations))
             setExperiment(data)
         }
 
         fetchData()
             .catch(console.error);
+        // setPopulationDotSizes(setInitialPopulationDotSizes())
     }, [])
 
     useEffect(() => {
         if (experiment != null) {
             const experimentPopulations = getPopulations(experiment, selectedAtlas)
             setPopulations(experimentPopulations)
-            dispatch(addWidget(threeDViewerWidget(selectedAtlas, {})));
+            dispatch(addWidget(threeDViewerWidget(selectedAtlas, {}, populationDotSizes)));
             dispatch(addWidget(twoDViewerWidget(Object.keys(subdivisions), [], selectedAtlas,
                 WidgetStatus.ACTIVE)));
             dispatch(addWidget(DetailsWidget(false, null)));
@@ -261,7 +282,7 @@ const ExperimentsPage: React.FC<{ residentialPopulations: any }> = ({residential
     function getWidget(widgetId: string) {
         switch (widgetId) {
             case widgetIds.threeDViewer:
-                return threeDViewerWidget(selectedAtlas, getActivePopulations())
+                return threeDViewerWidget(selectedAtlas, getActivePopulations(), populationDotSizes)
             case widgetIds.twoDViewer:
                 return twoDViewerWidget(Object.keys(subdivisions), Object.values(getActivePopulations()), selectedAtlas,
                     getWidgetStatus(widgetId))
@@ -269,11 +290,6 @@ const ExperimentsPage: React.FC<{ residentialPopulations: any }> = ({residential
 
     }
 
-    const handlePopulationDotSizeChange = (populationId: string, size: number) => {
-        const nextPopulations: any = { ...populations }
-        nextPopulations[populationId].size = size
-        setPopulations(nextPopulations)
-    }
 
 
     useEffect(() => {
@@ -283,7 +299,7 @@ const ExperimentsPage: React.FC<{ residentialPopulations: any }> = ({residential
                 dispatch(updateWidget(widget))
             }
         }
-    }, [populations])
+    }, [populations, populationDotSizes])
 
     useEffect(() => {
         if (LayoutComponent === undefined) {
@@ -298,12 +314,12 @@ const ExperimentsPage: React.FC<{ residentialPopulations: any }> = ({residential
 
     return experiment != null ? (
         <Box display="flex">
+            {/* @ts-ignore */}
             <Sidebar selectedAtlas={selectedAtlas}
                 populations={populations}
                 handleAtlasChange={handleAtlasChange}
                 handleChildPopulationSwitch={handleChildPopulationSwitch}
                 handleParentPopulationSwitch={handleParentPopulationSwitch}
-
                 handleShowAllPopulations={handleShowAllPopulations}
                 handlePopulationColorChange={handlePopulationColorChange}
                 hasEditPermission={experiment.has_edit_permission}
@@ -319,8 +335,9 @@ const ExperimentsPage: React.FC<{ residentialPopulations: any }> = ({residential
                     populations={populations}
                     anchorElement={populationRefPosition}
                     activePopulations={getActivePopulations()}
-                    handlePopulationDotSizeChange={handlePopulationDotSizeChange}
+                    handleSubPopulationDotSizeChange={handleSubPopulationDotSizeChange}
                     dialogPopulationsSelected={dialogPopulationsSelected}
+                    populationDotSizes={populationDotSizes}
                 />
                 {LayoutComponent === undefined ? <CircularProgress /> : <LayoutComponent />}
             </Box>

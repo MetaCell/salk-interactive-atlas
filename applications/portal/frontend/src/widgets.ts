@@ -9,7 +9,7 @@ export const widgetIds = {
     detailsViewer: 'detailsViewer'
 }
 
-export const threeDViewerWidget = (selectedAtlas: AtlasChoice, activePopulations: any) => {
+export const threeDViewerWidget = (selectedAtlas: AtlasChoice, activePopulations: any, populationDotSizes: any) => {
     return {
         id: widgetIds.threeDViewer,
         name: "3D Viewer",
@@ -20,6 +20,7 @@ export const threeDViewerWidget = (selectedAtlas: AtlasChoice, activePopulations
         config: {
             selectedAtlas,
             activePopulations,
+            populationDotSizes,
         }
     }
 };

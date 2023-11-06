@@ -23,7 +23,7 @@ import ADD from "../../assets/images/icons/add.svg";
 import UP_ICON from "../../assets/images/icons/up.svg";
 import POPULATION from "../../assets/images/icons/population.svg";
 import RESIDENTIAL_POPULATION from "../../assets/images/icons/residential_population.svg";
-import { atlasMap } from "../../utilities/constants";
+import { EXPERIMENTAL_POPULATION_NAME, RESIDENTIAL_POPULATION_NAME, atlasMap } from "../../utilities/constants";
 import { groupPopulations, splitPopulations, splitPopulationsByType } from '../../utilities/functions';
 import PopulationsAccordion from "./PopulationsAccordion";
 
@@ -260,6 +260,14 @@ const useStyles = makeStyles({
             },
         },
 
+        '& .MuiSvgIcon-root': {
+            opacity: 0,
+            transition: 'opacity 0.3s',
+            '&:hover': {
+                opacity: 1,
+            },
+        },
+
     },
 
     shrink: {
@@ -287,7 +295,6 @@ const ExperimentSidebar = ({
     selectedAtlas,
     populations,
     handleAtlasChange,
-    handlePopulationSwitch,
     handleChildPopulationSwitch,
     handleParentPopulationSwitch,
     handleShowAllPopulations,
@@ -364,6 +371,7 @@ const ExperimentSidebar = ({
 
                     <PopulationsAccordion populations={residentialPopulationsWithChildren} icon={RESIDENTIAL_POPULATION}
                         title={"Data library"}
+                        type={RESIDENTIAL_POPULATION_NAME}
                         handleShowAllPopulations={() => handleShowAllPopulations(residentialPopulationsWithChildren)}
                         hasEditPermission={false}
                         handlePopulationColorChange={handlePopulationColorChange}
@@ -377,6 +385,7 @@ const ExperimentSidebar = ({
 
                     <PopulationsAccordion populations={experimentPopulationsWithChildren} icon={POPULATION}
                         title={"Experimental Populations"}
+                        type={EXPERIMENTAL_POPULATION_NAME}
                         handleShowAllPopulations={() => handleShowAllPopulations(experimentPopulationsWithChildren)}
                         hasEditPermission={hasEditPermission}
                         handlePopulationColorChange={handlePopulationColorChange}

@@ -79,6 +79,23 @@ const CustomAccordionSummary = ({
     const status = isParent ? getParentPopulationStatus(population) : population.status
     const checked = isParent ? areAllSelected(population.children) : population.selected
 
+    const selectPopulationForDotSizeChange = (population) => {
+        setDotSizeDialogOpen(!dotSizeDialogOpen)
+
+        const children = population?.children
+        if (children) {
+            setDialogPopulationsSelected({
+                showAll: false,
+                populations: {
+                    [population.name]: {
+                        color: population.color,
+                        children: Object.keys(children).map((childId) => children[childId].id)
+                    }
+                }
+            })
+        }
+    }
+
     return (
         <AccordionSummary
             expandIcon={
@@ -130,10 +147,7 @@ const CustomAccordionSummary = ({
                             {
                                 checked && (
                                     <DotSizeButton
-                                        onClickFunc={() => {
-                                            setDotSizeDialogOpen(!dotSizeDialogOpen)
-                                            setDialogPopulationsSelected({ [population.id]: population })
-                                        }}
+                                            onClickFunc={() => selectPopulationForDotSizeChange(population)}
                                         setPopulationRefPosition={setPopulationRefPosition}
                                     />
                                 )

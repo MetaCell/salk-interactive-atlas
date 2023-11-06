@@ -5,6 +5,7 @@ import { Box, Typography, Slider, Divider, IconButton, Dialog, DialogTitle, Dial
 import { getRGBAString, getRGBAColor, areAllPopulationsWithChildrenSelected } from "../../../utilities/functions";
 import { headerBorderColor } from "../../../theme";
 import CLOSE from "../../../assets/images/icons/close.svg";
+import { EXPERIMENTAL_POPULATION_NAME, RESIDENTIAL_POPULATION_NAME } from "../../../utilities/constants";
 
 
 const useStyles = makeStyles((theme) => ({
@@ -90,9 +91,17 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const NeuronDotSize = ({ open, onClose, populations, anchorElement, activePopulations, handlePopulationDotSizeChange, dialogPopulationsSelected }) => {
+const NeuronDotSize = ({
+  open, onClose, populations, anchorElement,
+  activePopulations, handleSubPopulationDotSizeChange,
+  dialogPopulationsSelected, populationDotSizes,
+}) => {
   const classes = useStyles();
-  const [globalDotSize, setGlobalDotSize] = React.useState(1);
+  const [globalDotSize, setGlobalDotSize] = React.useState({
+    [RESIDENTIAL_POPULATION_NAME]: 1,
+    [EXPERIMENTAL_POPULATION_NAME]: 1,
+  });
+
   const marks = [
     {
       value: 0,
@@ -120,32 +129,37 @@ const NeuronDotSize = ({ open, onClose, populations, anchorElement, activePopula
     };
   };
 
-  // from the dialogPopulationsSelected, get the populations that have name !== 'unknown'
-  const populationSelected = () => {
-    if (dialogPopulationsSelected) {
-      return Object.keys(dialogPopulationsSelected).filter((pId) => dialogPopulationsSelected[pId].name !== 'unknown');
-    }
-    return [];
-  };
 
+
+  const populationSelected = dialogPopulationsSelected?.populations;
+  const populationType = dialogPopulationsSelected?.type;
 
   const changeAllDotSize = useCallback((newValue) => {
-    Object.keys(activePopulations).map((pId) => {
-      handlePopulationDotSizeChange(pId, newValue / 100);
+    let allSubPopulations = []
+    Object.keys(populationSelected).map((populationName) => {
+      allSubPopulations = [...allSubPopulations, ...populationSelected[populationName].children]
     })
-    setGlobalDotSize(newValue / 100);
+    handlePopulationDotSizeChange(allSubPopulations, newValue / 100)
+
+    setGlobalDotSize({
+      ...globalDotSize,
+      [populationType]: newValue / 100,
+    });
   }, [populations, handlePopulationDotSizeChange, activePopulations]);
 
 
+  const getPopulationSize = (subPopulationList) => {
+    // Detail: All subpopulations have the same size - get the size of the first one
+    return populationDotSizes[subPopulationList[0]] * 100;
+  }
 
-  const showAllPopulations = () => {
-    if (dialogPopulationsSelected && activePopulations
-      && areAllPopulationsWithChildrenSelected(populations)
-      && Object.keys(dialogPopulationsSelected).length === Object.keys(activePopulations).length) {
-      return true;
-    }
-    return false;
-  };
+  const handlePopulationDotSizeChange = useCallback((subPopulationList, newValue) => {
+    const newPopulationDotSizes = { ...populationDotSizes };
+    subPopulationList ? subPopulationList.forEach((pId) => {
+      newPopulationDotSizes[pId] = newValue;
+    }) : null;
+    handleSubPopulationDotSizeChange(newPopulationDotSizes);
+  }, [handleSubPopulationDotSizeChange]);
 
   return (
     <Dialog open={open} onClose={onClose}
@@ -167,7 +181,7 @@ const NeuronDotSize = ({ open, onClose, populations, anchorElement, activePopula
         <Box className={classes.dialogContent}>
           <Box >
             {
-              showAllPopulations() && (
+              dialogPopulationsSelected?.showAll && (
                 <Box>
                   <Typography variant="body1" gutterBottom>
                     Global
@@ -179,7 +193,7 @@ const NeuronDotSize = ({ open, onClose, populations, anchorElement, activePopula
 
                     <Slider
                       className={classes.slider}
-                      value={globalDotSize * 100}
+                      value={globalDotSize[populationType] * 100}
                       onChange={(event, newValue) => changeAllDotSize(newValue)}
                       marks={marks}
                       min={0}
@@ -197,28 +211,28 @@ const NeuronDotSize = ({ open, onClose, populations, anchorElement, activePopula
               )
             }
             {
-              Object.keys(populationSelected).map((pId) => (
-                <Box key={populationSelected[pId].id}>
+              populationSelected && Object.keys(populationSelected).map((populationName) => (
+                <Box key={populationName}>
                   <Box className='row-container'>
                     <span className='population-color'>
-                      <Box style={{ backgroundColor: getRGBAString(getRGBAColor(populationSelected, pId)) }}
+                      <Box style={{ backgroundColor: populationSelected[populationName].color }}
                         component="span"
                         className='square' />
                     </span>
                     <Typography variant="body1">
-                      {populationSelected[pId].name}
+                      {populationName}
                     </Typography>
                   </Box>
                   <Box className='row-slider'>
                     <Slider
                       className={classes.slider}
-                      value={populationSelected[pId].size * 100}
-                      onChange={(event, newValue) => handlePopulationDotSizeChange(pId, newValue / 100)}
+                      value={getPopulationSize(populationSelected[populationName].children)}
+                      onChange={(event, newValue) => handlePopulationDotSizeChange(populationSelected[populationName].children, newValue / 100)}
                       marks={marks}
                       min={0}
                       max={100}
                     />
-                    <Button onClick={() => handlePopulationDotSizeChange(pId, 1)}>
+                    <Button onClick={() => handlePopulationDotSizeChange(populationSelected[populationName].children, 1)}>
                       <Typography className="disable-text">
                         Reset
                       </Typography>

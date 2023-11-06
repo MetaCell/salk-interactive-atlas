@@ -26,6 +26,7 @@ const PopulationsAccordion = ({
     populations,
     icon,
     title,
+    type,
     handleShowAllPopulations,
     hasEditPermission,
     handlePopulationColorChange,
@@ -68,6 +69,30 @@ const PopulationsAccordion = ({
     const downloadTooltipTitle = activePopulations.length
         ? 'Download active populations data'
         : 'No active populations to download';
+
+    const selectAllPopulationsForDotSizeChange = () => {
+        setDotSizeDialogOpen(!dotSizeDialogOpen)
+        let populationsToSelect = {}
+        for (const populationId in populations) {
+            const population = populations[populationId]
+            if (population.children) {
+                populationsToSelect = {
+                    ...populationsToSelect,
+                    [population.name]: {
+                        color: population.color,
+                        children: Object.keys(population.children).map((childId) => population.children[childId].id)
+                    }
+                }
+            }
+        }
+        setDialogPopulationsSelected({
+            showAll: true,
+            type: type,
+            populations: populationsToSelect
+        })
+    }
+
+
     return (
         <Accordion elevation={0} square defaultExpanded={true}>
             <AccordionSummary
@@ -89,10 +114,7 @@ const PopulationsAccordion = ({
                                 <DotSizeButton
                                     onClickFunc={() => {
                                         setDotSizeDialogOpen(!dotSizeDialogOpen)
-                                        setDialogPopulationsSelected(Object.values(activePopulations).reduce((acc, pId) => {
-                                            acc[pId] = populations[pId]
-                                            return acc
-                                        }, {}))
+                                        selectAllPopulationsForDotSizeChange()
                                     }}
                                     setPopulationRefPosition={setPopulationRefPosition}
                                 />
