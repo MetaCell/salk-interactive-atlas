@@ -14,3 +14,4 @@ applications/workspaces/backend/static
 
 applications/portal/frontend/src/assets/atlas/salk_cord_10um/*
 applications/portal/backend/persistent/*
+applications/portal/backend/data/*
