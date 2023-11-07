@@ -7,17 +7,23 @@ import UNORDERED from "../../../assets/images/icons/unordered_list.svg";
 import ORDERED from "../../../assets/images/icons/ordered_list.svg";
 import {Editor} from "react-draft-wysiwyg";
 import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
-import {EditorState} from 'draft-js';
+import {EditorState, ContentState, convertFromHTML} from 'draft-js';
 
 export const TextEditor = (props) => {
     const [editorState, setEditorState] = React.useState(EditorState.createEmpty())
-    const {onChange, wrapperClassName} = props;
+    const {value, onChange, wrapperClassName} = props;
 
 
     const onEditorStateChange = (updatedEditorState) => {
         setEditorState(updatedEditorState)
         onChange(updatedEditorState)
     }
+
+    React.useEffect(() => {
+        if (value) {
+            setEditorState(EditorState.createWithContent(ContentState.createFromBlockArray(convertFromHTML(value))));
+        };
+    }, []);
 
     return (
         <Editor

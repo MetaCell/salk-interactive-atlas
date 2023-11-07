@@ -6,7 +6,8 @@ CAUDAL = "Caudal"
 
 class PopulationPersistentFiles(Enum):
     CSV_FILE = ".csv"
-    PROBABILITY_MAP_IMG = "_probability_map.png"
+    CONTOUR_PLOT_IMG = "_contour_plot.png"
+    CONTOUR_PLOT_WITH_OVERLAY_IMG = "_contour_plot_with_overlay.png"
     CENTROIDS_IMG = "_centroids.png"
 
 

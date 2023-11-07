@@ -42,7 +42,6 @@ class Command(BaseCommand):
             subdivisions.sort()
             laminas_metadata = {}
             for s in subdivisions:
-                # TODO: Change hardcoded to for lamina in bg_atlas.structures['laminae']
                 for l_key in get_laminas(bg_atlas):
                     lamina = bg_atlas.structures[l_key].data
                     try:

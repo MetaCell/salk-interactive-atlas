@@ -11,5 +11,7 @@ skaffold.yaml
 applications/workspaces/backend/static
 .overrides
 **/*.sqlite3
+
 applications/portal/frontend/src/assets/atlas/salk_cord_10um/*
 applications/portal/backend/persistent/*
+applications/portal/backend/data/*

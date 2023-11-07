@@ -27,7 +27,9 @@ def add_atlas(atlas_id: str) -> ICustomAtlas:
 
 
 def get_atlas(atlas_id: str) -> ICustomAtlas:
-    return salkAtlasses.get(atlas_id, add_atlas(atlas_id))
+    if atlas_id in salkAtlasses:
+        return salkAtlasses[atlas_id]
+    return add_atlas(atlas_id)
 
 
 for atlas_id in (e.value for e in AtlasesChoice):
