@@ -33,7 +33,7 @@
     "@metacell/geppetto-meta-ui": "1.0.9",
     "@qiuz/react-image-map": "^1.1.5",
     "@reduxjs/toolkit": "^1.5.1",
-    "axios": "^0.21.0",
+    "axios": "^1.6.0",
     "draft-js": "^0.11.7",
     "html-to-image": "^1.9.0",
     "keycloak-js": "^12.0.0",
