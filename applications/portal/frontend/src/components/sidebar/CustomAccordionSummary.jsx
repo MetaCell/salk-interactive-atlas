@@ -22,6 +22,7 @@ import ColorPicker from "../common/ColorPicker";
 import SwitchLabel from "../common/SwitchLabel";
 import {TrailIcon, TrailEndIcon} from '../icons';
 import { DotSizeButton } from './DotSizeButton';
+import DoublePressInput from '../common/DoublePressInput';
 
 
 const POPULATION_ICONS_OPACITY = 0.4
@@ -30,6 +31,7 @@ const CustomAccordionSummary = ({
     id,
     data,
     expanded,
+    type,
     population,
     isParent,
     handlePopulationSwitch,
@@ -129,21 +131,33 @@ const CustomAccordionSummary = ({
 
             {
                 !isParent ? (
-                    <FormControlLabel
-                        className={'population-label-child'}
-                        key={population.id}
-                        control={<Switch />}
-                        label={<PopulationLabel population={population} />}
-                        labelPlacement="start"
-                        onChange={() => isParent ? handlePopulationSwitch(population.children, !checked) : handlePopulationSwitch(population.id)}
-                        checked={checked}
-                        style={populationTextStyle(status !== POPULATION_FINISHED_STATE)}
-                        disabled={status !== POPULATION_FINISHED_STATE}
-                    />
+                    <Box
+                        className='population-label-box'
+                        style={populationTextStyle(population.status !== POPULATION_FINISHED_STATE)}
+                    >
+                        <DoublePressInput
+                            label={<PopulationLabel population={population} />}
+                            value={population.name}
+                            population={population}
+                            type={type}
+                            isParent={isParent}
+                        />
+                        <FormControlLabel
+                            className={'population-label-child'}
+                            key={population.id}
+                            control={<Switch />}
+                            // label={<PopulationLabel population={population} />}
+                            labelPlacement="start"
+                            onChange={() => isParent ? handlePopulationSwitch(population.children, !checked) : handlePopulationSwitch(population.id)}
+                            checked={checked}
+                            style={populationTextStyle(status !== POPULATION_FINISHED_STATE)}
+                            disabled={status !== POPULATION_FINISHED_STATE}
+                        />
+                    </Box>
                 ) : (
                     <Box className='population-container'>
-                        <Box className='dotsize-text-button'>
-                            <PopulationLabel population={population} />
+                            {/* <Box className='dotsize-text-button'> */}
+                            {/* <PopulationLabel population={population} /> */}
                             {
                                 checked && (
                                     <DotSizeButton
@@ -152,18 +166,29 @@ const CustomAccordionSummary = ({
                                     />
                                 )
                             }
-                        </Box>
-
-                        <FormControlLabel
-                            key={population.id}
-                            control={<Switch />}
-                            onChange={() => isParent ? handlePopulationSwitch(population.children, !checked) : handlePopulationSwitch(population.id)}
-                            checked={checked}
-                            disabled={status !== POPULATION_FINISHED_STATE}
-                            labelPlacement="start"
-                            className={'population-label-parent'}
-                            style={populationTextStyle(status !== POPULATION_FINISHED_STATE)}
-                        />
+                            {/* </Box> */}
+                            <Box
+                                className='population-label-box'
+                                style={populationTextStyle(population.status !== POPULATION_FINISHED_STATE)}
+                            >
+                                <DoublePressInput
+                                    label={<PopulationLabel population={population} />}
+                                    value={population.name}
+                                    population={population}
+                                    type={type}
+                                    isParent={isParent}
+                                />
+                                <FormControlLabel
+                                    key={population.id}
+                                    control={<Switch />}
+                                    onChange={() => isParent ? handlePopulationSwitch(population.children, !checked) : handlePopulationSwitch(population.id)}
+                                    checked={checked}
+                                    disabled={status !== POPULATION_FINISHED_STATE}
+                                    labelPlacement="start"
+                                    className={'population-label-parent'}
+                                    style={populationTextStyle(status !== POPULATION_FINISHED_STATE)}
+                                />
+                            </Box>
                     </Box>
                 )
             }

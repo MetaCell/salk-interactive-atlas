@@ -4,10 +4,27 @@ import {
   Input,
   makeStyles,
 } from '@material-ui/core';
-import { Population as PopulationType } from '../../apiclient/workspaces/api';
 
 import workspaceService from "../../service/WorkspaceService";
+import { EXPERIMENTAL_POPULATION_NAME } from '../../utilities/constants';
 
+type SubPoplulationRenameBodyType = {
+  type: string,
+  change: {
+    pid: number,
+    name: string,
+  }
+}
+
+type PopulationRenameBodyType = {
+  type: string,
+  change: [
+    {
+      pid: number,
+      name: string,
+    }
+  ]
+}
 
 const useStyles = makeStyles({
   sidebar: {
@@ -31,15 +48,15 @@ const useStyles = makeStyles({
 });
 
 
-const DoublePressInput = (props) => {
-  const { children, value, population } = props;
+const DoublePressInput = (props: any) => {
+  const { label, value, population, isParent, type } = props;
   const [pressCount, setPressCount] = useState(0);
   const [editPopulation, setEditPopulation] = useState(false);
   const handleKeyPress = () => {
     setPressCount((prevCount) => prevCount + 1);
     setTimeout(() => {
       setPressCount(0);
-    }, 300);
+    }, 500);
 
     if (pressCount === 1) {
       setEditPopulation(true);
@@ -47,10 +64,37 @@ const DoublePressInput = (props) => {
   };
   const api = workspaceService.getApi()
 
-  const handleRenamePopulation = async (id: string, updatedPopulationName) => {
+  const handleOnEditPopulation = (newValue: string) => {
+    console.log("DoublePressInput: population: ", population)
+    setEditPopulation(false);
+    if (isParent) {
+      handleRenamePopulation(population, newValue || value);
+    } else {
+      handleRenameSubPopulation(population, newValue || value);
+    }
+  }
+  const handleRenamePopulation = async (population: any, updatedPopulationName) => {
     // @ts-ignore
-    const populationBody: PopulationType = { 'name': updatedPopulationName };
-    await api.partialUpdatePopulation(id, populationBody)
+    // const populationBody: PopulationRenameBodyType = 
+    let change = []
+    const subPopulations = Object.values(population.children)
+    for (const subPopulation of subPopulations) {
+      console.log("DoublePressInput: subPopulation: ", subPopulation)
+      change.push({
+        pid: subPopulation.id,
+        name: updatedPopulationName + " " + subPopulation.name,
+      })
+    }
+    const populationBody = {
+      type: 'population',
+      change: change
+    }
+    console.log("DoublePressInput: populationBody: ", populationBody)
+    // await api.partialUpdatePopulation(id, populationBody)
+
+
+
+
     // Now change the name of the population everywhere.
     // @ts-ignore
     // const nextPopulations = { ...populations };
@@ -60,9 +104,22 @@ const DoublePressInput = (props) => {
     // setSidebarPopulations(nextPopulations)
   }
 
+  const handleRenameSubPopulation = async (population: any, updatedPopulationName) => {
+    const subPopulationBody: SubPoplulationRenameBodyType = {
+      type: 'subpopulation',
+      change: {
+        pid: population.id,
+        name: updatedPopulationName,
+      }
+    };
+    console.log("DoublePressInput: subPopulationBody: ", subPopulationBody)
+  }
+
+
+
   return (
     <>
-      {editPopulation ? (
+      {(editPopulation && type === EXPERIMENTAL_POPULATION_NAME) ? (
         <Input
           defaultValue={value}
           autoFocus={true}
@@ -73,14 +130,13 @@ const DoublePressInput = (props) => {
           onBlur={() => setEditPopulation(false)}
           onKeyUp={(e) => {
             if (e.keyCode === 13) {
-              setEditPopulation(false);
-              handleRenamePopulation(population.id, e?.target?.value || value);
+              handleOnEditPopulation(e.target.value);
             }
           }}
           onKeyPress={handleKeyPress}
         />
       ) : (
-        <Box onClick={() => handleKeyPress()}>{children}</Box>
+          <Box onClick={() => handleKeyPress()}>{label}</Box>
       )}
     </>
   );

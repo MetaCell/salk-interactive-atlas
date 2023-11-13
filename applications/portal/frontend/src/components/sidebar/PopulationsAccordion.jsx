@@ -137,6 +137,7 @@ const PopulationsAccordion = ({
                         }}>
                             <CustomAccordionSummary
                                 expanded={expanded}
+                                type={type}
                                 population={populations[pId]}
                                 isParent={populations[pId]?.children !== undefined}
                                 handlePopulationSwitch={handleParentPopulationSwitch}
@@ -159,6 +160,7 @@ const PopulationsAccordion = ({
                                                         id={index}
                                                         data={arr}
                                                         expanded={{}}
+                                                        type={type}
                                                         isParent={false}
                                                         population={populations[pId]?.children[nestedPId]}
                                                         handlePopulationSwitch={handleChildPopulationSwitch}
