@@ -7,27 +7,6 @@ import {
 
 import { EXPERIMENTAL_POPULATION_NAME, POPULATION_UNKNOWN_CHILD } from '../../utilities/constants';
 
-const useStyles = makeStyles({
-  sidebar: {
-    '& .population-entry': {
-      display: 'flex',
-      alignItems: 'center',
-      lineHeight: '0.938rem',
-      fontWeight: 400,
-      fontSize: '0.75rem',
-    },
-
-    '& .population-label': {
-      display: 'flex',
-      flex: '1',
-      justifyContent: 'space-between',
-      lineHeight: '0.938rem',
-      fontWeight: 400,
-      fontSize: '0.75rem',
-    },
-  }
-});
-
 
 const DoublePressInput = (props: any) => {
   const { label, value, population, isParent, type, handleOnEditPopulation } = props;
