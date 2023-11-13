@@ -2076,6 +2076,216 @@ export const ApiApiAxiosParamCreator = function (configuration?: Configuration) 
             };
         },
         /**
+         * This viewset automatically provides `list`, `create`, `retrieve`, `update` and `destroy` actions.
+         * @param {string} id A unique integer value identifying this experiment.
+         * @param {string} name 
+         * @param {string} description 
+         * @param {number} [id2] 
+         * @param {boolean} [isPrivate] 
+         * @param {string} [dateCreated] 
+         * @param {string} [lastModified] 
+         * @param {ExperimentOwner} [owner] 
+         * @param {Array<ExperimentOwnerGroupsInner>} [teams] 
+         * @param {Array<ExperimentCollaboratorsInner>} [collaborators] 
+         * @param {Array<ExperimentPopulationsInner>} [populations] 
+         * @param {Array<ExperimentTagsInner>} [tags] 
+         * @param {string} [hasEditPermission] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        renamePopulationExperiment: async (id: string, name: string, description: string, id2?: number, isPrivate?: boolean, dateCreated?: string, lastModified?: string, owner?: ExperimentOwner, teams?: Array<ExperimentOwnerGroupsInner>, collaborators?: Array<ExperimentCollaboratorsInner>, populations?: Array<ExperimentPopulationsInner>, tags?: Array<ExperimentTagsInner>, hasEditPermission?: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'id' is not null or undefined
+            assertParamExists('renamePopulationExperiment', 'id', id)
+            // verify required parameter 'name' is not null or undefined
+            assertParamExists('renamePopulationExperiment', 'name', name)
+            // verify required parameter 'description' is not null or undefined
+            assertParamExists('renamePopulationExperiment', 'description', description)
+            const localVarPath = `/api/experiments/{id}/rename_population/`
+                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'PATCH', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+            const localVarFormParams = new ((configuration && configuration.formDataCtor) || FormData)();
+
+            // authentication bearerAuth required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+
+            if (id2 !== undefined) { 
+                localVarFormParams.append('id', id2 as any);
+            }
+    
+            if (name !== undefined) { 
+                localVarFormParams.append('name', name as any);
+            }
+    
+            if (isPrivate !== undefined) { 
+                localVarFormParams.append('is_private', isPrivate as any);
+            }
+    
+            if (description !== undefined) { 
+                localVarFormParams.append('description', description as any);
+            }
+    
+            if (dateCreated !== undefined) { 
+                localVarFormParams.append('date_created', dateCreated as any);
+            }
+    
+            if (lastModified !== undefined) { 
+                localVarFormParams.append('last_modified', lastModified as any);
+            }
+    
+            if (owner !== undefined) { 
+                localVarFormParams.append('owner', new Blob([JSON.stringify(owner)], { type: "application/json", }));
+            }
+                if (teams) {
+                localVarFormParams.append('teams', teams.join(COLLECTION_FORMATS.csv));
+            }
+
+                if (collaborators) {
+                localVarFormParams.append('collaborators', collaborators.join(COLLECTION_FORMATS.csv));
+            }
+
+                if (populations) {
+                localVarFormParams.append('populations', populations.join(COLLECTION_FORMATS.csv));
+            }
+
+                if (tags) {
+                localVarFormParams.append('tags', tags.join(COLLECTION_FORMATS.csv));
+            }
+
+    
+            if (hasEditPermission !== undefined) { 
+                localVarFormParams.append('has_edit_permission', hasEditPermission as any);
+            }
+    
+    
+            localVarHeaderParameter['Content-Type'] = 'multipart/form-data';
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = localVarFormParams;
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * This viewset automatically provides `list`, `create`, `retrieve`, `update` and `destroy` actions.
+         * @param {string} id A unique integer value identifying this experiment.
+         * @param {string} name 
+         * @param {string} description 
+         * @param {number} [id2] 
+         * @param {boolean} [isPrivate] 
+         * @param {string} [dateCreated] 
+         * @param {string} [lastModified] 
+         * @param {ExperimentOwner} [owner] 
+         * @param {Array<ExperimentOwnerGroupsInner>} [teams] 
+         * @param {Array<ExperimentCollaboratorsInner>} [collaborators] 
+         * @param {Array<ExperimentPopulationsInner>} [populations] 
+         * @param {Array<ExperimentTagsInner>} [tags] 
+         * @param {string} [hasEditPermission] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        renameSubpopulationExperiment: async (id: string, name: string, description: string, id2?: number, isPrivate?: boolean, dateCreated?: string, lastModified?: string, owner?: ExperimentOwner, teams?: Array<ExperimentOwnerGroupsInner>, collaborators?: Array<ExperimentCollaboratorsInner>, populations?: Array<ExperimentPopulationsInner>, tags?: Array<ExperimentTagsInner>, hasEditPermission?: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'id' is not null or undefined
+            assertParamExists('renameSubpopulationExperiment', 'id', id)
+            // verify required parameter 'name' is not null or undefined
+            assertParamExists('renameSubpopulationExperiment', 'name', name)
+            // verify required parameter 'description' is not null or undefined
+            assertParamExists('renameSubpopulationExperiment', 'description', description)
+            const localVarPath = `/api/experiments/{id}/rename_subpopulation/`
+                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'PATCH', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+            const localVarFormParams = new ((configuration && configuration.formDataCtor) || FormData)();
+
+            // authentication bearerAuth required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+
+            if (id2 !== undefined) { 
+                localVarFormParams.append('id', id2 as any);
+            }
+    
+            if (name !== undefined) { 
+                localVarFormParams.append('name', name as any);
+            }
+    
+            if (isPrivate !== undefined) { 
+                localVarFormParams.append('is_private', isPrivate as any);
+            }
+    
+            if (description !== undefined) { 
+                localVarFormParams.append('description', description as any);
+            }
+    
+            if (dateCreated !== undefined) { 
+                localVarFormParams.append('date_created', dateCreated as any);
+            }
+    
+            if (lastModified !== undefined) { 
+                localVarFormParams.append('last_modified', lastModified as any);
+            }
+    
+            if (owner !== undefined) { 
+                localVarFormParams.append('owner', new Blob([JSON.stringify(owner)], { type: "application/json", }));
+            }
+                if (teams) {
+                localVarFormParams.append('teams', teams.join(COLLECTION_FORMATS.csv));
+            }
+
+                if (collaborators) {
+                localVarFormParams.append('collaborators', collaborators.join(COLLECTION_FORMATS.csv));
+            }
+
+                if (populations) {
+                localVarFormParams.append('populations', populations.join(COLLECTION_FORMATS.csv));
+            }
+
+                if (tags) {
+                localVarFormParams.append('tags', tags.join(COLLECTION_FORMATS.csv));
+            }
+
+    
+            if (hasEditPermission !== undefined) { 
+                localVarFormParams.append('has_edit_permission', hasEditPermission as any);
+            }
+    
+    
+            localVarHeaderParameter['Content-Type'] = 'multipart/form-data';
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = localVarFormParams;
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
          * This viewset automatically provides `list` actions.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -3073,6 +3283,50 @@ export const ApiApiFp = function(configuration?: Configuration) {
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
+         * This viewset automatically provides `list`, `create`, `retrieve`, `update` and `destroy` actions.
+         * @param {string} id A unique integer value identifying this experiment.
+         * @param {string} name 
+         * @param {string} description 
+         * @param {number} [id2] 
+         * @param {boolean} [isPrivate] 
+         * @param {string} [dateCreated] 
+         * @param {string} [lastModified] 
+         * @param {ExperimentOwner} [owner] 
+         * @param {Array<ExperimentOwnerGroupsInner>} [teams] 
+         * @param {Array<ExperimentCollaboratorsInner>} [collaborators] 
+         * @param {Array<ExperimentPopulationsInner>} [populations] 
+         * @param {Array<ExperimentTagsInner>} [tags] 
+         * @param {string} [hasEditPermission] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async renamePopulationExperiment(id: string, name: string, description: string, id2?: number, isPrivate?: boolean, dateCreated?: string, lastModified?: string, owner?: ExperimentOwner, teams?: Array<ExperimentOwnerGroupsInner>, collaborators?: Array<ExperimentCollaboratorsInner>, populations?: Array<ExperimentPopulationsInner>, tags?: Array<ExperimentTagsInner>, hasEditPermission?: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Experiment>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.renamePopulationExperiment(id, name, description, id2, isPrivate, dateCreated, lastModified, owner, teams, collaborators, populations, tags, hasEditPermission, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * This viewset automatically provides `list`, `create`, `retrieve`, `update` and `destroy` actions.
+         * @param {string} id A unique integer value identifying this experiment.
+         * @param {string} name 
+         * @param {string} description 
+         * @param {number} [id2] 
+         * @param {boolean} [isPrivate] 
+         * @param {string} [dateCreated] 
+         * @param {string} [lastModified] 
+         * @param {ExperimentOwner} [owner] 
+         * @param {Array<ExperimentOwnerGroupsInner>} [teams] 
+         * @param {Array<ExperimentCollaboratorsInner>} [collaborators] 
+         * @param {Array<ExperimentPopulationsInner>} [populations] 
+         * @param {Array<ExperimentTagsInner>} [tags] 
+         * @param {string} [hasEditPermission] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async renameSubpopulationExperiment(id: string, name: string, description: string, id2?: number, isPrivate?: boolean, dateCreated?: string, lastModified?: string, owner?: ExperimentOwner, teams?: Array<ExperimentOwnerGroupsInner>, collaborators?: Array<ExperimentCollaboratorsInner>, populations?: Array<ExperimentPopulationsInner>, tags?: Array<ExperimentTagsInner>, hasEditPermission?: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Experiment>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.renameSubpopulationExperiment(id, name, description, id2, isPrivate, dateCreated, lastModified, owner, teams, collaborators, populations, tags, hasEditPermission, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
          * This viewset automatically provides `list` actions.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -3568,6 +3822,48 @@ export const ApiApiFactory = function (configuration?: Configuration, basePath?:
          */
         publicExperiment(options?: any): AxiosPromise<Experiment> {
             return localVarFp.publicExperiment(options).then((request) => request(axios, basePath));
+        },
+        /**
+         * This viewset automatically provides `list`, `create`, `retrieve`, `update` and `destroy` actions.
+         * @param {string} id A unique integer value identifying this experiment.
+         * @param {string} name 
+         * @param {string} description 
+         * @param {number} [id2] 
+         * @param {boolean} [isPrivate] 
+         * @param {string} [dateCreated] 
+         * @param {string} [lastModified] 
+         * @param {ExperimentOwner} [owner] 
+         * @param {Array<ExperimentOwnerGroupsInner>} [teams] 
+         * @param {Array<ExperimentCollaboratorsInner>} [collaborators] 
+         * @param {Array<ExperimentPopulationsInner>} [populations] 
+         * @param {Array<ExperimentTagsInner>} [tags] 
+         * @param {string} [hasEditPermission] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        renamePopulationExperiment(id: string, name: string, description: string, id2?: number, isPrivate?: boolean, dateCreated?: string, lastModified?: string, owner?: ExperimentOwner, teams?: Array<ExperimentOwnerGroupsInner>, collaborators?: Array<ExperimentCollaboratorsInner>, populations?: Array<ExperimentPopulationsInner>, tags?: Array<ExperimentTagsInner>, hasEditPermission?: string, options?: any): AxiosPromise<Experiment> {
+            return localVarFp.renamePopulationExperiment(id, name, description, id2, isPrivate, dateCreated, lastModified, owner, teams, collaborators, populations, tags, hasEditPermission, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * This viewset automatically provides `list`, `create`, `retrieve`, `update` and `destroy` actions.
+         * @param {string} id A unique integer value identifying this experiment.
+         * @param {string} name 
+         * @param {string} description 
+         * @param {number} [id2] 
+         * @param {boolean} [isPrivate] 
+         * @param {string} [dateCreated] 
+         * @param {string} [lastModified] 
+         * @param {ExperimentOwner} [owner] 
+         * @param {Array<ExperimentOwnerGroupsInner>} [teams] 
+         * @param {Array<ExperimentCollaboratorsInner>} [collaborators] 
+         * @param {Array<ExperimentPopulationsInner>} [populations] 
+         * @param {Array<ExperimentTagsInner>} [tags] 
+         * @param {string} [hasEditPermission] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        renameSubpopulationExperiment(id: string, name: string, description: string, id2?: number, isPrivate?: boolean, dateCreated?: string, lastModified?: string, owner?: ExperimentOwner, teams?: Array<ExperimentOwnerGroupsInner>, collaborators?: Array<ExperimentCollaboratorsInner>, populations?: Array<ExperimentPopulationsInner>, tags?: Array<ExperimentTagsInner>, hasEditPermission?: string, options?: any): AxiosPromise<Experiment> {
+            return localVarFp.renameSubpopulationExperiment(id, name, description, id2, isPrivate, dateCreated, lastModified, owner, teams, collaborators, populations, tags, hasEditPermission, options).then((request) => request(axios, basePath));
         },
         /**
          * This viewset automatically provides `list` actions.
@@ -4121,6 +4417,52 @@ export class ApiApi extends BaseAPI {
     }
 
     /**
+     * This viewset automatically provides `list`, `create`, `retrieve`, `update` and `destroy` actions.
+     * @param {string} id A unique integer value identifying this experiment.
+     * @param {string} name 
+     * @param {string} description 
+     * @param {number} [id2] 
+     * @param {boolean} [isPrivate] 
+     * @param {string} [dateCreated] 
+     * @param {string} [lastModified] 
+     * @param {ExperimentOwner} [owner] 
+     * @param {Array<ExperimentOwnerGroupsInner>} [teams] 
+     * @param {Array<ExperimentCollaboratorsInner>} [collaborators] 
+     * @param {Array<ExperimentPopulationsInner>} [populations] 
+     * @param {Array<ExperimentTagsInner>} [tags] 
+     * @param {string} [hasEditPermission] 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof ApiApi
+     */
+    public renamePopulationExperiment(id: string, name: string, description: string, id2?: number, isPrivate?: boolean, dateCreated?: string, lastModified?: string, owner?: ExperimentOwner, teams?: Array<ExperimentOwnerGroupsInner>, collaborators?: Array<ExperimentCollaboratorsInner>, populations?: Array<ExperimentPopulationsInner>, tags?: Array<ExperimentTagsInner>, hasEditPermission?: string, options?: AxiosRequestConfig) {
+        return ApiApiFp(this.configuration).renamePopulationExperiment(id, name, description, id2, isPrivate, dateCreated, lastModified, owner, teams, collaborators, populations, tags, hasEditPermission, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * This viewset automatically provides `list`, `create`, `retrieve`, `update` and `destroy` actions.
+     * @param {string} id A unique integer value identifying this experiment.
+     * @param {string} name 
+     * @param {string} description 
+     * @param {number} [id2] 
+     * @param {boolean} [isPrivate] 
+     * @param {string} [dateCreated] 
+     * @param {string} [lastModified] 
+     * @param {ExperimentOwner} [owner] 
+     * @param {Array<ExperimentOwnerGroupsInner>} [teams] 
+     * @param {Array<ExperimentCollaboratorsInner>} [collaborators] 
+     * @param {Array<ExperimentPopulationsInner>} [populations] 
+     * @param {Array<ExperimentTagsInner>} [tags] 
+     * @param {string} [hasEditPermission] 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof ApiApi
+     */
+    public renameSubpopulationExperiment(id: string, name: string, description: string, id2?: number, isPrivate?: boolean, dateCreated?: string, lastModified?: string, owner?: ExperimentOwner, teams?: Array<ExperimentOwnerGroupsInner>, collaborators?: Array<ExperimentCollaboratorsInner>, populations?: Array<ExperimentPopulationsInner>, tags?: Array<ExperimentTagsInner>, hasEditPermission?: string, options?: AxiosRequestConfig) {
+        return ApiApiFp(this.configuration).renameSubpopulationExperiment(id, name, description, id2, isPrivate, dateCreated, lastModified, owner, teams, collaborators, populations, tags, hasEditPermission, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
      * This viewset automatically provides `list` actions.
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
@@ -4291,5 +4633,6 @@ export class ApiApi extends BaseAPI {
         return ApiApiFp(this.configuration).uploadSingleFileExperiment(id, file, options).then((request) => request(this.axios, this.basePath));
     }
 }
+
 
 

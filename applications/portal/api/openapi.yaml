@@ -1119,6 +1119,60 @@ paths:
           description: ''
       tags:
       - api
+  /api/experiments/{id}/rename_population/:
+    patch:
+      operationId: renamePopulationExperiment
+      description: 'This viewset automatically provides `list`, `create`, `retrieve`,
+
+        `update` and `destroy` actions.'
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: A unique integer value identifying this experiment.
+        schema:
+          type: string
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Experiment'
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Experiment'
+          description: ''
+      tags:
+      - api
+  /api/experiments/{id}/rename_subpopulation/:
+    patch:
+      operationId: renameSubpopulationExperiment
+      description: 'This viewset automatically provides `list`, `create`, `retrieve`,
+
+        `update` and `destroy` actions.'
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: A unique integer value identifying this experiment.
+        schema:
+          type: string
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Experiment'
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Experiment'
+          description: ''
+      tags:
+      - api
   /api/experiments/{id}/tag/{tag_name}/:
     delete:
       operationId: deleteTagExperiment
