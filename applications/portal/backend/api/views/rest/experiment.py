@@ -2,6 +2,7 @@ import logging
 import os
 import tempfile
 import zipfile
+import json
 
 from django.db.models import Q
 from django.http import HttpResponse
@@ -18,12 +19,14 @@ from api.serializers import (
     ExperimentPairFileUploadSerializer,
     ExperimentSerializer,
     TagSerializer,
+    PopulationSerializer,
     TagsSerializer, ExperimentSingleFileUploadSerializer, DownloadPopulationsSerializer,
 )
 from api.services.cordmap_service import get_populations, is_a_population_single_file, SINGLE_FILE_POPULATION_ID_COLUMN, \
     is_a_population_multiple_files, MULTIPLE_FILE_POPULATION_NAME_COLUMN
 from api.services.experiment_service import add_tag, delete_tag, handle_populations_upload
 from api.services.filesystem_service import move_files
+from api.services.user_service import get_current_user
 from api.validators.upload_files import validate_multiple_files_input, validate_single_file_input
 
 log = logging.getLogger("__name__")
@@ -217,3 +220,70 @@ class ExperimentViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         experiment = serializer.save(owner=self.request.user)
+
+    def check_if_user_is_owner(self, kwargs_experiment_id):
+        try:
+            user = get_current_user()
+            experiment = Experiment.objects.get(id=kwargs_experiment_id)
+            if user.id != experiment.owner.id:
+                return Response(status=status.HTTP_403_FORBIDDEN, data={'detail': 'You are not the owner of the experiment'})
+        except Experiment.DoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND, data={'detail': 'Experiment does not exist'})
+        
+    def check_if_subpopulation_exists(self, subpopulation_id, kwargs_experiment_id):
+        try:
+            sub_population_object = Population.objects.get(id=subpopulation_id)
+            is_residential = sub_population_object.experiment is None
+            if is_residential:
+                return Response(status=status.HTTP_403_FORBIDDEN, data={'detail': 'You cannot change the name of a residential population'})
+            if int(sub_population_object.experiment.id) != int(kwargs_experiment_id):
+                return Response(status=status.HTTP_404_NOT_FOUND, data={'detail': f'Subpopulation with id {subpopulation_id} does not exist in this experiment'})
+        except Population.DoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND, data={'detail': f'Subpopulation with id {subpopulation_id} does not exist'})
+        return sub_population_object
+    
+    @action(
+        detail=True, 
+        methods=['patch'], 
+        url_name="rename_population"
+    )
+    def rename_population(self, request, **kwargs):
+        kwargs_experiment_id = kwargs['pk']
+        is_user_owner = self.check_if_user_is_owner(kwargs_experiment_id)
+        request_data = json.loads(request.body)
+        sub_populations = []
+        try:
+            for change in request_data['change']:
+                subpopulation_id = change['pid']
+                get_subpopulation_if_valid = self.check_if_subpopulation_exists(subpopulation_id, kwargs_experiment_id)
+                get_subpopulation_if_valid.name = change['new_name']
+                sub_populations.append(get_subpopulation_if_valid)
+            
+            for sub_population_object in sub_populations:
+                sub_population_object.save()
+        except KeyError:
+            return Response(status=status.HTTP_400_BAD_REQUEST, data={'detail': 'Invalid request body'})
+
+        return Response(status=status.HTTP_200_OK, data={'detail': 'Population name changed successfully'})
+
+    @action(
+        detail=True, methods=["patch"], 
+        url_name="rename_subpopulation"
+    )
+    def rename_subpopulation(self, request, **kwargs):
+        kwargs_experiment_id = kwargs['pk']
+        is_user_owner = self.check_if_user_is_owner(kwargs_experiment_id)
+        request_data = json.loads(request.body)
+        try:
+            change_id = request_data['change']['pid']
+            new_name = request_data['change']['new_name']
+        except KeyError:
+            return Response(status=status.HTTP_400_BAD_REQUEST, data={'detail': 'Invalid request body'})
+        
+        get_subpopulation_if_valid = self.check_if_subpopulation_exists(change_id, kwargs_experiment_id)
+
+        get_subpopulation_if_valid.name = new_name
+        get_subpopulation_if_valid.save()
+
+        return Response(status=status.HTTP_200_OK, data={'detail': 'Subpopulation name changed successfully'})
+    
