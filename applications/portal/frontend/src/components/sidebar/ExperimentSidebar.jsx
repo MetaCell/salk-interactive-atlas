@@ -312,6 +312,7 @@ const ExperimentSidebar = ({
     selectedAtlas,
     populations,
     handleAtlasChange,
+    handleOnEditPopulation,
     handleChildPopulationSwitch,
     handleParentPopulationSwitch,
     handleShowAllPopulations,
@@ -330,7 +331,6 @@ const ExperimentSidebar = ({
         setShrink((prevState) => !prevState)
     };
 
-    const SidebarRef = React.useRef(null);
     const activePopulations = Object.keys(populations).filter(
         (populationID) => populations[populationID].selected
     );
@@ -389,6 +389,7 @@ const ExperimentSidebar = ({
                     <PopulationsAccordion populations={residentialPopulationsWithChildren} icon={RESIDENTIAL_POPULATION}
                         title={"Data library"}
                         type={RESIDENTIAL_POPULATION_NAME}
+                        handleOnEditPopulation={handleOnEditPopulation}
                         handleShowAllPopulations={() => handleShowAllPopulations(residentialPopulationsWithChildren)}
                         hasEditPermission={false}
                         handlePopulationColorChange={handlePopulationColorChange}
@@ -403,6 +404,7 @@ const ExperimentSidebar = ({
                     <PopulationsAccordion populations={experimentPopulationsWithChildren} icon={POPULATION}
                         title={"Experimental Populations"}
                         type={EXPERIMENTAL_POPULATION_NAME}
+                        handleOnEditPopulation={handleOnEditPopulation}
                         handleShowAllPopulations={() => handleShowAllPopulations(experimentPopulationsWithChildren)}
                         hasEditPermission={hasEditPermission}
                         handlePopulationColorChange={handlePopulationColorChange}

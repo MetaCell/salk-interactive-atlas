@@ -31,6 +31,9 @@ import { useInterval } from "../utilities/hooks/useInterval";
 import { useParams } from "react-router";
 import { getCells } from "../helpers/CellsHelper";
 import NeuronDotSize from '../components/common/ExperimentDialogs/NeuronDotSize';
+import { ExperimentRenamePopulations, ExperimentRenameSubPopulations } from '../apiclient/workspaces/api';
+import { EXPERIMENTAL_POPULATION_NAME, POPULATION_UNKNOWN_CHILD } from '../utilities/constants';
+
 
 type PopulationDataType = {
     [key: string]: {
@@ -170,6 +173,63 @@ const ExperimentsPage: React.FC<{ residentialPopulations: any }> = ({residential
 
         setPopulations(nextPopulations);
     };
+
+
+    const handleOnEditPopulation = (updatedName: string, isParent: boolean, population: any) => {
+        if (isParent) {
+            handleRenamePopulation(updatedName, population);
+        } else {
+            handleRenameSubPopulation(updatedName, population);
+        }
+    }
+
+    const handleRenamePopulation = async (updatedName: string, population: any) => {
+        const renameChanges = []
+        const subPopulations = Object.values(population.children)
+        for (const subPopulation of subPopulations) {
+            // @ts-ignore
+            const newName = subPopulation.name !== POPULATION_UNKNOWN_CHILD ? updatedName + "@" + subPopulation.name : updatedName
+            // @ts-ignore
+            renameChanges.push({ pid: subPopulation.id, new_name: newName })
+        }
+        const populationBody: ExperimentRenamePopulations = {
+            type: 'population',
+            change: renameChanges
+        }
+
+        try {
+            await api.renamePopulationExperiment(experiment.id, populationBody)
+            const newPopulations = { ...populations };
+            for (const change of renameChanges) {
+                // @ts-ignore
+                newPopulations[change.pid].name = change.new_name
+            }
+            setPopulations(newPopulations)
+        } catch (e) {
+            console.log("Error renaming population: ", e)
+        }
+    }
+
+    const handleRenameSubPopulation = async (updatedName: string, population: any) => {
+        const subPopulationBody: ExperimentRenameSubPopulations = {
+            type: 'subpopulation',
+            change: {
+                pid: population.id,
+                new_name: population.parent + "@" + updatedName,
+            }
+        };
+        try {
+            await api.renameSubpopulationExperiment(experiment.id, subPopulationBody)
+            const newPopulations = { ...populations };
+            // @ts-ignore
+            newPopulations[population.id].name = population.parent + "@" + updatedName
+            setPopulations(newPopulations)
+        } catch (e) {
+            console.log("Error renaming subpopulation: ", e)
+        }
+
+    }
+
 
     const handlePopulationColorChange = async (id: string, color: string, opacity: string) => {
         if (id) {
@@ -316,6 +376,7 @@ const ExperimentsPage: React.FC<{ residentialPopulations: any }> = ({residential
             <Sidebar selectedAtlas={selectedAtlas}
                 populations={populations}
                 handleAtlasChange={handleAtlasChange}
+                handleOnEditPopulation={handleOnEditPopulation}
                 handleChildPopulationSwitch={handleChildPopulationSwitch}
                 handleParentPopulationSwitch={handleParentPopulationSwitch}
                 handleShowAllPopulations={handleShowAllPopulations}

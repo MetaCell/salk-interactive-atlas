@@ -32,6 +32,7 @@ const CustomAccordionSummary = ({
     data,
     expanded,
     type,
+    handleOnEditPopulation,
     population,
     isParent,
     handlePopulationSwitch,
@@ -76,7 +77,7 @@ const CustomAccordionSummary = ({
         )
     }
 
-    const populationTextStyle = (disabled) => hasEditPermission && !disabled ? {} : {marginLeft: "8px"}
+    const populationTextStyle = (disabled) => hasEditPermission && !disabled ? {} : {}
     const lastElement = id === data?.length - 1;
     const status = isParent ? getParentPopulationStatus(population) : population.status
     const checked = isParent ? areAllSelected(population.children) : population.selected
@@ -140,13 +141,13 @@ const CustomAccordionSummary = ({
                             value={population.name}
                             population={population}
                             type={type}
+                            handleOnEditPopulation={handleOnEditPopulation}
                             isParent={isParent}
                         />
                         <FormControlLabel
                             className={'population-label-child'}
                             key={population.id}
                             control={<Switch />}
-                            // label={<PopulationLabel population={population} />}
                             labelPlacement="start"
                             onChange={() => isParent ? handlePopulationSwitch(population.children, !checked) : handlePopulationSwitch(population.id)}
                             checked={checked}
@@ -156,18 +157,8 @@ const CustomAccordionSummary = ({
                     </Box>
                 ) : (
                     <Box className='population-container'>
-                            {/* <Box className='dotsize-text-button'> */}
-                            {/* <PopulationLabel population={population} /> */}
-                            {
-                                checked && (
-                                    <DotSizeButton
-                                            onClickFunc={() => selectPopulationForDotSizeChange(population)}
-                                        setPopulationRefPosition={setPopulationRefPosition}
-                                    />
-                                )
-                            }
-                            {/* </Box> */}
-                            <Box
+                            <Box className='dotsize-text-button'>
+                                <Box
                                 className='population-label-box'
                                 style={populationTextStyle(population.status !== POPULATION_FINISHED_STATE)}
                             >
@@ -176,8 +167,21 @@ const CustomAccordionSummary = ({
                                     value={population.name}
                                     population={population}
                                     type={type}
+                                        handleOnEditPopulation={handleOnEditPopulation}
                                     isParent={isParent}
                                 />
+                                </Box>
+                                {
+                                    checked && (
+                                        <DotSizeButton
+                                            onClickFunc={() => selectPopulationForDotSizeChange(population)}
+                                            setPopulationRefPosition={setPopulationRefPosition}
+                                        />
+                                    )
+                                }
+                            </Box>
+
+
                                 <FormControlLabel
                                     key={population.id}
                                     control={<Switch />}
@@ -187,8 +191,7 @@ const CustomAccordionSummary = ({
                                     labelPlacement="start"
                                     className={'population-label-parent'}
                                     style={populationTextStyle(status !== POPULATION_FINISHED_STATE)}
-                                />
-                            </Box>
+                            />
                     </Box>
                 )
             }
