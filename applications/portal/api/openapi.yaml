@@ -167,6 +167,9 @@ paths:
           multipart/form-data:
             schema:
               $ref: '#/components/schemas/Experiment'
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Experiment'
       responses:
         '201':
           content:
@@ -279,6 +282,9 @@ paths:
           multipart/form-data:
             schema:
               $ref: '#/components/schemas/Experiment'
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Experiment'
       responses:
         '200':
           content:
@@ -303,6 +309,9 @@ paths:
       requestBody:
         content:
           multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Experiment'
+          application/json:
             schema:
               $ref: '#/components/schemas/Experiment'
       responses:
@@ -1018,6 +1027,9 @@ paths:
           multipart/form-data:
             schema:
               $ref: '#/components/schemas/Tags'
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Tags'
       responses:
         '201':
           content:
@@ -1134,15 +1146,15 @@ paths:
           type: string
       requestBody:
         content:
-          multipart/form-data:
+          application/json:
             schema:
-              $ref: '#/components/schemas/Experiment'
+              $ref: '#/components/schemas/ExperimentRenamePopulations'
       responses:
         '200':
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Experiment'
+                $ref: '#/components/schemas/ExperimentRenamePopulations'
           description: ''
       tags:
       - api
@@ -1161,15 +1173,15 @@ paths:
           type: string
       requestBody:
         content:
-          multipart/form-data:
+          application/json:
             schema:
-              $ref: '#/components/schemas/Experiment'
+              $ref: '#/components/schemas/ExperimentRenameSubPopulations'
       responses:
         '200':
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Experiment'
+                $ref: '#/components/schemas/ExperimentRenameSubPopulations'
           description: ''
       tags:
       - api
@@ -1595,6 +1607,44 @@ components:
           type: integer
       required:
       - user_id
+    ExperimentRenamePopulations:
+      type: object
+      properties:
+        type:
+          type: string
+        change:
+          type: array
+          items:
+            type: object
+            properties:
+              pid:
+                type: integer
+              new_name:
+                type: string
+            required:
+            - pid
+            - new_name
+      required:
+      - type
+      - change
+    ExperimentRenameSubPopulations:
+      type: object
+      properties:
+        type:
+          type: string
+        change:
+          type: object
+          properties:
+            pid:
+              type: integer
+            new_name:
+              type: string
+          required:
+          - pid
+          - new_name
+      required:
+      - type
+      - change
   securitySchemes:
     bearerAuth:
       type: http

@@ -9,7 +9,7 @@ from django.http import HttpResponse
 from dry_rest_permissions.generics import DRYPermissions
 from rest_framework import status, viewsets
 from rest_framework.decorators import action
-from rest_framework.parsers import MultiPartParser
+from rest_framework.parsers import MultiPartParser, JSONParser
 from rest_framework.response import Response
 from django.shortcuts import get_object_or_404
 
@@ -20,6 +20,8 @@ from api.serializers import (
     ExperimentSerializer,
     TagSerializer,
     PopulationSerializer,
+    ExperimentRenamePopulationsSerializer, 
+    ExperimentRenameSubPopulationsSerializer,
     TagsSerializer, ExperimentSingleFileUploadSerializer, DownloadPopulationsSerializer,
 )
 from api.services.cordmap_service import get_populations, is_a_population_single_file, SINGLE_FILE_POPULATION_ID_COLUMN, \
@@ -42,12 +44,14 @@ class ExperimentViewSet(viewsets.ModelViewSet):
     """
     permission_classes = (DRYPermissions,)
     queryset = Experiment.objects.all()
-    parser_classes = (MultiPartParser,)
+    parser_classes = (MultiPartParser, JSONParser)
     custom_serializer_map = {
         "upload_pair_files": ExperimentPairFileUploadSerializer,
         "upload_single_file": ExperimentSingleFileUploadSerializer,
         "add_tags": TagsSerializer,
         'download_populations': DownloadPopulationsSerializer,
+        'rename_population': ExperimentRenamePopulationsSerializer,
+        'rename_subpopulation': ExperimentRenameSubPopulationsSerializer
     }
 
     def get_serializer_class(self):
@@ -242,9 +246,11 @@ class ExperimentViewSet(viewsets.ModelViewSet):
             return Response(status=status.HTTP_404_NOT_FOUND, data={'detail': f'Subpopulation with id {subpopulation_id} does not exist'})
         return sub_population_object
     
+
     @action(
         detail=True, 
         methods=['patch'], 
+        parser_classes=(JSONParser,),
         url_name="rename_population"
     )
     def rename_population(self, request, **kwargs):
@@ -268,6 +274,7 @@ class ExperimentViewSet(viewsets.ModelViewSet):
 
     @action(
         detail=True, methods=["patch"], 
+        parser_classes=(JSONParser,),
         url_name="rename_subpopulation"
     )
     def rename_subpopulation(self, request, **kwargs):
