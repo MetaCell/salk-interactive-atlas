@@ -100,7 +100,7 @@ class Experiment(models.Model):
 
             # Associate the generated files with the populations and save them
             for population in populations:
-                associate_population_cells_file(population, csv_suffix)
+                associate_population_cells_file(population, self.storage_path, csv_suffix)
 
         except Exception:
             for population in populations:
