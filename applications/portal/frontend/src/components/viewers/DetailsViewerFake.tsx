@@ -1,7 +1,7 @@
 import React, { SyntheticEvent } from 'react';
 import { makeStyles, styled } from "@material-ui/core/styles";
 import { canvasBg } from "../../theme";
-import { Typography, Box, IconButton, Button, Tabs, Tab, Menu, MenuItem, Tooltip } from "@material-ui/core";
+import { Typography, Box, IconButton, Button, Tabs, Tab, Menu, MenuItem, Tooltip, TextField, Divider } from "@material-ui/core";
 import { Pagination, PaginationItem } from '@material-ui/lab';
 import INFO_ICON from "../../assets/images/icons/info.svg";
 import DOWN_ICON from "../../assets/images/icons/chevron_down.svg";
@@ -9,10 +9,13 @@ import DOWN_ICON from "../../assets/images/icons/chevron_down.svg";
 const useStyles = makeStyles({
     container: {
         background: canvasBg,
-        height: "100%",
+        height: "100%"
     },
     titleBox: {
-        padding: '0.75rem'
+        padding: '0.75rem',
+        '& .MuiButton-root': {
+            padding: '0.5rem 0.75rem'
+        }
     },
     title: {
         fontSize: '0.75rem',
@@ -24,6 +27,13 @@ const useStyles = makeStyles({
         padding: '0.75rem 0.75rem 0 0.25rem'
     },
     tabPanelActionMenuBtn: {
+        '&:hover': {
+            background: 'transparent'
+        }
+    },
+    ellipsisText: {
+        display: 'block',
+        width: '350px',
         textOverflow: 'ellipsis',
         whiteSpace: 'nowrap',
         overflow: 'hidden'
@@ -44,7 +54,54 @@ const useStyles = makeStyles({
         backgroundColor: 'rgba(242, 72, 34, 0.10)',
         color: '#F24822',
         padding: '0.5rem 0.75rem',
-        boxShadow: 'none'
+        boxShadow: 'none',
+        '&:hover': {
+            background: 'rgba(242, 72, 34, 0.10)',
+            boxShadow: 'none'
+        }
+    },
+    customMenu: {
+        '& .MuiPaper-root': {
+            maxWidth: '500px',
+            padding: '0.5rem 0'
+        },
+        '& .MuiMenuItem-root': {
+            padding: '0.5rem 1rem',
+            color: 'rgba(255, 255, 255, 0.80)',
+            '&:hover': {
+                background: 'transparent'
+            }
+        },
+        '& .MuiDivider-root': {
+            backgroundColor: '#3C3E40',
+            marginTop: '0.5rem',
+            marginBottom: '0.5rem'
+        }
+    },
+    searchField: {
+        '& .MuiInputBase-root': {
+            fontSize: '0.75rem',
+            fontWeight: 500,
+            color: 'rgba(255, 255, 255, 0.40)'
+        },
+        '& .MuiInputBase-input': {
+            padding: '0.25rem 1rem'
+        },
+        '& .MuiInput-underline:before': {
+            borderBottom: "none"
+        },
+        '& .MuiInput-underline:after': {
+            borderBottom: "none"
+        },
+        '& .MuiInput-underline:hover:not(.Mui-disabled):before': {
+            borderBottom: "none"
+        }
+    },
+    customTooltip: {
+        '& .MuiTooltip-tooltip': {
+            padding: '5.5px 8.25px',
+            fontWeight: 400
+        }
     },
     pagination: {
         display: 'flex',
@@ -165,9 +222,9 @@ const DetailsViewerFake = (props: {
                 <Box>
                     <Box display="flex" alignItems="center" justifyContent="space-between" className={classes.tabPanelActions}>
                         <Button
-                            id="demo-customized-button"
+                            id="detailsViewer-customized-button"
                             className={classes.tabPanelActionMenuBtn}
-                            aria-controls={open ? 'demo-customized-menu' : undefined}
+                            aria-controls={open ? 'detailsViewer-customized-menu' : undefined}
                             aria-haspopup="true"
                             aria-expanded={open ? 'true' : undefined}
                             variant="text"
@@ -175,11 +232,32 @@ const DetailsViewerFake = (props: {
                             onClick={handleClick}
                             endIcon={<img src={DOWN_ICON} alt='' />}
                         >
-                            Electrophysiological properties of V2a interneurons in the lumbar spinal cord
+                            <span className={classes.ellipsisText}>Electrophysiological properties of V2a interneurons in the lumbar spinal cord</span>
                         </Button>
-                        {/*Menu*/}
+                        <Menu
+                            id="detailsViewer-customized-menu"
+                            MenuListProps={{
+                                'aria-labelledby': 'demo-customized-button',
+                            }}
+                            className={classes.customMenu}
+                            anchorEl={anchorEl}
+                            open={open}
+                            onClose={handleClose}
+                        >
+                            <TextField
+                                placeholder='Search for a file'
+                                className={classes.searchField}
+                            />
+                            <Divider />
+                            <MenuItem disableRipple>
+                                Edit
+                            </MenuItem>
+                            <MenuItem disableRipple>
+                                Duplicate
+                            </MenuItem>
+                        </Menu>
                         <Box>
-                            <Tooltip title="info icon">
+                            <Tooltip title="info icon" open={true} className={classes.customTooltip}>
                                 <IconButton>
                                     <img src={INFO_ICON} alt="" />
                                 </IconButton>
