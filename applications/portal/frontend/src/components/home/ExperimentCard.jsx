@@ -33,8 +33,10 @@ import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
 import ArrowRightIcon from '@material-ui/icons/ArrowRight';
-import { CircularProgress } from "@material-ui/core";
+import WorkspaceService from "../../service/WorkspaceService";
 import { getDateFromDateTime } from "../../utils";
+import { DeleteExperimentDialog } from "../DeleteExperimentDialog";
+import { ExplorationSpinalCordDialog } from "./ExplorationSpinalCordDialog";
 
 
 const commonStyle = {
@@ -274,9 +276,9 @@ const ExperimentCard = ({
     experiment,
     type,
     handleDialogToggle,
-    handleExplorationDialogToggle,
     handleShareDialogToggle,
-    handleShareMultipleDialogToggle
+    handleShareMultipleDialogToggle,
+    refreshExperimentList
 }) => {
     const classes = useStyles();
     const history = useHistory()
@@ -284,7 +286,15 @@ const ExperimentCard = ({
         history.push(`/experiments/${experiment.id}`)
     }
 
+    const api = WorkspaceService.getApi();
     const [experimentMenuEl, setExperimentMenuEl] = React.useState(null);
+    const [openDeleteDialog, setOpenDeleteDialog] = React.useState(false);
+    const [explorationDialogOpen, setExplorationDialogOpen] = React.useState(false);
+    const [tagsOptions, setTagsOptions] = React.useState([]);
+
+    const handleExplorationDialogToggle = () => {
+        setExplorationDialogOpen((prevOpen) => !prevOpen);
+    };
 
     const handleCardActions = (event) => {
         setExperimentMenuEl(event.currentTarget);
@@ -293,6 +303,19 @@ const ExperimentCard = ({
     const closeFilter = () => {
         setExperimentMenuEl(null);
     };
+
+    const handleDeleteDialog = () => {
+        closeFilter();
+        setOpenDeleteDialog(!openDeleteDialog);
+    };
+
+    React.useEffect(() => {
+        const fetchTagOptions = async () => {
+            const res = await api.listTags()
+            setTagsOptions(res.data)
+        };
+        fetchTagOptions().catch(console.error);
+    }, []);
 
     return (
         <Grid item xs={12} md={3} key={`${experiment.name}experiment_${experiment.id}`}>
@@ -335,8 +358,8 @@ const ExperimentCard = ({
                     </ListItem>
                     <Divider />
                     <ListItem button>
-                        {type === EXPERIMENTS_HASH ? <ListItemText primary="Delete" /> :
-                            <ListItemText primary="Clone this experiment" onClick={handleDialogToggle} />}
+                        {type === EXPERIMENTS_HASH ? <ListItemText primary="Delete" onClick={() => handleDeleteDialog()} /> :
+                            <ListItemText primary="Clone this experiment" onClick={handleDialogToggle}/>}
                     </ListItem>
                 </Menu>
                 <CardActionArea>
@@ -392,6 +415,21 @@ const ExperimentCard = ({
                     </CardContent>
                 </CardActionArea>
             </Card>
+            <ExplorationSpinalCordDialog
+                experimentId={experiment.id}
+                experiment={experiment}
+                tagsOptions={tagsOptions}
+                open={explorationDialogOpen}
+                handleClose={handleExplorationDialogToggle}
+                refreshExperimentList={refreshExperimentList}
+                setExperimentMenuEl={setExperimentMenuEl}
+            />
+            <DeleteExperimentDialog
+                experimentId={experiment.id} open={openDeleteDialog}
+                handleClose={() => setOpenDeleteDialog(false)}
+                refreshExperimentList={refreshExperimentList}
+            />
+
         </Grid>
     );
 }

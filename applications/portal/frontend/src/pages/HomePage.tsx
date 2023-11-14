@@ -67,12 +67,6 @@ export default (props: any) => {
     setDialogOpen((prevOpen) => !prevOpen);
   };
 
-  const [explorationDialogOpen, setExplorationDialogOpen] = React.useState(false);
-
-  const handleExplorationDialogToggle = () => {
-    setExplorationDialogOpen((prevOpen) => !prevOpen);
-  };
-
   const [shareDialogOpen, setShareDialogOpen] = React.useState(false);
 
   const handleShareDialogToggle = () => {
@@ -94,7 +88,13 @@ export default (props: any) => {
       <Sidebar experiments={experiments} executeScroll={(r: string) => executeScroll(r)} />
       <Box className={classes.layoutContainer}>
         <div ref={myRef} id={EXPERIMENTS_HASH}>
-          <ExperimentList experiments={experiments} heading={"My experiments"} description={`${experiments.length} experiments`} type={EXPERIMENTS_HASH} handleExplorationDialogToggle={handleExplorationDialogToggle} infoIcon={false} handleShareDialogToggle={handleShareDialogToggle} handleShareMultipleDialogToggle={handleShareMultipleDialogToggle}/>
+          <ExperimentList
+            experiments={experiments} heading={"My experiments"}
+            description={`${experiments.length} experiments`} type={EXPERIMENTS_HASH}
+            infoIcon={false}
+            handleShareDialogToggle={handleShareDialogToggle} handleShareMultipleDialogToggle={handleShareMultipleDialogToggle}
+            refreshExperimentList={fetchExperiments}
+          />
         </div>
         {/*<div ref={shared} id={SHARED_HASH}>*/}
         {/*  <ExperimentList heading={"Shared with me"} description={"28 experiments"} type={SHARED_HASH} handleDialogToggle={handleDialogToggle} handleExplorationDialogToggle={handleExplorationDialogToggle} infoIcon={false} handleShareDialogToggle={handleShareDialogToggle} handleShareMultipleDialogToggle={handleShareMultipleDialogToggle} />*/}
@@ -112,7 +112,6 @@ export default (props: any) => {
         {/*</Box>*/}
       </Box>
       <CloneExperimentDialog open={dialogOpen} handleClose={handleDialogToggle} user={props?.user} />
-      <ExplorationSpinalCordDialog open={explorationDialogOpen} handleClose={handleExplorationDialogToggle} />
       <ShareExperimentDialog open={shareDialogOpen} handleClose={handleShareDialogToggle} />
       <ShareMultipleExperimentDialog open={shareMultipleDialogOpen} handleClose={handleShareMultipleDialogToggle} />
     </Box>

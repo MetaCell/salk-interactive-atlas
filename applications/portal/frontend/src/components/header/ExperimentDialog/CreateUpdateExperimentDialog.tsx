@@ -361,7 +361,7 @@ export const CreateUpdateExperimentDialog = ({
 
                 <Box display="flex" alignItems={"center"} className={classes.formGroup}>
                     <Typography component="label">Tags</Typography>
-                    <TagsAutocomplete tags={tagsOptions.map(t => t.name)} onChange={handleTagsChange}/>
+                    <TagsAutocomplete tagsOptions={tagsOptions.map(t => t.name)} onChange={handleTagsChange}/>
                 </Box>
 
                 <Box display="flex" alignItems={"center"} className={classes.formGroup}>

@@ -10,6 +10,7 @@ from rest_framework import status, viewsets
 from rest_framework.decorators import action
 from rest_framework.parsers import MultiPartParser
 from rest_framework.response import Response
+from django.shortcuts import get_object_or_404
 
 from api.helpers.exceptions import InvalidPopulationFile, DuplicatedPopulationError, InvalidInputError
 from api.models import Experiment, Population
@@ -35,7 +36,6 @@ class ExperimentViewSet(viewsets.ModelViewSet):
     This viewset automatically provides `list`, `create`, `retrieve`,
     `update` and `destroy` actions.
     """
-
     permission_classes = (DRYPermissions,)
     queryset = Experiment.objects.all()
     parser_classes = (MultiPartParser,)
@@ -63,6 +63,15 @@ class ExperimentViewSet(viewsets.ModelViewSet):
             queryset, many=True, context={"request": request}
         )
         return Response(serializer.data)
+
+    def destroy(self, request, *args, **kwargs):
+        pk = kwargs.get("pk")
+        queryset = self.get_queryset()
+        instance = get_object_or_404(queryset, pk=pk)
+        if request.user==instance.owner:
+            self.perform_destroy(instance)
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        return Response(status=status.HTTP_403_FORBIDDEN)
 
     @action(detail=False)
     def mine(self, request):
@@ -111,7 +120,6 @@ class ExperimentViewSet(viewsets.ModelViewSet):
     )
     def delete_tag(self, request, tag_name, **kwargs):
         instance = self.get_object()
-        tag_name = request.data.get("name")
         delete_tag(instance, tag_name)
         return Response(status=status.HTTP_204_NO_CONTENT)
 
@@ -136,7 +144,8 @@ class ExperimentViewSet(viewsets.ModelViewSet):
             return Response(data={'detail': str(e)}, status=status.HTTP_422_UNPROCESSABLE_ENTITY)
         try:
             filepaths = move_files([key_file, data_file], instance.storage_path)
-        except Exception:
+        except Exception as e:
+            print(e)
             return Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR)
         try:
             register_non_fiducial_experiment(instance.id, filepaths[KEY_INDEX],

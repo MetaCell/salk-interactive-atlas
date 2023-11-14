@@ -11,7 +11,6 @@ import Breadcrumbs from '@material-ui/core/Breadcrumbs';
 import Link from '@material-ui/core/Link';
 import Menu from '@material-ui/core/Menu';
 import FILTER from "../../assets/images/icons/filters.svg";
-import FILTER_ACTIVE from "../../assets/images/icons/filters-active.svg";
 import UP_ICON from "../../assets/images/icons/up.svg";
 import CHECK from "../../assets/images/icons/check.svg";
 import INFO from "../../assets/images/icons/info.svg";
@@ -169,7 +168,7 @@ const useStyles = makeStyles(() => ({
 
 const ExperimentList = (props) => {
   const classes = useStyles();
-  const {experiments} = props;
+  const { experiments, refreshExperimentList } = props;
   const [anchorEl, setAnchorEl] = React.useState(null);
   const [value, setValue] = React.useState('Alphabetical');
   const [filterAnchorEL, setFilterAnchorEL] = React.useState(null);
@@ -198,7 +197,7 @@ const ExperimentList = (props) => {
   }
 
   const tags = ["Project A", "Tag X", "Label 1"];
-  const { heading, description, type, infoIcon, handleDialogToggle, handleExplorationDialogToggle, handleShareMultipleDialogToggle, handleShareDialogToggle } = props;
+  const { heading, description, type, infoIcon, handleDialogToggle, handleShareMultipleDialogToggle, handleShareDialogToggle } = props;
   const sortOptions = ["Alphabetical", "Date created", "Last viewed"];
   const orderOptions = ["Oldest first", "Newest first"];
 
@@ -293,7 +292,12 @@ const ExperimentList = (props) => {
       <Box p={5}>
         <Grid container item spacing={3}>
           {experiments.map( exp => (
-            <ExperimentCard key={exp.id} experiment={exp} type={type} handleDialogToggle={handleDialogToggle} handleExplorationDialogToggle={handleExplorationDialogToggle} handleShareDialogToggle={handleShareDialogToggle} handleShareMultipleDialogToggle={handleShareMultipleDialogToggle} />
+            <ExperimentCard
+              key={exp.id} experiment={exp} type={type} handleDialogToggle={handleDialogToggle}
+              handleShareDialogToggle={handleShareDialogToggle}
+              handleShareMultipleDialogToggle={handleShareMultipleDialogToggle}
+              refreshExperimentList={refreshExperimentList}
+            />
             ))
           }
         </Grid>
