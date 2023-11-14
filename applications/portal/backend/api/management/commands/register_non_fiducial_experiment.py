@@ -21,4 +21,5 @@ class Command(BaseCommand):
 
         population_names = get_populations(key_filepath, is_a_population_multiple_files,
                                            MULTIPLE_FILE_POPULATION_NAME_COLUMN)
+        print(population_names)
         register_experiment(data_filepath, experiment_id, population_names)
