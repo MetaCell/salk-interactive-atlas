@@ -1,7 +1,7 @@
 
 from django.core.management.base import BaseCommand
 
-from api.management.utilities import register_experiment
+from api.management.utilities import create_populations_and_register_experiment
 from api.services.cordmap_service import is_a_population_multiple_files, get_populations, \
     MULTIPLE_FILE_POPULATION_NAME_COLUMN
 
@@ -21,4 +21,4 @@ class Command(BaseCommand):
 
         population_names = get_populations(key_filepath, is_a_population_multiple_files,
                                            MULTIPLE_FILE_POPULATION_NAME_COLUMN)
-        register_experiment(data_filepath, experiment_id, population_names)
+        create_populations_and_register_experiment(data_filepath, experiment_id, population_names)

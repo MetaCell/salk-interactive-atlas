@@ -1,16 +1,12 @@
 import os
 
-from django.apps import apps
 from django.conf import settings
 from django.contrib.auth.models import Group, User
 from django.db import models
 
-from .text_choices import PopulationStatus, CollaboratorRole
 from .tag import Tag
+from .text_choices import CollaboratorRole
 from ..constants import EXPERIMENTS_DATA
-from ..helpers.experiment_registration.experiment_registration_strategy_factory import \
-    get_registration_strategy
-from ..helpers.population_cells import associate_population_cells_file
 from ..services.filesystem_service import create_dir_if_not_exists
 
 
@@ -80,32 +76,6 @@ class Experiment(models.Model):
     def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
         super(Experiment, self).save(force_insert, force_update, using, update_fields)
         create_dir_if_not_exists(self.storage_path)
-
-    def register(self, filepath, populations):
-        if not populations:
-            return
-
-        is_fiducial = populations[0].is_fiducial
-
-        Population = apps.get_model('api', 'Population')
-        # Set status of all provided populations to RUNNING
-        Population.objects.filter(id__in=[pop.id for pop in populations]).update(status=PopulationStatus.RUNNING)
-        try:
-            strategy = get_registration_strategy(is_fiducial)
-            # Perform the registration
-            strategy.register(filepath, self.storage_path)
-
-            csv_suffix = strategy.get_csv_suffix()
-
-            # Associate the generated files with the populations and save them
-            for population in populations:
-                associate_population_cells_file(population, self.storage_path, csv_suffix)
-
-        except Exception as e:
-            print(e)
-            for population in populations:
-                population.status = PopulationStatus.ERROR
-                population.save()
 
     @property
     def storage_path(self) -> str:

@@ -20,8 +20,8 @@ from api.serializers import (
     TagSerializer,
     TagsSerializer, ExperimentSingleFileUploadSerializer, DownloadPopulationsSerializer,
 )
-from api.services.experiment_service import add_tag, delete_tag, register_non_fiducial_experiment, \
-    register_fiducial_experiment
+from api.services.experiment_service import add_tag, delete_tag, start_non_fiducial_experiment_registration_workflow, \
+    start_fiducial_experiment_registration_workflow
 from api.services.filesystem_service import move_files
 from api.validators.upload_files import validate_multiple_files_input, validate_single_file_input
 
@@ -144,12 +144,11 @@ class ExperimentViewSet(viewsets.ModelViewSet):
             return Response(data={'detail': str(e)}, status=status.HTTP_422_UNPROCESSABLE_ENTITY)
         try:
             filepaths = move_files([key_file, data_file], instance.storage_path)
-        except Exception as e:
-            print(e)
+        except Exception:
             return Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR)
         try:
-            register_non_fiducial_experiment(instance.id, filepaths[KEY_INDEX],
-                                             filepaths[DATA_INDEX])
+            start_non_fiducial_experiment_registration_workflow(instance.id, filepaths[KEY_INDEX],
+                                                                filepaths[DATA_INDEX])
             response_status = status.HTTP_201_CREATED
         except InvalidPopulationFile:
             response_status = status.HTTP_400_BAD_REQUEST
@@ -176,8 +175,8 @@ class ExperimentViewSet(viewsets.ModelViewSet):
         except Exception:
             return Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR)
         try:
-            register_fiducial_experiment(instance.id,
-                                         filepaths[KEY_INDEX])
+            start_fiducial_experiment_registration_workflow(instance.id,
+                                                            filepaths[KEY_INDEX])
             response_status = status.HTTP_201_CREATED
         except InvalidPopulationFile:
             response_status = status.HTTP_400_BAD_REQUEST

@@ -1,6 +1,7 @@
 from django.db import transaction
 
 from api.models import AtlasesChoice, Population, PopulationStatus, Experiment
+from api.services.experiment_service import register_experiment
 
 
 def get_valid_atlases():
@@ -8,7 +9,7 @@ def get_valid_atlases():
     return valid_atlas_ids
 
 
-def register_experiment(data_filepath, experiment_id, population_names):
+def create_populations_and_register_experiment(data_filepath, experiment_id, population_names):
     populations = []
     with transaction.atomic():
         for name in population_names:
@@ -19,4 +20,4 @@ def register_experiment(data_filepath, experiment_id, population_names):
                 status=PopulationStatus.PENDING
             ))
     experiment = Experiment.objects.get(pk=experiment_id)
-    experiment.register(data_filepath, populations)
+    register_experiment(data_filepath, populations, experiment.storage_path)
