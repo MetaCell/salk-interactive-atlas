@@ -4,8 +4,9 @@ import {
     canvasBg, populationTitleColor, populationSubTitleColor,
     headerBorderColor, secondaryColor, sidebarTextColor, deleteBtnTextColor, deleteBtnBgColor, switchActiveColor
 } from "../../theme";
-import { Typography, Box, IconButton, Button, Tabs, Tab, Menu, MenuItem, 
-    Tooltip, TextField, Divider, ListItemIcon, Select, OutlinedInput
+import {
+    Typography, Box, IconButton, Button, Tabs, Tab, Menu, MenuItem,
+    Tooltip, TextField, Divider, ListItemIcon, Select, OutlinedInput, FormControl
 } from "@material-ui/core";
 import { Pagination } from '@material-ui/lab';
 import DeleteDialog from '../common/ExperimentDialogs/DeleteModal';
@@ -17,6 +18,7 @@ import INFO_ICON from "../../assets/images/icons/info.svg";
 import DOWN_ICON from "../../assets/images/icons/chevron_down.svg";
 import CHECK from "../../assets/images/icons/check.svg";
 import pageImg from "../../assets/images/pdf.png";
+import { KeyboardArrowDown } from '@material-ui/icons';
 
 const PDF_FILE = "pdfFile"
 
@@ -81,6 +83,11 @@ const useStyles = makeStyles({
             flexShrink: '0',
         },
     },
+    categorySelect: {
+        '& .MuiSelect-selectMenu': {
+            color: populationSubTitleColor
+        }
+    },
     addAnotherFileBox: {
         padding: '1rem',
         borderTop: `1px solid ${headerBorderColor}`,
@@ -114,12 +121,6 @@ const useStyles = makeStyles({
             maxWidth: '31.25rem',
             padding: '0.5rem 0'
         },
-        '& .menuItemBox': {
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            padding: '0.5rem 1rem'
-        },
         '& .MuiMenuItem-root': {
             padding: 0,
             color: populationTitleColor,
@@ -130,14 +131,23 @@ const useStyles = makeStyles({
                 backgroundColor: 'transparent'
             }
         },
-        '& .MuiListItemIcon-root': {
-            minWidth: 'auto'
-        },
         '& .MuiDivider-root': {
             backgroundColor: headerBorderColor,
             marginTop: '0.5rem',
             marginBottom: '0.5rem'
         }
+    },
+    menuItemBox: {
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        padding: '0.5rem 1rem',
+        '& .MuiMenuItem-root': {
+            padding: 0
+        },
+        '& .MuiListItemIcon-root': {
+            minWidth: 'auto'
+        },
     },
     searchField: {
         '& .MuiInputBase-root': {
@@ -201,6 +211,7 @@ const DetailsViewerFake = (props: {
     const [tabIdx, setTabIdx] = React.useState(0);
     const [anchorElMenu, setAnchorElMenu] = React.useState<null | HTMLElement>(null);
     const [selectedIndex, setSelectedIndex] = React.useState(0);
+    const [category, setCategory] = React.useState(undefined);
     const [openDeleteDialog, setOpenDeleteDialog] = React.useState(false);
     const [openUploadDialog, setOpenUploadDialog] = React.useState(false);
     const [validationErrors, setValidationErrors] = React.useState(new Set([]));
@@ -228,6 +239,13 @@ const DetailsViewerFake = (props: {
         setAnchorElMenu(null);
     };
 
+    const handleCategoryChange = (e: any) => {
+        const {
+            target: { value },
+        } = e;
+        setCategory(value)
+    }
+
     const handleAddFile = (type: string, value: any) => {
         setFiles({ ...files, [type]: value })
         validationErrors.delete(type)
@@ -238,7 +256,6 @@ const DetailsViewerFake = (props: {
         setPage(page)
     }
     console.log("files: ", files)
-
     return populationName !== null ? (
         <div className={classes.container}>
             <Box display="flex" justifyContent="space-between" alignItems="center" className={classes.titleBox}>
@@ -289,7 +306,7 @@ const DetailsViewerFake = (props: {
                     <Divider />
                     {
                         data[tabIdx].files.map((file: any, index) => (
-                            <div className='menuItemBox' key={index}>
+                            <div className={classes.menuItemBox} key={index}>
                                 <MenuItem
                                     disableGutters
                                     selected={index === selectedIndex}
@@ -360,21 +377,47 @@ const DetailsViewerFake = (props: {
                 </Box>
                 <Box display="flex" alignItems="center" justifyContent="space-between" p={2} className={classes.categoryBox}>
                     <Typography component="label">Category</Typography>
-                    <Select
-                        variant="outlined"
-                        input={<OutlinedInput />}
-                        renderValue={(selected) => {
-                            if (!selected) {
-                                return <Typography>Select a category</Typography>;
+                    <FormControl fullWidth>
+                        <Select
+                            variant="outlined"
+                            input={<OutlinedInput />}
+                            displayEmpty
+                            value={category}
+                            onChange={handleCategoryChange}
+                            className={classes.categorySelect}
+                            renderValue={(selected) => {
+                                if (!selected) {
+                                    return <p>Select a category</p>;
+                                }
+                                return selected;
+                            }}
+                            IconComponent={() => <img src={DOWN_ICON} alt='' style={{ marginRight: '0.75rem' }} />}
+                            inputProps={{ 'aria-label': 'Without label' }}
+                        >
+                            {
+                                options.map((option: string, index) => (
+                                    <div className={classes.menuItemBox} key={index}>
+                                        <MenuItem
+                                            value={option}
+                                            disableGutters
+                                        >
+                                            {option}
+                                        </MenuItem>
+                                    </div>
+                                ))
                             }
-
-                            return selected;
-                        }}
-                    />
+                        </Select>
+                    </FormControl>
                 </Box>
                 {
                     files[PDF_FILE] !== null && <Box className={classes.addAnotherFileBox}>
-                        <Button variant='text'>+ Add another file</Button>
+                        <Button component="label"><input
+                            type="file"
+                            accept=".pdf"
+                            hidden
+                        />
+                            + Add another file
+                        </Button>
                     </Box>
                 }
             </Modal>
@@ -400,6 +443,7 @@ const DetailsViewerFake = (props: {
 
 export default DetailsViewerFake
 
+const options = ['Electrophysiology', 'Behaviour', 'I/O Mapping']
 const data = [
     {
         tab: 'Electrophysiology',
