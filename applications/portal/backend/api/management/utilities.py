@@ -20,4 +20,4 @@ def create_populations_and_register_experiment(data_filepath, experiment_id, pop
                 status=PopulationStatus.PENDING
             ))
     experiment = Experiment.objects.get(pk=experiment_id)
-    register_experiment(data_filepath, populations, experiment.storage_path)
+    register_experiment(populations, data_filepath, experiment.storage_path)
