@@ -18,6 +18,5 @@ def register_experiment(data_filepath, experiment_id, population_names):
                 is_fiducial=False,
                 status=PopulationStatus.PENDING
             ))
-    print("register_experiment")
     experiment = Experiment.objects.get(pk=experiment_id)
     experiment.register(data_filepath, populations)

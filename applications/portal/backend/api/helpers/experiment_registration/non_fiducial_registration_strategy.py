@@ -7,7 +7,6 @@ class NonFiducialExperimentRegistrationStrategy(ExperimentRegistrationStrategy):
 
     def register(self, data_filepath: str, out_dir: str):
         from cordmap.main import register_sections_3D
-        print("NonFiducialExperimentRegistrationStrategy")
         register_sections_3D(data_filepath, out_dir, parallel=True)
 
     def get_csv_suffix(self) -> str:

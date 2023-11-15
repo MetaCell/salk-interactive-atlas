@@ -82,8 +82,6 @@ class Experiment(models.Model):
         create_dir_if_not_exists(self.storage_path)
 
     def register(self, filepath, populations):
-        print("experiemnt.register")
-        print(populations)
         if not populations:
             return
 
@@ -93,11 +91,7 @@ class Experiment(models.Model):
         # Set status of all provided populations to RUNNING
         Population.objects.filter(id__in=[pop.id for pop in populations]).update(status=PopulationStatus.RUNNING)
         try:
-            print('try')
             strategy = get_registration_strategy(is_fiducial)
-            print(self.storage_path)
-            print(strategy)
-
             # Perform the registration
             strategy.register(filepath, self.storage_path)
 
