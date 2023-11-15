@@ -8,7 +8,7 @@ import {
     Typography, Box, IconButton, Button, Tabs, Tab, Menu, MenuItem,
     Tooltip, TextField, Divider, ListItemIcon, Select, OutlinedInput, FormControl
 } from "@material-ui/core";
-import { Pagination } from '@material-ui/lab';
+import { usePagination } from '@material-ui/lab';
 import DeleteDialog from '../common/ExperimentDialogs/DeleteModal';
 import Modal from '../common/BaseDialog';
 import { PdfFileDrop } from '../common/PdfFileDrop';
@@ -19,6 +19,7 @@ import DOWN_ICON from "../../assets/images/icons/chevron_down.svg";
 import CHECK from "../../assets/images/icons/check.svg";
 import pageImg from "../../assets/images/pdf.png";
 import { KeyboardArrowDown } from '@material-ui/icons';
+import { ArrowBack, ArrowForward } from '@material-ui/icons';
 
 const PDF_FILE = "pdfFile"
 
@@ -38,6 +39,12 @@ const useStyles = makeStyles({
         fontWeight: 600,
         lineHeight: '1rem',
         color: populationTitleColor
+    },
+    noContentTitle: {
+        margin: 0,
+        fontSize: '0.875rem',
+        color: populationTitleColor,
+        fontWeight: 500
     },
     tabPanelActions: {
         padding: '0.75rem 0.75rem 0 0.25rem'
@@ -185,6 +192,12 @@ const useStyles = makeStyles({
         fontWeight: 400,
         gap: '0.25rem'
     },
+    ul: {
+        listStyle: 'none',
+        padding: 0,
+        margin: 0,
+        display: 'flex',
+    },
     pagination: {
         display: 'flex',
         alignItems: 'center',
@@ -215,6 +228,9 @@ const DetailsViewerFake = (props: {
     const [openDeleteDialog, setOpenDeleteDialog] = React.useState(false);
     const [openUploadDialog, setOpenUploadDialog] = React.useState(false);
     const [validationErrors, setValidationErrors] = React.useState(new Set([]));
+    const { items } = usePagination({
+        count: 10,
+    });
     let [page, setPage] = React.useState(1);
     const [files, setFiles] = React.useState<any>({
         [PDF_FILE]: null,
@@ -350,14 +366,28 @@ const DetailsViewerFake = (props: {
                 <Typography>
                     Page {page} of 10
                 </Typography>
-                <Pagination
+                <ul className={classes.ul}>
+                    {items.map(({ page, type, selected, ...item }, index) => {
+                        let children = null;
+
+                        if (type === 'previous' || type === 'next') {
+                            children = (
+                                <button type="button" {...item}>
+                                    {type}
+                                </button>
+                            );
+                        }
+                        return <li key={index}>{children}</li>;
+                    })}
+                </ul>
+                {/* <Pagination
                     count={10}
                     size="large"
                     page={page}
                     variant="outlined"
                     shape="rounded"
                     onChange={handlePageChange}
-                />
+                /> */}
             </Box>
             <Modal
                 open={openUploadDialog}
@@ -436,8 +466,8 @@ const DetailsViewerFake = (props: {
             </DeleteDialog>
         </div>
     ) : (
-        <div className={classes.container}>
-            <p className={classes.title}>Select a population to start viewing details</p>
+        <div className={classes.container} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <p className={classes.noContentTitle}>Select a population to start viewing details</p>
         </div>)
 };
 
