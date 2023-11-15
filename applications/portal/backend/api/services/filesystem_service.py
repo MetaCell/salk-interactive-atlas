@@ -5,8 +5,6 @@ from typing import List
 
 from django.core.files.uploadedfile import TemporaryUploadedFile
 
-from api.utils import get_persistence_path
-
 
 def remove_dir(dir_path: str):
     try:
@@ -32,7 +30,7 @@ def move_file(filepath, target_dir, filename=None) -> str:
         filename = os.path.basename(filepath)
     dst_path = os.path.join(target_dir, filename)
     shutil.move(filepath, dst_path)
-    return get_persistence_path(dst_path)
+    return dst_path
 
 
 def remove_file_if_exists(path: str):

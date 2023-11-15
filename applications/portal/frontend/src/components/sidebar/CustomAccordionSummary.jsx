@@ -4,16 +4,14 @@ import {
     AccordionSummary,
     Switch,
     FormControlLabel,
-    Popover,
-    IconButton
+    Popover
 } from '@material-ui/core';
-import { SliderIcon } from "../icons";
 
 import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown';
 import UP_ICON from "../../assets/images/icons/up.svg";
 import {POPULATION_FINISHED_STATE} from "../../utilities/constants";
 import {
-    areAllPopulationsWithChildrenSelected, areAllSelected,
+    areAllSelected,
     getParentPopulationStatus,
     getRGBAFromHexAlpha,
     getRGBAString

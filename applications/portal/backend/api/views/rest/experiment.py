@@ -20,9 +20,8 @@ from api.serializers import (
     TagSerializer,
     TagsSerializer, ExperimentSingleFileUploadSerializer, DownloadPopulationsSerializer,
 )
-from api.services.cordmap_service import get_populations, is_a_population_single_file, SINGLE_FILE_POPULATION_ID_COLUMN, \
-    is_a_population_multiple_files, MULTIPLE_FILE_POPULATION_NAME_COLUMN
-from api.services.experiment_service import add_tag, delete_tag, handle_populations_upload
+from api.services.experiment_service import add_tag, delete_tag, start_non_fiducial_experiment_registration_workflow, \
+    start_fiducial_experiment_registration_workflow
 from api.services.filesystem_service import move_files
 from api.validators.upload_files import validate_multiple_files_input, validate_single_file_input
 
@@ -64,7 +63,7 @@ class ExperimentViewSet(viewsets.ModelViewSet):
             queryset, many=True, context={"request": request}
         )
         return Response(serializer.data)
-    
+
     def destroy(self, request, *args, **kwargs):
         pk = kwargs.get("pk")
         queryset = self.get_queryset()
@@ -73,7 +72,6 @@ class ExperimentViewSet(viewsets.ModelViewSet):
             self.perform_destroy(instance)
             return Response(status=status.HTTP_204_NO_CONTENT)
         return Response(status=status.HTTP_403_FORBIDDEN)
-
 
     @action(detail=False)
     def mine(self, request):
@@ -149,11 +147,8 @@ class ExperimentViewSet(viewsets.ModelViewSet):
         except Exception:
             return Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR)
         try:
-            handle_populations_upload(instance.id,
-                                      get_populations(filepaths[KEY_INDEX], is_a_population_multiple_files,
-                                                      MULTIPLE_FILE_POPULATION_NAME_COLUMN),
-                                      filepaths[DATA_INDEX],
-                                      False)
+            start_non_fiducial_experiment_registration_workflow(instance.id, filepaths[KEY_INDEX],
+                                                                filepaths[DATA_INDEX])
             response_status = status.HTTP_201_CREATED
         except InvalidPopulationFile:
             response_status = status.HTTP_400_BAD_REQUEST
@@ -180,11 +175,8 @@ class ExperimentViewSet(viewsets.ModelViewSet):
         except Exception:
             return Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR)
         try:
-            handle_populations_upload(instance.id,
-                                      get_populations(filepaths[KEY_INDEX], is_a_population_single_file,
-                                                      SINGLE_FILE_POPULATION_ID_COLUMN),
-                                      filepaths[KEY_INDEX],
-                                      True)
+            start_fiducial_experiment_registration_workflow(instance.id,
+                                                            filepaths[KEY_INDEX])
             response_status = status.HTTP_201_CREATED
         except InvalidPopulationFile:
             response_status = status.HTTP_400_BAD_REQUEST

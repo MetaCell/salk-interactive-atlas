@@ -1,6 +1,6 @@
+from .text_choices import *
 from .atlas import *
 from .collaborator import *
-from .collaborator_role import *
 from .experiment import *
 from .population import *
 from .tag import *

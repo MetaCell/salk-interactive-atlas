@@ -17,14 +17,14 @@ from cordmap.utils.misc import ensure_directory_exists
 
 
 def register_3D_fiducial(
-        csv_file: str,
-        output_directory: str,
-        debug: bool = False,
-        debug_slice_number: int = 5,
-        save: bool = True,
-        save_csv: bool = True,
-        image_padding: int = 10,
-        atlas_name: str = "salk_cord_10um",
+    csv_file: str,
+    output_directory: str,
+    debug: bool = False,
+    debug_slice_number: int = 5,
+    save: bool = True,
+    save_csv: bool = True,
+    image_padding: int = 10,
+    atlas_name: str = "salk_cord_10um",
 ):
     atlas = SalkAtlas(atlas_name)
     _ = datetime.now()
@@ -68,7 +68,6 @@ def register_3D_fiducial(
         )
 
     if save:
-        labeled_cells = labeled_cells.rename(columns={"x": "y", "y": "x"})  # swap x and y
         save_output(
             output_directory,
             labeled_cells,

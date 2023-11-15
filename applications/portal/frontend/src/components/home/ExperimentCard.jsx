@@ -34,7 +34,6 @@ import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
 import ArrowRightIcon from '@material-ui/icons/ArrowRight';
 import WorkspaceService from "../../service/WorkspaceService";
-import { CircularProgress } from "@material-ui/core";
 import { getDateFromDateTime } from "../../utils";
 import { DeleteExperimentDialog } from "../DeleteExperimentDialog";
 import { ExplorationSpinalCordDialog } from "./ExplorationSpinalCordDialog";

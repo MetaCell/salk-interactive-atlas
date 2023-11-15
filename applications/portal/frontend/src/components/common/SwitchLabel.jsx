@@ -1,4 +1,4 @@
-import { MAX_STR_LENGTH_SIDEBAR, POPULATION_FINISHED_STATE } from "../../utilities/constants";
+import { MAX_STR_LENGTH_SIDEBAR } from "../../utilities/constants";
 import { Tooltip, Typography, Box } from "@material-ui/core";
 import React from "react";
 import { makeStyles } from "@material-ui/core/styles";

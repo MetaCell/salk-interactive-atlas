@@ -16,16 +16,13 @@ import Sidebar from "../components/sidebar/ExperimentSidebar";
 // @ts-ignore
 import {
     AtlasChoice,
-    NEURONAL_LOCATIONS_ID,
     POPULATION_FINISHED_STATE,
-    CONTOUR_PLOT_ID,
     PULL_TIME_MS
 } from "../utilities/constants"
 import { getAtlas } from "../service/AtlasService";
 import { Experiment, ExperimentPopulationsInner, Population } from "../apiclient/workspaces";
-import { areAllSelected, areAllPopulationsWithChildrenSelected } from "../utilities/functions";
+import { areAllPopulationsWithChildrenSelected } from "../utilities/functions";
 import workspaceService from "../service/WorkspaceService";
-import Cell from "../models/Cell";
 import { DetailsWidget, threeDViewerWidget, twoDViewerWidget, widgetIds } from "../widgets";
 import { useInterval } from "../utilities/hooks/useInterval";
 import { useParams } from "react-router";
