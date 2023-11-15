@@ -68,6 +68,7 @@ def register_3D_fiducial(
         )
 
     if save:
+        labeled_cells = labeled_cells.rename(columns={"x": "y", "y": "x"})  # swap x and y
         save_output(
             output_directory,
             labeled_cells,
