@@ -9,14 +9,14 @@ def get_valid_atlases():
     return valid_atlas_ids
 
 
-def create_populations_and_register_experiment(data_filepath, experiment_id, population_names):
+def create_populations_and_register_experiment(data_filepath, experiment_id, population_names, is_fiducial=False):
     populations = []
     with transaction.atomic():
         for name in population_names:
             populations.append(Population.objects.create(
                 experiment_id=experiment_id,
                 name=name,
-                is_fiducial=False,
+                is_fiducial=is_fiducial,
                 status=PopulationStatus.PENDING
             ))
     experiment = Experiment.objects.get(pk=experiment_id)
