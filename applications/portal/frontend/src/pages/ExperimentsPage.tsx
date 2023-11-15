@@ -202,13 +202,13 @@ const ExperimentsPage: React.FC<{ residentialPopulations: any }> = ({residential
             const cells = await Promise.all(fetchedExperiment.populations.map(async (p) => {
                 if (p.status !== POPULATION_FINISHED_STATE) return [];
                 const existingPopulation = experiment.populations.find((e: ExperimentPopulationsInner) => e.id === p.id)
-                if (existingPopulation !== undefined && typeof existingPopulation.cells !== "string" && existingPopulation.cells.length > 0) return existingPopulation.cells
+                if (existingPopulation !== undefined && typeof existingPopulation.cells !== "string") return existingPopulation.cells
                 return getCells(api, p);
             }));
             let shouldUpdateExperiment = false;
             fetchedExperiment.populations.forEach((p, i) => {
                 const existingPopulation = experiment.populations.find((e: ExperimentPopulationsInner) => e.id === p.id)
-                if (existingPopulation === undefined || typeof existingPopulation.cells === "string" || existingPopulation.cells.length === 0) {
+                if (existingPopulation === undefined || typeof existingPopulation.cells === "string") {
                     // previous population cells !== new population cells --> update the experiment data
                     shouldUpdateExperiment = true;
                 }
