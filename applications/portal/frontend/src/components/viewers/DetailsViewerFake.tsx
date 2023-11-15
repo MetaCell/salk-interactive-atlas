@@ -2,16 +2,23 @@ import React, { SyntheticEvent } from 'react';
 import { makeStyles } from "@material-ui/core/styles";
 import {
     canvasBg, populationTitleColor, populationSubTitleColor,
-    headerBorderColor, secondaryColor, sidebarTextColor, deleteBtnTextColor, deleteBtnBgColor
+    headerBorderColor, secondaryColor, sidebarTextColor, deleteBtnTextColor, deleteBtnBgColor, switchActiveColor
 } from "../../theme";
-import { Typography, Box, IconButton, Button, Tabs, Tab, Menu, MenuItem, Tooltip, TextField, Divider, ListItemIcon } from "@material-ui/core";
+import { Typography, Box, IconButton, Button, Tabs, Tab, Menu, MenuItem, 
+    Tooltip, TextField, Divider, ListItemIcon, Select, OutlinedInput
+} from "@material-ui/core";
 import { Pagination } from '@material-ui/lab';
+import DeleteDialog from '../common/ExperimentDialogs/DeleteModal';
+import Modal from '../common/BaseDialog';
+import { PdfFileDrop } from '../common/PdfFileDrop';
 
 //icons
 import INFO_ICON from "../../assets/images/icons/info.svg";
 import DOWN_ICON from "../../assets/images/icons/chevron_down.svg";
 import CHECK from "../../assets/images/icons/check.svg";
 import pageImg from "../../assets/images/pdf.png";
+
+const PDF_FILE = "pdfFile"
 
 const useStyles = makeStyles({
     container: {
@@ -63,6 +70,30 @@ const useStyles = makeStyles({
             }
         }
     },
+    categoryBox: {
+        '& label': {
+            fontWeight: 600,
+            fontSize: '0.75rem',
+            lineHeight: '1rem',
+            letterSpacing: '0.005em',
+            color: populationTitleColor,
+            width: '8rem',
+            flexShrink: '0',
+        },
+    },
+    addAnotherFileBox: {
+        padding: '1rem',
+        borderTop: `1px solid ${headerBorderColor}`,
+        '& .MuiButton-root': {
+            color: switchActiveColor,
+            fontWeight: 500,
+            fontSize: '0.75rem',
+            padding: 0,
+            '&:hover': {
+                backgroundColor: 'transparent'
+            }
+        }
+    },
     deleteBtn: {
         backgroundColor: deleteBtnBgColor,
         color: deleteBtnTextColor,
@@ -70,6 +101,12 @@ const useStyles = makeStyles({
         '&:hover': {
             background: deleteBtnBgColor,
             boxShadow: 'none'
+        }
+    },
+    deleteModalBox: {
+        '& .MuiTypography-root': {
+            fontSize: '0.75rem',
+            color: populationTitleColor
         }
     },
     customMenu: {
@@ -164,7 +201,13 @@ const DetailsViewerFake = (props: {
     const [tabIdx, setTabIdx] = React.useState(0);
     const [anchorElMenu, setAnchorElMenu] = React.useState<null | HTMLElement>(null);
     const [selectedIndex, setSelectedIndex] = React.useState(0);
+    const [openDeleteDialog, setOpenDeleteDialog] = React.useState(false);
+    const [openUploadDialog, setOpenUploadDialog] = React.useState(false);
+    const [validationErrors, setValidationErrors] = React.useState(new Set([]));
     let [page, setPage] = React.useState(1);
+    const [files, setFiles] = React.useState<any>({
+        [PDF_FILE]: null,
+    });
 
     const handleTabChange = (event: React.SyntheticEvent, newTabIdx: number) => {
         setTabIdx(newTabIdx);
@@ -185,9 +228,16 @@ const DetailsViewerFake = (props: {
         setAnchorElMenu(null);
     };
 
+    const handleAddFile = (type: string, value: any) => {
+        setFiles({ ...files, [type]: value })
+        validationErrors.delete(type)
+        setValidationErrors(validationErrors)
+    }
+
     const handlePageChange = (event: any, page: number) => {
         setPage(page)
     }
+    console.log("files: ", files)
 
     return populationName !== null ? (
         <div className={classes.container}>
@@ -197,7 +247,7 @@ const DetailsViewerFake = (props: {
                     </IconButton>
                     <Typography className={classes.title}>{populationName}</Typography>
                 </Box>
-                <Button variant='outlined'>Upload PDF</Button>
+                <Button variant='outlined' onClick={() => setOpenUploadDialog(true)}>Upload PDF</Button>
             </Box>
             <Box sx={{ bgcolor: 'transparent' }}>
                 <Tabs value={tabIdx} onChange={handleTabChange} className={classes.tabs}>
@@ -276,7 +326,7 @@ const DetailsViewerFake = (props: {
                             <img src={INFO_ICON} alt="" />
                         </IconButton>
                     </Tooltip>
-                    <Button variant='contained' className={classes.deleteBtn}>Delete file</Button>
+                    <Button variant='contained' className={classes.deleteBtn} onClick={() => setOpenDeleteDialog(true)}>Delete file</Button>
                 </Box>
             </Box>
             <Box className={classes.pagination}>
@@ -292,6 +342,55 @@ const DetailsViewerFake = (props: {
                     onChange={handlePageChange}
                 />
             </Box>
+            <Modal
+                open={openUploadDialog}
+                dialogActions={true}
+                actionText="Upload"
+                disableGutter={true}
+                handleClose={() => setOpenUploadDialog(false)}
+                handleAction={() => { }}
+                title={`Upload PDF to Population ${populationName}`}
+            >
+                <Box display="flex" alignItems="center" justifyContent="center" p={2}>
+                    <PdfFileDrop
+                        file={files[PDF_FILE]}
+                        setFile={(value: any) => handleAddFile(PDF_FILE, value)}
+                        hasErrors={validationErrors.has(PDF_FILE)}
+                    />
+                </Box>
+                <Box display="flex" alignItems="center" justifyContent="space-between" p={2} className={classes.categoryBox}>
+                    <Typography component="label">Category</Typography>
+                    <Select
+                        variant="outlined"
+                        input={<OutlinedInput />}
+                        renderValue={(selected) => {
+                            if (!selected) {
+                                return <Typography>Select a category</Typography>;
+                            }
+
+                            return selected;
+                        }}
+                    />
+                </Box>
+                {
+                    files[PDF_FILE] !== null && <Box className={classes.addAnotherFileBox}>
+                        <Button variant='text'>+ Add another file</Button>
+                    </Box>
+                }
+            </Modal>
+            <DeleteDialog
+                open={openDeleteDialog}
+                handleClose={() => setOpenDeleteDialog(false)}
+                actionText="Delete"
+                title="Delete this file?"
+                dialogActions={true}
+                handleAction={() => { }}
+            >
+                <Box className={classes.deleteModalBox}>
+                    <Typography>This action cannot be undone. Are you sure you want to delete “Electrophysiological properties of V2a
+                        interneurons in the lumbar spinal cord.pdf”?</Typography>
+                </Box>
+            </DeleteDialog>
         </div>
     ) : (
         <div className={classes.container}>
