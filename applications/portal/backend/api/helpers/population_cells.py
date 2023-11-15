@@ -22,3 +22,6 @@ def associate_population_cells_file(population, storage_path, csv_suffix):
             population.cells.save(new_file_name, File(file), save=True)
         population.status = PopulationStatus.FINISHED
         population.save()
+    else:
+        population.status = PopulationStatus.ERROR
+        population.save()

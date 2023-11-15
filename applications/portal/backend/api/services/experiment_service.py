@@ -1,3 +1,5 @@
+import logging
+
 from api.helpers.experiment_registration.experiment_registration_strategy_factory import get_registration_strategy
 from api.helpers.population_cells import associate_population_cells_file
 from api.models import Experiment, Tag, Population, PopulationStatus
@@ -65,7 +67,8 @@ def register_experiment(populations, filepath, storage_path):
         for population in populations:
             associate_population_cells_file(population, storage_path, csv_suffix)
 
-    except Exception:
+    except Exception as e:
+        logging.error(e)
         for population in populations:
             population.status = PopulationStatus.ERROR
             population.save()
