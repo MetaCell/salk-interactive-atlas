@@ -8,7 +8,7 @@ import {
     Typography, Box, IconButton, Button, Tabs, Tab, Menu, MenuItem,
     Tooltip, TextField, Divider, ListItemIcon, Select, OutlinedInput, FormControl
 } from "@material-ui/core";
-import { usePagination } from '@material-ui/lab';
+import { Pagination, usePagination } from '@material-ui/lab';
 import DeleteDialog from '../common/ExperimentDialogs/DeleteModal';
 import Modal from '../common/BaseDialog';
 import { PdfFileDrop } from '../common/PdfFileDrop';
@@ -150,7 +150,11 @@ const useStyles = makeStyles({
         justifyContent: 'space-between',
         padding: '0.5rem 1rem',
         '& .MuiMenuItem-root': {
-            padding: 0
+            padding: 0,
+            '&:hover': {
+                backgroundColor: 'transparent'
+            },
+            '&.Mui-selected': {backgroundColor: 'transparent'}
         },
         '& .MuiListItemIcon-root': {
             minWidth: 'auto'
@@ -196,7 +200,7 @@ const useStyles = makeStyles({
         listStyle: 'none',
         padding: 0,
         margin: 0,
-        display: 'flex',
+        display: 'flex'
     },
     pagination: {
         display: 'flex',
@@ -224,6 +228,7 @@ const DetailsViewerFake = (props: {
     const [tabIdx, setTabIdx] = React.useState(0);
     const [anchorElMenu, setAnchorElMenu] = React.useState<null | HTMLElement>(null);
     const [selectedIndex, setSelectedIndex] = React.useState(0);
+    const [selectedCategoryIndex, setSelectedCategoryIndex] = React.useState(null);
     const [category, setCategory] = React.useState(undefined);
     const [openDeleteDialog, setOpenDeleteDialog] = React.useState(false);
     const [openUploadDialog, setOpenUploadDialog] = React.useState(false);
@@ -254,6 +259,12 @@ const DetailsViewerFake = (props: {
         setSelectedIndex(index);
         setAnchorElMenu(null);
     };
+    const handleCategoryClick = (
+        event: React.MouseEvent<HTMLElement>,
+        index: number,
+    ) => {
+        setSelectedCategoryIndex(index)
+    }
 
     const handleCategoryChange = (e: any) => {
         const {
@@ -272,6 +283,7 @@ const DetailsViewerFake = (props: {
         setPage(page)
     }
     console.log("files: ", files)
+    console.log("page: ", page)
     return populationName !== null ? (
         <div className={classes.container}>
             <Box display="flex" justifyContent="space-between" alignItems="center" className={classes.titleBox}>
@@ -366,28 +378,32 @@ const DetailsViewerFake = (props: {
                 <Typography>
                     Page {page} of 10
                 </Typography>
-                <ul className={classes.ul}>
+                {/* <ul className={classes.ul}>
                     {items.map(({ page, type, selected, ...item }, index) => {
                         let children = null;
 
                         if (type === 'previous' || type === 'next') {
                             children = (
-                                <button type="button" {...item}>
-                                    {type}
-                                </button>
+                                <Button
+                                    variant="outlined"
+                                    style={{ marginRight: type === "previous" ? "0.5rem" : 0 }}
+                                    {...item}
+                                >
+                                    {type === "previous" ? "Previous" : "Next"}
+                                </Button>
                             );
                         }
-                        return <li key={index}>{children}</li>;
+                        return <li key={index} onClick={(e) => handlePageChange(e, page)}>{children}</li>;
                     })}
-                </ul>
-                {/* <Pagination
+                </ul> */}
+                <Pagination
                     count={10}
                     size="large"
                     page={page}
                     variant="outlined"
                     shape="rounded"
                     onChange={handlePageChange}
-                /> */}
+                />
             </Box>
             <Modal
                 open={openUploadDialog}
@@ -430,9 +446,16 @@ const DetailsViewerFake = (props: {
                                         <MenuItem
                                             value={option}
                                             disableGutters
+                                            selected={index === selectedCategoryIndex}
+                                            onClick={(event) => handleCategoryClick(event, index)}
                                         >
                                             {option}
                                         </MenuItem>
+                                        {
+                                            selectedCategoryIndex === index && <ListItemIcon>
+                                                <img src={CHECK} alt='' />
+                                            </ListItemIcon>
+                                        }
                                     </div>
                                 ))
                             }
