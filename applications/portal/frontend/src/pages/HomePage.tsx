@@ -11,7 +11,6 @@ import {
   ACME_TEAM,
   COMMUNITY_HASH,
   SHARED_HASH,
-  PULL_TIME_MS
 } from "../utilities/constants";
 import { CloneExperimentDialog } from "../components/home/CloneExperimentDialog";
 import { ExplorationSpinalCordDialog } from "../components/home/ExplorationSpinalCordDialog";
