@@ -1,8 +1,6 @@
-import React, {Fragment, useState} from "react";
+import React, {Fragment} from "react";
 import {Box, Button, Grid, Typography} from "@material-ui/core";
 import {DropzoneArea} from "material-ui-dropzone";
-// @ts-ignore
-import UPLOAD from "../../../assets/images/icons/upload.svg";
 // @ts-ignore
 import CHECK_FILLED from "../../assets/images/icons/check_filled.svg";
 import { common, UploadIcon } from "../header/ExperimentDialog/Common";

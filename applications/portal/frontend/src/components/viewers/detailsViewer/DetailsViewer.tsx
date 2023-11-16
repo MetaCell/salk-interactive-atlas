@@ -3,24 +3,24 @@ import { makeStyles } from "@material-ui/core/styles";
 import {
     canvasBg, populationTitleColor, populationSubTitleColor,
     headerBorderColor, secondaryColor, sidebarTextColor, deleteBtnTextColor, deleteBtnBgColor, switchActiveColor
-} from "../../theme";
+} from "../../../theme";
 import {
     Typography, Box, IconButton, Button, Tabs, Tab, Menu, MenuItem,
-    Tooltip, TextField, Divider, ListItemIcon, Select, OutlinedInput, FormControl
+    Tooltip, TextField, Divider, ListItemIcon
 } from "@material-ui/core";
-import { Pagination, usePagination } from '@material-ui/lab';
-import DeleteDialog from '../common/ExperimentDialogs/DeleteModal';
-import Modal from '../common/BaseDialog';
-import { PdfFileDrop } from '../common/PdfFileDrop';
-import { AddPdfFileDrop } from '../common/AddPdfFileDrop';
+import { Pagination } from '@material-ui/lab';
+import DeleteDialog from '../../common/ExperimentDialogs/DeleteModal';
+import Modal from '../../common/BaseDialog';
+import { PdfFileDrop } from '../../common/PdfFileDrop';
+import { AddPdfFileDrop } from '../../common/AddPdfFileDrop';
+import { CategorySelect } from './CategorySelect';
+import { getRGBAFromHexAlpha, getRGBAString } from '../../../utilities/functions';
 
 //icons
-import INFO_ICON from "../../assets/images/icons/info.svg";
-import DOWN_ICON from "../../assets/images/icons/chevron_down.svg";
-import CHECK from "../../assets/images/icons/check.svg";
-import pageImg from "../../assets/images/pdf.png";
-import { KeyboardArrowDown } from '@material-ui/icons';
-import { ArrowBack, ArrowForward } from '@material-ui/icons';
+import INFO_ICON from "../../../assets/images/icons/info.svg";
+import DOWN_ICON from "../../../assets/images/icons/chevron_down.svg";
+import CHECK from "../../../assets/images/icons/check.svg";
+import pageImg from "../../../assets/images/pdf.png";
 
 const PDF_FILE = "pdfFile"
 
@@ -80,22 +80,6 @@ const useStyles = makeStyles({
             '&.Mui-selected': {
                 color: secondaryColor
             }
-        }
-    },
-    categoryBox: {
-        '& label': {
-            fontWeight: 600,
-            fontSize: '0.75rem',
-            lineHeight: '1rem',
-            letterSpacing: '0.005em',
-            color: populationTitleColor,
-            width: '8rem',
-            flexShrink: 0
-        },
-    },
-    categorySelect: {
-        '& .MuiSelect-selectMenu': {
-            color: populationSubTitleColor
         }
     },
     addAnotherFileBox: {
@@ -199,11 +183,19 @@ const useStyles = makeStyles({
         fontWeight: 400,
         gap: '0.25rem'
     },
-    ul: {
-        listStyle: 'none',
-        padding: 0,
-        margin: 0,
-        display: 'flex'
+    populationColor: {
+        display: 'flex',
+        alignItems: 'center',
+        lineHeight: '0.938rem',
+        fontWeight: 400,
+        fontSize: '0.75rem',
+        paddingRight: '0.5rem',
+    },
+
+    square: {
+        width: '0.75rem',
+        height: '0.75rem',
+        borderRadius: '0.1rem',
     },
     pagination: {
         display: 'flex',
@@ -222,32 +214,30 @@ const useStyles = makeStyles({
     }
 });
 
-const DetailsViewerFake = (props: {
-    populationName: string | null
+const DetailsViewer = (props: {
+    populationName: string | null,
+    populationColor: "#44C9C9"
 }) => {
-    const { populationName } = props
+    const { populationName, populationColor } = props
 
     const classes = useStyles();
     const [tabIdx, setTabIdx] = React.useState(0);
     const [anchorElMenu, setAnchorElMenu] = React.useState<null | HTMLElement>(null);
     const [selectedIndex, setSelectedIndex] = React.useState(0);
-    const [selectedCategoryIndex, setSelectedCategoryIndex] = React.useState(null);
-    const [category, setCategory] = React.useState(undefined);
+    const [category, setCategory] = React.useState('');
     const [openDeleteDialog, setOpenDeleteDialog] = React.useState(false);
     const [openUploadDialog, setOpenUploadDialog] = React.useState(false);
     const [validationErrors, setValidationErrors] = React.useState(new Set([]));
-    const { items } = usePagination({
-        count: 10,
-    });
     let [page, setPage] = React.useState(1);
-    // const [files, setFiles] = React.useState<any>({
-    //     [PDF_FILE]: [null],
-    // });
     const [files, setFiles] = React.useState([])
 
     const handleTabChange = (event: React.SyntheticEvent, newTabIdx: number) => {
         setTabIdx(newTabIdx);
     };
+
+    const getRGBAColor = () => {
+        return getRGBAFromHexAlpha(populationColor, 0)
+    }
 
     const openMenu = Boolean(anchorElMenu);
     const handleMenuClick = (event: React.MouseEvent<HTMLElement>) => {
@@ -263,18 +253,9 @@ const DetailsViewerFake = (props: {
         setSelectedIndex(index);
         setAnchorElMenu(null);
     };
-    const handleCategoryClick = (
-        event: React.MouseEvent<HTMLElement>,
-        index: number,
-    ) => {
-        setSelectedCategoryIndex(index)
-    }
 
     const handleCategoryChange = (e: any) => {
-        const {
-            target: { value },
-        } = e;
-        setCategory(value)
+        setCategory(e.target.value)
     }
 
     const handleAddFile = (type: string, value: any) => {
@@ -286,15 +267,17 @@ const DetailsViewerFake = (props: {
     const handlePageChange = (event: any, page: number) => {
         setPage(page)
     }
-    console.log("files: ", files)
-    console.log("page: ", page)
+
     return populationName !== null ? (
         <div className={classes.container} style={{ justifyContent: "space-between" }}>
             <div>
                 <Box display="flex" justifyContent="space-between" alignItems="center" className={classes.titleBox}>
                     <Box display="flex" alignItems="center">
-                        <IconButton>
-                        </IconButton>
+                        <span className={classes.populationColor}>
+                            <Box style={{ backgroundColor: getRGBAString(getRGBAColor()) }}
+                                component="span"
+                                className={classes.square} />
+                        </span>
                         <Typography className={classes.title}>{populationName}</Typography>
                     </Box>
                     <Button variant="outlined" onClick={() => setOpenUploadDialog(true)}>Upload PDF</Button>
@@ -385,26 +368,16 @@ const DetailsViewerFake = (props: {
             </div>
             <Box className={classes.pagination}>
                 <Typography>
-                    Page {page} of 10
+                    Page {page} of {data[tabIdx].files[selectedIndex].pages.length}
                 </Typography>
-                <ul className={classes.ul}>
-                    {items.map(({ page, type, selected, ...item }, index) => {
-                        let children = null;
-
-                        if (type === "previous" || type === "next") {
-                            children = (
-                                <Button
-                                    variant="outlined"
-                                    style={{ marginRight: type === "previous" ? "0.5rem" : 0 }}
-                                    {...item}
-                                >
-                                    {type === "previous" ? "Previous" : "Next"}
-                                </Button>
-                            );
-                        }
-                        return <li key={index} onClick={(e) => handlePageChange(e, page)}>{children}</li>;
-                    })}
-                </ul>
+                <Pagination
+                    count={data[tabIdx].files[selectedIndex].pages.length}
+                    size="large"
+                    page={page}
+                    variant="outlined"
+                    shape="rounded"
+                    onChange={handlePageChange}
+                />
             </Box>
             <Modal
                 open={openUploadDialog}
@@ -422,47 +395,7 @@ const DetailsViewerFake = (props: {
                         hasErrors={validationErrors.has(PDF_FILE)}
                     />
                 </Box>
-                <Box display="flex" alignItems="center" justifyContent="space-between" p={2} className={classes.categoryBox}>
-                    <Typography component="label">Category</Typography>
-                    <FormControl fullWidth>
-                        <Select
-                            variant="outlined"
-                            input={<OutlinedInput />}
-                            displayEmpty
-                            value={category}
-                            onChange={handleCategoryChange}
-                            className={classes.categorySelect}
-                            renderValue={(selected) => {
-                                if (!selected) {
-                                    return <p>Select a category</p>;
-                                }
-                                return selected;
-                            }}
-                            IconComponent={() => <img src={DOWN_ICON} alt='' style={{ marginRight: '0.75rem' }} />}
-                            inputProps={{ 'aria-label': 'Without label' }}
-                        >
-                            {
-                                options.map((option: string, index) => (
-                                    <div className={classes.menuItemBox} key={index}>
-                                        <MenuItem
-                                            value={option}
-                                            disableGutters
-                                            selected={index === selectedCategoryIndex}
-                                            onClick={(event) => handleCategoryClick(event, index)}
-                                        >
-                                            {option}
-                                        </MenuItem>
-                                        {
-                                            selectedCategoryIndex === index && <ListItemIcon>
-                                                <img src={CHECK} alt='' />
-                                            </ListItemIcon>
-                                        }
-                                    </div>
-                                ))
-                            }
-                        </Select>
-                    </FormControl>
-                </Box>
+                <CategorySelect category={category} handleCategoryChange={handleCategoryChange} />
                 {
                     files[0] !== undefined && <Box className={classes.addAnotherFileBox}>
                         <AddPdfFileDrop
@@ -493,9 +426,8 @@ const DetailsViewerFake = (props: {
         </div>)
 };
 
-export default DetailsViewerFake
+export default DetailsViewer
 
-const options = ['Electrophysiology', 'Behaviour', 'I/O Mapping']
 const data = [
     {
         tab: 'Electrophysiology',
