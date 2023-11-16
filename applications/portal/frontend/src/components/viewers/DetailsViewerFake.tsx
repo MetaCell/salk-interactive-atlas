@@ -12,6 +12,7 @@ import { Pagination, usePagination } from '@material-ui/lab';
 import DeleteDialog from '../common/ExperimentDialogs/DeleteModal';
 import Modal from '../common/BaseDialog';
 import { PdfFileDrop } from '../common/PdfFileDrop';
+import { AddPdfFileDrop } from '../common/AddPdfFileDrop';
 
 //icons
 import INFO_ICON from "../../assets/images/icons/info.svg";
@@ -239,9 +240,10 @@ const DetailsViewerFake = (props: {
         count: 10,
     });
     let [page, setPage] = React.useState(1);
-    const [files, setFiles] = React.useState<any>({
-        [PDF_FILE]: null,
-    });
+    // const [files, setFiles] = React.useState<any>({
+    //     [PDF_FILE]: [null],
+    // });
+    const [files, setFiles] = React.useState([])
 
     const handleTabChange = (event: React.SyntheticEvent, newTabIdx: number) => {
         setTabIdx(newTabIdx);
@@ -276,7 +278,7 @@ const DetailsViewerFake = (props: {
     }
 
     const handleAddFile = (type: string, value: any) => {
-        setFiles({ ...files, [type]: value })
+        setFiles([...files, value])
         validationErrors.delete(type)
         setValidationErrors(validationErrors)
     }
@@ -367,7 +369,7 @@ const DetailsViewerFake = (props: {
                                     <span>Quinn Silverman</span>
                                 </div>
                             </div>}
-                            placement="left-end"
+                            placement="bottom-end"
                             className={classes.customTooltip}
                         >
                             <IconButton>
@@ -415,7 +417,7 @@ const DetailsViewerFake = (props: {
             >
                 <Box display="flex" alignItems="center" justifyContent="center" p={2}>
                     <PdfFileDrop
-                        file={files[PDF_FILE]}
+                        file={files[0]}
                         setFile={(value: any) => handleAddFile(PDF_FILE, value)}
                         hasErrors={validationErrors.has(PDF_FILE)}
                     />
@@ -462,14 +464,12 @@ const DetailsViewerFake = (props: {
                     </FormControl>
                 </Box>
                 {
-                    files[PDF_FILE] !== null && <Box className={classes.addAnotherFileBox}>
-                        <Button component="label"><input
-                            type="file"
-                            accept=".pdf"
-                            hidden
+                    files[0] !== undefined && <Box className={classes.addAnotherFileBox}>
+                        <AddPdfFileDrop
+                            file={files[1]}
+                            setFile={(value: any) => handleAddFile(PDF_FILE, value)}
+                            hasErrors={validationErrors.has(PDF_FILE)}
                         />
-                            + Add another file
-                        </Button>
                     </Box>
                 }
             </Modal>
