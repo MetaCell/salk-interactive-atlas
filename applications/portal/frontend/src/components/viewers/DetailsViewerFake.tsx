@@ -26,7 +26,9 @@ const PDF_FILE = "pdfFile"
 const useStyles = makeStyles({
     container: {
         background: canvasBg,
-        height: "100%",
+        display: 'flex',
+        flexDirection: 'column',
+        height: '100%',
         '& .MuiButton-root': {
             padding: '0.5rem 0.75rem',
         }
@@ -63,8 +65,8 @@ const useStyles = makeStyles({
         textAlign: 'left'
     },
     img: {
-        maxHeight: "600px",
-        objectFit: "contain"
+        maxHeight: '600px',
+        objectFit: 'contain'
     },
     tabs: {
         padding: '0.875rem 1rem',
@@ -87,7 +89,7 @@ const useStyles = makeStyles({
             letterSpacing: '0.005em',
             color: populationTitleColor,
             width: '8rem',
-            flexShrink: '0',
+            flexShrink: 0
         },
     },
     categorySelect: {
@@ -154,7 +156,7 @@ const useStyles = makeStyles({
             '&:hover': {
                 backgroundColor: 'transparent'
             },
-            '&.Mui-selected': {backgroundColor: 'transparent'}
+            '&.Mui-selected': { backgroundColor: 'transparent' }
         },
         '& .MuiListItemIcon-root': {
             minWidth: 'auto'
@@ -170,13 +172,13 @@ const useStyles = makeStyles({
             padding: '0.25rem 1rem'
         },
         '& .MuiInput-underline:before': {
-            borderBottom: "none"
+            borderBottom: 'none'
         },
         '& .MuiInput-underline:after': {
-            borderBottom: "none"
+            borderBottom: 'none'
         },
         '& .MuiInput-underline:hover:not(.Mui-disabled):before': {
-            borderBottom: "none"
+            borderBottom: 'none'
         }
     },
     customTooltip: {
@@ -285,104 +287,109 @@ const DetailsViewerFake = (props: {
     console.log("files: ", files)
     console.log("page: ", page)
     return populationName !== null ? (
-        <div className={classes.container}>
-            <Box display="flex" justifyContent="space-between" alignItems="center" className={classes.titleBox}>
-                <Box display="flex" alignItems="center">
-                    <IconButton>
-                    </IconButton>
-                    <Typography className={classes.title}>{populationName}</Typography>
-                </Box>
-                <Button variant='outlined' onClick={() => setOpenUploadDialog(true)}>Upload PDF</Button>
-            </Box>
-            <Box sx={{ bgcolor: 'transparent' }}>
-                <Tabs value={tabIdx} onChange={handleTabChange} className={classes.tabs}>
-                    {
-                        data.map((option, index) => (
-                            <Tab key={index} disableRipple label={option.tab} />
-                        ))
-                    }
-                </Tabs>
-            </Box>
-            <Box display="flex" alignItems="center" justifyContent="space-between" className={classes.tabPanelActions}>
-                <Button
-                    id="detailsViewer-customized-button"
-                    className={classes.tabPanelActionsMenuBtn}
-                    aria-controls={openMenu ? 'detailsViewer-customized-menu' : undefined}
-                    aria-haspopup="true"
-                    aria-expanded={openMenu ? 'true' : undefined}
-                    variant="text"
-                    disableElevation
-                    onClick={handleMenuClick}
-                    endIcon={<img src={DOWN_ICON} alt='' />}
-                >
-                    <span className={classes.ellipsisText}>{data[tabIdx].files[selectedIndex].title}</span>
-                </Button>
-                <Menu
-                    id="detailsViewer-customized-menu"
-                    MenuListProps={{
-                        'aria-labelledby': 'demo-customized-button',
-                    }}
-                    className={classes.customMenu}
-                    anchorEl={anchorElMenu}
-                    open={openMenu}
-                    onClose={handleMenuClose}
-                >
-                    <TextField
-                        placeholder='Search for a file'
-                        className={classes.searchField}
-                    />
-                    <Divider />
-                    {
-                        data[tabIdx].files.map((file: any, index) => (
-                            <div className={classes.menuItemBox} key={index}>
-                                <MenuItem
-                                    disableGutters
-                                    selected={index === selectedIndex}
-                                    onClick={(event) => handleMenuItemClick(event, index)}
-                                >
-                                    {file.title}
-                                </MenuItem>
-                                {
-                                    selectedIndex === index && <ListItemIcon>
-                                        <img src={CHECK} alt='' />
-                                    </ListItemIcon>
-                                }
-                            </div>
-                        ))
-                    }
-                </Menu>
-                <Box>
-                    <Tooltip
-                        arrow
-                        title={<div style={{ display: 'flex', justifyContent: 'space-between', gap: '0.75rem' }}>
-                            <div className={classes.textBlock} style={{ color: sidebarTextColor }}>
-                                <span>Uploaded on</span>
-                                <span>Uploaded by</span>
-                            </div>
-                            <div className={classes.textBlock} style={{ alignItems: 'flex-end' }}>
-                                <span>06 Nov 2023, 11.58am</span>
-                                <span>Quinn Silverman</span>
-                            </div>
-                        </div>}
-                        placement='bottom-start'
-                        className={classes.customTooltip}
-                    >
+        <div className={classes.container} style={{ justifyContent: "space-between" }}>
+            <div>
+                <Box display="flex" justifyContent="space-between" alignItems="center" className={classes.titleBox}>
+                    <Box display="flex" alignItems="center">
                         <IconButton>
-                            <img src={INFO_ICON} alt="" />
                         </IconButton>
-                    </Tooltip>
-                    <Button variant='contained' className={classes.deleteBtn} onClick={() => setOpenDeleteDialog(true)}>Delete file</Button>
+                        <Typography className={classes.title}>{populationName}</Typography>
+                    </Box>
+                    <Button variant="outlined" onClick={() => setOpenUploadDialog(true)}>Upload PDF</Button>
                 </Box>
-            </Box>
+                <Box sx={{ bgcolor: 'transparent' }}>
+                    <Tabs value={tabIdx} onChange={handleTabChange} className={classes.tabs}>
+                        {
+                            data.map((option, index) => (
+                                <Tab key={index} disableRipple label={option.tab} />
+                            ))
+                        }
+                    </Tabs>
+                </Box>
+                <Box display="flex" alignItems="center" justifyContent="space-between" className={classes.tabPanelActions}>
+                    <Button
+                        id="detailsViewer-customized-button"
+                        className={classes.tabPanelActionsMenuBtn}
+                        aria-controls={openMenu ? 'detailsViewer-customized-menu' : undefined}
+                        aria-haspopup="true"
+                        aria-expanded={openMenu ? 'true' : undefined}
+                        variant="text"
+                        disableElevation
+                        onClick={handleMenuClick}
+                        endIcon={<img src={DOWN_ICON} alt='' />}
+                    >
+                        <span className={classes.ellipsisText}>{data[tabIdx].files[selectedIndex].title}</span>
+                    </Button>
+                    <Menu
+                        id="detailsViewer-customized-menu"
+                        MenuListProps={{
+                            'aria-labelledby': 'demo-customized-button',
+                        }}
+                        className={classes.customMenu}
+                        anchorEl={anchorElMenu}
+                        open={openMenu}
+                        onClose={handleMenuClose}
+                    >
+                        <TextField
+                            placeholder="Search for a file"
+                            className={classes.searchField}
+                        />
+                        <Divider />
+                        {
+                            data[tabIdx].files.map((file: any, index) => (
+                                <div className={classes.menuItemBox} key={index}>
+                                    <MenuItem
+                                        disableGutters
+                                        selected={index === selectedIndex}
+                                        onClick={(event) => handleMenuItemClick(event, index)}
+                                    >
+                                        {file.title}
+                                    </MenuItem>
+                                    {
+                                        selectedIndex === index && <ListItemIcon>
+                                            <img src={CHECK} alt='' />
+                                        </ListItemIcon>
+                                    }
+                                </div>
+                            ))
+                        }
+                    </Menu>
+                    <Box>
+                        <Tooltip
+                            arrow
+                            title={<div style={{ display: 'flex', justifyContent: 'space-between', gap: '0.75rem' }}>
+                                <div className={classes.textBlock} style={{ color: sidebarTextColor }}>
+                                    <span>Uploaded on</span>
+                                    <span>Uploaded by</span>
+                                </div>
+                                <div className={classes.textBlock} style={{ alignItems: 'flex-end' }}>
+                                    <span>06 Nov 2023, 11.58am</span>
+                                    <span>Quinn Silverman</span>
+                                </div>
+                            </div>}
+                            placement="left-end"
+                            className={classes.customTooltip}
+                        >
+                            <IconButton>
+                                <img src={INFO_ICON} alt="" />
+                            </IconButton>
+                        </Tooltip>
+                        <Button variant="contained" className={classes.deleteBtn} onClick={() => setOpenDeleteDialog(true)}>Delete file</Button>
+                    </Box>
+                </Box>
+                <Box display="flex" alignItems="center" justifyContent="center" py={4}>
+                    <img src={pageImg} alt='' style={{ maxWidth: 500, maxHeight: 400 }} />
+                </Box>
+            </div>
             <Box className={classes.pagination}>
                 <Typography>
                     Page {page} of 10
                 </Typography>
-                {/* <ul className={classes.ul}>
+                <ul className={classes.ul}>
                     {items.map(({ page, type, selected, ...item }, index) => {
                         let children = null;
 
-                        if (type === 'previous' || type === 'next') {
+                        if (type === "previous" || type === "next") {
                             children = (
                                 <Button
                                     variant="outlined"
@@ -395,15 +402,7 @@ const DetailsViewerFake = (props: {
                         }
                         return <li key={index} onClick={(e) => handlePageChange(e, page)}>{children}</li>;
                     })}
-                </ul> */}
-                <Pagination
-                    count={10}
-                    size="large"
-                    page={page}
-                    variant="outlined"
-                    shape="rounded"
-                    onChange={handlePageChange}
-                />
+                </ul>
             </Box>
             <Modal
                 open={openUploadDialog}
@@ -489,7 +488,7 @@ const DetailsViewerFake = (props: {
             </DeleteDialog>
         </div>
     ) : (
-        <div className={classes.container} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <div className={classes.container} style={{ alignItems: 'center', justifyContent: 'center' }}>
             <p className={classes.noContentTitle}>Select a population to start viewing details</p>
         </div>)
 };
