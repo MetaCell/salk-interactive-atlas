@@ -56,3 +56,10 @@ def has_property(obj, prop: str) -> bool:
 def get_closest_multiple(number: float, multiple_of: float) -> Tuple[int, float]:
     closest_integer = int(math.ceil(number / multiple_of))
     return closest_integer, closest_integer * multiple_of
+
+
+def create_dir_if_not_exists(dir_path: str) -> bool:
+    if not os.path.exists(dir_path):
+        os.makedirs(dir_path)
+        return True
+    return False
