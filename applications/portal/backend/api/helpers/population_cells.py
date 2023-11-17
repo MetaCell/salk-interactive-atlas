@@ -15,7 +15,7 @@ def associate_population_cells_file(population, storage_path, csv_suffix):
         new_file_name = f"{csv_suffix}_{str(uuid.uuid4())[:8]}.csv"
         new_file_path = move_file(
             original_file_path,
-            os.path.join(population.storage_path, str(population.id)),
+            population.storage_path,
             new_file_name
         )
         with open(new_file_path, 'rb') as file:
