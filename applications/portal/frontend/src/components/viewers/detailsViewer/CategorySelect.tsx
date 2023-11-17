@@ -54,11 +54,11 @@ export const CategorySelect = (props: {
     return (
         <Box display="flex" alignItems="center" justifyContent="space-between" p={2} className={classes.categoryBox}>
             <Typography component="label">Category</Typography>
-            <FormControl fullWidth>
+            <FormControl fullWidth={true}>
                 <Select
                     variant="outlined"
                     input={<OutlinedInput />}
-                    displayEmpty
+                    displayEmpty={true}
                     value={category}
                     onChange={handleCategoryChange}
                     className={classes.categorySelect}
@@ -76,7 +76,7 @@ export const CategorySelect = (props: {
                             <MenuItem
                                 key={index}
                                 value={option}
-                                disableGutters
+                                disableGutters={true}
                                 className={classes.categorySelectMenuItem}
                             >
                                 {option}

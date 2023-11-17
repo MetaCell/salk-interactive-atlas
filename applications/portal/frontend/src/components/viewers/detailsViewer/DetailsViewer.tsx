@@ -1,4 +1,4 @@
-import React, { SyntheticEvent } from 'react';
+import React from 'react';
 import { makeStyles } from "@material-ui/core/styles";
 import {
     canvasBg, populationTitleColor, populationSubTitleColor,
@@ -9,20 +9,19 @@ import {
     Tooltip, TextField, Divider, ListItemIcon
 } from "@material-ui/core";
 import { Pagination } from '@material-ui/lab';
+import { DropzoneArea } from "material-ui-dropzone";
 import DeleteDialog from '../../common/ExperimentDialogs/DeleteModal';
 import Modal from '../../common/BaseDialog';
 import { PdfFileDrop } from '../../common/PdfFileDrop';
-import { AddPdfFileDrop } from '../../common/AddPdfFileDrop';
 import { CategorySelect } from './CategorySelect';
 import { getRGBAFromHexAlpha, getRGBAString } from '../../../utilities/functions';
 
-//icons
+// icons
 import INFO_ICON from "../../../assets/images/icons/info.svg";
 import DOWN_ICON from "../../../assets/images/icons/chevron_down.svg";
 import CHECK from "../../../assets/images/icons/check.svg";
 import pageImg from "../../../assets/images/pdf.png";
-
-const PDF_FILE = "pdfFile"
+import { UploadIcon, common } from '../../header/ExperimentDialog/Common';
 
 const useStyles = makeStyles({
     container: {
@@ -221,15 +220,15 @@ const DetailsViewer = (props: {
     const { populationName, populationColor } = props
 
     const classes = useStyles();
+    const commonClasses = common();
     const [tabIdx, setTabIdx] = React.useState(0);
     const [anchorElMenu, setAnchorElMenu] = React.useState<null | HTMLElement>(null);
     const [selectedIndex, setSelectedIndex] = React.useState(0);
     const [category, setCategory] = React.useState('');
     const [openDeleteDialog, setOpenDeleteDialog] = React.useState(false);
     const [openUploadDialog, setOpenUploadDialog] = React.useState(false);
-    const [validationErrors, setValidationErrors] = React.useState(new Set([]));
-    let [page, setPage] = React.useState(1);
-    const [files, setFiles] = React.useState([])
+    const [initialPdf, setInitiaPdf] = React.useState(null);
+    const [page, setPage] = React.useState(1);
 
     const handleTabChange = (event: React.SyntheticEvent, newTabIdx: number) => {
         setTabIdx(newTabIdx);
@@ -254,19 +253,19 @@ const DetailsViewer = (props: {
         setAnchorElMenu(null);
     };
 
+    const handleFileUpload = (files: any) => {
+        if (files.length > 0) {
+            setInitiaPdf(files[0])
+        }
+    };
+
     const handleCategoryChange = (e: any) => {
         setCategory(e.target.value)
-    }
+    };
 
-    const handleAddFile = (type: string, value: any) => {
-        setFiles([...files, value])
-        validationErrors.delete(type)
-        setValidationErrors(validationErrors)
-    }
-
-    const handlePageChange = (event: any, page: number) => {
-        setPage(page)
-    }
+    const handlePageChange = (event: any, value: number) => {
+        setPage(value)
+    };
 
     return populationName !== null ? (
         <div className={classes.container} style={{ justifyContent: "space-between" }}>
@@ -286,7 +285,7 @@ const DetailsViewer = (props: {
                     <Tabs value={tabIdx} onChange={handleTabChange} className={classes.tabs}>
                         {
                             data.map((option, index) => (
-                                <Tab key={index} disableRipple label={option.tab} />
+                                <Tab key={index} disableRipple={true} label={option.tab} />
                             ))
                         }
                     </Tabs>
@@ -299,7 +298,7 @@ const DetailsViewer = (props: {
                         aria-haspopup="true"
                         aria-expanded={openMenu ? 'true' : undefined}
                         variant="text"
-                        disableElevation
+                        disableElevation={true}
                         onClick={handleMenuClick}
                         endIcon={<img src={DOWN_ICON} alt='' />}
                     >
@@ -324,7 +323,7 @@ const DetailsViewer = (props: {
                             data[tabIdx].files.map((file: any, index) => (
                                 <div className={classes.menuItemBox} key={index}>
                                     <MenuItem
-                                        disableGutters
+                                        disableGutters={true}
                                         selected={index === selectedIndex}
                                         onClick={(event) => handleMenuItemClick(event, index)}
                                     >
@@ -341,7 +340,7 @@ const DetailsViewer = (props: {
                     </Menu>
                     <Box>
                         <Tooltip
-                            arrow
+                            arrow={true}
                             title={<div style={{ display: 'flex', justifyContent: 'space-between', gap: '0.75rem' }}>
                                 <div className={classes.textBlock} style={{ color: sidebarTextColor }}>
                                     <span>Uploaded on</span>
@@ -385,26 +384,47 @@ const DetailsViewer = (props: {
                 actionText="Upload"
                 disableGutter={true}
                 handleClose={() => setOpenUploadDialog(false)}
-                handleAction={() => { }}
+                handleAction={() => { console.log("Uploaded") }}
                 title={`Upload PDF to Population ${populationName}`}
             >
                 <Box display="flex" alignItems="center" justifyContent="center" p={2}>
                     <PdfFileDrop
-                        file={files[0]}
-                        setFile={(value: any) => handleAddFile(PDF_FILE, value)}
-                        hasErrors={validationErrors.has(PDF_FILE)}
-                    />
+                        file={initialPdf}
+                        setFile={setInitiaPdf}
+                    >
+                        <Typography className={commonClasses.fileLabel}>PDF</Typography>
+                        <DropzoneArea
+                            dropzoneText="Select your PDF or drop it here"
+                            Icon={UploadIcon}
+                            showPreviews={false}
+                            showPreviewsInDropzone={false}
+                            onChange={(files: any) => handleFileUpload(files)}
+                            filesLimit={1}
+                            showAlerts={['error']}
+                            classes={{ icon: "MuiButton-outlined primary" }}
+                        />
+                    </PdfFileDrop>
                 </Box>
                 <CategorySelect category={category} handleCategoryChange={handleCategoryChange} />
-                {
-                    files[0] !== undefined && <Box className={classes.addAnotherFileBox}>
-                        <AddPdfFileDrop
-                            file={files[1]}
-                            setFile={(value: any) => handleAddFile(PDF_FILE, value)}
-                            hasErrors={validationErrors.has(PDF_FILE)}
-                        />
+                {/* {
+                    pdfs[0] !== undefined && <Box className={classes.addAnotherFileBox}>
+                        <PdfFileDrop
+                            file={pdfs[1]}
+                            setFile={setFile}
+                        >
+                            <Button component="label"><input
+                                type="file"
+                                accept=".pdf"
+                                hidden={true}
+                                onChange={(files: any) => handleFileUpload(files)}
+                            />
+                                + Add another file
+                            </Button>
+
+                        </PdfFileDrop>
                     </Box>
-                }
+                } */}
+
             </Modal>
             <DeleteDialog
                 open={openDeleteDialog}
@@ -412,7 +432,7 @@ const DetailsViewer = (props: {
                 actionText="Delete"
                 title="Delete this file?"
                 dialogActions={true}
-                handleAction={() => { }}
+                handleAction={() => { console.log("Deleted") }}
             >
                 <Box className={classes.deleteModalBox}>
                     <Typography>This action cannot be undone. Are you sure you want to delete “Electrophysiological properties of V2a
