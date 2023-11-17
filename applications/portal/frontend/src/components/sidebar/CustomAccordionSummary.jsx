@@ -102,11 +102,14 @@ const CustomAccordionSummary = ({
             }
             className={isParent ? 'nested' : 'nested_child_element'}
         >
-            <span className='population-color'
+            <span className='population-color' style={{
+                paddingRight: hasEditPermission && status === POPULATION_FINISHED_STATE?"0.5rem": "1.75rem"
+            }}
                   onClick={(event) => handlePopoverClick(event, population.id)}>
                 <Box style={{backgroundColor: getRGBAString(getRGBAColor())}}
                      component="span"
-                     className='square'/>
+                     className='square'
+                />
                 {hasEditPermission && status === POPULATION_FINISHED_STATE &&
                     <ArrowDropDownIcon fontSize='small' style={{opacity: POPULATION_ICONS_OPACITY}}/>}
             </span>
@@ -135,7 +138,6 @@ const CustomAccordionSummary = ({
                         labelPlacement="start"
                         onChange={() => isParent ? handlePopulationSwitch(population.children, !checked) : handlePopulationSwitch(population.id)}
                         checked={checked}
-                        style={populationTextStyle(status !== POPULATION_FINISHED_STATE)}
                         disabled={status !== POPULATION_FINISHED_STATE}
                     />
                 ) : (
@@ -160,7 +162,6 @@ const CustomAccordionSummary = ({
                             disabled={status !== POPULATION_FINISHED_STATE}
                             labelPlacement="start"
                             className={'population-label-parent'}
-                            style={populationTextStyle(status !== POPULATION_FINISHED_STATE)}
                         />
                     </Box>
                 )
