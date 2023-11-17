@@ -6,7 +6,7 @@ import { common } from "../header/ExperimentDialog/Common";
 
 
 export const PdfFileDrop = ({ file, setFile, children } : any) => {
-    
+
     const commonClasses = common();
 
     return (
@@ -24,8 +24,7 @@ export const PdfFileDrop = ({ file, setFile, children } : any) => {
                                 <img src={CHECK_FILLED} alt="check"/>
                                 {file.name}
                             </Typography>
-                            <Button disableRipple={true}
-                                    onClick={() => setFile(null)}>Remove</Button>
+                            <Button disableRipple={true} onClick={() => setFile(null)}>Remove</Button>
                         </Box>
                     </Grid>)
                 }

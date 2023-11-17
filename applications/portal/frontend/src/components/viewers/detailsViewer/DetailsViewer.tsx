@@ -228,6 +228,8 @@ const DetailsViewer = (props: {
     const [openDeleteDialog, setOpenDeleteDialog] = React.useState(false);
     const [openUploadDialog, setOpenUploadDialog] = React.useState(false);
     const [initialPdf, setInitiaPdf] = React.useState(null);
+    const [file, setFile] = React.useState(null);
+    const [files, setFiles] = React.useState([]);
     const [page, setPage] = React.useState(1);
 
     const handleTabChange = (event: React.SyntheticEvent, newTabIdx: number) => {
@@ -259,6 +261,10 @@ const DetailsViewer = (props: {
         }
     };
 
+    const handleFileChange = (event: any) => {
+        setFile(event.target.files[0]);
+    }
+
     const handleCategoryChange = (e: any) => {
         setCategory(e.target.value)
     };
@@ -266,6 +272,16 @@ const DetailsViewer = (props: {
     const handlePageChange = (event: any, value: number) => {
         setPage(value)
     };
+
+    React.useEffect(() => {
+        setFiles([...files, initialPdf]);
+    }, [initialPdf])
+
+    React.useEffect(() => {
+        setFiles([...files, file]);
+    },[file])
+
+    console.log("files: ", files);
 
     return populationName !== null ? (
         <div className={classes.container} style={{ justifyContent: "space-between" }}>
@@ -347,8 +363,8 @@ const DetailsViewer = (props: {
                                     <span>Uploaded by</span>
                                 </div>
                                 <div className={classes.textBlock} style={{ alignItems: 'flex-end' }}>
-                                    <span>06 Nov 2023, 11.58am</span>
-                                    <span>Quinn Silverman</span>
+                                    <span>{data[tabIdx].files[selectedIndex].createdAt}</span>
+                                    <span>{data[tabIdx].files[selectedIndex].createdBy}</span>
                                 </div>
                             </div>}
                             placement="bottom-end"
@@ -406,24 +422,28 @@ const DetailsViewer = (props: {
                     </PdfFileDrop>
                 </Box>
                 <CategorySelect category={category} handleCategoryChange={handleCategoryChange} />
-                {/* {
-                    pdfs[0] !== undefined && <Box className={classes.addAnotherFileBox}>
-                        <PdfFileDrop
-                            file={pdfs[1]}
-                            setFile={setFile}
-                        >
-                            <Button component="label"><input
-                                type="file"
-                                accept=".pdf"
-                                hidden={true}
-                                onChange={(files: any) => handleFileUpload(files)}
-                            />
-                                + Add another file
-                            </Button>
+                {
+                    files.map((file, index) => {
+                        if (file) {
+                            return <Box key={index} className={classes.addAnotherFileBox}>
+                                <PdfFileDrop
+                                    file={files[index+1]}
+                                    setFile={()=>{}}
+                                >
+                                    <Button component="label"><input
+                                        type="file"
+                                        accept=".pdf"
+                                        hidden={true}
+                                        onChange={handleFileChange}
+                                    />
+                                        + Add another file
+                                    </Button>
 
-                        </PdfFileDrop>
-                    </Box>
-                } */}
+                                </PdfFileDrop>
+                            </Box>
+                        }
+                    })
+                }
 
             </Modal>
             <DeleteDialog
@@ -435,8 +455,7 @@ const DetailsViewer = (props: {
                 handleAction={() => { console.log("Deleted") }}
             >
                 <Box className={classes.deleteModalBox}>
-                    <Typography>This action cannot be undone. Are you sure you want to delete “Electrophysiological properties of V2a
-                        interneurons in the lumbar spinal cord.pdf”?</Typography>
+                    <Typography>This action cannot be undone. Are you sure you want to delete "{data[tabIdx].files[selectedIndex].title}"?</Typography>
                 </Box>
             </DeleteDialog>
         </div>
@@ -454,12 +473,16 @@ const data = [
         files: [
             {
                 title: 'Electrophysiology A1',
+                createdAt: '06 Nov 2023, 11.58am',
+                createdBy: 'Quinn Silverman',
                 pages: [
                     "A11", "A12", "A13"
                 ]
             },
             {
                 title: 'Electrophysiology A2',
+                createdAt: '06 Nov 2023, 11.58am',
+                createdBy: 'Quinn Silverman',
                 pages: [
                     "A21", "A22"
                 ]
@@ -471,12 +494,16 @@ const data = [
         files: [
             {
                 title: 'Behaviour B1',
+                createdAt: '06 Nov 2023, 12.00am',
+                createdBy: 'Quinn Silver',
                 pages: [
                     "B11", "B12", "B13"
                 ]
             },
             {
                 title: 'Behaviour B2',
+                createdAt: '06 Nov 2023, 12.00am',
+                createdBy: 'Quinn Silver',
                 pages: [
                     "B21", "B22"
                 ]
@@ -488,12 +515,16 @@ const data = [
         files: [
             {
                 title: 'I/O Mapping C1',
+                createdAt: '06 Nov 2023, 12.58am',
+                createdBy: 'Quinn Silverman',
                 pages: [
                     "C11", "C12", "C13"
                 ]
             },
             {
                 title: 'I/O Mapping C2',
+                createdAt: '06 Nov 2023, 12.58am',
+                createdBy: 'Quinn Silverman',
                 pages: [
                     "C21", "C22"
                 ]
