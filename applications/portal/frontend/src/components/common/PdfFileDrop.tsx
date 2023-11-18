@@ -26,7 +26,9 @@ export const PdfFileDrop = ({ file, setFile, children } : any) => {
                             </Typography>
                             <Button disableRipple={true} onClick={() => setFile(null)}>Remove</Button>
                         </Box>
-                    </Grid>)
+                    </Grid>
+                    
+                    )
                 }
             </>
         </Grid>

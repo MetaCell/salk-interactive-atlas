@@ -279,7 +279,7 @@ const DetailsViewer = (props: {
 
     React.useEffect(() => {
         setFiles([...files, file]);
-    },[file])
+    }, [file])
 
     console.log("files: ", files);
 
@@ -425,21 +425,24 @@ const DetailsViewer = (props: {
                 {
                     files.map((file, index) => {
                         if (file) {
-                            return <Box key={index} className={classes.addAnotherFileBox}>
-                                <PdfFileDrop
-                                    file={files[index+1]}
-                                    setFile={()=>{}}
-                                >
-                                    <Button component="label"><input
-                                        type="file"
-                                        accept=".pdf"
-                                        hidden={true}
-                                        onChange={handleFileChange}
-                                    />
-                                        + Add another file
-                                    </Button>
+                            return <Box key={index}>
+                                <Box className={classes.addAnotherFileBox}>
+                                    <PdfFileDrop
+                                        file={files[index + 1]}
+                                        setFile={() => {}}
+                                    >
+                                        <Button component="label"><input
+                                            type="file"
+                                            accept=".pdf"
+                                            hidden={true}
+                                            onChange={handleFileChange}
+                                        />
+                                            + Add another file
+                                        </Button>
 
-                                </PdfFileDrop>
+                                    </PdfFileDrop>
+                                </Box>
+                                {files[index + 1] && <CategorySelect category={category} handleCategoryChange={handleCategoryChange} />}
                             </Box>
                         }
                     })
