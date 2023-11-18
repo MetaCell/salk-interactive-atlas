@@ -262,6 +262,7 @@ class ExperimentViewSet(viewsets.ModelViewSet):
             for change in request_data['change']:
                 subpopulation_id = change['pid']
                 get_subpopulation_if_valid = self.check_if_subpopulation_exists(subpopulation_id, kwargs_experiment_id)
+                # Check if two or more @ signs are present in the new name. If not only then change the name
                 get_subpopulation_if_valid.name = change['new_name']
                 sub_populations.append(get_subpopulation_if_valid)
             
@@ -278,11 +279,14 @@ class ExperimentViewSet(viewsets.ModelViewSet):
         url_name="rename_subpopulation"
     )
     def rename_subpopulation(self, request, **kwargs):
+
+        
         kwargs_experiment_id = kwargs['pk']
         is_user_owner = self.check_if_user_is_owner(kwargs_experiment_id)
         request_data = json.loads(request.body)
         try:
             change_id = request_data['change']['pid']
+            # Check if two or more @ signs are present in the new name. If not only then change the name
             new_name = request_data['change']['new_name']
         except KeyError:
             return Response(status=status.HTTP_400_BAD_REQUEST, data={'detail': 'Invalid request body'})

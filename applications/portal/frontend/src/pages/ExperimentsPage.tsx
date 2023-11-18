@@ -33,6 +33,7 @@ import { getCells } from "../helpers/CellsHelper";
 import NeuronDotSize from '../components/common/ExperimentDialogs/NeuronDotSize';
 import { ExperimentRenamePopulations, ExperimentRenameSubPopulations } from '../apiclient/workspaces/api';
 import { EXPERIMENTAL_POPULATION_NAME, POPULATION_UNKNOWN_CHILD } from '../utilities/constants';
+import { hasAtSymbol } from '../utils';
 
 
 type PopulationDataType = {
@@ -176,6 +177,7 @@ const ExperimentsPage: React.FC<{ residentialPopulations: any }> = ({residential
 
 
     const handleOnEditPopulation = (updatedName: string, isParent: boolean, population: any) => {
+        if (hasAtSymbol(updatedName)) return 
         if (isParent) {
             handleRenamePopulation(updatedName, population);
         } else {
@@ -189,6 +191,8 @@ const ExperimentsPage: React.FC<{ residentialPopulations: any }> = ({residential
         for (const subPopulation of subPopulations) {
             // @ts-ignore
             const newName = subPopulation.name !== POPULATION_UNKNOWN_CHILD ? updatedName + "@" + subPopulation.name : updatedName
+            if (hasAtSymbol(newName)) return 
+
             // @ts-ignore
             renameChanges.push({ pid: subPopulation.id, new_name: newName })
         }
@@ -222,7 +226,7 @@ const ExperimentsPage: React.FC<{ residentialPopulations: any }> = ({residential
             await api.renameSubpopulationExperiment(experiment.id, subPopulationBody)
             const newPopulations = { ...populations };
             // @ts-ignore
-            newPopulations[population.id].name = population.parent + "@" + updatedName
+            newPopulations[population.id].name = subPopulationBody.change.new_name
             setPopulations(newPopulations)
         } catch (e) {
             console.log("Error renaming subpopulation: ", e)

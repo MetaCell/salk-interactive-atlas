@@ -40,3 +40,7 @@ export function downloadFile(response: AxiosResponse<DownloadPopulations>) {
   document.body.removeChild(link);
   window.URL.revokeObjectURL(url);
 }
+
+export function hasAtSymbol(inputString: string) {
+  return inputString.includes('@');
+}
