@@ -255,7 +255,7 @@ const DetailsViewer = (props: {
         setAnchorElMenu(null);
     };
 
-    const filterData = (query: string, data: any) => {
+    const onFilterData = (query: string, data: any) => {
         if (!query) {
             return data;
         } else {
@@ -294,9 +294,9 @@ const DetailsViewer = (props: {
     };
 
     React.useEffect(() => {
-        const dataFiltered = filterData(searchQuery, data[tabIdx].files);
-        setFilteredData(dataFiltered)
-    }, [searchQuery])
+        const newDataFiltered = onFilterData(searchQuery, data[tabIdx].files);
+        setFilteredData(newDataFiltered)
+    }, [searchQuery, tabIdx])
 
     return populationName !== null ? (
         <div className={classes.container} style={{ justifyContent: "space-between" }}>
@@ -354,7 +354,7 @@ const DetailsViewer = (props: {
                         />
                         <Divider />
                         {
-                            data[tabIdx].files.map((file: any, index) => (
+                            filteredData.map((file: any, index) => (
                                 <div className={classes.menuItemBox} key={index}>
                                     <MenuItem
                                         disableGutters={true}
