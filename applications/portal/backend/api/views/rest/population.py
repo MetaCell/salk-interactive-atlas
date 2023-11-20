@@ -10,7 +10,8 @@ from rest_framework.schemas.openapi import AutoSchema
 from api.constants import PopulationPersistentFiles
 from api.models import Experiment, Population
 from api.serializers import PopulationSerializer
-from api.services.population_service import get_cells
+from api.services.population_service import get_cells,  check_at_sign_in_population
+from api.services.user_service import is_user_owner
 from api.utils import send_file
 
 log = logging.getLogger("__name__")
@@ -58,6 +59,15 @@ class PopulationViewSet(viewsets.ModelViewSet):
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
     
+    def partial_update(self, request, *args, **kwargs):
+        instance = self.get_object()
+        new_population_name = request.data.get("name")
+        if (not check_at_sign_in_population(new_population_name)):
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+        if (not is_user_owner(request, instance)):
+            return Response(status=status.HTTP_403_FORBIDDEN)
+        
+        return super().partial_update(request, *args, **kwargs)
 
     @action(detail=False)
     def residential(self, request, **kwargs):

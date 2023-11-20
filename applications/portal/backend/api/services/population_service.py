@@ -117,3 +117,7 @@ def _store_image(
         img.save(population.get_subdivision_storage_path(s, key))
 
 
+def correct_at_sign_in_population(name):
+    if name and name.count("@") > 1:
+        return False
+    return True

@@ -41,6 +41,7 @@ export function downloadFile(response: AxiosResponse<DownloadPopulations>) {
   window.URL.revokeObjectURL(url);
 }
 
-export function hasAtSymbol(inputString: string) {
-  return inputString.includes('@');
+export function hasOneOrLessAtSign(inputString: string) {
+  // return inputString.includes('@');
+  return (inputString.match(/@/g) || []).length <= 1;
 }

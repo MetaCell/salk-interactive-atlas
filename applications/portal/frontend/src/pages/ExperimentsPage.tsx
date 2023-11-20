@@ -19,7 +19,8 @@ import {
     NEURONAL_LOCATIONS_ID,
     POPULATION_FINISHED_STATE,
     CONTOUR_PLOT_ID,
-    PULL_TIME_MS
+    PULL_TIME_MS,
+    EXPERIMENTAL_POPULATION_NAME, POPULATION_UNKNOWN_CHILD
 } from "../utilities/constants"
 import { getAtlas } from "../service/AtlasService";
 import { Experiment, ExperimentPopulationsInner, Population } from "../apiclient/workspaces";
@@ -32,8 +33,7 @@ import { useParams } from "react-router";
 import { getCells } from "../helpers/CellsHelper";
 import NeuronDotSize from '../components/common/ExperimentDialogs/NeuronDotSize';
 import { ExperimentRenamePopulations, ExperimentRenameSubPopulations } from '../apiclient/workspaces/api';
-import { EXPERIMENTAL_POPULATION_NAME, POPULATION_UNKNOWN_CHILD } from '../utilities/constants';
-import { hasAtSymbol } from '../utils';
+import { hasOneOrLessAtSign } from '../utils';
 
 
 type PopulationDataType = {
@@ -177,7 +177,6 @@ const ExperimentsPage: React.FC<{ residentialPopulations: any }> = ({residential
 
 
     const handleOnEditPopulation = (updatedName: string, isParent: boolean, population: any) => {
-        if (hasAtSymbol(updatedName)) return 
         if (isParent) {
             handleRenamePopulation(updatedName, population);
         } else {
@@ -186,47 +185,59 @@ const ExperimentsPage: React.FC<{ residentialPopulations: any }> = ({residential
     }
 
     const handleRenamePopulation = async (updatedName: string, population: any) => {
-        const renameChanges = []
+        // const renameChanges = []
         const subPopulations = Object.values(population.children)
+        // let renamePromises = []
+
         for (const subPopulation of subPopulations) {
             // @ts-ignore
-            const newName = subPopulation.name !== POPULATION_UNKNOWN_CHILD ? updatedName + "@" + subPopulation.name : updatedName
-            if (hasAtSymbol(newName)) return 
+            const newName = subPopulation.name !== POPULATION_UNKNOWN_CHILD ? updatedName + "@" + subPopulation?.name : updatedName
+            if (!hasOneOrLessAtSign(newName)) { return }
+            // renameChanges.push({ pid: subPopulation.id, new_name: newName })
+
+            // const subPopulationRename = api.renameAPI(experiment.id, newName)
+            // renamePromises.push(subPopulationRename)
+
 
             // @ts-ignore
-            renameChanges.push({ pid: subPopulation.id, new_name: newName })
+            // renameChanges.push({ pid: subPopulation.id, new_name: newName })
         }
-        const populationBody: ExperimentRenamePopulations = {
-            type: 'population',
-            change: renameChanges
-        }
+        // const populationBody: ExperimentRenamePopulations = {
+        //     type: 'population',
+        //     change: renameChanges
+        // }
 
-        try {
-            await api.renamePopulationExperiment(experiment.id, populationBody)
-            const newPopulations = { ...populations };
-            for (const change of renameChanges) {
-                // @ts-ignore
-                newPopulations[change.pid].name = change.new_name
-            }
-            setPopulations(newPopulations)
-        } catch (e) {
-            console.log("Error renaming population: ", e)
-        }
+        // try {
+        //     await api.renamePopulationExperiment(experiment.id, populationBody)
+        //     const newPopulations = { ...populations };
+        //     for (const change of renameChanges) {
+        //         // @ts-ignore
+        //         newPopulations[change.pid].name = change.new_name
+        //     }
+        //     setPopulations(newPopulations)
+        // } catch (e) {
+        //     console.log("Error renaming population: ", e)
+        // }
+
+        // await Promise.all(renamePromises)
     }
 
     const handleRenameSubPopulation = async (updatedName: string, population: any) => {
-        const subPopulationBody: ExperimentRenameSubPopulations = {
-            type: 'subpopulation',
-            change: {
-                pid: population.id,
-                new_name: population.parent + "@" + updatedName,
-            }
+        // const subPopulationBody: ExperimentRenameSubPopulations = {
+        // type: 'subpopulation',
+        // change: {
+        //     pid: population.id,
+        //     new_name: population.parent + "@" + updatedName,
+        // }
+        const subPopulationBody = {
+            name: population.parent + "@" + updatedName,
         };
+        if (!hasOneOrLessAtSign(subPopulationBody.name)) { return }
         try {
-            await api.renameSubpopulationExperiment(experiment.id, subPopulationBody)
+            // await api.renameAPI(experiment.id, subPopulationBody)
             const newPopulations = { ...populations };
             // @ts-ignore
-            newPopulations[population.id].name = subPopulationBody.change.new_name
+            newPopulations[population.id].name = subPopulationBody.name
             setPopulations(newPopulations)
         } catch (e) {
             console.log("Error renaming subpopulation: ", e)
