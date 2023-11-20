@@ -227,9 +227,9 @@ const DetailsViewer = (props: {
     const [category, setCategory] = React.useState('');
     const [openDeleteDialog, setOpenDeleteDialog] = React.useState(false);
     const [openUploadDialog, setOpenUploadDialog] = React.useState(false);
-    const [initialPdf, setInitiaPdf] = React.useState(null);
-    const [file, setFile] = React.useState(null);
-    const [files, setFiles] = React.useState([]);
+    const [searchQuery, setSearchQuery] = React.useState("");
+    const [filteredData, setFilteredData] = React.useState([]);
+    const [pdfFiles, setpdfFiles] = React.useState([]);
     const [page, setPage] = React.useState(1);
 
     const handleTabChange = (event: React.SyntheticEvent, newTabIdx: number) => {
@@ -255,14 +255,34 @@ const DetailsViewer = (props: {
         setAnchorElMenu(null);
     };
 
-    const handleFileUpload = (files: any) => {
-        if (files.length > 0) {
-            setInitiaPdf(files[0])
+    const filterData = (query: string, data: any) => {
+        if (!query) {
+            return data;
+        } else {
+            return data.filter((d: any) => d.toString().toLowerCase().includes(query));
         }
     };
 
-    const handleFileChange = (event: any) => {
-        setFile(event.target.files[0]);
+    const handleFileUpload = (files: any) => {
+        const initialPdf = {
+            id: 0,
+            file: files[0],
+        }
+        if (files.length > 0) {
+            setpdfFiles([initialPdf])
+        }
+    };
+
+    const handleFileChange = (event: any, index: number) => {
+        const newFile = {
+            id: pdfFiles[index].id + 1,
+            file: event.target.files[0]
+        }
+        setpdfFiles([...pdfFiles, newFile])
+    };
+
+    const handleFileRemove = (index: number) => {
+        pdfFiles[index].file = null;
     }
 
     const handleCategoryChange = (e: any) => {
@@ -274,14 +294,9 @@ const DetailsViewer = (props: {
     };
 
     React.useEffect(() => {
-        setFiles([...files, initialPdf]);
-    }, [initialPdf])
-
-    React.useEffect(() => {
-        setFiles([...files, file]);
-    }, [file])
-
-    console.log("files: ", files);
+        const dataFiltered = filterData(searchQuery, data[tabIdx].files);
+        setFilteredData(dataFiltered)
+    }, [searchQuery])
 
     return populationName !== null ? (
         <div className={classes.container} style={{ justifyContent: "space-between" }}>
@@ -333,6 +348,9 @@ const DetailsViewer = (props: {
                         <TextField
                             placeholder="Search for a file"
                             className={classes.searchField}
+                            onChange={(e) => {
+                                setSearchQuery(e.target.value);
+                            }}
                         />
                         <Divider />
                         {
@@ -405,8 +423,8 @@ const DetailsViewer = (props: {
             >
                 <Box display="flex" alignItems="center" justifyContent="center" p={2}>
                     <PdfFileDrop
-                        file={initialPdf}
-                        setFile={setInitiaPdf}
+                        file={pdfFiles[0]?.file}
+                        removeFile={() => handleFileRemove(0)}
                     >
                         <Typography className={commonClasses.fileLabel}>PDF</Typography>
                         <DropzoneArea
@@ -423,26 +441,26 @@ const DetailsViewer = (props: {
                 </Box>
                 <CategorySelect category={category} handleCategoryChange={handleCategoryChange} />
                 {
-                    files.map((file, index) => {
+                    pdfFiles.map((file, index) => {
                         if (file) {
                             return <Box key={index}>
                                 <Box className={classes.addAnotherFileBox}>
                                     <PdfFileDrop
-                                        file={files[index + 1]}
-                                        setFile={() => {}}
+                                        file={pdfFiles[index + 1]?.file}
+                                        removeFile={() => handleFileRemove(index + 1)}
                                     >
                                         <Button component="label"><input
                                             type="file"
                                             accept=".pdf"
                                             hidden={true}
-                                            onChange={handleFileChange}
+                                            onChange={(e) => handleFileChange(e, index)}
                                         />
                                             + Add another file
                                         </Button>
 
                                     </PdfFileDrop>
                                 </Box>
-                                {files[index + 1] && <CategorySelect category={category} handleCategoryChange={handleCategoryChange} />}
+                                {pdfFiles[index + 1] && <CategorySelect category={category} handleCategoryChange={handleCategoryChange} />}
                             </Box>
                         }
                     })
