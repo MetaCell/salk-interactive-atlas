@@ -282,9 +282,16 @@ const DetailsViewer = (props: {
         setUploadedFiles([...uploadedFiles, newFile])
     };
 
+    const handleCategoryChange = (newCategory: any, index: number) => {
+        const tempUploadedFiles = [...uploadedFiles];
+        tempUploadedFiles[index].selectedCategory = newCategory;
+        setUploadedFiles(tempUploadedFiles);
+    };
+
     const handleFileRemove = (index: number) => {
         const tempUploadedFiles = [...uploadedFiles]
-        tempUploadedFiles[index].file = null 
+        tempUploadedFiles[index].file = null
+        tempUploadedFiles[index].selectedCategory = ""
         setUploadedFiles(tempUploadedFiles)
     }
 
@@ -440,7 +447,7 @@ const DetailsViewer = (props: {
                         />
                     </PdfFileDrop>
                 </Box>
-                <CategorySelect category={uploadedFiles[0]?.category} handleCategoryChange={()=>{}} />
+                <CategorySelect category={uploadedFiles[0]?.category} handleCategoryChange={(event: any) => handleCategoryChange(event.target.value, 0)} />
                 {
                     uploadedFiles.map((file, index) => {
                         if (file) {
@@ -461,7 +468,7 @@ const DetailsViewer = (props: {
 
                                     </PdfFileDrop>
                                 </Box>
-                                {uploadedFiles[index + 1]?.file && <CategorySelect category={uploadedFiles[index + 1]?.category} handleCategoryChange={()=>{}} />}
+                                {uploadedFiles[index + 1]?.file && <CategorySelect category={uploadedFiles[index + 1]?.category} handleCategoryChange={(event: any) => handleCategoryChange(event.target.value, index + 1)} />}
                             </Box>
                         }
                     })
