@@ -224,12 +224,11 @@ const DetailsViewer = (props: {
     const [tabIdx, setTabIdx] = React.useState(0);
     const [anchorElMenu, setAnchorElMenu] = React.useState<null | HTMLElement>(null);
     const [selectedIndex, setSelectedIndex] = React.useState(0);
-    const [category, setCategory] = React.useState('');
     const [openDeleteDialog, setOpenDeleteDialog] = React.useState(false);
     const [openUploadDialog, setOpenUploadDialog] = React.useState(false);
     const [searchQuery, setSearchQuery] = React.useState("");
     const [filteredData, setFilteredData] = React.useState([]);
-    const [pdfFiles, setpdfFiles] = React.useState([]);
+    const [uploadedFiles, setUploadedFiles] = React.useState([]);
     const [page, setPage] = React.useState(1);
 
     const handleTabChange = (event: React.SyntheticEvent, newTabIdx: number) => {
@@ -267,27 +266,27 @@ const DetailsViewer = (props: {
         const initialPdf = {
             id: 0,
             file: files[0],
+            selectedCategory: ""
         }
         if (files.length > 0) {
-            setpdfFiles([initialPdf])
+            setUploadedFiles([initialPdf])
         }
     };
 
     const handleFileChange = (event: any, index: number) => {
         const newFile = {
-            id: pdfFiles[index].id + 1,
-            file: event.target.files[0]
+            id: uploadedFiles[index].id + 1,
+            file: event.target.files[0],
+            selectedCategory: ""
         }
-        setpdfFiles([...pdfFiles, newFile])
+        setUploadedFiles([...uploadedFiles, newFile])
     };
 
     const handleFileRemove = (index: number) => {
-        pdfFiles[index].file = null;
+        const tempUploadedFiles = [...uploadedFiles]
+        tempUploadedFiles[index].file = null 
+        setUploadedFiles(tempUploadedFiles)
     }
-
-    const handleCategoryChange = (e: any) => {
-        setCategory(e.target.value)
-    };
 
     const handlePageChange = (event: any, value: number) => {
         setPage(value)
@@ -297,6 +296,7 @@ const DetailsViewer = (props: {
         const newDataFiltered = onFilterData(searchQuery, data[tabIdx].files);
         setFilteredData(newDataFiltered)
     }, [searchQuery, tabIdx])
+    console.log("files: ", uploadedFiles);
 
     return populationName !== null ? (
         <div className={classes.container} style={{ justifyContent: "space-between" }}>
@@ -423,7 +423,7 @@ const DetailsViewer = (props: {
             >
                 <Box display="flex" alignItems="center" justifyContent="center" p={2}>
                     <PdfFileDrop
-                        file={pdfFiles[0]?.file}
+                        file={uploadedFiles[0]?.file}
                         removeFile={() => handleFileRemove(0)}
                     >
                         <Typography className={commonClasses.fileLabel}>PDF</Typography>
@@ -434,19 +434,20 @@ const DetailsViewer = (props: {
                             showPreviewsInDropzone={false}
                             onChange={(files: any) => handleFileUpload(files)}
                             filesLimit={1}
+                            acceptedFiles={['.pdf']}
                             showAlerts={['error']}
                             classes={{ icon: "MuiButton-outlined primary" }}
                         />
                     </PdfFileDrop>
                 </Box>
-                <CategorySelect category={category} handleCategoryChange={handleCategoryChange} />
+                <CategorySelect category={uploadedFiles[0]?.category} handleCategoryChange={()=>{}} />
                 {
-                    pdfFiles.map((file, index) => {
+                    uploadedFiles.map((file, index) => {
                         if (file) {
                             return <Box key={index}>
                                 <Box className={classes.addAnotherFileBox}>
                                     <PdfFileDrop
-                                        file={pdfFiles[index + 1]?.file}
+                                        file={uploadedFiles[index + 1]?.file}
                                         removeFile={() => handleFileRemove(index + 1)}
                                     >
                                         <Button component="label"><input
@@ -460,7 +461,7 @@ const DetailsViewer = (props: {
 
                                     </PdfFileDrop>
                                 </Box>
-                                {pdfFiles[index + 1] && <CategorySelect category={category} handleCategoryChange={handleCategoryChange} />}
+                                {uploadedFiles[index + 1]?.file && <CategorySelect category={uploadedFiles[index + 1]?.category} handleCategoryChange={()=>{}} />}
                             </Box>
                         }
                     })
