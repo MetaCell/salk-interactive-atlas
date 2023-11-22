@@ -289,9 +289,7 @@ const DetailsViewer = (props: {
     };
 
     const handleFileRemove = (index: number) => {
-        const tempUploadedFiles = [...uploadedFiles]
-        tempUploadedFiles[index].file = null
-        tempUploadedFiles[index].selectedCategory = ""
+        const tempUploadedFiles = uploadedFiles.filter(item => item.id !== index)
         setUploadedFiles(tempUploadedFiles)
     }
 
