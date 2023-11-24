@@ -46,7 +46,6 @@ export function downloadFile(response: AxiosResponse<DownloadPopulations>) {
 }
 
 export function hasNoAtSign(inputString: string) {
-  // return inputString.includes('@');
   return (inputString.match(/@/g) || []).length === 0;
 }
 

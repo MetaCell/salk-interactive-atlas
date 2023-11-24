@@ -59,24 +59,6 @@ class RenameChangeSerializer(serializers.Serializer):
     new_name = serializers.CharField()
 
 
-class ExperimentRenamePopulationsSerializer(serializers.Serializer):
-    type = serializers.CharField()
-    change = serializers.ListField(
-        child=RenameChangeSerializer()
-    )
-    class Meta:
-        model = Experiment
-        fields = ()
-
-
-class ExperimentRenameSubPopulationsSerializer(serializers.Serializer):
-    type = serializers.CharField()
-    change = RenameChangeSerializer()
-    class Meta:
-        model = Experiment
-        fields = ()
-
-
 class ExperimentSerializer(serializers.ModelSerializer, EagerLoadingMixin):
     teams = GroupSerializer(many=True, read_only=True)
     collaborators = CollaboratorInfoSerializer(
