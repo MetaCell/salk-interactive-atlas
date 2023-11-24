@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import {
     Box,
@@ -7,13 +7,11 @@ import {
     Accordion,
     AccordionSummary,
     AccordionDetails,
-    Switch,
     FormControlLabel,
     FormControl,
     RadioGroup,
     Radio,
-    Button,
-    Tooltip
+    Button
 } from '@material-ui/core';
 
 import { canvasIconColor, headerBg, headerBorderColor } from "../../theme";
@@ -24,7 +22,7 @@ import UP_ICON from "../../assets/images/icons/up.svg";
 import POPULATION from "../../assets/images/icons/population.svg";
 import RESIDENTIAL_POPULATION from "../../assets/images/icons/residential_population.svg";
 import { EXPERIMENTAL_POPULATION_NAME, RESIDENTIAL_POPULATION_NAME, atlasMap } from "../../utilities/constants";
-import { groupPopulations, splitPopulations, splitPopulationsByType } from '../../utilities/functions';
+import { groupPopulations, splitPopulations } from '../../utilities/functions';
 import PopulationsAccordion from "./PopulationsAccordion";
 
 const useStyles = makeStyles({

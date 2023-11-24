@@ -30,6 +30,7 @@ def register_single_section_fiducial_serial(
             cell_pop_labels,
         ) = output
 
+        transformed_cells = transformed_cells[:, [0, 2, 1]]  # swap x and y
         labeled_cells = update_labeled_cells(
             labeled_cells,
             z_position_atlas,

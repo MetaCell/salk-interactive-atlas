@@ -61,10 +61,10 @@ def get_atlas_z_position(z_position_sample, segment_length=1000):
     logging.info(f"start: {segment_start}, end: {segment_end}")
 
     percent_through_segment = (
-                                      z_position_sample % segment_length
-                              ) / segment_length
+        z_position_sample % segment_length
+    ) / segment_length
     atlas_pos = (
-            segment_start - (segment_start - segment_end) * percent_through_segment
+        segment_start - (segment_start - segment_end) * percent_through_segment
     )
 
     logging.info(
@@ -75,10 +75,10 @@ def get_atlas_z_position(z_position_sample, segment_length=1000):
 
 
 def register_fiducial_single_section(
-        atlas,
-        sample,
-        z_position_sample=30,
-        image_padding=10,
+    atlas,
+    sample,
+    z_position_sample=30,
+    image_padding=10,
 ):
     """
     Registers a single sample section to the atlas.

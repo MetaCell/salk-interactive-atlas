@@ -93,10 +93,10 @@ def correct_raw_coordinates(markers_df_slice):
 
     markers_df_slice.loc[markers_df_slice["x"] < 0, "x"] += markers_df_slice[
         markers_df_slice["label"] == 4
-        ]["x"].values
+    ]["x"].values
     markers_df_slice.loc[markers_df_slice["x"] > 0, "x"] -= markers_df_slice[
         markers_df_slice["label"] == 4
-        ]["x"].values
+    ]["x"].values
 
 
 def load_df_preprocessed(sample, z, normalise=True, scale_factor=20):
@@ -209,16 +209,16 @@ def map_points(points):
 
 
 def register_fiducial(
-        fixed_image,
-        moving_image,
-        fixed_points,
-        moving_points,
-        rigid=True,
-        affine=True,
-        bspline=True,
-        use_control_points=False,
-        image_metric_weight=0.9,
-        point_metric_weight=0.1,
+    fixed_image,
+    moving_image,
+    fixed_points,
+    moving_points,
+    rigid=True,
+    affine=True,
+    bspline=True,
+    use_control_points=False,
+    image_metric_weight=0.9,
+    point_metric_weight=0.1,
 ):
     """
     Registration function for the register_fiducial marker pipeline.
@@ -274,11 +274,11 @@ def get_as_image(points, padding=10):
 
 
 def save_output(
-        output_directory,
-        labeled_cells,
-        transformed_cells,
-        save_csv=True,
-        save_npy=True,
+    output_directory,
+    labeled_cells,
+    transformed_cells,
+    save_csv=True,
+    save_npy=True,
 ):
     """
     Saves registration output files to disk.
