@@ -28,7 +28,7 @@ from api.services.cordmap_service import get_populations, is_a_population_single
     is_a_population_multiple_files, MULTIPLE_FILE_POPULATION_NAME_COLUMN
 from api.services.experiment_service import add_tag, delete_tag, handle_populations_upload
 from api.services.filesystem_service import move_files
-from api.services.user_service import get_current_user
+# from api.services.user_service import get_current_user
 from api.validators.upload_files import validate_multiple_files_input, validate_single_file_input
 
 log = logging.getLogger("__name__")
