@@ -66,7 +66,6 @@ class PopulationViewSet(viewsets.ModelViewSet):
             return Response(status=status.HTTP_400_BAD_REQUEST)
         if (not is_user_owner(request, instance)):
             return Response(status=status.HTTP_403_FORBIDDEN)
-        
         return super().partial_update(request, *args, **kwargs)
 
     @action(detail=False)
