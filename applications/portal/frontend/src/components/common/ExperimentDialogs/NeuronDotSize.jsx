@@ -2,7 +2,6 @@ import React, { useCallback } from 'react';
 import PropTypes from 'prop-types';
 import { makeStyles } from '@material-ui/core/styles';
 import { Box, Typography, Slider, Divider, IconButton, Dialog, DialogTitle, DialogContent, Button } from '@material-ui/core';
-import { getRGBAString, getRGBAColor, areAllPopulationsWithChildrenSelected } from "../../../utilities/functions";
 import { headerBorderColor } from "../../../theme";
 import CLOSE from "../../../assets/images/icons/close.svg";
 import { EXPERIMENTAL_POPULATION_NAME, RESIDENTIAL_POPULATION_NAME } from "../../../utilities/constants";

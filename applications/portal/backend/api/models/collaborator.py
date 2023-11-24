@@ -1,7 +1,7 @@
 from django.contrib.auth.models import User
 from django.db import models
 
-from .collaborator_role import CollaboratorRole
+from .text_choices import CollaboratorRole
 from .experiment import Experiment
 
 

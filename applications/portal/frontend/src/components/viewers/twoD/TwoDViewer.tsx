@@ -181,7 +181,8 @@ const getDefaultOverlays = () => {
 }
 
 const TwoDViewer = (props: {
-    subdivisions: string[], activePopulations: Population[],
+    subdivisions: string[],
+    activePopulations: Population[],
     selectedAtlas: AtlasChoice,
     invalidCachePopulations: Set<string>
 }) => {

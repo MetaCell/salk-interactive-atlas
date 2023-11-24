@@ -1,14 +1,13 @@
 import os
-import zipfile
 
+from django.conf import settings
 from django.contrib.auth.models import Group, User
 from django.db import models
-from django.conf import settings
 
-from .collaborator_role import CollaboratorRole
 from .tag import Tag
+from .text_choices import CollaboratorRole
 from ..constants import EXPERIMENTS_DATA
-from ..services.filesystem_service import create_dir_if_not_exists, remove_file_if_exists
+from ..services.filesystem_service import create_dir_if_not_exists
 
 
 # Create your models here.
@@ -78,6 +77,10 @@ class Experiment(models.Model):
         super(Experiment, self).save(force_insert, force_update, using, update_fields)
         create_dir_if_not_exists(self.storage_path)
 
+    @property
+    def storage_path(self) -> str:
+        return os.path.join(settings.PERSISTENT_ROOT, EXPERIMENTS_DATA, str(self.id))
+
     def __str__(self):
         return self.name
 
@@ -120,8 +123,3 @@ class Experiment(models.Model):
 
     def has_object_retrieve_density_map_permission(self, request):
         return self.has_object_read_permission(request)
-
-    @property
-    def storage_path(self) -> str:
-        return os.path.join(settings.PERSISTENT_ROOT, EXPERIMENTS_DATA, str(self.id))
-

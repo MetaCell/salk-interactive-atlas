@@ -1,9 +1,9 @@
-from api.helpers.population_registration.ipopulation_registration_strategy import PopulationRegistrationStrategy
+from api.helpers.experiment_registration.iexperiment_registration_strategy import ExperimentRegistrationStrategy
 
 PAIR_CELLS_CSV_SUFFIX = "cells_with_labels"
 
 
-class NonFiducialPopulationRegistrationStrategy(PopulationRegistrationStrategy):
+class NonFiducialExperimentRegistrationStrategy(ExperimentRegistrationStrategy):
 
     def register(self, data_filepath: str, out_dir: str):
         from cordmap.main import register_sections_3D
