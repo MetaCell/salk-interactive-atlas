@@ -8,10 +8,14 @@ from rest_framework.response import Response
 from rest_framework.schemas.openapi import AutoSchema
 
 from api.constants import PopulationPersistentFiles
-from api.models import Experiment, Population
-from api.serializers import PopulationSerializer
+from api.models import Experiment, Population, Pdf, PDFCategory
+from api.serializers import PopulationSerializer, PopulationPDFUploadSerializer, PdfSerializer
 from api.services.population_service import get_cells
+from api.services.user_service import is_user_owner
+from api.services.pdf_service import convert_and_save_pdf_to_png
 from api.utils import send_file
+from api.helpers.exceptions import UserNotFoundInExperimentError, InvalidPDFFile
+from rest_framework.parsers import MultiPartParser, JSONParser
 
 log = logging.getLogger("__name__")
 
@@ -125,3 +129,38 @@ class PopulationViewSet(viewsets.ModelViewSet):
             content_type="image/png"
         )
         return response
+
+    @action(
+        detail=True,
+        methods=["post"],
+        parser_classes=(MultiPartParser,),
+        name="upload-pdf-files",
+        url_path="upload-pdf-files",
+        serializer_class=PopulationPDFUploadSerializer,
+    )
+    def upload_pdf_file(self, request, **kwargs):
+        pdf_file = request.FILES.get("pdf_file")
+        category = request.data.get("category")
+        instance = self.get_object()
+
+        if (not is_user_owner(request, instance)):
+            return Response(status=status.HTTP_403_FORBIDDEN)
+
+        try:
+            pdf_obj = Pdf.objects.create(
+                population=instance, created_by=request.user,
+                category=category, name=pdf_file.name
+            )
+            pdf_path = convert_and_save_pdf_to_png(
+                pdf_obj=pdf_obj,
+                population_storage_path=instance.storage_path, pdf_file=pdf_file
+            )
+            pdf_obj.file = pdf_path
+            pdf_obj.save()
+
+            pdf_serializer = PdfSerializer(pdf_obj)
+            return Response(pdf_serializer.data, status=status.HTTP_201_CREATED)
+        except InvalidPDFFile as e:
+            return Response(data={'detail': str(e)}, status=status.HTTP_422_UNPROCESSABLE_ENTITY)
+        except:
+            return Response(status=status.HTTP_400_BAD_REQUEST)

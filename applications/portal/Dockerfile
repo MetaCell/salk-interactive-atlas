@@ -18,6 +18,7 @@ RUN python3 -m pip install -r requirements.txt --no-cache-dir --upgrade
 
 COPY backend/requirements.txt backend/setup.py .
 RUN python3 -m pip install -e .
+RUN apt-get update && apt-get install poppler-utils -y
 
 COPY backend ${APP_DIR}
 RUN python3 manage.py collectstatic --noinput
@@ -38,6 +39,7 @@ ENV BUILDDIR=/builddir
 ENV APP_DIR=/usr/src/app
 
 COPY --from=backend ${APP_DIR}/persistent/ ${BUILDDIR}/src/assets/atlas/salk_cord_10um/
+RUN rm -rf ${BUILDDIR}/src/assets/atlas/salk_cord_10um/populations
 RUN rm -rf ${BUILDDIR}/src/assets/atlas/salk_cord_10um/*.sqlite3
 COPY frontend/package.json ${BUILDDIR}/package.json
 COPY frontend/yarn.lock ${BUILDDIR}/yarn.lock

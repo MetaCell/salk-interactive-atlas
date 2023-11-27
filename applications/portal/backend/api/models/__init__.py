@@ -5,3 +5,4 @@ from .experiment import *
 from .population import *
 from .tag import *
 from .userdetail import *
+from .pdf import *
