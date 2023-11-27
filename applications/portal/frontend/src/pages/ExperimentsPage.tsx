@@ -16,16 +16,13 @@ import Sidebar from "../components/sidebar/ExperimentSidebar";
 // @ts-ignore
 import {
     AtlasChoice,
-    NEURONAL_LOCATIONS_ID,
     POPULATION_FINISHED_STATE,
-    CONTOUR_PLOT_ID,
     PULL_TIME_MS
 } from "../utilities/constants"
 import { getAtlas } from "../service/AtlasService";
 import { Experiment, ExperimentPopulationsInner, Population } from "../apiclient/workspaces";
-import { areAllSelected, areAllPopulationsWithChildrenSelected } from "../utilities/functions";
+import { areAllPopulationsWithChildrenSelected } from "../utilities/functions";
 import workspaceService from "../service/WorkspaceService";
-import Cell from "../models/Cell";
 import { DetailsWidget, threeDViewerWidget, twoDViewerWidget, widgetIds } from "../widgets";
 import { useInterval } from "../utilities/hooks/useInterval";
 import { useParams } from "react-router";
@@ -203,15 +200,19 @@ const ExperimentsPage: React.FC<{ residentialPopulations: any }> = ({residential
             const response = await api.retrieveExperiment(params.id)
             const fetchedExperiment = response.data;
             const cells = await Promise.all(fetchedExperiment.populations.map(async (p) => {
-                if (p.status !== POPULATION_FINISHED_STATE) return [];
+                if (p.status !== POPULATION_FINISHED_STATE) return null;
                 const existingPopulation = experiment.populations.find((e: ExperimentPopulationsInner) => e.id === p.id)
-                if (existingPopulation !== undefined && typeof existingPopulation.cells !== "string" && existingPopulation.cells.length > 0) return existingPopulation.cells
+                if (existingPopulation !== undefined && typeof existingPopulation.cells !== "string"
+                    && existingPopulation.cells !== null){
+                    return existingPopulation.cells
+                }
                 return getCells(api, p);
             }));
             let shouldUpdateExperiment = false;
             fetchedExperiment.populations.forEach((p, i) => {
                 const existingPopulation = experiment.populations.find((e: ExperimentPopulationsInner) => e.id === p.id)
-                if (existingPopulation === undefined || typeof existingPopulation.cells === "string" || existingPopulation.cells.length === 0) {
+                if (existingPopulation === undefined || typeof existingPopulation.cells === "string" ||
+                    (existingPopulation.cells === null && cells[i] !== null)){
                     // previous population cells !== new population cells --> update the experiment data
                     shouldUpdateExperiment = true;
                 }
@@ -246,7 +247,9 @@ const ExperimentsPage: React.FC<{ residentialPopulations: any }> = ({residential
             const response = await api.retrieveExperiment(params.id)
             const data = response.data;
             const cells = await Promise.all(data.populations.map(async (p) => {
-                if (p.status !== POPULATION_FINISHED_STATE) return [];
+                if (p.status !== POPULATION_FINISHED_STATE){
+                    return null;
+                }
                 return getCells(api, p);
             }));
             data.populations.forEach((p, i) => {

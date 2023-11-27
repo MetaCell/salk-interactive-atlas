@@ -1,28 +1,24 @@
 import logging
-import os
-import tempfile
-import zipfile
 
-from django.db.models import Q
 from django.http import HttpResponse
+from django.shortcuts import get_object_or_404
 from dry_rest_permissions.generics import DRYPermissions
 from rest_framework import status, viewsets
 from rest_framework.decorators import action
 from rest_framework.parsers import MultiPartParser
 from rest_framework.response import Response
-from django.shortcuts import get_object_or_404
 
+from api.helpers.download_populations import get_populations_zip
 from api.helpers.exceptions import InvalidPopulationFile, DuplicatedPopulationError, InvalidInputError
-from api.models import Experiment, Population
+from api.models import Experiment
 from api.serializers import (
     ExperimentPairFileUploadSerializer,
     ExperimentSerializer,
     TagSerializer,
     TagsSerializer, ExperimentSingleFileUploadSerializer, DownloadPopulationsSerializer,
 )
-from api.services.cordmap_service import get_populations, is_a_population_single_file, SINGLE_FILE_POPULATION_ID_COLUMN, \
-    is_a_population_multiple_files, MULTIPLE_FILE_POPULATION_NAME_COLUMN
-from api.services.experiment_service import add_tag, delete_tag, handle_populations_upload
+from api.services.experiment_service import add_tag, delete_tag, start_non_fiducial_experiment_registration_workflow, \
+    start_fiducial_experiment_registration_workflow
 from api.services.filesystem_service import move_files
 from api.validators.upload_files import validate_multiple_files_input, validate_single_file_input
 
@@ -64,16 +60,15 @@ class ExperimentViewSet(viewsets.ModelViewSet):
             queryset, many=True, context={"request": request}
         )
         return Response(serializer.data)
-    
+
     def destroy(self, request, *args, **kwargs):
         pk = kwargs.get("pk")
         queryset = self.get_queryset()
         instance = get_object_or_404(queryset, pk=pk)
-        if request.user==instance.owner:
+        if request.user == instance.owner:
             self.perform_destroy(instance)
             return Response(status=status.HTTP_204_NO_CONTENT)
         return Response(status=status.HTTP_403_FORBIDDEN)
-
 
     @action(detail=False)
     def mine(self, request):
@@ -149,11 +144,8 @@ class ExperimentViewSet(viewsets.ModelViewSet):
         except Exception:
             return Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR)
         try:
-            handle_populations_upload(instance.id,
-                                      get_populations(filepaths[KEY_INDEX], is_a_population_multiple_files,
-                                                      MULTIPLE_FILE_POPULATION_NAME_COLUMN),
-                                      filepaths[DATA_INDEX],
-                                      False)
+            start_non_fiducial_experiment_registration_workflow(instance.id, filepaths[KEY_INDEX],
+                                                                filepaths[DATA_INDEX])
             response_status = status.HTTP_201_CREATED
         except InvalidPopulationFile:
             response_status = status.HTTP_400_BAD_REQUEST
@@ -180,11 +172,8 @@ class ExperimentViewSet(viewsets.ModelViewSet):
         except Exception:
             return Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR)
         try:
-            handle_populations_upload(instance.id,
-                                      get_populations(filepaths[KEY_INDEX], is_a_population_single_file,
-                                                      SINGLE_FILE_POPULATION_ID_COLUMN),
-                                      filepaths[KEY_INDEX],
-                                      True)
+            start_fiducial_experiment_registration_workflow(instance.id,
+                                                            filepaths[KEY_INDEX])
             response_status = status.HTTP_201_CREATED
         except InvalidPopulationFile:
             response_status = status.HTTP_400_BAD_REQUEST
@@ -198,22 +187,11 @@ class ExperimentViewSet(viewsets.ModelViewSet):
         if not active_populations or len(active_populations) == 0:
             return Response(status=status.HTTP_204_NO_CONTENT)
 
-        filename_prefix = f'{experiment.name}' if experiment else 'population'
-        filename_suffix = 's' if len(active_populations) > 1 else ''
-        with tempfile.TemporaryFile() as temp_file:
-            with zipfile.ZipFile(temp_file, 'w') as zip_file:
-                for population in Population.objects.filter(Q(experiment=experiment) | Q(experiment=None),
-                                                            id__in=active_populations):
-                    if population.cells:
-                        zip_file.write(population.cells.path, arcname=os.path.basename(population.cells.path))
-                        filename_prefix += f"_{population.name}"
-
-            temp_file.seek(0)  # move the file pointer to the beginning of the file
-
-            response = HttpResponse(temp_file.read(), content_type='application/octet-stream')
-            response[
-                'Content-Disposition'] = f'attachment; filename="{filename_prefix}_population{filename_suffix}.zip"'
-            return response
+        zip_file, filename = get_populations_zip(active_populations, experiment)
+        response = HttpResponse(zip_file.read(), content_type='application/octet-stream')
+        response['Content-Disposition'] = f'attachment; filename="{filename}"'
+        zip_file.close()
+        return response
 
     def perform_create(self, serializer):
         experiment = serializer.save(owner=self.request.user)

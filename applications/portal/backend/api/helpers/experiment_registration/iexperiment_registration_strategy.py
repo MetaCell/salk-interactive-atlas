@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 
 
-class PopulationRegistrationStrategy(ABC):
+class ExperimentRegistrationStrategy(ABC):
 
     @abstractmethod
     def register(self, data_filepath: str, out_dir: str):

@@ -11,7 +11,6 @@ import Breadcrumbs from '@material-ui/core/Breadcrumbs';
 import Link from '@material-ui/core/Link';
 import Menu from '@material-ui/core/Menu';
 import FILTER from "../../assets/images/icons/filters.svg";
-import FILTER_ACTIVE from "../../assets/images/icons/filters-active.svg";
 import UP_ICON from "../../assets/images/icons/up.svg";
 import CHECK from "../../assets/images/icons/check.svg";
 import INFO from "../../assets/images/icons/info.svg";

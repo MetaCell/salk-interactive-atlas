@@ -1,5 +1,6 @@
 import * as React from "react";
 import { Button, Dialog, DialogActions, DialogContent, makeStyles, Typography, DialogTitle, IconButton } from "@material-ui/core";
+// @ts-ignore
 import CLOSE from "../../../assets/images/icons/close.svg";
 import { Modal as IModal } from "../../../types/modal";
 

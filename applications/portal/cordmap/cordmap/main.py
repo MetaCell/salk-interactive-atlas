@@ -16,7 +16,6 @@ from cordmap.atlas.utils import load_create_cord_gm_atlas_volume_image
 from cordmap.data.io import load_data, save_output
 from cordmap.data.utils import filter_data_by_type, get_data_segments
 from cordmap.get_all_population_keys import get_populations_from_file
-from cordmap.napari.vis import visualise_results
 from cordmap.postprocessing.prob_map import generate_prob_map
 from cordmap.register.constants import population_ignore_set
 from cordmap.register.register_sections import (
@@ -261,10 +260,11 @@ def register_sections_3D(
     )
 
     if visualise:
-        visualise_results(
-            annotation,
-            transformed_cells,
-            transformed_gm,
-            transformed_cord,
-            probability_map,
-        )
+        # visualise_results(
+        #     annotation,
+        #     transformed_cells,
+        #     transformed_gm,
+        #     transformed_cord,
+        #     probability_map,
+        # )
+        pass

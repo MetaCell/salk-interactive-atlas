@@ -10,6 +10,16 @@ from cordmap.utils.misc import check_set_intersections
 def get_data_segments(
     data_by_type, atlas_segments, segment_name_header="Segment"
 ):
+    """
+    Organises the data according to segment and z position such
+    that one can get all the z positions in the sample corresponding
+    to a particular segment.
+
+    :param data_by_type:
+    :param atlas_segments:
+    :param segment_name_header:
+    :return:
+    """
     segment_name_list = list(atlas_segments[segment_name_header])
     segment_z_values = {}
     for segment_name in segment_name_list:

@@ -1,17 +1,7 @@
 from django.contrib.auth.models import User
 from django.db import models
 
-# Create your models here.
-
-
-class NotificationMethodsChoice(models.TextChoices):
-    @classmethod
-    def to_str(cls, value):
-        return next(
-            v for v in list(NotificationMethodsChoice) if v.value == value
-        ).label
-
-    EMAIL = "email", "Email"
+from api.models.text_choices import NotificationMethodsChoice
 
 
 class UserDetail(models.Model):

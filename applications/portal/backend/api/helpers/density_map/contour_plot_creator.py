@@ -3,7 +3,6 @@ from typing import Dict
 import matplotlib.cm as cm
 import numpy as np
 from PIL.Image import Image
-from matplotlib import pyplot as plt
 from scipy.ndimage import zoom
 from skimage.filters import gaussian
 
