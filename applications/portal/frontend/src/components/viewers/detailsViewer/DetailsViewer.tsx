@@ -254,11 +254,11 @@ const DetailsViewer = (props: {
         setAnchorElMenu(null);
     };
 
-    const onFilterData = (query: string, data: any) => {
+    const onFilterData = (query: string, prevData: any) => {
         if (!query) {
-            return data;
+            return prevData;
         } else {
-            return data.filter((d: any) => d.toString().toLowerCase().includes(query));
+            return prevData.filter((d: any) => d.toString().toLowerCase().includes(query.toLowerCase()));
         }
     };
 
@@ -298,7 +298,7 @@ const DetailsViewer = (props: {
     };
 
     React.useEffect(() => {
-        const newDataFiltered = onFilterData(searchQuery, data[tabIdx].files);
+        const newDataFiltered = onFilterData(searchQuery, filteredData[tabIdx].files);
         setFilteredData(newDataFiltered)
     }, [searchQuery, tabIdx])
     console.log("files: ", uploadedFiles);
