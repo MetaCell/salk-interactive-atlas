@@ -11,6 +11,8 @@ from api.constants import PopulationPersistentFiles
 from api.models import Population, Pdf, Experiment
 from api.serializers import PdfSerializer
 from api.services.population_service import get_cells
+from api.services.user_service import is_user_owner
+from api.services.pdf_service import get_pdf_save_dir
 from api.utils import send_file
 from rest_framework.parsers import MultiPartParser, JSONParser
 import os
@@ -31,16 +33,13 @@ class PDFViewSet(viewsets.ModelViewSet):
         instance = self.get_object()
         population_obj = instance.population
 
-        is_owner_of_experiment = Experiment.objects.my_experiments(request.user).filter(
-            id=population_obj.experiment.id
-        ).exists()
-        if (not is_owner_of_experiment):
+        if (not is_user_owner(request, population_obj)):
             return Response(status=status.HTTP_403_FORBIDDEN)
         
-        population_storage_path = population_obj.storage_path
-        pdf_storage_path = os.path.join(population_storage_path, 'pdf', instance.category, str(instance.id))
+        pdf_storage_path = get_pdf_save_dir(
+            population_obj.storage_path, instance)
         if os.path.exists(pdf_storage_path):
-            os.rmdir(pdf_storage_path)
+            os.remove(pdf_storage_path)
         
         instance.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)

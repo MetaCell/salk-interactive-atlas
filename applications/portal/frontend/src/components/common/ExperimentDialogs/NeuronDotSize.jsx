@@ -1,5 +1,4 @@
 import React, { useCallback } from 'react';
-import PropTypes from 'prop-types';
 import { makeStyles } from '@material-ui/core/styles';
 import { Box, Typography, Slider, Divider, IconButton, Dialog, DialogTitle, DialogContent, Button } from '@material-ui/core';
 import { headerBorderColor } from "../../../theme";
@@ -246,13 +245,6 @@ const NeuronDotSize = ({
 
     </Dialog>
   );
-};
-
-NeuronDotSize.propTypes = {
-  open: PropTypes.bool.isRequired,
-  onClose: PropTypes.func.isRequired,
-  value: PropTypes.number.isRequired,
-  onValueChange: PropTypes.func.isRequired,
 };
 
 export default NeuronDotSize;

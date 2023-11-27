@@ -11,9 +11,10 @@ from api.constants import PopulationPersistentFiles
 from api.models import Experiment, Population, Pdf, PDFCategory
 from api.serializers import PopulationSerializer, PopulationPDFUploadSerializer, PdfSerializer
 from api.services.population_service import get_cells
-from api.services.pdf_service import convert_and_save_pdf_to_png, is_pdf_category
+from api.services.user_service import is_user_owner
+from api.services.pdf_service import convert_and_save_pdf_to_png
 from api.utils import send_file
-from api.helpers.exceptions import UserNotFoundInExperimentError
+from api.helpers.exceptions import UserNotFoundInExperimentError, InvalidPDFFile
 from rest_framework.parsers import MultiPartParser, JSONParser
 
 log = logging.getLogger("__name__")
@@ -142,43 +143,24 @@ class PopulationViewSet(viewsets.ModelViewSet):
         category = request.data.get("category")
         instance = self.get_object()
 
-        try: 
-            is_owner_of_experiment = Experiment.objects.my_experiments(request.user).filter(
-                id=instance.experiment.id
-            ).exists()
-            if (not is_owner_of_experiment):
-                return Response(status=status.HTTP_403_FORBIDDEN)
-        except UserNotFoundInExperimentError:
+        if (not is_user_owner(request, instance)):
             return Response(status=status.HTTP_403_FORBIDDEN)
-        
+
         try:
-            population_storage_path = instance.storage_path
-            if not is_pdf_category(category):
-                return Response(status=status.HTTP_400_BAD_REQUEST, data={"detail": "Invalid category"})
-            
-            pdf_obj = Pdf.objects.create(population=instance, created_by=request.user, category=category, name=pdf_file.name)
-            pdf_path = convert_and_save_pdf_to_png(pdf_file, category, population_storage_path, pdf_obj)
+            pdf_obj = Pdf.objects.create(
+                population=instance, created_by=request.user,
+                category=category, name=pdf_file.name
+            )
+            pdf_path = convert_and_save_pdf_to_png(
+                pdf_obj=pdf_obj,
+                population_storage_path=instance.storage_path, pdf_file=pdf_file
+            )
             pdf_obj.file = pdf_path
             pdf_obj.save()
-            
+
             pdf_serializer = PdfSerializer(pdf_obj)
             return Response(pdf_serializer.data, status=status.HTTP_201_CREATED)
-        except:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
-
-
-    @action(
-        detail=True, 
-        methods=["get"], 
-        name="get-pdf-files", 
-        url_path="get-pdf-files"
-    )
-    def get_pdf_files(self, request, **kwargs):
-        instance = self.get_object()
-        try:
-            pdfs = Pdf.objects.filter(population=instance)
-
-            pdfs_serializer = PdfSerializer(pdfs, many=True)
-            return Response(pdfs_serializer.data)
+        except InvalidPDFFile as e:
+            return Response(data={'detail': str(e)}, status=status.HTTP_422_UNPROCESSABLE_ENTITY)
         except:
             return Response(status=status.HTTP_400_BAD_REQUEST)

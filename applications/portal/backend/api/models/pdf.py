@@ -23,7 +23,7 @@ class Pdf(models.Model):
 		related_name="pdf_created_by",
 		on_delete=models.CASCADE,
 	)
-    file = models.TextField(blank=True, null=True)   ## TODO: this cannot save long file names
+    file = models.FileField(null=True, blank=True, max_length=255)
     population = models.ForeignKey(
 		Population,
 		related_name="population_pdf",
