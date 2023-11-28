@@ -36,6 +36,7 @@ const classes = {
   page: 'pdf-page',
 };
 
+const BACKEND_PATH_FOR_POPULATION_FILES = '/backend/media/populations/'
 
 const PdfToPage = ({
   filepath,
@@ -63,8 +64,7 @@ const PdfToPage = ({
 
   useEffect(() => {
     if (!filepath) return
-    // TODO: create a variable for the backend url
-    const trimmedFileAddress = `/backend/media/populations/${filepath.split('/populations/')[1]}`
+    const trimmedFileAddress = BACKEND_PATH_FOR_POPULATION_FILES + `${filepath.split('/populations/')[1]}`
     fetch(trimmedFileAddress).then(res => res.blob()).then(blob => {
       const tempfile = new File([blob], filepath, { type: 'application/pdf' });
       setFile(tempfile)

@@ -300,7 +300,6 @@ const DetailsViewer = (props: {
         setOpenDeleteDialog(false);
     }
 
-    // TODO: Export this to a utility function
     const onFilterData = (query: string, filesData: any) => {
         if (!filesData) { return filesData };
         const categorySelected = Object.keys(PdfCategoryEnum)[tabIdx];
