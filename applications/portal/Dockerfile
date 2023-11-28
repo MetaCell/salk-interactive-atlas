@@ -33,7 +33,7 @@ RUN python3 manage.py generate_grey_and_white_matter_images salk_cord_10um
 RUN python3 manage.py split_meshes salk_cord_10um
 
 # compile frontend
-FROM node:16-alpine as frontend
+FROM node:18-alpine as frontend
 
 ENV BUILDDIR=/builddir
 ENV APP_DIR=/usr/src/app
