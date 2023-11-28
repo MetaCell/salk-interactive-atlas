@@ -1,20 +1,13 @@
 import logging
 
-from django.http import Http404, HttpResponse, FileResponse
 from dry_rest_permissions.generics import DRYPermissions
 from rest_framework import status, viewsets
-from rest_framework.decorators import action
 from rest_framework.response import Response
-from rest_framework.schemas.openapi import AutoSchema
 
-from api.constants import PopulationPersistentFiles
-from api.models import Population, Pdf, Experiment
+from api.models import Pdf
 from api.serializers import PdfSerializer
-from api.services.population_service import get_cells
 from api.services.user_service import is_user_owner
 from api.services.pdf_service import get_pdf_save_dir
-from api.utils import send_file
-from rest_framework.parsers import MultiPartParser, JSONParser
 import os
 
 log = logging.getLogger("__name__")

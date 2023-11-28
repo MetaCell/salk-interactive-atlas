@@ -8,14 +8,14 @@ from rest_framework.response import Response
 from rest_framework.schemas.openapi import AutoSchema
 
 from api.constants import PopulationPersistentFiles
-from api.models import Experiment, Population, Pdf, PDFCategory
+from api.models import Experiment, Population, Pdf
 from api.serializers import PopulationSerializer, PopulationPDFUploadSerializer, PdfSerializer
 from api.services.population_service import get_cells
 from api.services.user_service import is_user_owner
-from api.services.pdf_service import convert_and_save_pdf_to_png
+from api.services.pdf_service import save_pdf_and_get_path
 from api.utils import send_file
-from api.helpers.exceptions import UserNotFoundInExperimentError, InvalidPDFFile
-from rest_framework.parsers import MultiPartParser, JSONParser
+from api.helpers.exceptions import InvalidPDFFile
+from rest_framework.parsers import MultiPartParser
 
 log = logging.getLogger("__name__")
 
@@ -151,7 +151,7 @@ class PopulationViewSet(viewsets.ModelViewSet):
                 population=instance, created_by=request.user,
                 category=category, name=pdf_file.name
             )
-            pdf_path = convert_and_save_pdf_to_png(
+            pdf_path = save_pdf_and_get_path(
                 pdf_obj=pdf_obj,
                 population_storage_path=instance.storage_path, pdf_file=pdf_file
             )

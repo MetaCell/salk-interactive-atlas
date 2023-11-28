@@ -28,7 +28,7 @@ def save_pdf_file(pdf_file, save_dir, pdf_obj):
 	return pdf_save_dir
 
 
-def convert_and_save_pdf_to_png(pdf_obj, population_storage_path, pdf_file):
+def save_pdf_and_get_path(pdf_obj, population_storage_path, pdf_file):
 
 	pdf_saved_filepath = save_pdf_file(pdf_file, population_storage_path, pdf_obj)
 	return pdf_saved_filepath
