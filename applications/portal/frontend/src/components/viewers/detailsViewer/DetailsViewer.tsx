@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { makeStyles } from "@material-ui/core/styles";
 import {
     canvasBg, populationTitleColor, populationSubTitleColor,
@@ -15,13 +15,17 @@ import Modal from '../../common/BaseDialog';
 import { PdfFileDrop } from '../../common/PdfFileDrop';
 import { CategorySelect } from './CategorySelect';
 import { getRGBAFromHexAlpha, getRGBAString } from '../../../utilities/functions';
+import workspaceService from "../../../service/WorkspaceService";
 
 // icons
 import INFO_ICON from "../../../assets/images/icons/info.svg";
 import DOWN_ICON from "../../../assets/images/icons/chevron_down.svg";
 import CHECK from "../../../assets/images/icons/check.svg";
-import pageImg from "../../../assets/images/pdf.png";
 import { UploadIcon, common } from '../../header/ExperimentDialog/Common';
+import PdfToPage from './PdfToPage';
+import { PdfCategoryEnum } from '../../../apiclient/workspaces';
+import { formatDateTime, pdfNameOnFile } from '../../../utils';
+
 
 const useStyles = makeStyles({
     container: {
@@ -214,25 +218,34 @@ const useStyles = makeStyles({
 });
 
 const DetailsViewer = (props: {
-    populationName: string | null,
+    meshSelected: any,
     populationColor: "#44C9C9"
 }) => {
-    const { populationName, populationColor } = props
+    const population = props?.meshSelected?.population;
+    const populationName = population?.name;
+    const populationColor = population?.color;
+    const [pdfFiles, setPdfFiles] = useState(population?.pdfs || []);
 
     const classes = useStyles();
     const commonClasses = common();
-    const [tabIdx, setTabIdx] = React.useState(0);
-    const [anchorElMenu, setAnchorElMenu] = React.useState<null | HTMLElement>(null);
-    const [selectedIndex, setSelectedIndex] = React.useState(0);
-    const [openDeleteDialog, setOpenDeleteDialog] = React.useState(false);
-    const [openUploadDialog, setOpenUploadDialog] = React.useState(false);
-    const [searchQuery, setSearchQuery] = React.useState("");
-    const [filteredData, setFilteredData] = React.useState([]);
-    const [uploadedFiles, setUploadedFiles] = React.useState([]);
-    const [page, setPage] = React.useState(1);
+    const [tabIdx, setTabIdx] = useState<number>(0);
+    const [anchorElMenu, setAnchorElMenu] = useState<null | HTMLElement>(null);
+    const [selectedIndex, setSelectedIndex] = useState(0);
+    const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
+    const [openUploadDialog, setOpenUploadDialog] = useState(false);
+    const [searchQuery, setSearchQuery] = useState("");
+    const [filteredData, setFilteredData] = useState([]);
+    const [searchMenuData, setSearchMenuData] = useState([]);
+    const [uploadedFiles, setUploadedFiles] = useState([]);
+
+    const [numPages, setNumPages] = useState<number>();
+    const [currentPage, setCurrentPage] = useState(1);
+
+    const api = workspaceService.getApi();
 
     const handleTabChange = (event: React.SyntheticEvent, newTabIdx: number) => {
         setTabIdx(newTabIdx);
+        setSearchQuery("");
     };
 
     const getRGBAColor = () => {
@@ -245,7 +258,9 @@ const DetailsViewer = (props: {
     };
     const handleMenuClose = () => {
         setAnchorElMenu(null);
+        setSearchMenuData(filteredData);
     };
+
     const handleMenuItemClick = (
         event: React.MouseEvent<HTMLElement>,
         index: number,
@@ -254,11 +269,47 @@ const DetailsViewer = (props: {
         setAnchorElMenu(null);
     };
 
-    const onFilterData = (query: string, prevData: any) => {
+    const handleUploadPDF = async () => {
+        try {
+            const promises: any = []
+            uploadedFiles.map((file) => {
+                promises.push(api.uploadPdfFilePopulation(
+                    population.id,
+                    file.file,
+                    file.selectedCategory
+                ))
+            })
+            const newFiles = await Promise.all(promises)
+            setPdfFiles([...pdfFiles, ...newFiles.map((file) => file.data)]);
+        } catch (err) {
+            console.error(err)
+        }
+        setOpenUploadDialog(false);
+        setUploadedFiles([]);
+    };
+
+    const handleDeletePDF = async () => {
+        console.log("Deleted");
+        try {
+            const deletedPDF = await api.destroyPdf(filteredData[selectedIndex].id)
+            const tempPdfFiles = pdfFiles.filter((item: any) => item.id !== filteredData[selectedIndex].id);
+            setPdfFiles(tempPdfFiles);
+        } catch (err) {
+            console.error(err)
+        }
+        setOpenDeleteDialog(false);
+    }
+
+    // TODO: Export this to a utility function
+    const onFilterData = (query: string, filesData: any) => {
+        if (!filesData) { return filesData };
+        const categorySelected = Object.keys(PdfCategoryEnum)[tabIdx];
+        const filterByCategory = filesData.filter((d: any) => d.category === categorySelected);
         if (!query) {
-            return prevData;
+            return filterByCategory;
         } else {
-            return prevData.filter((d: any) => d.toString().toLowerCase().includes(query.toLowerCase()));
+            const Filteredfiles = filterByCategory?.filter((d: any) => d.name.toLowerCase().includes(query.toLowerCase()));
+            return Filteredfiles
         }
     };
 
@@ -294,18 +345,33 @@ const DetailsViewer = (props: {
     }
 
     const handlePageChange = (event: any, value: number) => {
-        setPage(value)
+        setCurrentPage(value);
     };
 
-    React.useEffect(() => {
-        const newDataFiltered = onFilterData(searchQuery, filteredData[tabIdx].files);
-        setFilteredData(newDataFiltered)
-    }, [searchQuery, tabIdx])
-    console.log("files: ", uploadedFiles);
 
-    return populationName !== null ? (
+    useEffect(() => {
+        const newDataFiltered = onFilterData('', pdfFiles);
+        setSelectedIndex(0);
+        setFilteredData(newDataFiltered)
+        setSearchMenuData(newDataFiltered);
+    }, [pdfFiles, tabIdx])
+
+    useEffect(() => {
+        const newDataFiltered = onFilterData(searchQuery, pdfFiles);
+        setSelectedIndex(0);
+        setSearchMenuData(newDataFiltered);
+    }, [searchQuery])
+
+    useEffect(() => {
+        setPdfFiles(population?.pdfs || []);
+    }, [population])
+
+
+    return (!population) ? (
+        <ShowEmptyMessage message="Select a population to start viewing details" />
+    ) : (
         <div className={classes.container} style={{ justifyContent: "space-between" }}>
-            <div>
+                <div style={{ height: '100%' }}>
                 <Box display="flex" justifyContent="space-between" alignItems="center" className={classes.titleBox}>
                     <Box display="flex" alignItems="center">
                         <span className={classes.populationColor}>
@@ -320,110 +386,150 @@ const DetailsViewer = (props: {
                 <Box sx={{ bgcolor: 'transparent' }}>
                     <Tabs value={tabIdx} onChange={handleTabChange} className={classes.tabs}>
                         {
-                            data.map((option, index) => (
-                                <Tab key={index} disableRipple={true} label={option.tab} />
+                                Object.keys(PdfCategoryEnum).map((option, index) => (
+                                    <Tab key={index} disableRipple={true} label={option} />
                             ))
                         }
                     </Tabs>
                 </Box>
-                <Box display="flex" alignItems="center" justifyContent="space-between" className={classes.tabPanelActions}>
-                    <Button
-                        id="detailsViewer-customized-button"
-                        className={classes.tabPanelActionsMenuBtn}
-                        aria-controls={openMenu ? 'detailsViewer-customized-menu' : undefined}
-                        aria-haspopup="true"
-                        aria-expanded={openMenu ? 'true' : undefined}
-                        variant="text"
-                        disableElevation={true}
-                        onClick={handleMenuClick}
-                        endIcon={<img src={DOWN_ICON} alt='' />}
-                    >
-                        <span className={classes.ellipsisText}>{data[tabIdx].files[selectedIndex].title}</span>
-                    </Button>
-                    <Menu
-                        id="detailsViewer-customized-menu"
-                        MenuListProps={{
-                            'aria-labelledby': 'demo-customized-button',
-                        }}
-                        className={classes.customMenu}
-                        anchorEl={anchorElMenu}
-                        open={openMenu}
-                        onClose={handleMenuClose}
-                    >
-                        <TextField
-                            placeholder="Search for a file"
-                            className={classes.searchField}
-                            onChange={(e) => {
-                                setSearchQuery(e.target.value);
-                            }}
-                        />
-                        <Divider />
-                        {
-                            filteredData.map((file: any, index) => (
-                                <div className={classes.menuItemBox} key={index}>
-                                    <MenuItem
-                                        disableGutters={true}
-                                        selected={index === selectedIndex}
-                                        onClick={(event) => handleMenuItemClick(event, index)}
+                    {
+                        (!population?.pdfs || population?.pdfs?.length === 0) ? (
+                            <ShowEmptyMessage message="No PDFs uploaded yet" />
+                        ) :
+                            (filteredData && filteredData[selectedIndex]) && (
+                                <Box display="flex" alignItems="center" justifyContent="space-between" className={classes.tabPanelActions}>
+                                    <Button
+                                        id="detailsViewer-customized-button"
+                                        className={classes.tabPanelActionsMenuBtn}
+                                        aria-controls={openMenu ? 'detailsViewer-customized-menu' : undefined}
+                                        aria-haspopup="true"
+                                        aria-expanded={openMenu ? 'true' : undefined}
+                                        variant="text"
+                                        disableElevation={true}
+                                        onClick={handleMenuClick}
+                                        endIcon={<img src={DOWN_ICON} alt='' />}
                                     >
-                                        {file.title}
-                                    </MenuItem>
-                                    {
-                                        selectedIndex === index && <ListItemIcon>
-                                            <img src={CHECK} alt='' />
-                                        </ListItemIcon>
-                                    }
-                                </div>
-                            ))
-                        }
-                    </Menu>
-                    <Box>
-                        <Tooltip
-                            arrow={true}
-                            title={<div style={{ display: 'flex', justifyContent: 'space-between', gap: '0.75rem' }}>
-                                <div className={classes.textBlock} style={{ color: sidebarTextColor }}>
-                                    <span>Uploaded on</span>
-                                    <span>Uploaded by</span>
-                                </div>
-                                <div className={classes.textBlock} style={{ alignItems: 'flex-end' }}>
-                                    <span>{data[tabIdx].files[selectedIndex].createdAt}</span>
-                                    <span>{data[tabIdx].files[selectedIndex].createdBy}</span>
-                                </div>
-                            </div>}
-                            placement="bottom-end"
-                            className={classes.customTooltip}
+                                        <span className={classes.ellipsisText}>
+                                            {pdfNameOnFile(filteredData[selectedIndex]?.name)}
+                                        </span>
+                                    </Button>
+                                    <Menu
+                                        id="detailsViewer-customized-menu"
+                                        MenuListProps={{
+                                            'aria-labelledby': 'demo-customized-button',
+                                        }}
+                                        className={classes.customMenu}
+                                        anchorEl={anchorElMenu}
+                                        open={openMenu}
+                                        onClose={handleMenuClose}
+                                    >
+                                        <TextField
+                                            placeholder="Search for a file"
+                                            className={classes.searchField}
+                                            onChange={(e) => {
+                                                setSearchQuery(e.target.value);
+                                            }}
+                                        />
+                                        <Divider />
+                                        {
+                                            searchMenuData.map((file: any, index) => (
+                                                <div className={classes.menuItemBox} key={index}>
+                                                    <MenuItem
+                                                        disableGutters={true}
+                                                        selected={index === selectedIndex}
+                                                        onClick={(event) => handleMenuItemClick(event, index)}
+                                                    >
+                                                        {pdfNameOnFile(file.name)}
+                                                    </MenuItem>
+                                                    {
+                                                        selectedIndex === index && <ListItemIcon>
+                                                            <img src={CHECK} alt='' />
+                                                        </ListItemIcon>
+                                                    }
+                                                </div>
+                                            ))
+                                        }
+                                    </Menu>
+                                    <Box>
+                                        <Tooltip
+                                            arrow={true}
+                                            title={<div style={{ display: 'flex', justifyContent: 'space-between', gap: '0.75rem' }}>
+                                                <div className={classes.textBlock} style={{ color: sidebarTextColor }}>
+                                                    <span>Uploaded on</span>
+                                                    <span>Uploaded by</span>
+                                                </div>
+                                                <div className={classes.textBlock} style={{ alignItems: 'flex-end' }}>
+                                                    <span>{formatDateTime(filteredData[selectedIndex].created_at)}</span>
+                                                    <span>{filteredData[selectedIndex].created_by}</span>
+                                                </div>
+                                            </div>}
+                                            placement="bottom-end"
+                                            className={classes.customTooltip}
+                                        >
+                                            <IconButton>
+                                                <img src={INFO_ICON} alt="" />
+                                            </IconButton>
+                                        </Tooltip>
+                                        <Button variant="contained" className={classes.deleteBtn} onClick={() => setOpenDeleteDialog(true)}>Delete file</Button>
+                                    </Box>
+                                </Box>
+                            )
+                    }
+                    {
+                        (filteredData && filteredData[selectedIndex]) && (
+                            <Box display="flex" className="scrollbar" style={{ flexDirection: 'column', justifyContent: 'space-between', height: '75%' }}>
+
+                                <Box display="flex" alignItems="center" justifyContent="center" py={4} style={{
+                                    width: '100%',
+                                }}>
+                                    <PdfToPage
+                                        filepath={filteredData && filteredData[selectedIndex]?.file}
+                                        setNumPages={setNumPages}
+                                        currentPage={currentPage}
+                                        setCurrentPage={setCurrentPage}
+                                    />
+                                </Box>
+                                <Box className={classes.pagination}>
+                                    <Typography>
+                                        Page {currentPage} of {numPages}
+                                    </Typography>
+                                    <Pagination
+                                        count={numPages}
+                                        size="large"
+                                        page={currentPage}
+                                        variant="outlined"
+                                        shape="rounded"
+                                        onChange={handlePageChange}
+                                    />
+                                </Box>
+                            </Box>
+
+                        )
+                    }
+                </div>
+                {
+                    filteredData && filteredData[selectedIndex] && (
+                        <DeleteDialog
+                            open={openDeleteDialog}
+                            handleClose={() => setOpenDeleteDialog(false)}
+                            actionText="Delete"
+                            title="Delete this file?"
+                            dialogActions={true}
+                            handleAction={() => handleDeletePDF()}
                         >
-                            <IconButton>
-                                <img src={INFO_ICON} alt="" />
-                            </IconButton>
-                        </Tooltip>
-                        <Button variant="contained" className={classes.deleteBtn} onClick={() => setOpenDeleteDialog(true)}>Delete file</Button>
-                    </Box>
-                </Box>
-                <Box display="flex" alignItems="center" justifyContent="center" py={4}>
-                    <img src={pageImg} alt='' style={{ maxWidth: 500, maxHeight: 400 }} />
-                </Box>
-            </div>
-            <Box className={classes.pagination}>
-                <Typography>
-                    Page {page} of {data[tabIdx].files[selectedIndex].pages.length}
-                </Typography>
-                <Pagination
-                    count={data[tabIdx].files[selectedIndex].pages.length}
-                    size="large"
-                    page={page}
-                    variant="outlined"
-                    shape="rounded"
-                    onChange={handlePageChange}
-                />
-            </Box>
+                            <Box className={classes.deleteModalBox}>
+                                <Typography>This action cannot be undone. Are you sure you want to delete "{filteredData.length > 0 && filteredData[selectedIndex].name}"?</Typography>
+                            </Box>
+                        </DeleteDialog>
+                    )
+                }
             <Modal
                 open={openUploadDialog}
                 dialogActions={true}
                 actionText="Upload"
                 disableGutter={true}
                 handleClose={() => setOpenUploadDialog(false)}
-                handleAction={() => { console.log("Uploaded") }}
+                    handleAction={handleUploadPDF}
                 title={`Upload PDF to Population ${populationName}`}
             >
                 <Box display="flex" alignItems="center" justifyContent="center" p={2}>
@@ -445,117 +551,63 @@ const DetailsViewer = (props: {
                         />
                     </PdfFileDrop>
                 </Box>
-                <CategorySelect category={uploadedFiles[0]?.category} handleCategoryChange={(event: any) => handleCategoryChange(event.target.value, 0)} />
+                    <CategorySelect
+                        category={uploadedFiles[0]?.category}
+                        handleCategoryChange={(event: any) => {
+                            handleCategoryChange(event.target.value, 0)
+                        }}
+                    />
                 {
                     uploadedFiles.map((file, index) => {
                         if (file) {
-                            return <Box key={index}>
-                                <Box className={classes.addAnotherFileBox}>
-                                    <PdfFileDrop
-                                        file={uploadedFiles[index + 1]?.file}
-                                        removeFile={() => handleFileRemove(index + 1)}
-                                    >
-                                        <Button component="label"><input
-                                            type="file"
-                                            accept=".pdf"
-                                            hidden={true}
-                                            onChange={(e) => handleFileChange(e, index)}
-                                        />
-                                            + Add another file
-                                        </Button>
+                            return (
+                                <Box key={index}>
+                                    <Box className={classes.addAnotherFileBox}>
+                                        <PdfFileDrop
+                                            file={uploadedFiles[index + 1]?.file}
+                                            removeFile={() => handleFileRemove(index + 1)}
+                                        >
+                                            <Button component="label"><input
+                                                type="file"
+                                                accept=".pdf"
+                                                hidden={true}
+                                                onChange={(e) => handleFileChange(e, index)}
+                                            />
+                                                + Add another file
+                                            </Button>
 
-                                    </PdfFileDrop>
+                                        </PdfFileDrop>
+                                    </Box>
+                                    {uploadedFiles[index + 1]?.file &&
+                                        <CategorySelect
+                                            category={uploadedFiles[index + 1]?.category}
+                                            handleCategoryChange={(event: any) =>
+                                                handleCategoryChange(event.target.value, index + 1)
+                                            }
+                                        />
+                                    }
                                 </Box>
-                                {uploadedFiles[index + 1]?.file && <CategorySelect category={uploadedFiles[index + 1]?.category} handleCategoryChange={(event: any) => handleCategoryChange(event.target.value, index + 1)} />}
-                            </Box>
+                            )
                         }
                     })
                 }
 
             </Modal>
-            <DeleteDialog
-                open={openDeleteDialog}
-                handleClose={() => setOpenDeleteDialog(false)}
-                actionText="Delete"
-                title="Delete this file?"
-                dialogActions={true}
-                handleAction={() => { console.log("Deleted") }}
-            >
-                <Box className={classes.deleteModalBox}>
-                    <Typography>This action cannot be undone. Are you sure you want to delete "{data[tabIdx].files[selectedIndex].title}"?</Typography>
-                </Box>
-            </DeleteDialog>
+
         </div>
-    ) : (
-        <div className={classes.container} style={{ alignItems: 'center', justifyContent: 'center' }}>
-            <p className={classes.noContentTitle}>Select a population to start viewing details</p>
-        </div>)
+        )
 };
 
 export default DetailsViewer
 
-const data = [
-    {
-        tab: 'Electrophysiology',
-        files: [
-            {
-                title: 'Electrophysiology A1',
-                createdAt: '06 Nov 2023, 11.58am',
-                createdBy: 'Quinn Silverman',
-                pages: [
-                    "A11", "A12", "A13"
-                ]
-            },
-            {
-                title: 'Electrophysiology A2',
-                createdAt: '06 Nov 2023, 11.58am',
-                createdBy: 'Quinn Silverman',
-                pages: [
-                    "A21", "A22"
-                ]
-            }
-        ]
-    },
-    {
-        tab: 'Behaviour',
-        files: [
-            {
-                title: 'Behaviour B1',
-                createdAt: '06 Nov 2023, 12.00am',
-                createdBy: 'Quinn Silver',
-                pages: [
-                    "B11", "B12", "B13"
-                ]
-            },
-            {
-                title: 'Behaviour B2',
-                createdAt: '06 Nov 2023, 12.00am',
-                createdBy: 'Quinn Silver',
-                pages: [
-                    "B21", "B22"
-                ]
-            }
-        ]
-    },
-    {
-        tab: 'I/O Mapping',
-        files: [
-            {
-                title: 'I/O Mapping C1',
-                createdAt: '06 Nov 2023, 12.58am',
-                createdBy: 'Quinn Silverman',
-                pages: [
-                    "C11", "C12", "C13"
-                ]
-            },
-            {
-                title: 'I/O Mapping C2',
-                createdAt: '06 Nov 2023, 12.58am',
-                createdBy: 'Quinn Silverman',
-                pages: [
-                    "C21", "C22"
-                ]
-            }
-        ]
-    }
-]
+
+const ShowEmptyMessage = ({ message }: {
+    message: string
+}) => {
+    const classes = useStyles();
+    return (
+        <div className={classes.container} style={{ alignItems: 'center', justifyContent: 'center' }}>
+            <p className={classes.noContentTitle}>{message}</p>
+        </div>
+    )
+}
