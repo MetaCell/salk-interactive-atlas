@@ -4,6 +4,7 @@ import os
 
 
 class PdfSerializer(serializers.ModelSerializer):
+	created_by = serializers.SerializerMethodField()
 	class Meta:
 		model = Pdf
 		fields = (
@@ -14,3 +15,6 @@ class PdfSerializer(serializers.ModelSerializer):
 			"created_by",
 			"file"
 		)
+
+	def get_created_by(self, obj):
+		return obj.created_by.first_name + " " + obj.created_by.last_name
