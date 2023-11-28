@@ -40,3 +40,25 @@ export function downloadFile(response: AxiosResponse<DownloadPopulations>) {
   document.body.removeChild(link);
   window.URL.revokeObjectURL(url);
 }
+
+
+export const pdfNameOnFile = (pdfName: string) => {
+  if (!pdfName) {
+    return ''
+  }
+  return pdfName.split('.')[0]
+}
+
+export const formatDateTime = (date: string) => {
+  const dateObj = new Date(date)
+  const day = dateObj.getDate()
+  const month = dateObj.toLocaleString('default', { month: 'short' });
+  const year = dateObj.getFullYear()
+  const hours = dateObj.getHours()
+  const minutes = dateObj.getMinutes()
+  const ampm = hours >= 12 ? 'pm' : 'am';
+  const formattedHours = hours % 12 || 12;
+  const formattedMinutes = minutes < 10 ? '0' + minutes : minutes;
+  const strTime = formattedHours + ':' + formattedMinutes + ' ' + ampm;
+  return `${day} ${month} ${year}, ${strTime}`
+}

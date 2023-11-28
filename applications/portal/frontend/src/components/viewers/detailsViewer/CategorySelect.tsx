@@ -9,6 +9,8 @@ import {
 
 import DOWN_ICON from "../../../assets/images/icons/chevron_down.svg";
 import CHECK from "../../../assets/images/icons/check.svg";
+import { PdfCategoryEnum } from '../../../apiclient/workspaces';
+
 
 const useStyles = makeStyles({
     categoryBox: {
@@ -94,4 +96,4 @@ export const CategorySelect = (props: {
     )
 };
 
-const options = ['Electrophysiology', 'Behaviour', 'I/O Mapping']
+const options = Object.keys(PdfCategoryEnum);
