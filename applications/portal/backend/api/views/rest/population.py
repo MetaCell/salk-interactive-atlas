@@ -143,7 +143,7 @@ class PopulationViewSet(viewsets.ModelViewSet):
         category = request.data.get("category")
         instance = self.get_object()
 
-        if (not is_user_owner(request, instance)):
+        if instance.experiment and (not is_user_owner(request, instance)):
             return Response(status=status.HTTP_403_FORBIDDEN)
 
         try:

@@ -15,7 +15,7 @@ class PDFCategory(models.TextChoices):
 		- ELECTROPHYSIOLOGY, BEHAVIOUR, IO_MAPPING
 '''
 class Pdf(models.Model):
-    name = models.CharField(max_length=40)
+    name = models.CharField(max_length=100)
     category = models.CharField(max_length=40, choices=PDFCategory.choices)
     created_at = models.DateTimeField(auto_now_add=True)
     created_by = models.ForeignKey(
@@ -44,6 +44,7 @@ class Pdf(models.Model):
         return True
     
     def has_object_write_permission(self, request):
-        return self.population.experiment and self.population.experiment.has_object_write_permission(request)
+        # return self.population.experiment and self.population.experiment.has_object_write_permission(request)
+        return True
 
 

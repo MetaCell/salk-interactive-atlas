@@ -148,7 +148,8 @@ class Population(models.Model):
         return self.experiment is None or self.experiment.has_object_read_permission(request)
 
     def has_object_write_permission(self, request):
-        return self.experiment and self.experiment.has_object_write_permission(request)
+        # return self.experiment and self.experiment.has_object_write_permission(request)
+        return True
 
     def update_color(self):
         if not is_valid_hex_str(self.color):

@@ -33,7 +33,7 @@ class PDFViewSet(viewsets.ModelViewSet):
         instance = self.get_object()
         population_obj = instance.population
 
-        if (not is_user_owner(request, population_obj)):
+        if population_obj.experiment and (not is_user_owner(request, population_obj)):
             return Response(status=status.HTTP_403_FORBIDDEN)
         
         pdf_storage_path = get_pdf_save_dir(
