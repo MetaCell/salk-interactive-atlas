@@ -1216,31 +1216,6 @@ paths:
           description: ''
       tags:
       - api
-  /api/population/{id}/upload-pdf-files/:
-    post:
-      operationId: uploadPdfFilePopulation
-      description: This viewset automatically provides `list` actions.
-      parameters:
-      - name: id
-        in: path
-        required: true
-        description: A unique integer value identifying this population.
-        schema:
-          type: string
-      requestBody:
-        content:
-          multipart/form-data:
-            schema:
-              $ref: '#/components/schemas/PopulationPDFUpload'
-      responses:
-        '201':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/PopulationPDFUpload'
-          description: ''
-      tags:
-      - api
   /api/teams/{id}/add_members/:
     post:
       operationId: addMembersGroup
@@ -1579,7 +1554,7 @@ components:
           readOnly: true
         name:
           type: string
-          maxLength: 40
+          maxLength: 100
         category:
           enum:
           - ELECTROPHYSIOLOGY
@@ -1591,15 +1566,21 @@ components:
           format: date-time
           readOnly: true
         created_by:
-          type: integer
+          type: string
+          readOnly: true
         file:
           type: string
           format: binary
           nullable: true
+        experiment:
+          type: string
+          readOnly: true
+        population:
+          type: string
+          readOnly: true
       required:
       - name
       - category
-      - created_by
     Tag:
       type: object
       properties:
@@ -1729,21 +1710,6 @@ components:
           format: binary
       required:
       - file
-    PopulationPDFUpload:
-      type: object
-      properties:
-        pdf_file:
-          type: string
-          format: binary
-        category:
-          enum:
-          - ELECTROPHYSIOLOGY
-          - BEHAVIOUR
-          - IO_MAPPING
-          type: string
-      required:
-      - pdf_file
-      - category
     Member:
       type: object
       properties:

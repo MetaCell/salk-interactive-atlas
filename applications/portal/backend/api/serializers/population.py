@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from api.models import AtlasesChoice, Population, PDFCategory
+from api.models import AtlasesChoice, Population, Pdf
 from api.serializers.pdf import PdfSerializer
 
 
@@ -27,19 +27,19 @@ class PopulationSerializer(serializers.ModelSerializer):
         )
 
     def get_pdfs(self, obj):
-        pdfs = obj.population_pdf.filter(
-            created_by=self.context["request"].user
-        ).order_by("-created_at")
+        request = self.context.get("request")
+
+        # Check if there's an experiment ID in the request
+        experiment_id = request.query_params.get("experiment") if request else None
+
+        if experiment_id:
+            pdfs = obj.population_pdf.filter(
+                experiment_id=experiment_id,
+            ).order_by("-created_at")
+        else:
+            pdfs = Pdf.objects.none()
+
         return PdfSerializer(pdfs, many=True).data
 
 
 
-class PopulationPDFUploadSerializer(serializers.Serializer):
-    pdf_file = serializers.FileField(required=True)
-    category = serializers.ChoiceField(
-        choices=PDFCategory.choices, required=True
-    )
-
-    class Meta:
-        model = Population
-        fields = ()

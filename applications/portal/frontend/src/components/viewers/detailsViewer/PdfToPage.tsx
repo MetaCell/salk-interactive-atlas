@@ -17,24 +17,12 @@ pdfjs.GlobalWorkerOptions.workerSrc = workerUrl;
 
 type PDFFile = string | File | null;
 
-const options = {
-  cMapUrl: '/cmaps/',
-  standardFontDataUrl: '/standard_fonts/',
-};
-
-const resizeObserverOptions = {};
-
 interface PdfToPageProps {
   filepath: string;
   setNumPages: (numPages: number) => void;
   currentPage: number;
   setCurrentPage: (currentPage: number) => void;
 }
-
-const classes = {
-  document: 'pdf-document',
-  page: 'pdf-page',
-};
 
 const BACKEND_PATH_FOR_POPULATION_FILES = '/backend/media/populations/'
 
@@ -60,7 +48,7 @@ const PdfToPage = ({
     setNumPages(nextNumPages);
     setCurrentPage(1);
   }
-  useResizeObserver(containerRef, resizeObserverOptions, onResize);
+  useResizeObserver(containerRef, {}, onResize);
 
   useEffect(() => {
     if (!filepath) return
@@ -71,16 +59,16 @@ const PdfToPage = ({
     });
   }, [filepath]);
 
+  // Inverse of #27292B (background color)
+  const inverseColor = '#D8D6D4';
+
   return (
-    <div className="dark-mode" ref={setContainerRef} style={{ display: 'flex', justifyContent: 'center', width: '100%' }}>
-      <Document file={file} onLoadSuccess={onDocumentLoadSuccess} options={options}
-        className={classes.document}
-      >
+    <div className="invert-colors" ref={setContainerRef} style={{ display: 'flex', justifyContent: 'center', width: '100%' }}>
+      <Document file={file} onLoadSuccess={onDocumentLoadSuccess}>
         <Page
-          className={classes.page}
+          canvasBackground={inverseColor}
           key={`page_${currentPage}`}
           pageNumber={currentPage}
-          renderTextLayer={false}
         />
       </Document>
     </div>

@@ -74,6 +74,7 @@
     "@babel/plugin-transform-runtime": "^7.15.0",
     "@babel/preset-env": "^7.8.4",
     "@babel/preset-react": "^7.8.3",
+    "@openapitools/openapi-generator-cli": "^2.7.0",
     "@types/draft-js": "^0.11.9",
     "@types/keycloak-js": "^3.4.1",
     "@types/markdown-it": "^10.0.1",

@@ -456,16 +456,28 @@ export interface Pdf {
     'created_at'?: string;
     /**
      * 
-     * @type {number}
+     * @type {string}
      * @memberof Pdf
      */
-    'created_by': number;
+    'created_by'?: string;
     /**
      * 
      * @type {File}
      * @memberof Pdf
      */
     'file'?: File | null;
+    /**
+     * 
+     * @type {string}
+     * @memberof Pdf
+     */
+    'experiment'?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof Pdf
+     */
+    'population'?: string;
 }
 
 export const PdfCategoryEnum = {
@@ -543,34 +555,6 @@ export const PopulationAtlasEnum = {
 } as const;
 
 export type PopulationAtlasEnum = typeof PopulationAtlasEnum[keyof typeof PopulationAtlasEnum];
-
-/**
- * 
- * @export
- * @interface PopulationPDFUpload
- */
-export interface PopulationPDFUpload {
-    /**
-     * 
-     * @type {File}
-     * @memberof PopulationPDFUpload
-     */
-    'pdf_file': File;
-    /**
-     * 
-     * @type {string}
-     * @memberof PopulationPDFUpload
-     */
-    'category': PopulationPDFUploadCategoryEnum;
-}
-
-export const PopulationPDFUploadCategoryEnum = {
-    Electrophysiology: 'ELECTROPHYSIOLOGY',
-    Behaviour: 'BEHAVIOUR',
-    IoMapping: 'IO_MAPPING'
-} as const;
-
-export type PopulationPDFUploadCategoryEnum = typeof PopulationPDFUploadCategoryEnum[keyof typeof PopulationPDFUploadCategoryEnum];
 
 /**
  * 
@@ -2969,61 +2953,6 @@ export const ApiApiAxiosParamCreator = function (configuration?: Configuration) 
             };
         },
         /**
-         * This viewset automatically provides `list` actions.
-         * @param {string} id A unique integer value identifying this population.
-         * @param {File} pdfFile 
-         * @param {UploadPdfFilePopulationCategoryEnum} category 
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        uploadPdfFilePopulation: async (id: string, pdfFile: File, category: UploadPdfFilePopulationCategoryEnum, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
-            // verify required parameter 'id' is not null or undefined
-            assertParamExists('uploadPdfFilePopulation', 'id', id)
-            // verify required parameter 'pdfFile' is not null or undefined
-            assertParamExists('uploadPdfFilePopulation', 'pdfFile', pdfFile)
-            // verify required parameter 'category' is not null or undefined
-            assertParamExists('uploadPdfFilePopulation', 'category', category)
-            const localVarPath = `/api/population/{id}/upload-pdf-files/`
-                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
-            // use dummy base URL string because the URL constructor only accepts absolute URLs.
-            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
-            let baseOptions;
-            if (configuration) {
-                baseOptions = configuration.baseOptions;
-            }
-
-            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
-            const localVarHeaderParameter = {} as any;
-            const localVarQueryParameter = {} as any;
-            const localVarFormParams = new ((configuration && configuration.formDataCtor) || FormData)();
-
-            // authentication bearerAuth required
-            // http bearer authentication required
-            await setBearerAuthToObject(localVarHeaderParameter, configuration)
-
-
-            if (pdfFile !== undefined) { 
-                localVarFormParams.append('pdf_file', pdfFile as any);
-            }
-    
-            if (category !== undefined) { 
-                localVarFormParams.append('category', category as any);
-            }
-    
-    
-            localVarHeaderParameter['Content-Type'] = 'multipart/form-data';
-    
-            setSearchParams(localVarUrlObj, localVarQueryParameter);
-            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
-            localVarRequestOptions.data = localVarFormParams;
-
-            return {
-                url: toPathString(localVarUrlObj),
-                options: localVarRequestOptions,
-            };
-        },
-        /**
          * This viewset automatically provides `list`, `create`, `retrieve`, `update` and `destroy` actions.
          * @param {string} id A unique integer value identifying this experiment.
          * @param {File} file 
@@ -3759,20 +3688,6 @@ export const ApiApiFp = function(configuration?: Configuration) {
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, operationBasePath || basePath);
         },
         /**
-         * This viewset automatically provides `list` actions.
-         * @param {string} id A unique integer value identifying this population.
-         * @param {File} pdfFile 
-         * @param {UploadPdfFilePopulationCategoryEnum} category 
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        async uploadPdfFilePopulation(id: string, pdfFile: File, category: UploadPdfFilePopulationCategoryEnum, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<PopulationPDFUpload>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.uploadPdfFilePopulation(id, pdfFile, category, options);
-            const index = configuration?.serverIndex ?? 0;
-            const operationBasePath = operationServerMap['ApiApi.uploadPdfFilePopulation']?.[index]?.url;
-            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, operationBasePath || basePath);
-        },
-        /**
          * This viewset automatically provides `list`, `create`, `retrieve`, `update` and `destroy` actions.
          * @param {string} id A unique integer value identifying this experiment.
          * @param {File} file 
@@ -4312,17 +4227,6 @@ export const ApiApiFactory = function (configuration?: Configuration, basePath?:
          */
         uploadPairFilesExperiment(id: string, keyFile: File, dataFile: File, options?: any): AxiosPromise<ExperimentPairFileUpload> {
             return localVarFp.uploadPairFilesExperiment(id, keyFile, dataFile, options).then((request) => request(axios, basePath));
-        },
-        /**
-         * This viewset automatically provides `list` actions.
-         * @param {string} id A unique integer value identifying this population.
-         * @param {File} pdfFile 
-         * @param {UploadPdfFilePopulationCategoryEnum} category 
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        uploadPdfFilePopulation(id: string, pdfFile: File, category: UploadPdfFilePopulationCategoryEnum, options?: any): AxiosPromise<PopulationPDFUpload> {
-            return localVarFp.uploadPdfFilePopulation(id, pdfFile, category, options).then((request) => request(axios, basePath));
         },
         /**
          * This viewset automatically provides `list`, `create`, `retrieve`, `update` and `destroy` actions.
@@ -4969,19 +4873,6 @@ export class ApiApi extends BaseAPI {
     }
 
     /**
-     * This viewset automatically provides `list` actions.
-     * @param {string} id A unique integer value identifying this population.
-     * @param {File} pdfFile 
-     * @param {UploadPdfFilePopulationCategoryEnum} category 
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     * @memberof ApiApi
-     */
-    public uploadPdfFilePopulation(id: string, pdfFile: File, category: UploadPdfFilePopulationCategoryEnum, options?: AxiosRequestConfig) {
-        return ApiApiFp(this.configuration).uploadPdfFilePopulation(id, pdfFile, category, options).then((request) => request(this.axios, this.basePath));
-    }
-
-    /**
      * This viewset automatically provides `list`, `create`, `retrieve`, `update` and `destroy` actions.
      * @param {string} id A unique integer value identifying this experiment.
      * @param {File} file 
@@ -4994,14 +4885,5 @@ export class ApiApi extends BaseAPI {
     }
 }
 
-/**
- * @export
- */
-export const UploadPdfFilePopulationCategoryEnum = {
-    Electrophysiology: 'ELECTROPHYSIOLOGY',
-    Behaviour: 'BEHAVIOUR',
-    IoMapping: 'IO_MAPPING'
-} as const;
-export type UploadPdfFilePopulationCategoryEnum = typeof UploadPdfFilePopulationCategoryEnum[keyof typeof UploadPdfFilePopulationCategoryEnum];
 
 

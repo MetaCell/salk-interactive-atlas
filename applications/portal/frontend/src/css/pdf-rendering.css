@@ -1,6 +1,5 @@
-.dark-mode canvas {
-	filter: invert(1) hue-rotate(180deg);
-	background-color: blueviolet !important;
+.invert-colors {
+	filter: invert(100%);
 }
 
 .react-pdf__Page__canvas {
