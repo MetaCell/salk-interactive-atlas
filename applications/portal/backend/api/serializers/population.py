@@ -27,18 +27,7 @@ class PopulationSerializer(serializers.ModelSerializer):
         )
 
     def get_pdfs(self, obj):
-        request = self.context.get("request")
-
-        # Check if there's an experiment ID in the request
-        experiment_id = request.query_params.get("experiment") if request else None
-
-        if experiment_id:
-            pdfs = obj.population_pdf.filter(
-                experiment_id=experiment_id,
-            ).order_by("-created_at")
-        else:
-            pdfs = Pdf.objects.none()
-
+        pdfs = obj.pdfs if hasattr(obj, 'pdfs') else []
         return PdfSerializer(pdfs, many=True).data
 
 

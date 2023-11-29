@@ -426,6 +426,12 @@ paths:
         description: A unique integer value identifying this population.
         schema:
           type: string
+      - name: experiment_id
+        in: query
+        required: false
+        description: Optional experiment ID to filter PDFs
+        schema:
+          type: integer
       responses:
         '200':
           content:
@@ -610,13 +616,10 @@ paths:
       parameters: []
       requestBody:
         content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/Pdf'
-          application/x-www-form-urlencoded:
-            schema:
-              $ref: '#/components/schemas/Pdf'
           multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Pdf'
+          application/json:
             schema:
               $ref: '#/components/schemas/Pdf'
       responses:
@@ -660,13 +663,10 @@ paths:
           type: string
       requestBody:
         content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/Pdf'
-          application/x-www-form-urlencoded:
-            schema:
-              $ref: '#/components/schemas/Pdf'
           multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Pdf'
+          application/json:
             schema:
               $ref: '#/components/schemas/Pdf'
       responses:
@@ -690,13 +690,10 @@ paths:
           type: string
       requestBody:
         content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/Pdf'
-          application/x-www-form-urlencoded:
-            schema:
-              $ref: '#/components/schemas/Pdf'
           multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Pdf'
+          application/json:
             schema:
               $ref: '#/components/schemas/Pdf'
       responses:
@@ -1554,7 +1551,7 @@ components:
           readOnly: true
         name:
           type: string
-          maxLength: 100
+          readOnly: true
         category:
           enum:
           - ELECTROPHYSIOLOGY
@@ -1571,16 +1568,15 @@ components:
         file:
           type: string
           format: binary
-          nullable: true
         experiment:
-          type: string
-          readOnly: true
+          type: integer
         population:
-          type: string
-          readOnly: true
+          type: integer
       required:
-      - name
       - category
+      - file
+      - experiment
+      - population
     Tag:
       type: object
       properties:

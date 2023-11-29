@@ -1,12 +1,20 @@
 from rest_framework import serializers
 
-from api.models import Pdf
+from api.models import Pdf, Experiment, Population
 
 
 class PdfSerializer(serializers.ModelSerializer):
+    file = serializers.FileField(required=True)
     created_by = serializers.SerializerMethodField()
-    experiment = serializers.PrimaryKeyRelatedField(read_only=True)
-    population = serializers.PrimaryKeyRelatedField(read_only=True)
+    experiment = serializers.PrimaryKeyRelatedField(
+        queryset=Experiment.objects.all(),
+        required=True
+    )
+    population = serializers.PrimaryKeyRelatedField(
+        queryset=Population.objects.all(),
+        required=True
+    )
+    name = serializers.CharField(read_only=True)
 
     class Meta:
         model = Pdf

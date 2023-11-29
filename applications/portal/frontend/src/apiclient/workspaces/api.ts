@@ -441,7 +441,7 @@ export interface Pdf {
      * @type {string}
      * @memberof Pdf
      */
-    'name': string;
+    'name'?: string;
     /**
      * 
      * @type {string}
@@ -465,19 +465,19 @@ export interface Pdf {
      * @type {File}
      * @memberof Pdf
      */
-    'file'?: File | null;
+    'file': File;
     /**
      * 
-     * @type {string}
+     * @type {number}
      * @memberof Pdf
      */
-    'experiment'?: string;
+    'experiment': number;
     /**
      * 
-     * @type {string}
+     * @type {number}
      * @memberof Pdf
      */
-    'population'?: string;
+    'population': number;
 }
 
 export const PdfCategoryEnum = {
@@ -1139,11 +1139,26 @@ export const ApiApiAxiosParamCreator = function (configuration?: Configuration) 
         },
         /**
          * This viewset automatically provides `list` actions.
-         * @param {Pdf} [pdf] 
+         * @param {CreatePdfCategoryEnum} category 
+         * @param {File} file 
+         * @param {number} experiment 
+         * @param {number} population 
+         * @param {number} [id] 
+         * @param {string} [name] 
+         * @param {string} [createdAt] 
+         * @param {string} [createdBy] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        createPdf: async (pdf?: Pdf, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+        createPdf: async (category: CreatePdfCategoryEnum, file: File, experiment: number, population: number, id?: number, name?: string, createdAt?: string, createdBy?: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'category' is not null or undefined
+            assertParamExists('createPdf', 'category', category)
+            // verify required parameter 'file' is not null or undefined
+            assertParamExists('createPdf', 'file', file)
+            // verify required parameter 'experiment' is not null or undefined
+            assertParamExists('createPdf', 'experiment', experiment)
+            // verify required parameter 'population' is not null or undefined
+            assertParamExists('createPdf', 'population', population)
             const localVarPath = `/api/pdf/`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -1155,19 +1170,52 @@ export const ApiApiAxiosParamCreator = function (configuration?: Configuration) 
             const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
+            const localVarFormParams = new ((configuration && configuration.formDataCtor) || FormData)();
 
             // authentication bearerAuth required
             // http bearer authentication required
             await setBearerAuthToObject(localVarHeaderParameter, configuration)
 
 
+            if (id !== undefined) { 
+                localVarFormParams.append('id', id as any);
+            }
     
-            localVarHeaderParameter['Content-Type'] = 'application/json';
-
+            if (name !== undefined) { 
+                localVarFormParams.append('name', name as any);
+            }
+    
+            if (category !== undefined) { 
+                localVarFormParams.append('category', category as any);
+            }
+    
+            if (createdAt !== undefined) { 
+                localVarFormParams.append('created_at', createdAt as any);
+            }
+    
+            if (createdBy !== undefined) { 
+                localVarFormParams.append('created_by', createdBy as any);
+            }
+    
+            if (file !== undefined) { 
+                localVarFormParams.append('file', file as any);
+            }
+    
+            if (experiment !== undefined) { 
+                localVarFormParams.append('experiment', experiment as any);
+            }
+    
+            if (population !== undefined) { 
+                localVarFormParams.append('population', population as any);
+            }
+    
+    
+            localVarHeaderParameter['Content-Type'] = 'multipart/form-data';
+    
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
-            localVarRequestOptions.data = serializeDataIfNeeded(pdf, localVarRequestOptions, configuration)
+            localVarRequestOptions.data = localVarFormParams;
 
             return {
                 url: toPathString(localVarUrlObj),
@@ -2146,13 +2194,28 @@ export const ApiApiAxiosParamCreator = function (configuration?: Configuration) 
         /**
          * This viewset automatically provides `list` actions.
          * @param {string} id A unique integer value identifying this pdf.
-         * @param {Pdf} [pdf] 
+         * @param {PartialUpdatePdfCategoryEnum} category 
+         * @param {File} file 
+         * @param {number} experiment 
+         * @param {number} population 
+         * @param {number} [id2] 
+         * @param {string} [name] 
+         * @param {string} [createdAt] 
+         * @param {string} [createdBy] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        partialUpdatePdf: async (id: string, pdf?: Pdf, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+        partialUpdatePdf: async (id: string, category: PartialUpdatePdfCategoryEnum, file: File, experiment: number, population: number, id2?: number, name?: string, createdAt?: string, createdBy?: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'id' is not null or undefined
             assertParamExists('partialUpdatePdf', 'id', id)
+            // verify required parameter 'category' is not null or undefined
+            assertParamExists('partialUpdatePdf', 'category', category)
+            // verify required parameter 'file' is not null or undefined
+            assertParamExists('partialUpdatePdf', 'file', file)
+            // verify required parameter 'experiment' is not null or undefined
+            assertParamExists('partialUpdatePdf', 'experiment', experiment)
+            // verify required parameter 'population' is not null or undefined
+            assertParamExists('partialUpdatePdf', 'population', population)
             const localVarPath = `/api/pdf/{id}/`
                 .replace(`{${"id"}}`, encodeURIComponent(String(id)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
@@ -2165,19 +2228,52 @@ export const ApiApiAxiosParamCreator = function (configuration?: Configuration) 
             const localVarRequestOptions = { method: 'PATCH', ...baseOptions, ...options};
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
+            const localVarFormParams = new ((configuration && configuration.formDataCtor) || FormData)();
 
             // authentication bearerAuth required
             // http bearer authentication required
             await setBearerAuthToObject(localVarHeaderParameter, configuration)
 
 
+            if (id2 !== undefined) { 
+                localVarFormParams.append('id', id2 as any);
+            }
     
-            localVarHeaderParameter['Content-Type'] = 'application/json';
-
+            if (name !== undefined) { 
+                localVarFormParams.append('name', name as any);
+            }
+    
+            if (category !== undefined) { 
+                localVarFormParams.append('category', category as any);
+            }
+    
+            if (createdAt !== undefined) { 
+                localVarFormParams.append('created_at', createdAt as any);
+            }
+    
+            if (createdBy !== undefined) { 
+                localVarFormParams.append('created_by', createdBy as any);
+            }
+    
+            if (file !== undefined) { 
+                localVarFormParams.append('file', file as any);
+            }
+    
+            if (experiment !== undefined) { 
+                localVarFormParams.append('experiment', experiment as any);
+            }
+    
+            if (population !== undefined) { 
+                localVarFormParams.append('population', population as any);
+            }
+    
+    
+            localVarHeaderParameter['Content-Type'] = 'multipart/form-data';
+    
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
-            localVarRequestOptions.data = serializeDataIfNeeded(pdf, localVarRequestOptions, configuration)
+            localVarRequestOptions.data = localVarFormParams;
 
             return {
                 url: toPathString(localVarUrlObj),
@@ -2483,10 +2579,11 @@ export const ApiApiAxiosParamCreator = function (configuration?: Configuration) 
         /**
          * This viewset automatically provides `list` actions.
          * @param {string} id A unique integer value identifying this population.
+         * @param {number} [experimentId] Optional experiment ID to filter PDFs
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        retrievePopulation: async (id: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+        retrievePopulation: async (id: string, experimentId?: number, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'id' is not null or undefined
             assertParamExists('retrievePopulation', 'id', id)
             const localVarPath = `/api/population/{id}/`
@@ -2505,6 +2602,10 @@ export const ApiApiAxiosParamCreator = function (configuration?: Configuration) 
             // authentication bearerAuth required
             // http bearer authentication required
             await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+            if (experimentId !== undefined) {
+                localVarQueryParameter['experiment_id'] = experimentId;
+            }
 
 
     
@@ -2777,13 +2878,28 @@ export const ApiApiAxiosParamCreator = function (configuration?: Configuration) 
         /**
          * This viewset automatically provides `list` actions.
          * @param {string} id A unique integer value identifying this pdf.
-         * @param {Pdf} [pdf] 
+         * @param {UpdatePdfCategoryEnum} category 
+         * @param {File} file 
+         * @param {number} experiment 
+         * @param {number} population 
+         * @param {number} [id2] 
+         * @param {string} [name] 
+         * @param {string} [createdAt] 
+         * @param {string} [createdBy] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        updatePdf: async (id: string, pdf?: Pdf, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+        updatePdf: async (id: string, category: UpdatePdfCategoryEnum, file: File, experiment: number, population: number, id2?: number, name?: string, createdAt?: string, createdBy?: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'id' is not null or undefined
             assertParamExists('updatePdf', 'id', id)
+            // verify required parameter 'category' is not null or undefined
+            assertParamExists('updatePdf', 'category', category)
+            // verify required parameter 'file' is not null or undefined
+            assertParamExists('updatePdf', 'file', file)
+            // verify required parameter 'experiment' is not null or undefined
+            assertParamExists('updatePdf', 'experiment', experiment)
+            // verify required parameter 'population' is not null or undefined
+            assertParamExists('updatePdf', 'population', population)
             const localVarPath = `/api/pdf/{id}/`
                 .replace(`{${"id"}}`, encodeURIComponent(String(id)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
@@ -2796,19 +2912,52 @@ export const ApiApiAxiosParamCreator = function (configuration?: Configuration) 
             const localVarRequestOptions = { method: 'PUT', ...baseOptions, ...options};
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
+            const localVarFormParams = new ((configuration && configuration.formDataCtor) || FormData)();
 
             // authentication bearerAuth required
             // http bearer authentication required
             await setBearerAuthToObject(localVarHeaderParameter, configuration)
 
 
+            if (id2 !== undefined) { 
+                localVarFormParams.append('id', id2 as any);
+            }
     
-            localVarHeaderParameter['Content-Type'] = 'application/json';
-
+            if (name !== undefined) { 
+                localVarFormParams.append('name', name as any);
+            }
+    
+            if (category !== undefined) { 
+                localVarFormParams.append('category', category as any);
+            }
+    
+            if (createdAt !== undefined) { 
+                localVarFormParams.append('created_at', createdAt as any);
+            }
+    
+            if (createdBy !== undefined) { 
+                localVarFormParams.append('created_by', createdBy as any);
+            }
+    
+            if (file !== undefined) { 
+                localVarFormParams.append('file', file as any);
+            }
+    
+            if (experiment !== undefined) { 
+                localVarFormParams.append('experiment', experiment as any);
+            }
+    
+            if (population !== undefined) { 
+                localVarFormParams.append('population', population as any);
+            }
+    
+    
+            localVarHeaderParameter['Content-Type'] = 'multipart/form-data';
+    
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
-            localVarRequestOptions.data = serializeDataIfNeeded(pdf, localVarRequestOptions, configuration)
+            localVarRequestOptions.data = localVarFormParams;
 
             return {
                 url: toPathString(localVarUrlObj),
@@ -3124,12 +3273,19 @@ export const ApiApiFp = function(configuration?: Configuration) {
         },
         /**
          * This viewset automatically provides `list` actions.
-         * @param {Pdf} [pdf] 
+         * @param {CreatePdfCategoryEnum} category 
+         * @param {File} file 
+         * @param {number} experiment 
+         * @param {number} population 
+         * @param {number} [id] 
+         * @param {string} [name] 
+         * @param {string} [createdAt] 
+         * @param {string} [createdBy] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async createPdf(pdf?: Pdf, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Pdf>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.createPdf(pdf, options);
+        async createPdf(category: CreatePdfCategoryEnum, file: File, experiment: number, population: number, id?: number, name?: string, createdAt?: string, createdBy?: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Pdf>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.createPdf(category, file, experiment, population, id, name, createdAt, createdBy, options);
             const index = configuration?.serverIndex ?? 0;
             const operationBasePath = operationServerMap['ApiApi.createPdf']?.[index]?.url;
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, operationBasePath || basePath);
@@ -3443,12 +3599,19 @@ export const ApiApiFp = function(configuration?: Configuration) {
         /**
          * This viewset automatically provides `list` actions.
          * @param {string} id A unique integer value identifying this pdf.
-         * @param {Pdf} [pdf] 
+         * @param {PartialUpdatePdfCategoryEnum} category 
+         * @param {File} file 
+         * @param {number} experiment 
+         * @param {number} population 
+         * @param {number} [id2] 
+         * @param {string} [name] 
+         * @param {string} [createdAt] 
+         * @param {string} [createdBy] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async partialUpdatePdf(id: string, pdf?: Pdf, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Pdf>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.partialUpdatePdf(id, pdf, options);
+        async partialUpdatePdf(id: string, category: PartialUpdatePdfCategoryEnum, file: File, experiment: number, population: number, id2?: number, name?: string, createdAt?: string, createdBy?: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Pdf>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.partialUpdatePdf(id, category, file, experiment, population, id2, name, createdAt, createdBy, options);
             const index = configuration?.serverIndex ?? 0;
             const operationBasePath = operationServerMap['ApiApi.partialUpdatePdf']?.[index]?.url;
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, operationBasePath || basePath);
@@ -3552,11 +3715,12 @@ export const ApiApiFp = function(configuration?: Configuration) {
         /**
          * This viewset automatically provides `list` actions.
          * @param {string} id A unique integer value identifying this population.
+         * @param {number} [experimentId] Optional experiment ID to filter PDFs
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async retrievePopulation(id: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Population>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.retrievePopulation(id, options);
+        async retrievePopulation(id: string, experimentId?: number, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Population>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.retrievePopulation(id, experimentId, options);
             const index = configuration?.serverIndex ?? 0;
             const operationBasePath = operationServerMap['ApiApi.retrievePopulation']?.[index]?.url;
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, operationBasePath || basePath);
@@ -3637,12 +3801,19 @@ export const ApiApiFp = function(configuration?: Configuration) {
         /**
          * This viewset automatically provides `list` actions.
          * @param {string} id A unique integer value identifying this pdf.
-         * @param {Pdf} [pdf] 
+         * @param {UpdatePdfCategoryEnum} category 
+         * @param {File} file 
+         * @param {number} experiment 
+         * @param {number} population 
+         * @param {number} [id2] 
+         * @param {string} [name] 
+         * @param {string} [createdAt] 
+         * @param {string} [createdBy] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async updatePdf(id: string, pdf?: Pdf, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Pdf>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.updatePdf(id, pdf, options);
+        async updatePdf(id: string, category: UpdatePdfCategoryEnum, file: File, experiment: number, population: number, id2?: number, name?: string, createdAt?: string, createdBy?: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Pdf>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.updatePdf(id, category, file, experiment, population, id2, name, createdAt, createdBy, options);
             const index = configuration?.serverIndex ?? 0;
             const operationBasePath = operationServerMap['ApiApi.updatePdf']?.[index]?.url;
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, operationBasePath || basePath);
@@ -3800,12 +3971,19 @@ export const ApiApiFactory = function (configuration?: Configuration, basePath?:
         },
         /**
          * This viewset automatically provides `list` actions.
-         * @param {Pdf} [pdf] 
+         * @param {CreatePdfCategoryEnum} category 
+         * @param {File} file 
+         * @param {number} experiment 
+         * @param {number} population 
+         * @param {number} [id] 
+         * @param {string} [name] 
+         * @param {string} [createdAt] 
+         * @param {string} [createdBy] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        createPdf(pdf?: Pdf, options?: any): AxiosPromise<Pdf> {
-            return localVarFp.createPdf(pdf, options).then((request) => request(axios, basePath));
+        createPdf(category: CreatePdfCategoryEnum, file: File, experiment: number, population: number, id?: number, name?: string, createdAt?: string, createdBy?: string, options?: any): AxiosPromise<Pdf> {
+            return localVarFp.createPdf(category, file, experiment, population, id, name, createdAt, createdBy, options).then((request) => request(axios, basePath));
         },
         /**
          * This viewset automatically provides `list` actions.
@@ -4041,12 +4219,19 @@ export const ApiApiFactory = function (configuration?: Configuration, basePath?:
         /**
          * This viewset automatically provides `list` actions.
          * @param {string} id A unique integer value identifying this pdf.
-         * @param {Pdf} [pdf] 
+         * @param {PartialUpdatePdfCategoryEnum} category 
+         * @param {File} file 
+         * @param {number} experiment 
+         * @param {number} population 
+         * @param {number} [id2] 
+         * @param {string} [name] 
+         * @param {string} [createdAt] 
+         * @param {string} [createdBy] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        partialUpdatePdf(id: string, pdf?: Pdf, options?: any): AxiosPromise<Pdf> {
-            return localVarFp.partialUpdatePdf(id, pdf, options).then((request) => request(axios, basePath));
+        partialUpdatePdf(id: string, category: PartialUpdatePdfCategoryEnum, file: File, experiment: number, population: number, id2?: number, name?: string, createdAt?: string, createdBy?: string, options?: any): AxiosPromise<Pdf> {
+            return localVarFp.partialUpdatePdf(id, category, file, experiment, population, id2, name, createdAt, createdBy, options).then((request) => request(axios, basePath));
         },
         /**
          * This viewset automatically provides `list` actions.
@@ -4123,11 +4308,12 @@ export const ApiApiFactory = function (configuration?: Configuration, basePath?:
         /**
          * This viewset automatically provides `list` actions.
          * @param {string} id A unique integer value identifying this population.
+         * @param {number} [experimentId] Optional experiment ID to filter PDFs
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        retrievePopulation(id: string, options?: any): AxiosPromise<Population> {
-            return localVarFp.retrievePopulation(id, options).then((request) => request(axios, basePath));
+        retrievePopulation(id: string, experimentId?: number, options?: any): AxiosPromise<Population> {
+            return localVarFp.retrievePopulation(id, experimentId, options).then((request) => request(axios, basePath));
         },
         /**
          * This viewset automatically provides `list`, `create`, `retrieve`, `update` actions.  The list action will always return the current user\'s userdetail as a list or an empty list if the current user has no userdetail
@@ -4190,12 +4376,19 @@ export const ApiApiFactory = function (configuration?: Configuration, basePath?:
         /**
          * This viewset automatically provides `list` actions.
          * @param {string} id A unique integer value identifying this pdf.
-         * @param {Pdf} [pdf] 
+         * @param {UpdatePdfCategoryEnum} category 
+         * @param {File} file 
+         * @param {number} experiment 
+         * @param {number} population 
+         * @param {number} [id2] 
+         * @param {string} [name] 
+         * @param {string} [createdAt] 
+         * @param {string} [createdBy] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        updatePdf(id: string, pdf?: Pdf, options?: any): AxiosPromise<Pdf> {
-            return localVarFp.updatePdf(id, pdf, options).then((request) => request(axios, basePath));
+        updatePdf(id: string, category: UpdatePdfCategoryEnum, file: File, experiment: number, population: number, id2?: number, name?: string, createdAt?: string, createdBy?: string, options?: any): AxiosPromise<Pdf> {
+            return localVarFp.updatePdf(id, category, file, experiment, population, id2, name, createdAt, createdBy, options).then((request) => request(axios, basePath));
         },
         /**
          * This viewset automatically provides `list` actions.
@@ -4354,13 +4547,20 @@ export class ApiApi extends BaseAPI {
 
     /**
      * This viewset automatically provides `list` actions.
-     * @param {Pdf} [pdf] 
+     * @param {CreatePdfCategoryEnum} category 
+     * @param {File} file 
+     * @param {number} experiment 
+     * @param {number} population 
+     * @param {number} [id] 
+     * @param {string} [name] 
+     * @param {string} [createdAt] 
+     * @param {string} [createdBy] 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof ApiApi
      */
-    public createPdf(pdf?: Pdf, options?: AxiosRequestConfig) {
-        return ApiApiFp(this.configuration).createPdf(pdf, options).then((request) => request(this.axios, this.basePath));
+    public createPdf(category: CreatePdfCategoryEnum, file: File, experiment: number, population: number, id?: number, name?: string, createdAt?: string, createdBy?: string, options?: AxiosRequestConfig) {
+        return ApiApiFp(this.configuration).createPdf(category, file, experiment, population, id, name, createdAt, createdBy, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
@@ -4647,13 +4847,20 @@ export class ApiApi extends BaseAPI {
     /**
      * This viewset automatically provides `list` actions.
      * @param {string} id A unique integer value identifying this pdf.
-     * @param {Pdf} [pdf] 
+     * @param {PartialUpdatePdfCategoryEnum} category 
+     * @param {File} file 
+     * @param {number} experiment 
+     * @param {number} population 
+     * @param {number} [id2] 
+     * @param {string} [name] 
+     * @param {string} [createdAt] 
+     * @param {string} [createdBy] 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof ApiApi
      */
-    public partialUpdatePdf(id: string, pdf?: Pdf, options?: AxiosRequestConfig) {
-        return ApiApiFp(this.configuration).partialUpdatePdf(id, pdf, options).then((request) => request(this.axios, this.basePath));
+    public partialUpdatePdf(id: string, category: PartialUpdatePdfCategoryEnum, file: File, experiment: number, population: number, id2?: number, name?: string, createdAt?: string, createdBy?: string, options?: AxiosRequestConfig) {
+        return ApiApiFp(this.configuration).partialUpdatePdf(id, category, file, experiment, population, id2, name, createdAt, createdBy, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
@@ -4747,12 +4954,13 @@ export class ApiApi extends BaseAPI {
     /**
      * This viewset automatically provides `list` actions.
      * @param {string} id A unique integer value identifying this population.
+     * @param {number} [experimentId] Optional experiment ID to filter PDFs
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof ApiApi
      */
-    public retrievePopulation(id: string, options?: AxiosRequestConfig) {
-        return ApiApiFp(this.configuration).retrievePopulation(id, options).then((request) => request(this.axios, this.basePath));
+    public retrievePopulation(id: string, experimentId?: number, options?: AxiosRequestConfig) {
+        return ApiApiFp(this.configuration).retrievePopulation(id, experimentId, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
@@ -4826,13 +5034,20 @@ export class ApiApi extends BaseAPI {
     /**
      * This viewset automatically provides `list` actions.
      * @param {string} id A unique integer value identifying this pdf.
-     * @param {Pdf} [pdf] 
+     * @param {UpdatePdfCategoryEnum} category 
+     * @param {File} file 
+     * @param {number} experiment 
+     * @param {number} population 
+     * @param {number} [id2] 
+     * @param {string} [name] 
+     * @param {string} [createdAt] 
+     * @param {string} [createdBy] 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof ApiApi
      */
-    public updatePdf(id: string, pdf?: Pdf, options?: AxiosRequestConfig) {
-        return ApiApiFp(this.configuration).updatePdf(id, pdf, options).then((request) => request(this.axios, this.basePath));
+    public updatePdf(id: string, category: UpdatePdfCategoryEnum, file: File, experiment: number, population: number, id2?: number, name?: string, createdAt?: string, createdBy?: string, options?: AxiosRequestConfig) {
+        return ApiApiFp(this.configuration).updatePdf(id, category, file, experiment, population, id2, name, createdAt, createdBy, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
@@ -4885,5 +5100,32 @@ export class ApiApi extends BaseAPI {
     }
 }
 
+/**
+ * @export
+ */
+export const CreatePdfCategoryEnum = {
+    Electrophysiology: 'ELECTROPHYSIOLOGY',
+    Behaviour: 'BEHAVIOUR',
+    IoMapping: 'IO_MAPPING'
+} as const;
+export type CreatePdfCategoryEnum = typeof CreatePdfCategoryEnum[keyof typeof CreatePdfCategoryEnum];
+/**
+ * @export
+ */
+export const PartialUpdatePdfCategoryEnum = {
+    Electrophysiology: 'ELECTROPHYSIOLOGY',
+    Behaviour: 'BEHAVIOUR',
+    IoMapping: 'IO_MAPPING'
+} as const;
+export type PartialUpdatePdfCategoryEnum = typeof PartialUpdatePdfCategoryEnum[keyof typeof PartialUpdatePdfCategoryEnum];
+/**
+ * @export
+ */
+export const UpdatePdfCategoryEnum = {
+    Electrophysiology: 'ELECTROPHYSIOLOGY',
+    Behaviour: 'BEHAVIOUR',
+    IoMapping: 'IO_MAPPING'
+} as const;
+export type UpdatePdfCategoryEnum = typeof UpdatePdfCategoryEnum[keyof typeof UpdatePdfCategoryEnum];
 
 

@@ -1,17 +1,15 @@
 import logging
+import os
 
 from dry_rest_permissions.generics import DRYPermissions
 from rest_framework import status, viewsets
-from rest_framework.decorators import action
-from rest_framework.parsers import MultiPartParser
+from rest_framework.parsers import MultiPartParser, JSONParser
 from rest_framework.response import Response
 
 from api.helpers.exceptions import InvalidPDFFile
 from api.models import Pdf, Population, Experiment
 from api.serializers import PdfSerializer
-from api.services.user_service import is_user_owner
 from api.services.pdf_service import get_pdf_save_dir, save_pdf_and_get_path
-import os
 
 log = logging.getLogger("__name__")
 
@@ -24,6 +22,7 @@ class PDFViewSet(viewsets.ModelViewSet):
     permission_classes = (DRYPermissions,)
     serializer_class = PdfSerializer
     queryset = Pdf.objects.all()
+    parser_classes = (MultiPartParser, JSONParser)
 
     def partial_update(self, request, *args, **kwargs):
         # Disable PATCH
@@ -35,13 +34,13 @@ class PDFViewSet(viewsets.ModelViewSet):
 
     def destroy(self, request, *args, **kwargs):
         instance = self.get_object()
-        population_obj = instance.population
+        experiment = instance.experiment
+        population = instance.population
 
-        if population_obj.experiment and (not is_user_owner(request, population_obj)):
+        if experiment.owner != request.user:
             return Response(status=status.HTTP_403_FORBIDDEN)
 
-        pdf_storage_path = get_pdf_save_dir(
-            population_obj.storage_path, instance)
+        pdf_storage_path = get_pdf_save_dir(population.storage_path, instance)
         if os.path.exists(pdf_storage_path):
             os.remove(pdf_storage_path)
 
@@ -49,10 +48,10 @@ class PDFViewSet(viewsets.ModelViewSet):
         return Response(status=status.HTTP_204_NO_CONTENT)
 
     def create(self, request, **kwargs):
-        pdf_file = request.FILES.get("pdf_file")
+        pdf_file = request.FILES.get("file")
         category = request.data.get("category")
-        population_id = request.data.get("population_id")
-        experiment_id = request.data.get("experiment_id")
+        population_id = request.data.get("population")
+        experiment_id = request.data.get("experiment")
 
         # Retrieve the Population and Experiment instances
         try:
@@ -61,7 +60,7 @@ class PDFViewSet(viewsets.ModelViewSet):
         except (Population.DoesNotExist, Experiment.DoesNotExist):
             return Response(status=status.HTTP_404_NOT_FOUND)
 
-        if experiment and (not is_user_owner(request, experiment)):
+        if experiment.is_private and experiment.owner != request.user:
             return Response(status=status.HTTP_403_FORBIDDEN)
 
         try:
@@ -76,7 +75,7 @@ class PDFViewSet(viewsets.ModelViewSet):
             pdf_obj.file = pdf_path
             pdf_obj.save()
 
-            pdf_serializer = PdfSerializer(pdf_obj)
+            pdf_serializer = self.get_serializer(pdf_obj)
             return Response(pdf_serializer.data, status=status.HTTP_201_CREATED)
         except InvalidPDFFile as e:
             return Response(data={'detail': str(e)}, status=status.HTTP_422_UNPROCESSABLE_ENTITY)

@@ -276,14 +276,7 @@ const DetailsViewer = (props: {
             const promises: any = []
             uploadedFiles.map((file) => {
                 promises.push(
-                    api.createPdf({
-                        name: '',
-                        category: file.selectedCategory,
-                        file: file.file,
-                        experiment: params.id,
-                        population: populationId,
-                        }
-                    )
+                    api.createPdf(file.selectedCategory, file.file, +params.id, +populationId)
                 )
             })
             const newFiles = await Promise.all(promises)
@@ -376,7 +369,7 @@ const DetailsViewer = (props: {
     useEffect(() => {
         const fetchPopulationData = async () => {
             try {
-                const response = await api.retrievePopulation(populationId);
+                const response = await api.retrievePopulation(populationId, +params.id);
                 const populationData: Population = response.data;
                 setPopulation(populationData);
                 // @ts-ignore
@@ -390,7 +383,7 @@ const DetailsViewer = (props: {
         if (populationId) {
             fetchPopulationData();
         }
-    }, [populationId]);
+    }, [populationId, params.id]);
 
     useEffect(() => {
         if (population) {
