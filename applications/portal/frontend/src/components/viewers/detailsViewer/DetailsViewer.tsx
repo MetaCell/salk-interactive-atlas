@@ -370,7 +370,7 @@ const DetailsViewer = (props: {
         <ShowEmptyMessage message="Select a population to start viewing details" />
     ) : (
         <div className={classes.container} style={{ justifyContent: "space-between" }}>
-                <div style={{ height: '100%' }}>
+                <div style={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
                 <Box display="flex" justifyContent="space-between" alignItems="center" className={classes.titleBox}>
                     <Box display="flex" alignItems="center">
                         <span className={classes.populationColor}>
@@ -476,7 +476,7 @@ const DetailsViewer = (props: {
                     }
                     {
                         (filteredData && filteredData[selectedIndex]) && (
-                            <Box display="flex" className="scrollbar" style={{ flexDirection: 'column', justifyContent: 'space-between', height: '75%' }}>
+                            <Box display="flex" className="scrollbar" style={{ flexDirection: 'column', justifyContent: 'space-between', height: '100%' }}>
 
                                 <Box display="flex" alignItems="center" justifyContent="center" py={4} style={{
                                     width: '100%',
