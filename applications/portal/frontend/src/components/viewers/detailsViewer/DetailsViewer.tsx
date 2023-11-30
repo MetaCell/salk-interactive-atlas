@@ -1,5 +1,5 @@
-import React, {useCallback, useEffect, useState} from 'react';
-import {makeStyles} from "@material-ui/core/styles";
+import React, { useCallback, useEffect, useState } from 'react';
+import { makeStyles } from "@material-ui/core/styles";
 import {
     canvasBg, populationTitleColor, populationSubTitleColor,
     headerBorderColor, secondaryColor, sidebarTextColor, deleteBtnTextColor, deleteBtnBgColor, switchActiveColor
@@ -8,13 +8,13 @@ import {
     Typography, Box, IconButton, Button, Tabs, Tab, Menu, MenuItem,
     Tooltip, TextField, Divider, ListItemIcon
 } from "@material-ui/core";
-import {Pagination} from '@material-ui/lab';
-import {DropzoneArea} from "material-ui-dropzone";
+import { Pagination } from '@material-ui/lab';
+import { DropzoneArea } from "material-ui-dropzone";
 import DeleteDialog from '../../common/ExperimentDialogs/DeleteModal';
 import Modal from '../../common/BaseDialog';
-import {PdfFileDrop} from '../../common/PdfFileDrop';
-import {CategorySelect} from './CategorySelect';
-import {getRGBAFromHexAlpha, getRGBAString} from '../../../utilities/functions';
+import { PdfFileDrop } from '../../common/PdfFileDrop';
+import { CategorySelect } from './CategorySelect';
+import { getRGBAFromHexAlpha, getRGBAString } from '../../../utilities/functions';
 import workspaceService from "../../../service/WorkspaceService";
 
 // icons
@@ -24,11 +24,11 @@ import INFO_ICON from "../../../assets/images/icons/info.svg";
 import DOWN_ICON from "../../../assets/images/icons/chevron_down.svg";
 // @ts-ignore
 import CHECK from "../../../assets/images/icons/check.svg";
-import {UploadIcon, common} from '../../header/ExperimentDialog/Common';
+import { UploadIcon, common } from '../../header/ExperimentDialog/Common';
 import PdfToPage from './PdfToPage';
-import {PdfCategoryEnum, Population} from '../../../apiclient/workspaces';
-import {formatDateTime, pdfNameOnFile} from '../../../utils';
-import {useParams} from "react-router";
+import { PdfCategoryEnum, Population } from '../../../apiclient/workspaces';
+import { formatDateTime, pdfNameOnFile } from '../../../utils';
+import { useParams } from "react-router";
 
 
 const useStyles = makeStyles({
@@ -148,7 +148,7 @@ const useStyles = makeStyles({
             '&:hover': {
                 backgroundColor: 'transparent'
             },
-            '&.Mui-selected': {backgroundColor: 'transparent'}
+            '&.Mui-selected': { backgroundColor: 'transparent' }
         },
         '& .MuiListItemIcon-root': {
             minWidth: 'auto'
@@ -393,37 +393,37 @@ const DetailsViewer = (props: {
 
 
     return (!population) ? (
-        <ShowEmptyMessage message="Select a population to start viewing details"/>
+        <ShowEmptyMessage message="Select a population to start viewing details" />
     ) : (
-        <div className={classes.container} style={{justifyContent: "space-between"}}>
-            <div style={{height: '100%'}}>
+        <div className={classes.container} style={{ justifyContent: "space-between" }}>
+            <div style={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
                 <Box display="flex" justifyContent="space-between" alignItems="center" className={classes.titleBox}>
                     <Box display="flex" alignItems="center">
                         <span className={classes.populationColor}>
-                            <Box style={{backgroundColor: getRGBAString(getRGBAColor())}}
-                                 component="span"
-                                 className={classes.square}/>
+                            <Box style={{ backgroundColor: getRGBAString(getRGBAColor()) }}
+                                component="span"
+                                className={classes.square} />
                         </span>
                         <Typography className={classes.title}>{population?.name}</Typography>
                     </Box>
                     <Button variant="outlined" onClick={() => setOpenUploadDialog(true)}>Upload PDF</Button>
                 </Box>
-                <Box sx={{bgcolor: 'transparent'}}>
+                <Box sx={{ bgcolor: 'transparent' }}>
                     <Tabs value={tabIdx} onChange={handleTabChange} className={classes.tabs}>
                         {
                             Object.keys(PdfCategoryEnum).map((option, index) => (
-                                <Tab key={index} disableRipple={true} label={option}/>
+                                <Tab key={index} disableRipple={true} label={option} />
                             ))
                         }
                     </Tabs>
                 </Box>
                 {
                     (filteredData.length === 0) ? (
-                            <ShowEmptyMessage message="No PDFs uploaded yet"/>
-                        ) :
+                        <ShowEmptyMessage message="No PDFs uploaded yet" />
+                    ) :
                         (filteredData && filteredData[selectedIndex]) && (
                             <Box display="flex" alignItems="center" justifyContent="space-between"
-                                 className={classes.tabPanelActions}>
+                                className={classes.tabPanelActions}>
                                 <Button
                                     id="detailsViewer-customized-button"
                                     className={classes.tabPanelActionsMenuBtn}
@@ -433,11 +433,11 @@ const DetailsViewer = (props: {
                                     variant="text"
                                     disableElevation={true}
                                     onClick={handleMenuClick}
-                                    endIcon={<img src={DOWN_ICON} alt=''/>}
+                                    endIcon={<img src={DOWN_ICON} alt='' />}
                                 >
-                                        <span className={classes.ellipsisText}>
-                                            {pdfNameOnFile(filteredData[selectedIndex]?.name)}
-                                        </span>
+                                    <span className={classes.ellipsisText}>
+                                        {pdfNameOnFile(filteredData[selectedIndex]?.name)}
+                                    </span>
                                 </Button>
                                 <Menu
                                     id="detailsViewer-customized-menu"
@@ -456,7 +456,7 @@ const DetailsViewer = (props: {
                                             setSearchQuery(e.target.value);
                                         }}
                                     />
-                                    <Divider/>
+                                    <Divider />
                                     {
                                         searchMenuData.map((file: any, index) => (
                                             <div className={classes.menuItemBox} key={index}>
@@ -469,7 +469,7 @@ const DetailsViewer = (props: {
                                                 </MenuItem>
                                                 {
                                                     selectedIndex === index && <ListItemIcon>
-                                                        <img src={CHECK} alt=''/>
+                                                        <img src={CHECK} alt='' />
                                                     </ListItemIcon>
                                                 }
                                             </div>
@@ -479,13 +479,12 @@ const DetailsViewer = (props: {
                                 <Box>
                                     <Tooltip
                                         arrow={true}
-                                        title={<div
-                                            style={{display: 'flex', justifyContent: 'space-between', gap: '0.75rem'}}>
-                                            <div className={classes.textBlock} style={{color: sidebarTextColor}}>
+                                        title={<div style={{ display: 'flex', justifyContent: 'space-between', gap: '0.75rem' }}>
+                                            <div className={classes.textBlock} style={{ color: sidebarTextColor }}>
                                                 <span>Uploaded on</span>
                                                 <span>Uploaded by</span>
                                             </div>
-                                            <div className={classes.textBlock} style={{alignItems: 'flex-end'}}>
+                                            <div className={classes.textBlock} style={{ alignItems: 'flex-end' }}>
                                                 <span>{formatDateTime(filteredData[selectedIndex].created_at)}</span>
                                                 <span>{filteredData[selectedIndex].created_by}</span>
                                             </div>
@@ -494,19 +493,17 @@ const DetailsViewer = (props: {
                                         className={classes.customTooltip}
                                     >
                                         <IconButton>
-                                            <img src={INFO_ICON} alt=""/>
+                                            <img src={INFO_ICON} alt="" />
                                         </IconButton>
                                     </Tooltip>
-                                    <Button variant="contained" className={classes.deleteBtn}
-                                            onClick={() => setOpenDeleteDialog(true)}>Delete file</Button>
+                                    <Button variant="contained" className={classes.deleteBtn} onClick={() => setOpenDeleteDialog(true)}>Delete file</Button>
                                 </Box>
                             </Box>
                         )
                 }
                 {
                     (filteredData && filteredData[selectedIndex]) && (
-                        <Box display="flex" className="scrollbar"
-                             style={{flexDirection: 'column', justifyContent: 'space-between', height: '75%'}}>
+                        <Box display="flex" className="scrollbar" style={{ flexDirection: 'column', justifyContent: 'space-between', height: '100%' }}>
 
                             <Box display="flex" alignItems="center" justifyContent="center" py={4} style={{
                                 width: '100%',
@@ -577,7 +574,7 @@ const DetailsViewer = (props: {
                             filesLimit={1}
                             acceptedFiles={['.pdf']}
                             showAlerts={['error']}
-                            classes={{icon: "MuiButton-outlined primary"}}
+                            classes={{ icon: "MuiButton-outlined primary" }}
                         />
                     </PdfFileDrop>
                 </Box>
@@ -631,12 +628,12 @@ const DetailsViewer = (props: {
 export default DetailsViewer
 
 
-const ShowEmptyMessage = ({message}: {
+const ShowEmptyMessage = ({ message }: {
     message: string
 }) => {
     const classes = useStyles();
     return (
-        <div className={classes.container} style={{alignItems: 'center', justifyContent: 'center'}}>
+        <div className={classes.container} style={{ alignItems: 'center', justifyContent: 'center' }}>
             <p className={classes.noContentTitle}>{message}</p>
         </div>
     )
