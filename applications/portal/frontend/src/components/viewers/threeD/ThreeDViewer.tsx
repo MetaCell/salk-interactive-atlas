@@ -295,7 +295,7 @@ class ThreeDViewer extends Component {
         mesh.frustumCulled = false
         mesh.name = population.name
         // @ts-ignore
-        mesh.population = population
+        mesh.populationId = population.id
         for (let i = 0; i < population.cells.length; i++) {
 
             const cell = population.cells[i]
@@ -333,7 +333,7 @@ class ThreeDViewer extends Component {
             const mesh = this.scene.getObjectByProperty('uuid', nearestSelectionUUID)
             if (mesh) {
                 // @ts-ignore
-                this.props.updateWidget(DetailsWidget(true, mesh))
+                this.props.updateWidget(DetailsWidget(true, mesh.populationId))
             }
         }
     }

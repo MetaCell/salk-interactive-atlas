@@ -9,18 +9,34 @@ from rest_framework.schemas.openapi import AutoSchema
 
 from api.constants import PopulationPersistentFiles
 from api.models import Experiment, Population, Pdf
-from api.serializers import PopulationSerializer, PopulationPDFUploadSerializer, PdfSerializer
+from api.serializers import PopulationSerializer
 from api.services.population_service import get_cells
-from api.services.user_service import is_user_owner
-from api.services.pdf_service import save_pdf_and_get_path
 from api.utils import send_file
-from api.helpers.exceptions import InvalidPDFFile
-from rest_framework.parsers import MultiPartParser
 
 log = logging.getLogger("__name__")
 
 
 class CustomPopulationSchema(AutoSchema):
+    def get_operation(self, path, method):
+        # Get the default operation object
+        operation = super().get_operation(path, method)
+
+        if method.lower() == 'get' and path == '/api/population/{id}/':
+            # Add the experiment_id query parameter for the retrieve action
+            params = operation.get('parameters', [])
+            params.append({
+                'name': 'experiment_id',
+                'in': 'query',
+                'required': False,
+                'description': 'Optional experiment ID to filter PDFs',
+                'schema': {
+                    'type': 'integer',
+                },
+            })
+            operation['parameters'] = params
+
+        return operation
+
     def get_responses(self, path, method):
         view = self.view
 
@@ -55,6 +71,24 @@ class PopulationViewSet(viewsets.ModelViewSet):
     queryset = Population.objects.all()
     schema = CustomPopulationSchema()
 
+    def retrieve(self, request, *args, **kwargs):
+        population = self.get_object()
+        experiment_id = request.query_params.get('experiment_id')
+
+        if experiment_id:
+            try:
+                experiment = Experiment.objects.get(id=experiment_id)
+                # Check if experiment is not private or if the user is the owner
+                if not experiment.is_private or experiment.owner == request.user:
+                    # Filter PDFs based on both population and experiment_id
+                    pdfs = Pdf.objects.filter(population=population, experiment_id=experiment_id)
+                    # Update the population object's pdfs attribute
+                    population.pdfs = pdfs
+            except Experiment.DoesNotExist:
+                pass
+
+        serializer = self.get_serializer(population)
+        return Response(serializer.data)
 
     def list(self, request, **kwargs):
         experiments = Experiment.objects.list_ids(request.user)
@@ -129,38 +163,3 @@ class PopulationViewSet(viewsets.ModelViewSet):
             content_type="image/png"
         )
         return response
-
-    @action(
-        detail=True,
-        methods=["post"],
-        parser_classes=(MultiPartParser,),
-        name="upload-pdf-files",
-        url_path="upload-pdf-files",
-        serializer_class=PopulationPDFUploadSerializer,
-    )
-    def upload_pdf_file(self, request, **kwargs):
-        pdf_file = request.FILES.get("pdf_file")
-        category = request.data.get("category")
-        instance = self.get_object()
-
-        if instance.experiment and (not is_user_owner(request, instance)):
-            return Response(status=status.HTTP_403_FORBIDDEN)
-
-        try:
-            pdf_obj = Pdf.objects.create(
-                population=instance, created_by=request.user,
-                category=category, name=pdf_file.name
-            )
-            pdf_path = save_pdf_and_get_path(
-                pdf_obj=pdf_obj,
-                population_storage_path=instance.storage_path, pdf_file=pdf_file
-            )
-            pdf_obj.file = pdf_path
-            pdf_obj.save()
-
-            pdf_serializer = PdfSerializer(pdf_obj)
-            return Response(pdf_serializer.data, status=status.HTTP_201_CREATED)
-        except InvalidPDFFile as e:
-            return Response(data={'detail': str(e)}, status=status.HTTP_422_UNPROCESSABLE_ENTITY)
-        except:
-            return Response(status=status.HTTP_400_BAD_REQUEST)

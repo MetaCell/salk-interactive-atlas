@@ -426,6 +426,12 @@ paths:
         description: A unique integer value identifying this population.
         schema:
           type: string
+      - name: experiment_id
+        in: query
+        required: false
+        description: Optional experiment ID to filter PDFs
+        schema:
+          type: integer
       responses:
         '200':
           content:
@@ -610,13 +616,10 @@ paths:
       parameters: []
       requestBody:
         content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/Pdf'
-          application/x-www-form-urlencoded:
-            schema:
-              $ref: '#/components/schemas/Pdf'
           multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Pdf'
+          application/json:
             schema:
               $ref: '#/components/schemas/Pdf'
       responses:
@@ -660,13 +663,10 @@ paths:
           type: string
       requestBody:
         content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/Pdf'
-          application/x-www-form-urlencoded:
-            schema:
-              $ref: '#/components/schemas/Pdf'
           multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Pdf'
+          application/json:
             schema:
               $ref: '#/components/schemas/Pdf'
       responses:
@@ -690,13 +690,10 @@ paths:
           type: string
       requestBody:
         content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/Pdf'
-          application/x-www-form-urlencoded:
-            schema:
-              $ref: '#/components/schemas/Pdf'
           multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Pdf'
+          application/json:
             schema:
               $ref: '#/components/schemas/Pdf'
       responses:
@@ -1216,31 +1213,6 @@ paths:
           description: ''
       tags:
       - api
-  /api/population/{id}/upload-pdf-files/:
-    post:
-      operationId: uploadPdfFilePopulation
-      description: This viewset automatically provides `list` actions.
-      parameters:
-      - name: id
-        in: path
-        required: true
-        description: A unique integer value identifying this population.
-        schema:
-          type: string
-      requestBody:
-        content:
-          multipart/form-data:
-            schema:
-              $ref: '#/components/schemas/PopulationPDFUpload'
-      responses:
-        '201':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/PopulationPDFUpload'
-          description: ''
-      tags:
-      - api
   /api/teams/{id}/add_members/:
     post:
       operationId: addMembersGroup
@@ -1579,7 +1551,7 @@ components:
           readOnly: true
         name:
           type: string
-          maxLength: 40
+          readOnly: true
         category:
           enum:
           - ELECTROPHYSIOLOGY
@@ -1591,15 +1563,20 @@ components:
           format: date-time
           readOnly: true
         created_by:
-          type: integer
+          type: string
+          readOnly: true
         file:
           type: string
           format: binary
-          nullable: true
+        experiment:
+          type: integer
+        population:
+          type: integer
       required:
-      - name
       - category
-      - created_by
+      - file
+      - experiment
+      - population
     Tag:
       type: object
       properties:
@@ -1729,21 +1706,6 @@ components:
           format: binary
       required:
       - file
-    PopulationPDFUpload:
-      type: object
-      properties:
-        pdf_file:
-          type: string
-          format: binary
-        category:
-          enum:
-          - ELECTROPHYSIOLOGY
-          - BEHAVIOUR
-          - IO_MAPPING
-          type: string
-      required:
-      - pdf_file
-      - category
     Member:
       type: object
       properties:

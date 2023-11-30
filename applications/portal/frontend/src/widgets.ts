@@ -25,7 +25,7 @@ export const threeDViewerWidget = (selectedAtlas: AtlasChoice, activePopulations
     }
 };
 
-export const DetailsWidget = (active: boolean, meshSelected: any) => {
+export const DetailsWidget = (active: boolean, populationId: string) => {
     return {
         id: widgetIds.detailsViewer,
         name: "Details Viewer",
@@ -35,7 +35,7 @@ export const DetailsWidget = (active: boolean, meshSelected: any) => {
         enableClose: false,
         status: active ? WidgetStatus.ACTIVE : WidgetStatus.HIDDEN,
         config: {
-            meshSelected,
+            populationId,
         }
     }
 };
