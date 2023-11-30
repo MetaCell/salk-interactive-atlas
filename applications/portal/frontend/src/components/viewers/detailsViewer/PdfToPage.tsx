@@ -69,6 +69,7 @@ const PdfToPage = ({
           canvasBackground={inverseColor}
           key={`page_${currentPage}`}
           pageNumber={currentPage}
+          renderTextLayer={false}
         />
       </Document>
     </div>

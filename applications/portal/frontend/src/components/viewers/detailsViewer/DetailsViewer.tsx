@@ -289,9 +289,8 @@ const DetailsViewer = (props: {
     };
 
     const handleDeletePDF = async () => {
-        console.log("Deleted");
         try {
-            const deletedPDF = await api.destroyPdf(filteredData[selectedIndex].id)
+            await api.destroyPdf(filteredData[selectedIndex].id);
             const tempPdfFiles = pdfFiles.filter((item: any) => item.id !== filteredData[selectedIndex].id);
             setPdfFiles(tempPdfFiles);
         } catch (err) {
