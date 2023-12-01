@@ -33,7 +33,6 @@ import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
 import ArrowRightIcon from '@material-ui/icons/ArrowRight';
-import WorkspaceService from "../../service/WorkspaceService";
 import { getDateFromDateTime } from "../../utils";
 import { DeleteExperimentDialog } from "../DeleteExperimentDialog";
 import { ExplorationSpinalCordDialog } from "./ExplorationSpinalCordDialog";
@@ -276,6 +275,7 @@ const ExperimentCard = ({
     experiment,
     type,
     handleDialogToggle,
+    tagsOptions,
     handleShareDialogToggle,
     handleShareMultipleDialogToggle,
     refreshExperimentList
@@ -286,11 +286,9 @@ const ExperimentCard = ({
         history.push(`/experiments/${experiment.id}`)
     }
 
-    const api = WorkspaceService.getApi();
     const [experimentMenuEl, setExperimentMenuEl] = React.useState(null);
     const [openDeleteDialog, setOpenDeleteDialog] = React.useState(false);
     const [explorationDialogOpen, setExplorationDialogOpen] = React.useState(false);
-    const [tagsOptions, setTagsOptions] = React.useState([]);
 
     const handleExplorationDialogToggle = () => {
         setExplorationDialogOpen((prevOpen) => !prevOpen);
@@ -309,13 +307,6 @@ const ExperimentCard = ({
         setOpenDeleteDialog(!openDeleteDialog);
     };
 
-    React.useEffect(() => {
-        const fetchTagOptions = async () => {
-            const res = await api.listTags()
-            setTagsOptions(res.data)
-        };
-        fetchTagOptions().catch(console.error);
-    }, []);
 
     return (
         <Grid item xs={12} md={3} key={`${experiment.name}experiment_${experiment.id}`}>

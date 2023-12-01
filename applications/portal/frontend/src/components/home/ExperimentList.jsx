@@ -168,14 +168,12 @@ const useStyles = makeStyles(() => ({
 
 const ExperimentList = (props) => {
   const classes = useStyles();
-  const { experiments, refreshExperimentList } = props;
+  const { experiments, refreshExperimentList, setExperiments } = props;
   const [anchorEl, setAnchorEl] = React.useState(null);
-  const [value, setValue] = React.useState('Alphabetical');
   const [filterAnchorEL, setFilterAnchorEL] = React.useState(null);
   const [infoDrawer, setInfoDrawer] = React.useState(false);
-  const handleChange = (event) => {
-    setValue(event.target.value);
-  };
+  const [tagsOptions, setTagsOptions] = React.useState([]);
+
   const openSortingMenu = (event) => {
     setAnchorEl(event.currentTarget);
   };
@@ -202,6 +200,19 @@ const ExperimentList = (props) => {
   const orderOptions = ["Oldest first", "Newest first"];
 
   const hash = useLocation()?.hash;
+  console.log(experiments)
+  const api = WorkspaceService.getApi();
+
+  React.useEffect(() => {
+    const fetchTagOptions = async () => {
+      const res = await api.listTags();
+      return res.data;
+    }
+    fetchTagOptions().then(data => {
+      setTagsOptions(data.map(tag => tag.name));
+    }).catch(console.error);
+  }, []);
+
 
   return (
     <>
