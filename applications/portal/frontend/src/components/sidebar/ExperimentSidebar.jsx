@@ -81,7 +81,7 @@ const useStyles = makeStyles({
                 overflow: 'hidden',
             },
             '& .ellipsis': { width: '100%' },
-            '& .ellipsis-parent': { width: '3rem' },
+            '& .ellipsis-parent': { maxWidth: '3rem' },
             '& .MuiAccordionSummary-root': {
                 padding: '0.5rem 1rem 0.5rem 3rem',
                 flexDirection: 'row-reverse',
@@ -91,10 +91,10 @@ const useStyles = makeStyles({
                         display: 'block'
                     },
                     '& .ellipsis': {
-                        width: '5.25rem'
+                        maxWidth: '5.25rem'
                     },
                     '& .ellipsis-parent': {
-                        width: '2rem'
+                        maxWidth: '2rem'
                     }
                 },
                 '&.nested': {
@@ -112,7 +112,8 @@ const useStyles = makeStyles({
                     },
                     '& .trail-icon': {
                         width: 'auto',
-                        height: 'auto'
+                        height: 'auto',
+                        opacity: 'unset'
                     }
                 }
             },
@@ -161,8 +162,7 @@ const useStyles = makeStyles({
             alignItems: 'center',
             lineHeight: '0.938rem',
             fontWeight: 400,
-            fontSize: '0.75rem',
-            paddingRight: '0.5rem',
+            fontSize: '0.75rem'
         },
         '& .population-label-box': {
             display: 'flex',
