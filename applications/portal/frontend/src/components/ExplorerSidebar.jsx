@@ -170,7 +170,7 @@ function ListItemLink(props) {
 
 const Sidebar = (props) => {
   const classes = useStyles();
-  const {experiments} = props;
+  const { experiments, searchText, setSearchText } = props;
   const [open, setOpen] = React.useState(false);
   const [dialogOpen, setDialogOpen] = React.useState(false);
 
@@ -191,6 +191,8 @@ const Sidebar = (props) => {
               <img src={SEARCH} alt="search" />
             </InputAdornment>,
           }}
+          value={searchText}
+          onChange={(e) => setSearchText(e.target.value)}
         />
       </Box>
 
