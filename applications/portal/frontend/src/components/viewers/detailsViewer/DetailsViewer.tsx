@@ -44,7 +44,8 @@ const useStyles = makeStyles({
         }
     },
     titleBox: {
-        padding: '0.75rem'
+        padding: '0.75rem',
+        minHeight: '3.5rem'
     },
     title: {
         fontSize: '0.75rem',
@@ -210,6 +211,10 @@ const useStyles = makeStyles({
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'space-between',
+        width: '100%',
+        position: 'absolute',
+        backgroundColor: '#27292B',
+        bottom: 0,
         '& .MuiTypography-root': {
             fontSize: '0.75rem',
             fontWeight: 600,
@@ -228,6 +233,7 @@ const DetailsViewer = (props: {
     editPermission: boolean
 }) => {
     const populationId = props.populationId ? props.populationId.toString() : null
+    const { editPermission } = props
     const [population, setPopulation] = useState(null);
     const [pdfFiles, setPdfFiles] = useState<any[]>([]);
     const params = useParams<{ id: string }>();
@@ -408,7 +414,7 @@ const DetailsViewer = (props: {
                         </span>
                         <Typography className={classes.title}>{population?.name}</Typography>
                     </Box>
-                    <Button variant="outlined" onClick={() => setOpenUploadDialog(true)}>Upload PDF</Button>
+                    {editPermission && <Button variant="outlined" onClick={() => setOpenUploadDialog(true)}>Upload PDF</Button>}
                 </Box>
                 <Box sx={{ bgcolor: 'transparent' }}>
                     <Tabs value={tabIdx} onChange={handleTabChange} className={classes.tabs}>
@@ -498,7 +504,7 @@ const DetailsViewer = (props: {
                                             <img src={INFO_ICON} alt="" />
                                         </IconButton>
                                     </Tooltip>
-                                    <Button variant="contained" className={classes.deleteBtn} onClick={() => setOpenDeleteDialog(true)}>Delete file</Button>
+                                    {editPermission && <Button variant="contained" className={classes.deleteBtn} onClick={() => setOpenDeleteDialog(true)}>Delete file</Button>}
                                 </Box>
                             </Box>
                         )
