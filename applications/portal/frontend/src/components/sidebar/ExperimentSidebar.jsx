@@ -164,15 +164,6 @@ const useStyles = makeStyles({
             fontWeight: 400,
             fontSize: '0.75rem'
         },
-        '& .population-label-box': {
-            display: 'flex',
-            flex: '1',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            lineHeight: '0.938rem',
-            fontWeight: 400,
-            fontSize: '0.75rem',
-        },
 
         '& .population-switch': {
             display: 'flex',

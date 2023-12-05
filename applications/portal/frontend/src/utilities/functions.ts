@@ -7,6 +7,7 @@ import {
     POPULATION_PENDING_STATE, POPULATION_RUNNING_STATE, POPULATION_UNKNOWN_CHILD
 } from "./constants";
 import Range from "../models/Range";
+import {Population} from "../apiclient/workspaces";
 
 
 export const areAllSelected = (obj: {
@@ -84,7 +85,7 @@ export function getRGBAFromHexAlpha(hex: string, opacity: number) {
 }
 
 export const getRGBAColor = (populations: any, pId: number) => {
-    const { color, opacity } = populations[pId]
+    const {color, opacity} = populations[pId]
     return getRGBAFromHexAlpha(color, opacity)
 }
 
@@ -122,7 +123,9 @@ export function scrollStop(element: any, onEvent: (arg0: any) => void, callback:
 
 }
 
-export const onWheel = (event: { preventDefault: () => void; deltaY: number; }, currentRef: { current: number; }, len: number, callback: (arg0: number) => void) => {
+export const onWheel = (event: { preventDefault: () => void; deltaY: number; }, currentRef: {
+    current: number;
+},                      len: number, callback: (arg0: number) => void) => {
     event.preventDefault()
     const direction = Math.sign(event.deltaY) * -1
     const nextCursor = mod(currentRef.current + direction, len)
@@ -130,7 +133,9 @@ export const onWheel = (event: { preventDefault: () => void; deltaY: number; }, 
     currentRef.current = nextCursor
 }
 
-export const onKeyboard = (event: { keyCode: number; }, currentRef: { current: number; }, len: number, callback: (arg0: number) => void) => {
+export const onKeyboard = (event: { keyCode: number; }, currentRef: {
+    current: number;
+},                         len: number, callback: (arg0: number) => void) => {
     const direction = event.keyCode === ARROW_KEY_RIGHT ? 1 : event.keyCode === ARROW_KEY_LEFT ? -1 : null
     if (!direction) {
         return
@@ -166,14 +171,17 @@ export function dictZip(keys: string[], values: any[]) {
 }
 
 
-export const groupPopulations = (populations: any) => {
+export const groupPopulations = (populations: Record<string, Population>) => {
     if (populations === undefined) {
         return
     }
 
-    const populationKeys = Object.keys(populations);
+    const sortedKeys = Object.entries(populations)
+        .sort((a, b) => a[1].name.localeCompare(b[1].name))
+        .map(entry => entry[0]);
 
-    return sortSubpopulation(populationKeys, populations);
+
+    return sortSubpopulation(sortedKeys, populations);
 }
 
 function sortSubpopulation(populationKeys: string[], populations: any) {
@@ -236,7 +244,7 @@ export function splitPopulations(populations: any) {
         }
     });
 
-    return { residentialPopulations, experimentalPopulations };
+    return {residentialPopulations, experimentalPopulations};
 }
 
 export function getParentPopulationStatus(population: any) {
