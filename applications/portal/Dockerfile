@@ -18,6 +18,7 @@ RUN python3 -m pip install -r requirements.txt --no-cache-dir --upgrade
 
 COPY backend/requirements.txt backend/setup.py .
 RUN python3 -m pip install -e .
+RUN apt-get update && apt-get install poppler-utils -y
 
 COPY backend ${APP_DIR}
 RUN python3 manage.py collectstatic --noinput
@@ -32,7 +33,7 @@ RUN python3 manage.py generate_grey_and_white_matter_images salk_cord_10um
 RUN python3 manage.py split_meshes salk_cord_10um
 
 # compile frontend
-FROM node:16-alpine as frontend
+FROM node:18-alpine as frontend
 
 ENV BUILDDIR=/builddir
 ENV APP_DIR=/usr/src/app

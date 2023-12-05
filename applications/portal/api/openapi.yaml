@@ -435,6 +435,12 @@ paths:
         description: A unique integer value identifying this population.
         schema:
           type: string
+      - name: experiment_id
+        in: query
+        required: false
+        description: Optional experiment ID to filter PDFs
+        schema:
+          type: integer
       responses:
         '200':
           content:
@@ -594,6 +600,132 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Population'
+          description: ''
+      tags:
+      - api
+  /api/pdf/:
+    get:
+      operationId: listPdfs
+      description: This viewset automatically provides `list` actions.
+      parameters: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Pdf'
+          description: ''
+      tags:
+      - api
+    post:
+      operationId: createPdf
+      description: This viewset automatically provides `list` actions.
+      parameters: []
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Pdf'
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Pdf'
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Pdf'
+          description: ''
+      tags:
+      - api
+  /api/pdf/{id}/:
+    get:
+      operationId: retrievePdf
+      description: This viewset automatically provides `list` actions.
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: A unique integer value identifying this pdf.
+        schema:
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Pdf'
+          description: ''
+      tags:
+      - api
+    put:
+      operationId: updatePdf
+      description: This viewset automatically provides `list` actions.
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: A unique integer value identifying this pdf.
+        schema:
+          type: string
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Pdf'
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Pdf'
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Pdf'
+          description: ''
+      tags:
+      - api
+    patch:
+      operationId: partialUpdatePdf
+      description: This viewset automatically provides `list` actions.
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: A unique integer value identifying this pdf.
+        schema:
+          type: string
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Pdf'
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Pdf'
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Pdf'
+          description: ''
+      tags:
+      - api
+    delete:
+      operationId: destroyPdf
+      description: This viewset automatically provides `list` actions.
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: A unique integer value identifying this pdf.
+        schema:
+          type: string
+      responses:
+        '204':
           description: ''
       tags:
       - api
@@ -1351,6 +1483,9 @@ components:
               status:
                 type: string
                 readOnly: true
+              pdfs:
+                type: string
+                readOnly: true
             required:
             - name
             - color
@@ -1412,11 +1547,48 @@ components:
         status:
           type: string
           readOnly: true
+        pdfs:
+          type: string
+          readOnly: true
       required:
       - name
       - color
       - experiment
       - cells
+    Pdf:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        name:
+          type: string
+          readOnly: true
+        category:
+          enum:
+          - ELECTROPHYSIOLOGY
+          - BEHAVIOUR
+          - IO_MAPPING
+          type: string
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        created_by:
+          type: string
+          readOnly: true
+        file:
+          type: string
+          format: binary
+        experiment:
+          type: integer
+        population:
+          type: integer
+      required:
+      - category
+      - file
+      - experiment
+      - population
     Tag:
       type: object
       properties:

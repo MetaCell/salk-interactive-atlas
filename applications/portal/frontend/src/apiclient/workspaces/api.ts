@@ -371,6 +371,12 @@ export interface ExperimentPopulationsInner {
      * @memberof ExperimentPopulationsInner
      */
     'status'?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof ExperimentPopulationsInner
+     */
+    'pdfs'?: string;
 }
 
 export const ExperimentPopulationsInnerAtlasEnum = {
@@ -418,6 +424,70 @@ export interface Member {
      */
     'user_id': number;
 }
+/**
+ * 
+ * @export
+ * @interface Pdf
+ */
+export interface Pdf {
+    /**
+     * 
+     * @type {number}
+     * @memberof Pdf
+     */
+    'id'?: number;
+    /**
+     * 
+     * @type {string}
+     * @memberof Pdf
+     */
+    'name'?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof Pdf
+     */
+    'category': PdfCategoryEnum;
+    /**
+     * 
+     * @type {string}
+     * @memberof Pdf
+     */
+    'created_at'?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof Pdf
+     */
+    'created_by'?: string;
+    /**
+     * 
+     * @type {File}
+     * @memberof Pdf
+     */
+    'file': File;
+    /**
+     * 
+     * @type {number}
+     * @memberof Pdf
+     */
+    'experiment': number;
+    /**
+     * 
+     * @type {number}
+     * @memberof Pdf
+     */
+    'population': number;
+}
+
+export const PdfCategoryEnum = {
+    Electrophysiology: 'ELECTROPHYSIOLOGY',
+    Behaviour: 'BEHAVIOUR',
+    IoMapping: 'IO_MAPPING'
+} as const;
+
+export type PdfCategoryEnum = typeof PdfCategoryEnum[keyof typeof PdfCategoryEnum];
+
 /**
  * 
  * @export
@@ -472,6 +542,12 @@ export interface Population {
      * @memberof Population
      */
     'status'?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof Population
+     */
+    'pdfs'?: string;
 }
 
 export const PopulationAtlasEnum = {
@@ -693,7 +769,7 @@ export const ApiApiAxiosParamCreator = function (configuration?: Configuration) 
                 baseOptions = configuration.baseOptions;
             }
 
-            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options };
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
@@ -702,12 +778,12 @@ export const ApiApiAxiosParamCreator = function (configuration?: Configuration) 
             await setBearerAuthToObject(localVarHeaderParameter, configuration)
 
 
-    
+
             localVarHeaderParameter['Content-Type'] = 'application/json';
 
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.headers = { ...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers };
             localVarRequestOptions.data = serializeDataIfNeeded(member, localVarRequestOptions, configuration)
 
             return {
@@ -736,7 +812,7 @@ export const ApiApiAxiosParamCreator = function (configuration?: Configuration) 
                 baseOptions = configuration.baseOptions;
             }
 
-            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options };
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
             const localVarFormParams = new ((configuration && configuration.formDataCtor) || FormData)();
@@ -749,13 +825,13 @@ export const ApiApiAxiosParamCreator = function (configuration?: Configuration) 
                 localVarFormParams.append('tags', tags.join(COLLECTION_FORMATS.csv));
             }
 
-    
-    
+
+
             localVarHeaderParameter['Content-Type'] = 'multipart/form-data';
-    
+
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.headers = { ...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers };
             localVarRequestOptions.data = localVarFormParams;
 
             return {
@@ -781,7 +857,7 @@ export const ApiApiAxiosParamCreator = function (configuration?: Configuration) 
                 baseOptions = configuration.baseOptions;
             }
 
-            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options };
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
@@ -790,10 +866,10 @@ export const ApiApiAxiosParamCreator = function (configuration?: Configuration) 
             await setBearerAuthToObject(localVarHeaderParameter, configuration)
 
 
-    
+
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.headers = { ...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers };
 
             return {
                 url: toPathString(localVarUrlObj),
@@ -822,7 +898,7 @@ export const ApiApiAxiosParamCreator = function (configuration?: Configuration) 
                 baseOptions = configuration.baseOptions;
             }
 
-            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options };
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
@@ -831,10 +907,10 @@ export const ApiApiAxiosParamCreator = function (configuration?: Configuration) 
             await setBearerAuthToObject(localVarHeaderParameter, configuration)
 
 
-    
+
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.headers = { ...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers };
 
             return {
                 url: toPathString(localVarUrlObj),
@@ -867,7 +943,7 @@ export const ApiApiAxiosParamCreator = function (configuration?: Configuration) 
                 baseOptions = configuration.baseOptions;
             }
 
-            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options };
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
@@ -876,10 +952,10 @@ export const ApiApiAxiosParamCreator = function (configuration?: Configuration) 
             await setBearerAuthToObject(localVarHeaderParameter, configuration)
 
 
-    
+
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.headers = { ...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers };
 
             return {
                 url: toPathString(localVarUrlObj),
@@ -901,7 +977,7 @@ export const ApiApiAxiosParamCreator = function (configuration?: Configuration) 
                 baseOptions = configuration.baseOptions;
             }
 
-            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options };
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
@@ -910,12 +986,12 @@ export const ApiApiAxiosParamCreator = function (configuration?: Configuration) 
             await setBearerAuthToObject(localVarHeaderParameter, configuration)
 
 
-    
+
             localVarHeaderParameter['Content-Type'] = 'application/json';
 
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.headers = { ...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers };
             localVarRequestOptions.data = serializeDataIfNeeded(collaborator, localVarRequestOptions, configuration)
 
             return {
@@ -953,7 +1029,7 @@ export const ApiApiAxiosParamCreator = function (configuration?: Configuration) 
                 baseOptions = configuration.baseOptions;
             }
 
-            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options };
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
             const localVarFormParams = new ((configuration && configuration.formDataCtor) || FormData)();
@@ -963,60 +1039,60 @@ export const ApiApiAxiosParamCreator = function (configuration?: Configuration) 
             await setBearerAuthToObject(localVarHeaderParameter, configuration)
 
 
-            if (id !== undefined) { 
+            if (id !== undefined) {
                 localVarFormParams.append('id', id as any);
             }
-    
-            if (name !== undefined) { 
+
+            if (name !== undefined) {
                 localVarFormParams.append('name', name as any);
             }
-    
-            if (isPrivate !== undefined) { 
+
+            if (isPrivate !== undefined) {
                 localVarFormParams.append('is_private', isPrivate as any);
             }
-    
-            if (description !== undefined) { 
+
+            if (description !== undefined) {
                 localVarFormParams.append('description', description as any);
             }
-    
-            if (dateCreated !== undefined) { 
+
+            if (dateCreated !== undefined) {
                 localVarFormParams.append('date_created', dateCreated as any);
             }
-    
-            if (lastModified !== undefined) { 
+
+            if (lastModified !== undefined) {
                 localVarFormParams.append('last_modified', lastModified as any);
             }
-    
-            if (owner !== undefined) { 
+
+            if (owner !== undefined) {
                 localVarFormParams.append('owner', new Blob([JSON.stringify(owner)], { type: "application/json", }));
             }
-                if (teams) {
+            if (teams) {
                 localVarFormParams.append('teams', teams.join(COLLECTION_FORMATS.csv));
             }
 
-                if (collaborators) {
+            if (collaborators) {
                 localVarFormParams.append('collaborators', collaborators.join(COLLECTION_FORMATS.csv));
             }
 
-                if (populations) {
+            if (populations) {
                 localVarFormParams.append('populations', populations.join(COLLECTION_FORMATS.csv));
             }
 
-                if (tags) {
+            if (tags) {
                 localVarFormParams.append('tags', tags.join(COLLECTION_FORMATS.csv));
             }
 
-    
-            if (hasEditPermission !== undefined) { 
+
+            if (hasEditPermission !== undefined) {
                 localVarFormParams.append('has_edit_permission', hasEditPermission as any);
             }
-    
-    
+
+
             localVarHeaderParameter['Content-Type'] = 'multipart/form-data';
-    
+
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.headers = { ...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers };
             localVarRequestOptions.data = localVarFormParams;
 
             return {
@@ -1039,7 +1115,7 @@ export const ApiApiAxiosParamCreator = function (configuration?: Configuration) 
                 baseOptions = configuration.baseOptions;
             }
 
-            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options };
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
@@ -1048,13 +1124,98 @@ export const ApiApiAxiosParamCreator = function (configuration?: Configuration) 
             await setBearerAuthToObject(localVarHeaderParameter, configuration)
 
 
-    
+
             localVarHeaderParameter['Content-Type'] = 'application/json';
 
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.headers = { ...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers };
             localVarRequestOptions.data = serializeDataIfNeeded(team, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * This viewset automatically provides `list` actions.
+         * @param {CreatePdfCategoryEnum} category 
+         * @param {File} file 
+         * @param {number} experiment 
+         * @param {number} population 
+         * @param {number} [id] 
+         * @param {string} [name] 
+         * @param {string} [createdAt] 
+         * @param {string} [createdBy] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        createPdf: async (category: CreatePdfCategoryEnum, file: File, experiment: number, population: number, id?: number, name?: string, createdAt?: string, createdBy?: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'category' is not null or undefined
+            assertParamExists('createPdf', 'category', category)
+            // verify required parameter 'file' is not null or undefined
+            assertParamExists('createPdf', 'file', file)
+            // verify required parameter 'experiment' is not null or undefined
+            assertParamExists('createPdf', 'experiment', experiment)
+            // verify required parameter 'population' is not null or undefined
+            assertParamExists('createPdf', 'population', population)
+            const localVarPath = `/api/pdf/`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options };
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+            const localVarFormParams = new ((configuration && configuration.formDataCtor) || FormData)();
+
+            // authentication bearerAuth required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+
+            if (id !== undefined) {
+                localVarFormParams.append('id', id as any);
+            }
+
+            if (name !== undefined) {
+                localVarFormParams.append('name', name as any);
+            }
+
+            if (category !== undefined) {
+                localVarFormParams.append('category', category as any);
+            }
+
+            if (createdAt !== undefined) {
+                localVarFormParams.append('created_at', createdAt as any);
+            }
+
+            if (createdBy !== undefined) {
+                localVarFormParams.append('created_by', createdBy as any);
+            }
+
+            if (file !== undefined) {
+                localVarFormParams.append('file', file as any);
+            }
+
+            if (experiment !== undefined) {
+                localVarFormParams.append('experiment', experiment as any);
+            }
+
+            if (population !== undefined) {
+                localVarFormParams.append('population', population as any);
+            }
+
+
+            localVarHeaderParameter['Content-Type'] = 'multipart/form-data';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = { ...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers };
+            localVarRequestOptions.data = localVarFormParams;
 
             return {
                 url: toPathString(localVarUrlObj),
@@ -1076,7 +1237,7 @@ export const ApiApiAxiosParamCreator = function (configuration?: Configuration) 
                 baseOptions = configuration.baseOptions;
             }
 
-            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options };
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
@@ -1085,12 +1246,12 @@ export const ApiApiAxiosParamCreator = function (configuration?: Configuration) 
             await setBearerAuthToObject(localVarHeaderParameter, configuration)
 
 
-    
+
             localVarHeaderParameter['Content-Type'] = 'application/json';
 
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.headers = { ...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers };
             localVarRequestOptions.data = serializeDataIfNeeded(population, localVarRequestOptions, configuration)
 
             return {
@@ -1113,7 +1274,7 @@ export const ApiApiAxiosParamCreator = function (configuration?: Configuration) 
                 baseOptions = configuration.baseOptions;
             }
 
-            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options };
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
@@ -1122,12 +1283,12 @@ export const ApiApiAxiosParamCreator = function (configuration?: Configuration) 
             await setBearerAuthToObject(localVarHeaderParameter, configuration)
 
 
-    
+
             localVarHeaderParameter['Content-Type'] = 'application/json';
 
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.headers = { ...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers };
             localVarRequestOptions.data = serializeDataIfNeeded(userDetail, localVarRequestOptions, configuration)
 
             return {
@@ -1157,7 +1318,7 @@ export const ApiApiAxiosParamCreator = function (configuration?: Configuration) 
                 baseOptions = configuration.baseOptions;
             }
 
-            const localVarRequestOptions = { method: 'DELETE', ...baseOptions, ...options};
+            const localVarRequestOptions = { method: 'DELETE', ...baseOptions, ...options };
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
@@ -1166,10 +1327,10 @@ export const ApiApiAxiosParamCreator = function (configuration?: Configuration) 
             await setBearerAuthToObject(localVarHeaderParameter, configuration)
 
 
-    
+
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.headers = { ...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers };
 
             return {
                 url: toPathString(localVarUrlObj),
@@ -1198,7 +1359,7 @@ export const ApiApiAxiosParamCreator = function (configuration?: Configuration) 
                 baseOptions = configuration.baseOptions;
             }
 
-            const localVarRequestOptions = { method: 'DELETE', ...baseOptions, ...options};
+            const localVarRequestOptions = { method: 'DELETE', ...baseOptions, ...options };
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
@@ -1207,10 +1368,10 @@ export const ApiApiAxiosParamCreator = function (configuration?: Configuration) 
             await setBearerAuthToObject(localVarHeaderParameter, configuration)
 
 
-    
+
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.headers = { ...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers };
 
             return {
                 url: toPathString(localVarUrlObj),
@@ -1235,7 +1396,7 @@ export const ApiApiAxiosParamCreator = function (configuration?: Configuration) 
                 baseOptions = configuration.baseOptions;
             }
 
-            const localVarRequestOptions = { method: 'DELETE', ...baseOptions, ...options};
+            const localVarRequestOptions = { method: 'DELETE', ...baseOptions, ...options };
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
@@ -1244,10 +1405,10 @@ export const ApiApiAxiosParamCreator = function (configuration?: Configuration) 
             await setBearerAuthToObject(localVarHeaderParameter, configuration)
 
 
-    
+
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.headers = { ...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers };
 
             return {
                 url: toPathString(localVarUrlObj),
@@ -1272,7 +1433,7 @@ export const ApiApiAxiosParamCreator = function (configuration?: Configuration) 
                 baseOptions = configuration.baseOptions;
             }
 
-            const localVarRequestOptions = { method: 'DELETE', ...baseOptions, ...options};
+            const localVarRequestOptions = { method: 'DELETE', ...baseOptions, ...options };
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
@@ -1281,10 +1442,47 @@ export const ApiApiAxiosParamCreator = function (configuration?: Configuration) 
             await setBearerAuthToObject(localVarHeaderParameter, configuration)
 
 
-    
+
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.headers = { ...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers };
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * This viewset automatically provides `list` actions.
+         * @param {string} id A unique integer value identifying this pdf.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        destroyPdf: async (id: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'id' is not null or undefined
+            assertParamExists('destroyPdf', 'id', id)
+            const localVarPath = `/api/pdf/{id}/`
+                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'DELETE', ...baseOptions, ...options };
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication bearerAuth required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = { ...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers };
 
             return {
                 url: toPathString(localVarUrlObj),
@@ -1309,7 +1507,7 @@ export const ApiApiAxiosParamCreator = function (configuration?: Configuration) 
                 baseOptions = configuration.baseOptions;
             }
 
-            const localVarRequestOptions = { method: 'DELETE', ...baseOptions, ...options};
+            const localVarRequestOptions = { method: 'DELETE', ...baseOptions, ...options };
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
@@ -1318,10 +1516,10 @@ export const ApiApiAxiosParamCreator = function (configuration?: Configuration) 
             await setBearerAuthToObject(localVarHeaderParameter, configuration)
 
 
-    
+
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.headers = { ...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers };
 
             return {
                 url: toPathString(localVarUrlObj),
@@ -1346,7 +1544,7 @@ export const ApiApiAxiosParamCreator = function (configuration?: Configuration) 
                 baseOptions = configuration.baseOptions;
             }
 
-            const localVarRequestOptions = { method: 'DELETE', ...baseOptions, ...options};
+            const localVarRequestOptions = { method: 'DELETE', ...baseOptions, ...options };
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
@@ -1355,10 +1553,10 @@ export const ApiApiAxiosParamCreator = function (configuration?: Configuration) 
             await setBearerAuthToObject(localVarHeaderParameter, configuration)
 
 
-    
+
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.headers = { ...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers };
 
             return {
                 url: toPathString(localVarUrlObj),
@@ -1387,7 +1585,7 @@ export const ApiApiAxiosParamCreator = function (configuration?: Configuration) 
                 baseOptions = configuration.baseOptions;
             }
 
-            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options };
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
@@ -1396,10 +1594,10 @@ export const ApiApiAxiosParamCreator = function (configuration?: Configuration) 
             await setBearerAuthToObject(localVarHeaderParameter, configuration)
 
 
-    
+
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.headers = { ...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers };
 
             return {
                 url: toPathString(localVarUrlObj),
@@ -1420,7 +1618,7 @@ export const ApiApiAxiosParamCreator = function (configuration?: Configuration) 
                 baseOptions = configuration.baseOptions;
             }
 
-            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options };
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
@@ -1429,10 +1627,10 @@ export const ApiApiAxiosParamCreator = function (configuration?: Configuration) 
             await setBearerAuthToObject(localVarHeaderParameter, configuration)
 
 
-    
+
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.headers = { ...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers };
 
             return {
                 url: toPathString(localVarUrlObj),
@@ -1453,7 +1651,7 @@ export const ApiApiAxiosParamCreator = function (configuration?: Configuration) 
                 baseOptions = configuration.baseOptions;
             }
 
-            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options };
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
@@ -1462,10 +1660,10 @@ export const ApiApiAxiosParamCreator = function (configuration?: Configuration) 
             await setBearerAuthToObject(localVarHeaderParameter, configuration)
 
 
-    
+
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.headers = { ...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers };
 
             return {
                 url: toPathString(localVarUrlObj),
@@ -1486,7 +1684,7 @@ export const ApiApiAxiosParamCreator = function (configuration?: Configuration) 
                 baseOptions = configuration.baseOptions;
             }
 
-            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options };
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
@@ -1495,10 +1693,43 @@ export const ApiApiAxiosParamCreator = function (configuration?: Configuration) 
             await setBearerAuthToObject(localVarHeaderParameter, configuration)
 
 
-    
+
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.headers = { ...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers };
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * This viewset automatically provides `list` actions.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        listPdfs: async (options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/api/pdf/`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options };
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication bearerAuth required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = { ...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers };
 
             return {
                 url: toPathString(localVarUrlObj),
@@ -1519,7 +1750,7 @@ export const ApiApiAxiosParamCreator = function (configuration?: Configuration) 
                 baseOptions = configuration.baseOptions;
             }
 
-            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options };
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
@@ -1528,10 +1759,10 @@ export const ApiApiAxiosParamCreator = function (configuration?: Configuration) 
             await setBearerAuthToObject(localVarHeaderParameter, configuration)
 
 
-    
+
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.headers = { ...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers };
 
             return {
                 url: toPathString(localVarUrlObj),
@@ -1552,7 +1783,7 @@ export const ApiApiAxiosParamCreator = function (configuration?: Configuration) 
                 baseOptions = configuration.baseOptions;
             }
 
-            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options };
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
@@ -1561,10 +1792,10 @@ export const ApiApiAxiosParamCreator = function (configuration?: Configuration) 
             await setBearerAuthToObject(localVarHeaderParameter, configuration)
 
 
-    
+
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.headers = { ...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers };
 
             return {
                 url: toPathString(localVarUrlObj),
@@ -1585,7 +1816,7 @@ export const ApiApiAxiosParamCreator = function (configuration?: Configuration) 
                 baseOptions = configuration.baseOptions;
             }
 
-            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options };
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
@@ -1594,10 +1825,10 @@ export const ApiApiAxiosParamCreator = function (configuration?: Configuration) 
             await setBearerAuthToObject(localVarHeaderParameter, configuration)
 
 
-    
+
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.headers = { ...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers };
 
             return {
                 url: toPathString(localVarUrlObj),
@@ -1618,7 +1849,7 @@ export const ApiApiAxiosParamCreator = function (configuration?: Configuration) 
                 baseOptions = configuration.baseOptions;
             }
 
-            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options };
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
@@ -1627,10 +1858,10 @@ export const ApiApiAxiosParamCreator = function (configuration?: Configuration) 
             await setBearerAuthToObject(localVarHeaderParameter, configuration)
 
 
-    
+
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.headers = { ...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers };
 
             return {
                 url: toPathString(localVarUrlObj),
@@ -1651,7 +1882,7 @@ export const ApiApiAxiosParamCreator = function (configuration?: Configuration) 
                 baseOptions = configuration.baseOptions;
             }
 
-            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options };
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
@@ -1660,10 +1891,10 @@ export const ApiApiAxiosParamCreator = function (configuration?: Configuration) 
             await setBearerAuthToObject(localVarHeaderParameter, configuration)
 
 
-    
+
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.headers = { ...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers };
 
             return {
                 url: toPathString(localVarUrlObj),
@@ -1688,7 +1919,7 @@ export const ApiApiAxiosParamCreator = function (configuration?: Configuration) 
                 baseOptions = configuration.baseOptions;
             }
 
-            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options };
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
@@ -1697,10 +1928,10 @@ export const ApiApiAxiosParamCreator = function (configuration?: Configuration) 
             await setBearerAuthToObject(localVarHeaderParameter, configuration)
 
 
-    
+
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.headers = { ...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers };
 
             return {
                 url: toPathString(localVarUrlObj),
@@ -1721,7 +1952,7 @@ export const ApiApiAxiosParamCreator = function (configuration?: Configuration) 
                 baseOptions = configuration.baseOptions;
             }
 
-            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options };
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
@@ -1730,10 +1961,10 @@ export const ApiApiAxiosParamCreator = function (configuration?: Configuration) 
             await setBearerAuthToObject(localVarHeaderParameter, configuration)
 
 
-    
+
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.headers = { ...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers };
 
             return {
                 url: toPathString(localVarUrlObj),
@@ -1754,7 +1985,7 @@ export const ApiApiAxiosParamCreator = function (configuration?: Configuration) 
                 baseOptions = configuration.baseOptions;
             }
 
-            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options };
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
@@ -1763,10 +1994,10 @@ export const ApiApiAxiosParamCreator = function (configuration?: Configuration) 
             await setBearerAuthToObject(localVarHeaderParameter, configuration)
 
 
-    
+
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.headers = { ...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers };
 
             return {
                 url: toPathString(localVarUrlObj),
@@ -1792,7 +2023,7 @@ export const ApiApiAxiosParamCreator = function (configuration?: Configuration) 
                 baseOptions = configuration.baseOptions;
             }
 
-            const localVarRequestOptions = { method: 'PATCH', ...baseOptions, ...options};
+            const localVarRequestOptions = { method: 'PATCH', ...baseOptions, ...options };
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
@@ -1801,12 +2032,12 @@ export const ApiApiAxiosParamCreator = function (configuration?: Configuration) 
             await setBearerAuthToObject(localVarHeaderParameter, configuration)
 
 
-    
+
             localVarHeaderParameter['Content-Type'] = 'application/json';
 
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.headers = { ...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers };
             localVarRequestOptions.data = serializeDataIfNeeded(collaborator, localVarRequestOptions, configuration)
 
             return {
@@ -1848,7 +2079,7 @@ export const ApiApiAxiosParamCreator = function (configuration?: Configuration) 
                 baseOptions = configuration.baseOptions;
             }
 
-            const localVarRequestOptions = { method: 'PATCH', ...baseOptions, ...options};
+            const localVarRequestOptions = { method: 'PATCH', ...baseOptions, ...options };
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
             const localVarFormParams = new ((configuration && configuration.formDataCtor) || FormData)();
@@ -1858,60 +2089,60 @@ export const ApiApiAxiosParamCreator = function (configuration?: Configuration) 
             await setBearerAuthToObject(localVarHeaderParameter, configuration)
 
 
-            if (id2 !== undefined) { 
+            if (id2 !== undefined) {
                 localVarFormParams.append('id', id2 as any);
             }
-    
-            if (name !== undefined) { 
+
+            if (name !== undefined) {
                 localVarFormParams.append('name', name as any);
             }
-    
-            if (isPrivate !== undefined) { 
+
+            if (isPrivate !== undefined) {
                 localVarFormParams.append('is_private', isPrivate as any);
             }
-    
-            if (description !== undefined) { 
+
+            if (description !== undefined) {
                 localVarFormParams.append('description', description as any);
             }
-    
-            if (dateCreated !== undefined) { 
+
+            if (dateCreated !== undefined) {
                 localVarFormParams.append('date_created', dateCreated as any);
             }
-    
-            if (lastModified !== undefined) { 
+
+            if (lastModified !== undefined) {
                 localVarFormParams.append('last_modified', lastModified as any);
             }
-    
-            if (owner !== undefined) { 
+
+            if (owner !== undefined) {
                 localVarFormParams.append('owner', new Blob([JSON.stringify(owner)], { type: "application/json", }));
             }
-                if (teams) {
+            if (teams) {
                 localVarFormParams.append('teams', teams.join(COLLECTION_FORMATS.csv));
             }
 
-                if (collaborators) {
+            if (collaborators) {
                 localVarFormParams.append('collaborators', collaborators.join(COLLECTION_FORMATS.csv));
             }
 
-                if (populations) {
+            if (populations) {
                 localVarFormParams.append('populations', populations.join(COLLECTION_FORMATS.csv));
             }
 
-                if (tags) {
+            if (tags) {
                 localVarFormParams.append('tags', tags.join(COLLECTION_FORMATS.csv));
             }
 
-    
-            if (hasEditPermission !== undefined) { 
+
+            if (hasEditPermission !== undefined) {
                 localVarFormParams.append('has_edit_permission', hasEditPermission as any);
             }
-    
-    
+
+
             localVarHeaderParameter['Content-Type'] = 'multipart/form-data';
-    
+
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.headers = { ...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers };
             localVarRequestOptions.data = localVarFormParams;
 
             return {
@@ -1938,7 +2169,7 @@ export const ApiApiAxiosParamCreator = function (configuration?: Configuration) 
                 baseOptions = configuration.baseOptions;
             }
 
-            const localVarRequestOptions = { method: 'PATCH', ...baseOptions, ...options};
+            const localVarRequestOptions = { method: 'PATCH', ...baseOptions, ...options };
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
@@ -1947,13 +2178,102 @@ export const ApiApiAxiosParamCreator = function (configuration?: Configuration) 
             await setBearerAuthToObject(localVarHeaderParameter, configuration)
 
 
-    
+
             localVarHeaderParameter['Content-Type'] = 'application/json';
 
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.headers = { ...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers };
             localVarRequestOptions.data = serializeDataIfNeeded(team, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * This viewset automatically provides `list` actions.
+         * @param {string} id A unique integer value identifying this pdf.
+         * @param {PartialUpdatePdfCategoryEnum} category 
+         * @param {File} file 
+         * @param {number} experiment 
+         * @param {number} population 
+         * @param {number} [id2] 
+         * @param {string} [name] 
+         * @param {string} [createdAt] 
+         * @param {string} [createdBy] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        partialUpdatePdf: async (id: string, category: PartialUpdatePdfCategoryEnum, file: File, experiment: number, population: number, id2?: number, name?: string, createdAt?: string, createdBy?: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'id' is not null or undefined
+            assertParamExists('partialUpdatePdf', 'id', id)
+            // verify required parameter 'category' is not null or undefined
+            assertParamExists('partialUpdatePdf', 'category', category)
+            // verify required parameter 'file' is not null or undefined
+            assertParamExists('partialUpdatePdf', 'file', file)
+            // verify required parameter 'experiment' is not null or undefined
+            assertParamExists('partialUpdatePdf', 'experiment', experiment)
+            // verify required parameter 'population' is not null or undefined
+            assertParamExists('partialUpdatePdf', 'population', population)
+            const localVarPath = `/api/pdf/{id}/`
+                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'PATCH', ...baseOptions, ...options };
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+            const localVarFormParams = new ((configuration && configuration.formDataCtor) || FormData)();
+
+            // authentication bearerAuth required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+
+            if (id2 !== undefined) {
+                localVarFormParams.append('id', id2 as any);
+            }
+
+            if (name !== undefined) {
+                localVarFormParams.append('name', name as any);
+            }
+
+            if (category !== undefined) {
+                localVarFormParams.append('category', category as any);
+            }
+
+            if (createdAt !== undefined) {
+                localVarFormParams.append('created_at', createdAt as any);
+            }
+
+            if (createdBy !== undefined) {
+                localVarFormParams.append('created_by', createdBy as any);
+            }
+
+            if (file !== undefined) {
+                localVarFormParams.append('file', file as any);
+            }
+
+            if (experiment !== undefined) {
+                localVarFormParams.append('experiment', experiment as any);
+            }
+
+            if (population !== undefined) {
+                localVarFormParams.append('population', population as any);
+            }
+
+
+            localVarHeaderParameter['Content-Type'] = 'multipart/form-data';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = { ...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers };
+            localVarRequestOptions.data = localVarFormParams;
 
             return {
                 url: toPathString(localVarUrlObj),
@@ -1979,7 +2299,7 @@ export const ApiApiAxiosParamCreator = function (configuration?: Configuration) 
                 baseOptions = configuration.baseOptions;
             }
 
-            const localVarRequestOptions = { method: 'PATCH', ...baseOptions, ...options};
+            const localVarRequestOptions = { method: 'PATCH', ...baseOptions, ...options };
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
@@ -1988,12 +2308,12 @@ export const ApiApiAxiosParamCreator = function (configuration?: Configuration) 
             await setBearerAuthToObject(localVarHeaderParameter, configuration)
 
 
-    
+
             localVarHeaderParameter['Content-Type'] = 'application/json';
 
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.headers = { ...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers };
             localVarRequestOptions.data = serializeDataIfNeeded(population, localVarRequestOptions, configuration)
 
             return {
@@ -2020,7 +2340,7 @@ export const ApiApiAxiosParamCreator = function (configuration?: Configuration) 
                 baseOptions = configuration.baseOptions;
             }
 
-            const localVarRequestOptions = { method: 'PATCH', ...baseOptions, ...options};
+            const localVarRequestOptions = { method: 'PATCH', ...baseOptions, ...options };
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
@@ -2029,12 +2349,12 @@ export const ApiApiAxiosParamCreator = function (configuration?: Configuration) 
             await setBearerAuthToObject(localVarHeaderParameter, configuration)
 
 
-    
+
             localVarHeaderParameter['Content-Type'] = 'application/json';
 
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.headers = { ...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers };
             localVarRequestOptions.data = serializeDataIfNeeded(userDetail, localVarRequestOptions, configuration)
 
             return {
@@ -2056,7 +2376,7 @@ export const ApiApiAxiosParamCreator = function (configuration?: Configuration) 
                 baseOptions = configuration.baseOptions;
             }
 
-            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options };
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
@@ -2065,10 +2385,10 @@ export const ApiApiAxiosParamCreator = function (configuration?: Configuration) 
             await setBearerAuthToObject(localVarHeaderParameter, configuration)
 
 
-    
+
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.headers = { ...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers };
 
             return {
                 url: toPathString(localVarUrlObj),
@@ -2089,7 +2409,7 @@ export const ApiApiAxiosParamCreator = function (configuration?: Configuration) 
                 baseOptions = configuration.baseOptions;
             }
 
-            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options };
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
@@ -2098,10 +2418,10 @@ export const ApiApiAxiosParamCreator = function (configuration?: Configuration) 
             await setBearerAuthToObject(localVarHeaderParameter, configuration)
 
 
-    
+
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.headers = { ...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers };
 
             return {
                 url: toPathString(localVarUrlObj),
@@ -2126,7 +2446,7 @@ export const ApiApiAxiosParamCreator = function (configuration?: Configuration) 
                 baseOptions = configuration.baseOptions;
             }
 
-            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options };
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
@@ -2135,10 +2455,10 @@ export const ApiApiAxiosParamCreator = function (configuration?: Configuration) 
             await setBearerAuthToObject(localVarHeaderParameter, configuration)
 
 
-    
+
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.headers = { ...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers };
 
             return {
                 url: toPathString(localVarUrlObj),
@@ -2163,7 +2483,7 @@ export const ApiApiAxiosParamCreator = function (configuration?: Configuration) 
                 baseOptions = configuration.baseOptions;
             }
 
-            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options };
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
@@ -2172,10 +2492,10 @@ export const ApiApiAxiosParamCreator = function (configuration?: Configuration) 
             await setBearerAuthToObject(localVarHeaderParameter, configuration)
 
 
-    
+
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.headers = { ...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers };
 
             return {
                 url: toPathString(localVarUrlObj),
@@ -2200,7 +2520,7 @@ export const ApiApiAxiosParamCreator = function (configuration?: Configuration) 
                 baseOptions = configuration.baseOptions;
             }
 
-            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options };
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
@@ -2209,10 +2529,47 @@ export const ApiApiAxiosParamCreator = function (configuration?: Configuration) 
             await setBearerAuthToObject(localVarHeaderParameter, configuration)
 
 
-    
+
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.headers = { ...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers };
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * This viewset automatically provides `list` actions.
+         * @param {string} id A unique integer value identifying this pdf.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        retrievePdf: async (id: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'id' is not null or undefined
+            assertParamExists('retrievePdf', 'id', id)
+            const localVarPath = `/api/pdf/{id}/`
+                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options };
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication bearerAuth required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = { ...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers };
 
             return {
                 url: toPathString(localVarUrlObj),
@@ -2222,10 +2579,11 @@ export const ApiApiAxiosParamCreator = function (configuration?: Configuration) 
         /**
          * This viewset automatically provides `list` actions.
          * @param {string} id A unique integer value identifying this population.
+         * @param {number} [experimentId] Optional experiment ID to filter PDFs
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        retrievePopulation: async (id: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+        retrievePopulation: async (id: string, experimentId?: number, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'id' is not null or undefined
             assertParamExists('retrievePopulation', 'id', id)
             const localVarPath = `/api/population/{id}/`
@@ -2237,7 +2595,7 @@ export const ApiApiAxiosParamCreator = function (configuration?: Configuration) 
                 baseOptions = configuration.baseOptions;
             }
 
-            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options };
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
@@ -2245,11 +2603,15 @@ export const ApiApiAxiosParamCreator = function (configuration?: Configuration) 
             // http bearer authentication required
             await setBearerAuthToObject(localVarHeaderParameter, configuration)
 
+            if (experimentId !== undefined) {
+                localVarQueryParameter['experiment_id'] = experimentId;
+            }
 
-    
+
+
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.headers = { ...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers };
 
             return {
                 url: toPathString(localVarUrlObj),
@@ -2274,7 +2636,7 @@ export const ApiApiAxiosParamCreator = function (configuration?: Configuration) 
                 baseOptions = configuration.baseOptions;
             }
 
-            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options };
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
@@ -2283,10 +2645,10 @@ export const ApiApiAxiosParamCreator = function (configuration?: Configuration) 
             await setBearerAuthToObject(localVarHeaderParameter, configuration)
 
 
-    
+
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.headers = { ...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers };
 
             return {
                 url: toPathString(localVarUrlObj),
@@ -2307,7 +2669,7 @@ export const ApiApiAxiosParamCreator = function (configuration?: Configuration) 
                 baseOptions = configuration.baseOptions;
             }
 
-            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options };
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
@@ -2316,10 +2678,10 @@ export const ApiApiAxiosParamCreator = function (configuration?: Configuration) 
             await setBearerAuthToObject(localVarHeaderParameter, configuration)
 
 
-    
+
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.headers = { ...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers };
 
             return {
                 url: toPathString(localVarUrlObj),
@@ -2345,7 +2707,7 @@ export const ApiApiAxiosParamCreator = function (configuration?: Configuration) 
                 baseOptions = configuration.baseOptions;
             }
 
-            const localVarRequestOptions = { method: 'PUT', ...baseOptions, ...options};
+            const localVarRequestOptions = { method: 'PUT', ...baseOptions, ...options };
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
@@ -2354,12 +2716,12 @@ export const ApiApiAxiosParamCreator = function (configuration?: Configuration) 
             await setBearerAuthToObject(localVarHeaderParameter, configuration)
 
 
-    
+
             localVarHeaderParameter['Content-Type'] = 'application/json';
 
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.headers = { ...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers };
             localVarRequestOptions.data = serializeDataIfNeeded(collaborator, localVarRequestOptions, configuration)
 
             return {
@@ -2401,7 +2763,7 @@ export const ApiApiAxiosParamCreator = function (configuration?: Configuration) 
                 baseOptions = configuration.baseOptions;
             }
 
-            const localVarRequestOptions = { method: 'PUT', ...baseOptions, ...options};
+            const localVarRequestOptions = { method: 'PUT', ...baseOptions, ...options };
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
             const localVarFormParams = new ((configuration && configuration.formDataCtor) || FormData)();
@@ -2411,60 +2773,60 @@ export const ApiApiAxiosParamCreator = function (configuration?: Configuration) 
             await setBearerAuthToObject(localVarHeaderParameter, configuration)
 
 
-            if (id2 !== undefined) { 
+            if (id2 !== undefined) {
                 localVarFormParams.append('id', id2 as any);
             }
-    
-            if (name !== undefined) { 
+
+            if (name !== undefined) {
                 localVarFormParams.append('name', name as any);
             }
-    
-            if (isPrivate !== undefined) { 
+
+            if (isPrivate !== undefined) {
                 localVarFormParams.append('is_private', isPrivate as any);
             }
-    
-            if (description !== undefined) { 
+
+            if (description !== undefined) {
                 localVarFormParams.append('description', description as any);
             }
-    
-            if (dateCreated !== undefined) { 
+
+            if (dateCreated !== undefined) {
                 localVarFormParams.append('date_created', dateCreated as any);
             }
-    
-            if (lastModified !== undefined) { 
+
+            if (lastModified !== undefined) {
                 localVarFormParams.append('last_modified', lastModified as any);
             }
-    
-            if (owner !== undefined) { 
+
+            if (owner !== undefined) {
                 localVarFormParams.append('owner', new Blob([JSON.stringify(owner)], { type: "application/json", }));
             }
-                if (teams) {
+            if (teams) {
                 localVarFormParams.append('teams', teams.join(COLLECTION_FORMATS.csv));
             }
 
-                if (collaborators) {
+            if (collaborators) {
                 localVarFormParams.append('collaborators', collaborators.join(COLLECTION_FORMATS.csv));
             }
 
-                if (populations) {
+            if (populations) {
                 localVarFormParams.append('populations', populations.join(COLLECTION_FORMATS.csv));
             }
 
-                if (tags) {
+            if (tags) {
                 localVarFormParams.append('tags', tags.join(COLLECTION_FORMATS.csv));
             }
 
-    
-            if (hasEditPermission !== undefined) { 
+
+            if (hasEditPermission !== undefined) {
                 localVarFormParams.append('has_edit_permission', hasEditPermission as any);
             }
-    
-    
+
+
             localVarHeaderParameter['Content-Type'] = 'multipart/form-data';
-    
+
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.headers = { ...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers };
             localVarRequestOptions.data = localVarFormParams;
 
             return {
@@ -2491,7 +2853,7 @@ export const ApiApiAxiosParamCreator = function (configuration?: Configuration) 
                 baseOptions = configuration.baseOptions;
             }
 
-            const localVarRequestOptions = { method: 'PUT', ...baseOptions, ...options};
+            const localVarRequestOptions = { method: 'PUT', ...baseOptions, ...options };
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
@@ -2500,13 +2862,102 @@ export const ApiApiAxiosParamCreator = function (configuration?: Configuration) 
             await setBearerAuthToObject(localVarHeaderParameter, configuration)
 
 
-    
+
             localVarHeaderParameter['Content-Type'] = 'application/json';
 
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.headers = { ...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers };
             localVarRequestOptions.data = serializeDataIfNeeded(team, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * This viewset automatically provides `list` actions.
+         * @param {string} id A unique integer value identifying this pdf.
+         * @param {UpdatePdfCategoryEnum} category 
+         * @param {File} file 
+         * @param {number} experiment 
+         * @param {number} population 
+         * @param {number} [id2] 
+         * @param {string} [name] 
+         * @param {string} [createdAt] 
+         * @param {string} [createdBy] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        updatePdf: async (id: string, category: UpdatePdfCategoryEnum, file: File, experiment: number, population: number, id2?: number, name?: string, createdAt?: string, createdBy?: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'id' is not null or undefined
+            assertParamExists('updatePdf', 'id', id)
+            // verify required parameter 'category' is not null or undefined
+            assertParamExists('updatePdf', 'category', category)
+            // verify required parameter 'file' is not null or undefined
+            assertParamExists('updatePdf', 'file', file)
+            // verify required parameter 'experiment' is not null or undefined
+            assertParamExists('updatePdf', 'experiment', experiment)
+            // verify required parameter 'population' is not null or undefined
+            assertParamExists('updatePdf', 'population', population)
+            const localVarPath = `/api/pdf/{id}/`
+                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'PUT', ...baseOptions, ...options };
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+            const localVarFormParams = new ((configuration && configuration.formDataCtor) || FormData)();
+
+            // authentication bearerAuth required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+
+            if (id2 !== undefined) {
+                localVarFormParams.append('id', id2 as any);
+            }
+
+            if (name !== undefined) {
+                localVarFormParams.append('name', name as any);
+            }
+
+            if (category !== undefined) {
+                localVarFormParams.append('category', category as any);
+            }
+
+            if (createdAt !== undefined) {
+                localVarFormParams.append('created_at', createdAt as any);
+            }
+
+            if (createdBy !== undefined) {
+                localVarFormParams.append('created_by', createdBy as any);
+            }
+
+            if (file !== undefined) {
+                localVarFormParams.append('file', file as any);
+            }
+
+            if (experiment !== undefined) {
+                localVarFormParams.append('experiment', experiment as any);
+            }
+
+            if (population !== undefined) {
+                localVarFormParams.append('population', population as any);
+            }
+
+
+            localVarHeaderParameter['Content-Type'] = 'multipart/form-data';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = { ...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers };
+            localVarRequestOptions.data = localVarFormParams;
 
             return {
                 url: toPathString(localVarUrlObj),
@@ -2532,7 +2983,7 @@ export const ApiApiAxiosParamCreator = function (configuration?: Configuration) 
                 baseOptions = configuration.baseOptions;
             }
 
-            const localVarRequestOptions = { method: 'PUT', ...baseOptions, ...options};
+            const localVarRequestOptions = { method: 'PUT', ...baseOptions, ...options };
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
@@ -2541,12 +2992,12 @@ export const ApiApiAxiosParamCreator = function (configuration?: Configuration) 
             await setBearerAuthToObject(localVarHeaderParameter, configuration)
 
 
-    
+
             localVarHeaderParameter['Content-Type'] = 'application/json';
 
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.headers = { ...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers };
             localVarRequestOptions.data = serializeDataIfNeeded(population, localVarRequestOptions, configuration)
 
             return {
@@ -2573,7 +3024,7 @@ export const ApiApiAxiosParamCreator = function (configuration?: Configuration) 
                 baseOptions = configuration.baseOptions;
             }
 
-            const localVarRequestOptions = { method: 'PUT', ...baseOptions, ...options};
+            const localVarRequestOptions = { method: 'PUT', ...baseOptions, ...options };
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
@@ -2582,12 +3033,12 @@ export const ApiApiAxiosParamCreator = function (configuration?: Configuration) 
             await setBearerAuthToObject(localVarHeaderParameter, configuration)
 
 
-    
+
             localVarHeaderParameter['Content-Type'] = 'application/json';
 
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.headers = { ...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers };
             localVarRequestOptions.data = serializeDataIfNeeded(userDetail, localVarRequestOptions, configuration)
 
             return {
@@ -2619,7 +3070,7 @@ export const ApiApiAxiosParamCreator = function (configuration?: Configuration) 
                 baseOptions = configuration.baseOptions;
             }
 
-            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options };
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
             const localVarFormParams = new ((configuration && configuration.formDataCtor) || FormData)();
@@ -2629,20 +3080,20 @@ export const ApiApiAxiosParamCreator = function (configuration?: Configuration) 
             await setBearerAuthToObject(localVarHeaderParameter, configuration)
 
 
-            if (keyFile !== undefined) { 
+            if (keyFile !== undefined) {
                 localVarFormParams.append('key_file', keyFile as any);
             }
-    
-            if (dataFile !== undefined) { 
+
+            if (dataFile !== undefined) {
                 localVarFormParams.append('data_file', dataFile as any);
             }
-    
-    
+
+
             localVarHeaderParameter['Content-Type'] = 'multipart/form-data';
-    
+
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.headers = { ...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers };
             localVarRequestOptions.data = localVarFormParams;
 
             return {
@@ -2671,7 +3122,7 @@ export const ApiApiAxiosParamCreator = function (configuration?: Configuration) 
                 baseOptions = configuration.baseOptions;
             }
 
-            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options };
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
             const localVarFormParams = new ((configuration && configuration.formDataCtor) || FormData)();
@@ -2681,16 +3132,16 @@ export const ApiApiAxiosParamCreator = function (configuration?: Configuration) 
             await setBearerAuthToObject(localVarHeaderParameter, configuration)
 
 
-            if (file !== undefined) { 
+            if (file !== undefined) {
                 localVarFormParams.append('file', file as any);
             }
-    
-    
+
+
             localVarHeaderParameter['Content-Type'] = 'multipart/form-data';
-    
+
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.headers = { ...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers };
             localVarRequestOptions.data = localVarFormParams;
 
             return {
@@ -2705,7 +3156,7 @@ export const ApiApiAxiosParamCreator = function (configuration?: Configuration) 
  * ApiApi - functional programming interface
  * @export
  */
-export const ApiApiFp = function(configuration?: Configuration) {
+export const ApiApiFp = function (configuration?: Configuration) {
     const localVarAxiosParamCreator = ApiApiAxiosParamCreator(configuration)
     return {
         /**
@@ -2822,6 +3273,25 @@ export const ApiApiFp = function(configuration?: Configuration) {
         },
         /**
          * This viewset automatically provides `list` actions.
+         * @param {CreatePdfCategoryEnum} category 
+         * @param {File} file 
+         * @param {number} experiment 
+         * @param {number} population 
+         * @param {number} [id] 
+         * @param {string} [name] 
+         * @param {string} [createdAt] 
+         * @param {string} [createdBy] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async createPdf(category: CreatePdfCategoryEnum, file: File, experiment: number, population: number, id?: number, name?: string, createdAt?: string, createdBy?: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Pdf>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.createPdf(category, file, experiment, population, id, name, createdAt, createdBy, options);
+            const index = configuration?.serverIndex ?? 0;
+            const operationBasePath = operationServerMap['ApiApi.createPdf']?.[index]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, operationBasePath || basePath);
+        },
+        /**
+         * This viewset automatically provides `list` actions.
          * @param {Population} [population] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -2896,6 +3366,18 @@ export const ApiApiFp = function(configuration?: Configuration) {
         },
         /**
          * This viewset automatically provides `list` actions.
+         * @param {string} id A unique integer value identifying this pdf.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async destroyPdf(id: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.destroyPdf(id, options);
+            const index = configuration?.serverIndex ?? 0;
+            const operationBasePath = operationServerMap['ApiApi.destroyPdf']?.[index]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, operationBasePath || basePath);
+        },
+        /**
+         * This viewset automatically provides `list` actions.
          * @param {string} id A unique integer value identifying this population.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -2962,6 +3444,17 @@ export const ApiApiFp = function(configuration?: Configuration) {
             const localVarAxiosArgs = await localVarAxiosParamCreator.listGroups(options);
             const index = configuration?.serverIndex ?? 0;
             const operationBasePath = operationServerMap['ApiApi.listGroups']?.[index]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, operationBasePath || basePath);
+        },
+        /**
+         * This viewset automatically provides `list` actions.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async listPdfs(options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<Pdf>>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.listPdfs(options);
+            const index = configuration?.serverIndex ?? 0;
+            const operationBasePath = operationServerMap['ApiApi.listPdfs']?.[index]?.url;
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, operationBasePath || basePath);
         },
         /**
@@ -3105,6 +3598,26 @@ export const ApiApiFp = function(configuration?: Configuration) {
         },
         /**
          * This viewset automatically provides `list` actions.
+         * @param {string} id A unique integer value identifying this pdf.
+         * @param {PartialUpdatePdfCategoryEnum} category 
+         * @param {File} file 
+         * @param {number} experiment 
+         * @param {number} population 
+         * @param {number} [id2] 
+         * @param {string} [name] 
+         * @param {string} [createdAt] 
+         * @param {string} [createdBy] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async partialUpdatePdf(id: string, category: PartialUpdatePdfCategoryEnum, file: File, experiment: number, population: number, id2?: number, name?: string, createdAt?: string, createdBy?: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Pdf>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.partialUpdatePdf(id, category, file, experiment, population, id2, name, createdAt, createdBy, options);
+            const index = configuration?.serverIndex ?? 0;
+            const operationBasePath = operationServerMap['ApiApi.partialUpdatePdf']?.[index]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, operationBasePath || basePath);
+        },
+        /**
+         * This viewset automatically provides `list` actions.
          * @param {string} id A unique integer value identifying this population.
          * @param {Population} [population] 
          * @param {*} [options] Override http request option.
@@ -3189,12 +3702,25 @@ export const ApiApiFp = function(configuration?: Configuration) {
         },
         /**
          * This viewset automatically provides `list` actions.
-         * @param {string} id A unique integer value identifying this population.
+         * @param {string} id A unique integer value identifying this pdf.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async retrievePopulation(id: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Population>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.retrievePopulation(id, options);
+        async retrievePdf(id: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Pdf>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.retrievePdf(id, options);
+            const index = configuration?.serverIndex ?? 0;
+            const operationBasePath = operationServerMap['ApiApi.retrievePdf']?.[index]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, operationBasePath || basePath);
+        },
+        /**
+         * This viewset automatically provides `list` actions.
+         * @param {string} id A unique integer value identifying this population.
+         * @param {number} [experimentId] Optional experiment ID to filter PDFs
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async retrievePopulation(id: string, experimentId?: number, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Population>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.retrievePopulation(id, experimentId, options);
             const index = configuration?.serverIndex ?? 0;
             const operationBasePath = operationServerMap['ApiApi.retrievePopulation']?.[index]?.url;
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, operationBasePath || basePath);
@@ -3270,6 +3796,26 @@ export const ApiApiFp = function(configuration?: Configuration) {
             const localVarAxiosArgs = await localVarAxiosParamCreator.updateGroup(id, team, options);
             const index = configuration?.serverIndex ?? 0;
             const operationBasePath = operationServerMap['ApiApi.updateGroup']?.[index]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, operationBasePath || basePath);
+        },
+        /**
+         * This viewset automatically provides `list` actions.
+         * @param {string} id A unique integer value identifying this pdf.
+         * @param {UpdatePdfCategoryEnum} category 
+         * @param {File} file 
+         * @param {number} experiment 
+         * @param {number} population 
+         * @param {number} [id2] 
+         * @param {string} [name] 
+         * @param {string} [createdAt] 
+         * @param {string} [createdBy] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async updatePdf(id: string, category: UpdatePdfCategoryEnum, file: File, experiment: number, population: number, id2?: number, name?: string, createdAt?: string, createdBy?: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Pdf>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.updatePdf(id, category, file, experiment, population, id2, name, createdAt, createdBy, options);
+            const index = configuration?.serverIndex ?? 0;
+            const operationBasePath = operationServerMap['ApiApi.updatePdf']?.[index]?.url;
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, operationBasePath || basePath);
         },
         /**
@@ -3425,6 +3971,22 @@ export const ApiApiFactory = function (configuration?: Configuration, basePath?:
         },
         /**
          * This viewset automatically provides `list` actions.
+         * @param {CreatePdfCategoryEnum} category 
+         * @param {File} file 
+         * @param {number} experiment 
+         * @param {number} population 
+         * @param {number} [id] 
+         * @param {string} [name] 
+         * @param {string} [createdAt] 
+         * @param {string} [createdBy] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        createPdf(category: CreatePdfCategoryEnum, file: File, experiment: number, population: number, id?: number, name?: string, createdAt?: string, createdBy?: string, options?: any): AxiosPromise<Pdf> {
+            return localVarFp.createPdf(category, file, experiment, population, id, name, createdAt, createdBy, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * This viewset automatically provides `list` actions.
          * @param {Population} [population] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -3481,6 +4043,15 @@ export const ApiApiFactory = function (configuration?: Configuration, basePath?:
         },
         /**
          * This viewset automatically provides `list` actions.
+         * @param {string} id A unique integer value identifying this pdf.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        destroyPdf(id: string, options?: any): AxiosPromise<void> {
+            return localVarFp.destroyPdf(id, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * This viewset automatically provides `list` actions.
          * @param {string} id A unique integer value identifying this population.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -3530,6 +4101,14 @@ export const ApiApiFactory = function (configuration?: Configuration, basePath?:
          */
         listGroups(options?: any): AxiosPromise<Array<Team>> {
             return localVarFp.listGroups(options).then((request) => request(axios, basePath));
+        },
+        /**
+         * This viewset automatically provides `list` actions.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        listPdfs(options?: any): AxiosPromise<Array<Pdf>> {
+            return localVarFp.listPdfs(options).then((request) => request(axios, basePath));
         },
         /**
          * This viewset automatically provides `list` actions.
@@ -3639,6 +4218,23 @@ export const ApiApiFactory = function (configuration?: Configuration, basePath?:
         },
         /**
          * This viewset automatically provides `list` actions.
+         * @param {string} id A unique integer value identifying this pdf.
+         * @param {PartialUpdatePdfCategoryEnum} category 
+         * @param {File} file 
+         * @param {number} experiment 
+         * @param {number} population 
+         * @param {number} [id2] 
+         * @param {string} [name] 
+         * @param {string} [createdAt] 
+         * @param {string} [createdBy] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        partialUpdatePdf(id: string, category: PartialUpdatePdfCategoryEnum, file: File, experiment: number, population: number, id2?: number, name?: string, createdAt?: string, createdBy?: string, options?: any): AxiosPromise<Pdf> {
+            return localVarFp.partialUpdatePdf(id, category, file, experiment, population, id2, name, createdAt, createdBy, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * This viewset automatically provides `list` actions.
          * @param {string} id A unique integer value identifying this population.
          * @param {Population} [population] 
          * @param {*} [options] Override http request option.
@@ -3702,12 +4298,22 @@ export const ApiApiFactory = function (configuration?: Configuration, basePath?:
         },
         /**
          * This viewset automatically provides `list` actions.
-         * @param {string} id A unique integer value identifying this population.
+         * @param {string} id A unique integer value identifying this pdf.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        retrievePopulation(id: string, options?: any): AxiosPromise<Population> {
-            return localVarFp.retrievePopulation(id, options).then((request) => request(axios, basePath));
+        retrievePdf(id: string, options?: any): AxiosPromise<Pdf> {
+            return localVarFp.retrievePdf(id, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * This viewset automatically provides `list` actions.
+         * @param {string} id A unique integer value identifying this population.
+         * @param {number} [experimentId] Optional experiment ID to filter PDFs
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        retrievePopulation(id: string, experimentId?: number, options?: any): AxiosPromise<Population> {
+            return localVarFp.retrievePopulation(id, experimentId, options).then((request) => request(axios, basePath));
         },
         /**
          * This viewset automatically provides `list`, `create`, `retrieve`, `update` actions.  The list action will always return the current user\'s userdetail as a list or an empty list if the current user has no userdetail
@@ -3766,6 +4372,23 @@ export const ApiApiFactory = function (configuration?: Configuration, basePath?:
          */
         updateGroup(id: string, team?: Team, options?: any): AxiosPromise<Team> {
             return localVarFp.updateGroup(id, team, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * This viewset automatically provides `list` actions.
+         * @param {string} id A unique integer value identifying this pdf.
+         * @param {UpdatePdfCategoryEnum} category 
+         * @param {File} file 
+         * @param {number} experiment 
+         * @param {number} population 
+         * @param {number} [id2] 
+         * @param {string} [name] 
+         * @param {string} [createdAt] 
+         * @param {string} [createdBy] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        updatePdf(id: string, category: UpdatePdfCategoryEnum, file: File, experiment: number, population: number, id2?: number, name?: string, createdAt?: string, createdBy?: string, options?: any): AxiosPromise<Pdf> {
+            return localVarFp.updatePdf(id, category, file, experiment, population, id2, name, createdAt, createdBy, options).then((request) => request(axios, basePath));
         },
         /**
          * This viewset automatically provides `list` actions.
@@ -3924,6 +4547,24 @@ export class ApiApi extends BaseAPI {
 
     /**
      * This viewset automatically provides `list` actions.
+     * @param {CreatePdfCategoryEnum} category 
+     * @param {File} file 
+     * @param {number} experiment 
+     * @param {number} population 
+     * @param {number} [id] 
+     * @param {string} [name] 
+     * @param {string} [createdAt] 
+     * @param {string} [createdBy] 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof ApiApi
+     */
+    public createPdf(category: CreatePdfCategoryEnum, file: File, experiment: number, population: number, id?: number, name?: string, createdAt?: string, createdBy?: string, options?: AxiosRequestConfig) {
+        return ApiApiFp(this.configuration).createPdf(category, file, experiment, population, id, name, createdAt, createdBy, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * This viewset automatically provides `list` actions.
      * @param {Population} [population] 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
@@ -3992,6 +4633,17 @@ export class ApiApi extends BaseAPI {
 
     /**
      * This viewset automatically provides `list` actions.
+     * @param {string} id A unique integer value identifying this pdf.
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof ApiApi
+     */
+    public destroyPdf(id: string, options?: AxiosRequestConfig) {
+        return ApiApiFp(this.configuration).destroyPdf(id, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * This viewset automatically provides `list` actions.
      * @param {string} id A unique integer value identifying this population.
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
@@ -4052,6 +4704,16 @@ export class ApiApi extends BaseAPI {
      */
     public listGroups(options?: AxiosRequestConfig) {
         return ApiApiFp(this.configuration).listGroups(options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * This viewset automatically provides `list` actions.
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof ApiApi
+     */
+    public listPdfs(options?: AxiosRequestConfig) {
+        return ApiApiFp(this.configuration).listPdfs(options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
@@ -4184,6 +4846,25 @@ export class ApiApi extends BaseAPI {
 
     /**
      * This viewset automatically provides `list` actions.
+     * @param {string} id A unique integer value identifying this pdf.
+     * @param {PartialUpdatePdfCategoryEnum} category 
+     * @param {File} file 
+     * @param {number} experiment 
+     * @param {number} population 
+     * @param {number} [id2] 
+     * @param {string} [name] 
+     * @param {string} [createdAt] 
+     * @param {string} [createdBy] 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof ApiApi
+     */
+    public partialUpdatePdf(id: string, category: PartialUpdatePdfCategoryEnum, file: File, experiment: number, population: number, id2?: number, name?: string, createdAt?: string, createdBy?: string, options?: AxiosRequestConfig) {
+        return ApiApiFp(this.configuration).partialUpdatePdf(id, category, file, experiment, population, id2, name, createdAt, createdBy, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * This viewset automatically provides `list` actions.
      * @param {string} id A unique integer value identifying this population.
      * @param {Population} [population] 
      * @param {*} [options] Override http request option.
@@ -4261,13 +4942,25 @@ export class ApiApi extends BaseAPI {
 
     /**
      * This viewset automatically provides `list` actions.
-     * @param {string} id A unique integer value identifying this population.
+     * @param {string} id A unique integer value identifying this pdf.
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof ApiApi
      */
-    public retrievePopulation(id: string, options?: AxiosRequestConfig) {
-        return ApiApiFp(this.configuration).retrievePopulation(id, options).then((request) => request(this.axios, this.basePath));
+    public retrievePdf(id: string, options?: AxiosRequestConfig) {
+        return ApiApiFp(this.configuration).retrievePdf(id, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * This viewset automatically provides `list` actions.
+     * @param {string} id A unique integer value identifying this population.
+     * @param {number} [experimentId] Optional experiment ID to filter PDFs
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof ApiApi
+     */
+    public retrievePopulation(id: string, experimentId?: number, options?: AxiosRequestConfig) {
+        return ApiApiFp(this.configuration).retrievePopulation(id, experimentId, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
@@ -4340,6 +5033,25 @@ export class ApiApi extends BaseAPI {
 
     /**
      * This viewset automatically provides `list` actions.
+     * @param {string} id A unique integer value identifying this pdf.
+     * @param {UpdatePdfCategoryEnum} category 
+     * @param {File} file 
+     * @param {number} experiment 
+     * @param {number} population 
+     * @param {number} [id2] 
+     * @param {string} [name] 
+     * @param {string} [createdAt] 
+     * @param {string} [createdBy] 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof ApiApi
+     */
+    public updatePdf(id: string, category: UpdatePdfCategoryEnum, file: File, experiment: number, population: number, id2?: number, name?: string, createdAt?: string, createdBy?: string, options?: AxiosRequestConfig) {
+        return ApiApiFp(this.configuration).updatePdf(id, category, file, experiment, population, id2, name, createdAt, createdBy, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * This viewset automatically provides `list` actions.
      * @param {string} id A unique integer value identifying this population.
      * @param {Population} [population] 
      * @param {*} [options] Override http request option.
@@ -4387,6 +5099,34 @@ export class ApiApi extends BaseAPI {
         return ApiApiFp(this.configuration).uploadSingleFileExperiment(id, file, options).then((request) => request(this.axios, this.basePath));
     }
 }
+
+/**
+ * @export
+ */
+export const CreatePdfCategoryEnum = {
+    Electrophysiology: 'ELECTROPHYSIOLOGY',
+    Behaviour: 'BEHAVIOUR',
+    IoMapping: 'IO_MAPPING'
+} as const;
+export type CreatePdfCategoryEnum = typeof CreatePdfCategoryEnum[keyof typeof CreatePdfCategoryEnum];
+/**
+ * @export
+ */
+export const PartialUpdatePdfCategoryEnum = {
+    Electrophysiology: 'ELECTROPHYSIOLOGY',
+    Behaviour: 'BEHAVIOUR',
+    IoMapping: 'IO_MAPPING'
+} as const;
+export type PartialUpdatePdfCategoryEnum = typeof PartialUpdatePdfCategoryEnum[keyof typeof PartialUpdatePdfCategoryEnum];
+/**
+ * @export
+ */
+export const UpdatePdfCategoryEnum = {
+    Electrophysiology: 'ELECTROPHYSIOLOGY',
+    Behaviour: 'BEHAVIOUR',
+    IoMapping: 'IO_MAPPING'
+} as const;
+export type UpdatePdfCategoryEnum = typeof UpdatePdfCategoryEnum[keyof typeof UpdatePdfCategoryEnum];
 
 
 

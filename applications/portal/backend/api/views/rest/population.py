@@ -8,7 +8,7 @@ from rest_framework.response import Response
 from rest_framework.schemas.openapi import AutoSchema
 
 from api.constants import PopulationPersistentFiles
-from api.models import Experiment, Population
+from api.models import Experiment, Population, Pdf
 from api.serializers import PopulationSerializer
 from api.services.population_service import get_cells,  has_correct_at_sign_count
 from api.services.user_service import is_user_owner
@@ -18,6 +18,26 @@ log = logging.getLogger("__name__")
 
 
 class CustomPopulationSchema(AutoSchema):
+    def get_operation(self, path, method):
+        # Get the default operation object
+        operation = super().get_operation(path, method)
+
+        if method.lower() == 'get' and path == '/api/population/{id}/':
+            # Add the experiment_id query parameter for the retrieve action
+            params = operation.get('parameters', [])
+            params.append({
+                'name': 'experiment_id',
+                'in': 'query',
+                'required': False,
+                'description': 'Optional experiment ID to filter PDFs',
+                'schema': {
+                    'type': 'integer',
+                },
+            })
+            operation['parameters'] = params
+
+        return operation
+
     def get_responses(self, path, method):
         view = self.view
 
@@ -52,6 +72,24 @@ class PopulationViewSet(viewsets.ModelViewSet):
     queryset = Population.objects.all()
     schema = CustomPopulationSchema()
 
+    def retrieve(self, request, *args, **kwargs):
+        population = self.get_object()
+        experiment_id = request.query_params.get('experiment_id')
+
+        if experiment_id:
+            try:
+                experiment = Experiment.objects.get(id=experiment_id)
+                # Check if experiment is not private or if the user is the owner
+                if not experiment.is_private or experiment.owner == request.user:
+                    # Filter PDFs based on both population and experiment_id
+                    pdfs = Pdf.objects.filter(population=population, experiment_id=experiment_id)
+                    # Update the population object's pdfs attribute
+                    population.pdfs = pdfs
+            except Experiment.DoesNotExist:
+                pass
+
+        serializer = self.get_serializer(population)
+        return Response(serializer.data)
 
     def list(self, request, **kwargs):
         experiments = Experiment.objects.list_ids(request.user)

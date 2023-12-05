@@ -1,12 +1,12 @@
 import { AxiosResponse } from "axios";
-import {DownloadPopulations} from "./apiclient/workspaces";
+import { DownloadPopulations } from "./apiclient/workspaces";
 import {
   POPULATION_UNKNOWN_CHILD
 } from "./utilities/constants"
 
 
 export function formatDate(date: Date) {
-  return date.toLocaleDateString("en-US", {hour: '2-digit', minute: '2-digit'});
+  return date.toLocaleDateString("en-US", { hour: '2-digit', minute: '2-digit' });
 }
 
 export function getBaseDomain() {
@@ -51,4 +51,25 @@ export function hasNoAtSign(inputString: string) {
 
 export function isNameUnknown(inputString: string) {
   return inputString.toLowerCase() === POPULATION_UNKNOWN_CHILD;
+}
+
+export const pdfNameOnFile = (pdfName: string) => {
+  if (!pdfName) {
+    return ''
+  }
+  return pdfName.split('.')[0]
+}
+
+export const formatDateTime = (date: string) => {
+  const dateObj = new Date(date)
+  const day = dateObj.getDate()
+  const month = dateObj.toLocaleString('default', { month: 'short' });
+  const year = dateObj.getFullYear()
+  const hours = dateObj.getHours()
+  const minutes = dateObj.getMinutes()
+  const ampm = hours >= 12 ? 'pm' : 'am';
+  const formattedHours = hours % 12 || 12;
+  const formattedMinutes = minutes < 10 ? '0' + minutes : minutes;
+  const strTime = formattedHours + ':' + formattedMinutes + ' ' + ampm;
+  return `${day} ${month} ${year}, ${strTime}`
 }
