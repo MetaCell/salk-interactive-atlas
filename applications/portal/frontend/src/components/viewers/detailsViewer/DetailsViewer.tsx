@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { makeStyles } from "@material-ui/core/styles";
 import {
     canvasBg, populationTitleColor, populationSubTitleColor,
@@ -30,6 +30,8 @@ import { PdfCategoryEnum, Population } from '../../../apiclient/workspaces';
 import { formatDateTime, pdfNameOnFile } from '../../../utils';
 import { useParams } from "react-router";
 
+const PDF_CATEGORY_ENUM = Object.keys(PdfCategoryEnum);
+const MAX_FILES = 1;
 
 const useStyles = makeStyles({
     container: {
@@ -251,7 +253,8 @@ const DetailsViewer = (props: {
     };
 
     const getRGBAColor = () => {
-        return getRGBAFromHexAlpha(population?.color, 0)
+        const {color, opacity} = population
+        return getRGBAFromHexAlpha(color, opacity)
     }
 
     const openMenu = Boolean(anchorElMenu);
@@ -304,7 +307,7 @@ const DetailsViewer = (props: {
             return filesData
         }
         ;
-        const categorySelected = Object.keys(PdfCategoryEnum)[tabIdx];
+        const categorySelected = PDF_CATEGORY_ENUM[tabIdx];
         const filterByCategory = filesData.filter((d: any) => d.category === categorySelected);
         if (!query) {
             return filterByCategory;
@@ -351,7 +354,7 @@ const DetailsViewer = (props: {
 
 
     useEffect(() => {
-        const categorySelected = Object.keys(PdfCategoryEnum)[tabIdx];
+        const categorySelected = PDF_CATEGORY_ENUM[tabIdx];
         const newDataFiltered = onFilterData('', pdfFiles.filter(pdf => pdf.category === categorySelected));
         setSelectedIndex(0);
         setFilteredData(newDataFiltered)
@@ -390,7 +393,6 @@ const DetailsViewer = (props: {
         }
     }, [population])
 
-
     return (!population) ? (
         <ShowEmptyMessage message="Select a population to start viewing details" />
     ) : (
@@ -410,7 +412,7 @@ const DetailsViewer = (props: {
                 <Box sx={{ bgcolor: 'transparent' }}>
                     <Tabs value={tabIdx} onChange={handleTabChange} className={classes.tabs}>
                         {
-                            Object.keys(PdfCategoryEnum).map((option, index) => (
+                            PDF_CATEGORY_ENUM.map((option, index) => (
                                 <Tab key={index} disableRipple={true} label={option} />
                             ))
                         }
@@ -467,7 +469,7 @@ const DetailsViewer = (props: {
                                                     {pdfNameOnFile(file.name)}
                                                 </MenuItem>
                                                 {
-                                                    selectedIndex === index && <ListItemIcon>
+                                                    selectedIndex === index && !searchQuery && <ListItemIcon>
                                                         <img src={CHECK} alt='' />
                                                     </ListItemIcon>
                                                 }
@@ -570,7 +572,7 @@ const DetailsViewer = (props: {
                             showPreviews={false}
                             showPreviewsInDropzone={false}
                             onChange={(files: any) => handleFileUpload(files)}
-                            filesLimit={1}
+                            filesLimit={MAX_FILES}
                             acceptedFiles={['.pdf']}
                             showAlerts={['error']}
                             classes={{ icon: "MuiButton-outlined primary" }}
