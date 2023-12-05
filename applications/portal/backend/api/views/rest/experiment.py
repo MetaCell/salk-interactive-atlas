@@ -35,7 +35,7 @@ class ExperimentViewSet(viewsets.ModelViewSet):
     """
     permission_classes = (DRYPermissions,)
     queryset = Experiment.objects.all()
-    parser_classes = (MultiPartParser)
+    parser_classes = (MultiPartParser,)
     custom_serializer_map = {
         "upload_pair_files": ExperimentPairFileUploadSerializer,
         "upload_single_file": ExperimentSingleFileUploadSerializer,

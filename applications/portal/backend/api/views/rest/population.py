@@ -10,7 +10,7 @@ from rest_framework.schemas.openapi import AutoSchema
 from api.constants import PopulationPersistentFiles
 from api.models import Experiment, Population
 from api.serializers import PopulationSerializer
-from api.services.population_service import get_cells,  correct_at_sign_count
+from api.services.population_service import get_cells,  has_correct_at_sign_count
 from api.services.user_service import is_user_owner
 from api.utils import send_file
 
@@ -62,7 +62,7 @@ class PopulationViewSet(viewsets.ModelViewSet):
     def partial_update(self, request, *args, **kwargs):
         instance = self.get_object()
         new_population_name = request.data.get("name")
-        if (not correct_at_sign_count(new_population_name)):
+        if ((new_population_name is None) or (not has_correct_at_sign_count(new_population_name))):
             return Response(status=status.HTTP_400_BAD_REQUEST)
         if (not is_user_owner(request, instance)):
             return Response(status=status.HTTP_403_FORBIDDEN)
