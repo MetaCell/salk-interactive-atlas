@@ -125,7 +125,7 @@ export function scrollStop(element: any, onEvent: (arg0: any) => void, callback:
 
 export const onWheel = (event: { preventDefault: () => void; deltaY: number; }, currentRef: {
     current: number;
-}, len: number, callback: (arg0: number) => void) => {
+},                      len: number, callback: (arg0: number) => void) => {
     event.preventDefault()
     const direction = Math.sign(event.deltaY) * -1
     const nextCursor = mod(currentRef.current + direction, len)
@@ -135,7 +135,7 @@ export const onWheel = (event: { preventDefault: () => void; deltaY: number; }, 
 
 export const onKeyboard = (event: { keyCode: number; }, currentRef: {
     current: number;
-}, len: number, callback: (arg0: number) => void) => {
+},                         len: number, callback: (arg0: number) => void) => {
     const direction = event.keyCode === ARROW_KEY_RIGHT ? 1 : event.keyCode === ARROW_KEY_LEFT ? -1 : null
     if (!direction) {
         return
