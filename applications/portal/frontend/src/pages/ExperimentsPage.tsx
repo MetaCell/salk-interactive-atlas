@@ -220,17 +220,29 @@ const ExperimentsPage: React.FC<{ residentialPopulations: any }> = ({ residentia
     }
 
 
-    const handlePopulationColorChange = async (id: string, color: string, opacity: string) => {
-        if (id) {
+    const handlePopulationColorChange = async (updates: Array<{ id: string, color: string, opacity: number }>) => {
+        const updatePromises = updates.map(update =>
             // @ts-ignore
-            await api.partialUpdatePopulation(id, { color, opacity })
+            api.partialUpdatePopulation(update.id, { color: update.color, opacity: update.opacity })
+        );
+
+        try {
+            await Promise.all(updatePromises);
+
+            setPopulations((prevPopulations) => {
+                const nextPopulations = { ...prevPopulations };
+                updates.forEach(({ id, color, opacity }) => {
+                    if (nextPopulations[id]) {
+                        // @ts-ignore
+                        nextPopulations[id] = { ...nextPopulations[id], color, opacity };
+                    }
+                });
+                return nextPopulations;
+            });
+        } catch (error) {
+            setErrorMessage("Couldn't update population color")
         }
-        // @ts-ignore
-        const nextPopulations = { ...populations };
-        // @ts-ignore
-        nextPopulations[id] = { ...nextPopulations[id], color, opacity }
-        setPopulations(nextPopulations)
-    }
+    };
 
     const handleSubPopulationDotSizeChange = (newPopulationDotSizes: DotSizeType) => {
         setPopulationDotSizes(newPopulationDotSizes)
