@@ -54,6 +54,11 @@ class ExperimentSingleFileUploadSerializer(serializers.Serializer):
         fields = ()
 
 
+class RenameChangeSerializer(serializers.Serializer):
+    pid = serializers.IntegerField()
+    new_name = serializers.CharField()
+
+
 class ExperimentSerializer(serializers.ModelSerializer, EagerLoadingMixin):
     teams = GroupSerializer(many=True, read_only=True)
     collaborators = CollaboratorInfoSerializer(

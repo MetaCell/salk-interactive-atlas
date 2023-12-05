@@ -27,6 +27,7 @@ const PopulationsAccordion = ({
     icon,
     title,
     type,
+    handleOnEditPopulation,
     handleShowAllPopulations,
     hasEditPermission,
     handlePopulationColorChange,
@@ -137,6 +138,8 @@ const PopulationsAccordion = ({
                         }}>
                             <CustomAccordionSummary
                                 expanded={expanded}
+                                type={type}
+                                handleOnEditPopulation={handleOnEditPopulation}
                                 population={populations[pId]}
                                 isParent={populations[pId]?.children !== undefined}
                                 handlePopulationSwitch={handleParentPopulationSwitch}
@@ -159,6 +162,8 @@ const PopulationsAccordion = ({
                                                         id={index}
                                                         data={arr}
                                                         expanded={{}}
+                                                        type={type}
+                                                        handleOnEditPopulation={handleOnEditPopulation}
                                                         isParent={false}
                                                         population={populations[pId]?.children[nestedPId]}
                                                         handlePopulationSwitch={handleChildPopulationSwitch}
@@ -179,9 +184,9 @@ const PopulationsAccordion = ({
                         disableRipple
                         onClick={() => downloadPopulationsData()}
                         disabled={!activePopulations.length}
-                        style={{ fontWeight: 400 }}
+                        style={{ fontWeight: 400, padding: '1.5rem 1rem 1rem 1rem' }}
                     >
-                        Download actives
+                        Download active populations
                         <img src={DOWNLOAD_ICON} alt="" />
                     </Button>
                 </Tooltip>

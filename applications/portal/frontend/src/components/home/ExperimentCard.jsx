@@ -307,6 +307,10 @@ const ExperimentCard = ({
         setOpenDeleteDialog(!openDeleteDialog);
     };
 
+    const handleCopyLink = () => {
+        closeFilter();
+        navigator.clipboard.writeText(`${window.location.origin}/experiments/${experiment.id}`);
+    };
 
     return (
         <Grid item xs={12} md={3} key={`${experiment.name}experiment_${experiment.id}`}>
@@ -333,10 +337,11 @@ const ExperimentCard = ({
                         <ListItemText primary="Edit info and tags" />
                     </ListItem>
                     <Divider />
-                    <ListItem button>
+                    <ListItem button onClick={handleCopyLink}>
                         <ListItemText primary="Copy link" />
                     </ListItem>
-                    <ListItem>
+                    {/* Disabled Feature: for future */}
+                    {/* <ListItem>
                         <ListItemText primary="Share" secondary={<ArrowRightIcon />} />
                         <List component="nav" aria-label="secondary mailbox folders">
                             <ListItem button onClick={handleShareDialogToggle}>
@@ -346,11 +351,11 @@ const ExperimentCard = ({
                                 <ListItemText primary="Share multiple experiments" />
                             </ListItem>
                         </List>
-                    </ListItem>
+                    </ListItem> */}
                     <Divider />
                     <ListItem button>
                         {type === EXPERIMENTS_HASH ? <ListItemText primary="Delete" onClick={() => handleDeleteDialog()} /> :
-                            <ListItemText primary="Clone this experiment" onClick={handleDialogToggle}/>}
+                            <ListItemText primary="Clone this experiment" onClick={handleDialogToggle} />}
                     </ListItem>
                 </Menu>
                 <CardActionArea>
