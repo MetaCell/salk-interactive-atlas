@@ -225,6 +225,7 @@ const useStyles = makeStyles({
 
 const DetailsViewer = (props: {
     populationId: number
+    editPermission: boolean
 }) => {
     const populationId = props.populationId ? props.populationId.toString() : null
     const [population, setPopulation] = useState(null);
