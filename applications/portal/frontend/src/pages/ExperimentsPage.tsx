@@ -29,6 +29,7 @@ import { useInterval } from "../utilities/hooks/useInterval";
 import { useParams } from "react-router";
 import { getCells } from "../helpers/CellsHelper";
 import NeuronDotSize from '../components/common/ExperimentDialogs/NeuronDotSize';
+import SnackMessage from '../components/snackbar/SnackMessage';
 
 
 type PopulationDataType = {
@@ -88,6 +89,7 @@ const ExperimentsPage: React.FC<{ residentialPopulations: any }> = ({ residentia
     const [dotSizeDialogOpen, setDotSizeDialogOpen] = useState(false);
     const [dialogPopulationsSelected, setDialogPopulationsSelected] = useState(null);
     const [populationDotSizes, setPopulationDotSizes] = useState<DotSizeType>({})
+    const [errorMessage, setErrorMessage] = React.useState('');
 
     const dispatch = useDispatch();
     const [LayoutComponent, setLayoutManager] = useState(undefined);
@@ -184,6 +186,7 @@ const ExperimentsPage: React.FC<{ residentialPopulations: any }> = ({ residentia
         const subPopulations = Object.values(population.children)
         const renamePromises = []
         const newPopulations = { ...populations };
+        console.log(subPopulations, populations)
         try {
             for (const subPopulation of subPopulations) {
                 // @ts-ignore
@@ -197,7 +200,7 @@ const ExperimentsPage: React.FC<{ residentialPopulations: any }> = ({ residentia
             await Promise.all(renamePromises)
             setPopulations(newPopulations)
         } catch (e) {
-            console.log("Error renaming population: ", e)
+            setErrorMessage("Error renaming population");
         }
     }
 
@@ -212,7 +215,7 @@ const ExperimentsPage: React.FC<{ residentialPopulations: any }> = ({ residentia
             newPopulations[population.id].name = newName
             setPopulations(newPopulations)
         } catch (e) {
-            console.log("Error renaming subpopulation: ", e)
+            setErrorMessage("Error renaming subpopulation");
         }
 
     }
@@ -393,6 +396,10 @@ const ExperimentsPage: React.FC<{ residentialPopulations: any }> = ({ residentia
                 />
                 {LayoutComponent === undefined ? <CircularProgress /> : <LayoutComponent />}
             </Box>
+            <SnackMessage
+                message={errorMessage}
+                setMesssage={setErrorMessage}
+            />
         </Box>
     ) : <Loader />
 }
