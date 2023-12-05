@@ -230,10 +230,10 @@ const useStyles = makeStyles({
 
 const DetailsViewer = (props: {
     populationId: number
-    editPermission: boolean
+    hasEditPermission: boolean
 }) => {
     const populationId = props.populationId ? props.populationId.toString() : null
-    const { editPermission } = props
+    const { hasEditPermission } = props
     const [population, setPopulation] = useState(null);
     const [pdfFiles, setPdfFiles] = useState<any[]>([]);
     const params = useParams<{ id: string }>();
@@ -414,7 +414,7 @@ const DetailsViewer = (props: {
                         </span>
                         <Typography className={classes.title}>{population?.name}</Typography>
                     </Box>
-                    {editPermission && <Button variant="outlined" onClick={() => setOpenUploadDialog(true)}>Upload PDF</Button>}
+                    {hasEditPermission && <Button variant="outlined" onClick={() => setOpenUploadDialog(true)}>Upload PDF</Button>}
                 </Box>
                 <Box sx={{ bgcolor: 'transparent' }}>
                     <Tabs value={tabIdx} onChange={handleTabChange} className={classes.tabs}>
@@ -504,7 +504,7 @@ const DetailsViewer = (props: {
                                             <img src={INFO_ICON} alt="" />
                                         </IconButton>
                                     </Tooltip>
-                                    {editPermission && <Button variant="contained" className={classes.deleteBtn} onClick={() => setOpenDeleteDialog(true)}>Delete file</Button>}
+                                    {hasEditPermission && <Button variant="contained" className={classes.deleteBtn} onClick={() => setOpenDeleteDialog(true)}>Delete file</Button>}
                                 </Box>
                             </Box>
                         )
