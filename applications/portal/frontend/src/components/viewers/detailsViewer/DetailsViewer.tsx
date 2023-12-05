@@ -210,6 +210,10 @@ const useStyles = makeStyles({
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'space-between',
+        position: 'absolute',
+        background: '#27292B',
+        width: '100%',
+        bottom: 0,
         '& .MuiTypography-root': {
             fontSize: '0.75rem',
             fontWeight: 600,
