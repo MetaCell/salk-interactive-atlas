@@ -148,13 +148,30 @@ const useStyles = makeStyles({
             fontSize: '0.75rem',
             marginLeft: '5px'
         },
-
+        '& .population-label-box': {
+            display: 'flex',
+            flex: '1',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            lineHeight: '0.938rem',
+            fontWeight: 400,
+            fontSize: '0.75rem',
+        },
         '& .population-color': {
             display: 'flex',
             alignItems: 'center',
             lineHeight: '0.938rem',
             fontWeight: 400,
             fontSize: '0.75rem'
+        },
+        '& .population-label-box': {
+            display: 'flex',
+            flex: '1',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            lineHeight: '0.938rem',
+            fontWeight: 400,
+            fontSize: '0.75rem',
         },
 
         '& .population-switch': {
@@ -293,6 +310,7 @@ const ExperimentSidebar = ({
     selectedAtlas,
     populations,
     handleAtlasChange,
+    handleOnEditPopulation,
     handleChildPopulationSwitch,
     handleParentPopulationSwitch,
     handleShowAllPopulations,
@@ -311,7 +329,6 @@ const ExperimentSidebar = ({
         setShrink((prevState) => !prevState)
     };
 
-    const SidebarRef = React.useRef(null);
     const activePopulations = Object.keys(populations).filter(
         (populationID) => populations[populationID].selected
     );
@@ -370,6 +387,7 @@ const ExperimentSidebar = ({
                     <PopulationsAccordion populations={residentialPopulationsWithChildren} icon={RESIDENTIAL_POPULATION}
                         title={"Data library"}
                         type={RESIDENTIAL_POPULATION_NAME}
+                        handleOnEditPopulation={handleOnEditPopulation}
                         handleShowAllPopulations={() => handleShowAllPopulations(residentialPopulationsWithChildren)}
                         hasEditPermission={false}
                         handlePopulationColorChange={handlePopulationColorChange}
@@ -384,6 +402,7 @@ const ExperimentSidebar = ({
                     <PopulationsAccordion populations={experimentPopulationsWithChildren} icon={POPULATION}
                         title={"Experimental Populations"}
                         type={EXPERIMENTAL_POPULATION_NAME}
+                        handleOnEditPopulation={handleOnEditPopulation}
                         handleShowAllPopulations={() => handleShowAllPopulations(experimentPopulationsWithChildren)}
                         hasEditPermission={hasEditPermission}
                         handlePopulationColorChange={handlePopulationColorChange}

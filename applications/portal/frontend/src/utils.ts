@@ -1,5 +1,9 @@
 import { AxiosResponse } from "axios";
 import {DownloadPopulations} from "./apiclient/workspaces";
+import {
+  POPULATION_UNKNOWN_CHILD
+} from "./utilities/constants"
+
 
 export function formatDate(date: Date) {
   return date.toLocaleDateString("en-US", {hour: '2-digit', minute: '2-digit'});
@@ -39,4 +43,12 @@ export function downloadFile(response: AxiosResponse<DownloadPopulations>) {
   link.click();
   document.body.removeChild(link);
   window.URL.revokeObjectURL(url);
+}
+
+export function hasNoAtSign(inputString: string) {
+  return (inputString.match(/@/g) || []).length === 0;
+}
+
+export function isNameUnknown(inputString: string) {
+  return inputString.toLowerCase() === POPULATION_UNKNOWN_CHILD;
 }

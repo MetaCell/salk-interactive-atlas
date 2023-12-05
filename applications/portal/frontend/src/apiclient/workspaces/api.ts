@@ -21,7 +21,7 @@ import globalAxios from 'axios';
 import { DUMMY_BASE_URL, assertParamExists, setApiKeyToObject, setBasicAuthToObject, setBearerAuthToObject, setOAuthToObject, setSearchParams, serializeDataIfNeeded, toPathString, createRequestFunction } from './common';
 import type { RequestArgs } from './base';
 // @ts-ignore
-import { BASE_PATH, COLLECTION_FORMATS, BaseAPI, RequiredError } from './base';
+import { BASE_PATH, COLLECTION_FORMATS, BaseAPI, RequiredError, operationServerMap } from './base';
 
 /**
  * 
@@ -2717,7 +2717,9 @@ export const ApiApiFp = function(configuration?: Configuration) {
          */
         async addMembersGroup(id: string, member?: Member, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Member>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.addMembersGroup(id, member, options);
-            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+            const index = configuration?.serverIndex ?? 0;
+            const operationBasePath = operationServerMap['ApiApi.addMembersGroup']?.[index]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, operationBasePath || basePath);
         },
         /**
          * This viewset automatically provides `list`, `create`, `retrieve`, `update` and `destroy` actions.
@@ -2728,7 +2730,9 @@ export const ApiApiFp = function(configuration?: Configuration) {
          */
         async addTagsExperiment(id: string, tags: Array<string>, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Tags>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.addTagsExperiment(id, tags, options);
-            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+            const index = configuration?.serverIndex ?? 0;
+            const operationBasePath = operationServerMap['ApiApi.addTagsExperiment']?.[index]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, operationBasePath || basePath);
         },
         /**
          * This viewset automatically provides `list` actions.
@@ -2738,7 +2742,9 @@ export const ApiApiFp = function(configuration?: Configuration) {
          */
         async cellsPopulation(id: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Population>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.cellsPopulation(id, options);
-            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+            const index = configuration?.serverIndex ?? 0;
+            const operationBasePath = operationServerMap['ApiApi.cellsPopulation']?.[index]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, operationBasePath || basePath);
         },
         /**
          * This viewset automatically provides `list` actions.
@@ -2749,7 +2755,9 @@ export const ApiApiFp = function(configuration?: Configuration) {
          */
         async centroidsPopulation(id: string, subdivision: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Population>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.centroidsPopulation(id, subdivision, options);
-            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+            const index = configuration?.serverIndex ?? 0;
+            const operationBasePath = operationServerMap['ApiApi.centroidsPopulation']?.[index]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, operationBasePath || basePath);
         },
         /**
          * This viewset automatically provides `list` actions.
@@ -2761,7 +2769,9 @@ export const ApiApiFp = function(configuration?: Configuration) {
          */
         async contourPlotPopulation(id: string, subdivision: string, type: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Population>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.contourPlotPopulation(id, subdivision, type, options);
-            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+            const index = configuration?.serverIndex ?? 0;
+            const operationBasePath = operationServerMap['ApiApi.contourPlotPopulation']?.[index]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, operationBasePath || basePath);
         },
         /**
          * This viewset automatically provides `list` actions.
@@ -2771,7 +2781,9 @@ export const ApiApiFp = function(configuration?: Configuration) {
          */
         async createCollaborator(collaborator?: Collaborator, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Collaborator>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.createCollaborator(collaborator, options);
-            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+            const index = configuration?.serverIndex ?? 0;
+            const operationBasePath = operationServerMap['ApiApi.createCollaborator']?.[index]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, operationBasePath || basePath);
         },
         /**
          * This viewset automatically provides `list`, `create`, `retrieve`, `update` and `destroy` actions.
@@ -2792,7 +2804,9 @@ export const ApiApiFp = function(configuration?: Configuration) {
          */
         async createExperiment(name: string, description: string, id?: number, isPrivate?: boolean, dateCreated?: string, lastModified?: string, owner?: ExperimentOwner, teams?: Array<ExperimentOwnerGroupsInner>, collaborators?: Array<ExperimentCollaboratorsInner>, populations?: Array<ExperimentPopulationsInner>, tags?: Array<ExperimentTagsInner>, hasEditPermission?: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Experiment>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.createExperiment(name, description, id, isPrivate, dateCreated, lastModified, owner, teams, collaborators, populations, tags, hasEditPermission, options);
-            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+            const index = configuration?.serverIndex ?? 0;
+            const operationBasePath = operationServerMap['ApiApi.createExperiment']?.[index]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, operationBasePath || basePath);
         },
         /**
          * This viewset automatically provides `list`, `create`, `retrieve`, `update` actions.  Additionally we also provide extra `magic` actions `members`, `members add` and `members delete`.
@@ -2802,7 +2816,9 @@ export const ApiApiFp = function(configuration?: Configuration) {
          */
         async createGroup(team?: Team, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Team>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.createGroup(team, options);
-            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+            const index = configuration?.serverIndex ?? 0;
+            const operationBasePath = operationServerMap['ApiApi.createGroup']?.[index]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, operationBasePath || basePath);
         },
         /**
          * This viewset automatically provides `list` actions.
@@ -2812,7 +2828,9 @@ export const ApiApiFp = function(configuration?: Configuration) {
          */
         async createPopulation(population?: Population, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Population>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.createPopulation(population, options);
-            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+            const index = configuration?.serverIndex ?? 0;
+            const operationBasePath = operationServerMap['ApiApi.createPopulation']?.[index]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, operationBasePath || basePath);
         },
         /**
          * This viewset automatically provides `list`, `create`, `retrieve`, `update` actions.  The list action will always return the current user\'s userdetail as a list or an empty list if the current user has no userdetail
@@ -2822,7 +2840,9 @@ export const ApiApiFp = function(configuration?: Configuration) {
          */
         async createUserDetail(userDetail?: UserDetail, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<UserDetail>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.createUserDetail(userDetail, options);
-            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+            const index = configuration?.serverIndex ?? 0;
+            const operationBasePath = operationServerMap['ApiApi.createUserDetail']?.[index]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, operationBasePath || basePath);
         },
         /**
          * This viewset automatically provides `list`, `create`, `retrieve`, `update` actions.  Additionally we also provide extra `magic` actions `members`, `members add` and `members delete`.
@@ -2833,7 +2853,9 @@ export const ApiApiFp = function(configuration?: Configuration) {
          */
         async delMemberGroup(id: string, userId: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.delMemberGroup(id, userId, options);
-            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+            const index = configuration?.serverIndex ?? 0;
+            const operationBasePath = operationServerMap['ApiApi.delMemberGroup']?.[index]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, operationBasePath || basePath);
         },
         /**
          * This viewset automatically provides `list`, `create`, `retrieve`, `update` and `destroy` actions.
@@ -2844,7 +2866,9 @@ export const ApiApiFp = function(configuration?: Configuration) {
          */
         async deleteTagExperiment(id: string, tagName: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.deleteTagExperiment(id, tagName, options);
-            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+            const index = configuration?.serverIndex ?? 0;
+            const operationBasePath = operationServerMap['ApiApi.deleteTagExperiment']?.[index]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, operationBasePath || basePath);
         },
         /**
          * This viewset automatically provides `list` actions.
@@ -2854,7 +2878,9 @@ export const ApiApiFp = function(configuration?: Configuration) {
          */
         async destroyCollaborator(id: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.destroyCollaborator(id, options);
-            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+            const index = configuration?.serverIndex ?? 0;
+            const operationBasePath = operationServerMap['ApiApi.destroyCollaborator']?.[index]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, operationBasePath || basePath);
         },
         /**
          * This viewset automatically provides `list`, `create`, `retrieve`, `update` and `destroy` actions.
@@ -2864,7 +2890,9 @@ export const ApiApiFp = function(configuration?: Configuration) {
          */
         async destroyExperiment(id: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.destroyExperiment(id, options);
-            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+            const index = configuration?.serverIndex ?? 0;
+            const operationBasePath = operationServerMap['ApiApi.destroyExperiment']?.[index]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, operationBasePath || basePath);
         },
         /**
          * This viewset automatically provides `list` actions.
@@ -2874,7 +2902,9 @@ export const ApiApiFp = function(configuration?: Configuration) {
          */
         async destroyPopulation(id: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.destroyPopulation(id, options);
-            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+            const index = configuration?.serverIndex ?? 0;
+            const operationBasePath = operationServerMap['ApiApi.destroyPopulation']?.[index]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, operationBasePath || basePath);
         },
         /**
          * This viewset automatically provides `list`, `create`, `retrieve`, `update` actions.  The list action will always return the current user\'s userdetail as a list or an empty list if the current user has no userdetail
@@ -2884,7 +2914,9 @@ export const ApiApiFp = function(configuration?: Configuration) {
          */
         async destroyUserDetail(id: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.destroyUserDetail(id, options);
-            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+            const index = configuration?.serverIndex ?? 0;
+            const operationBasePath = operationServerMap['ApiApi.destroyUserDetail']?.[index]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, operationBasePath || basePath);
         },
         /**
          * This viewset automatically provides `list`, `create`, `retrieve`, `update` and `destroy` actions.
@@ -2895,7 +2927,9 @@ export const ApiApiFp = function(configuration?: Configuration) {
          */
         async downloadPopulationsExperiment(id: string, activePopulations: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<DownloadPopulations>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.downloadPopulationsExperiment(id, activePopulations, options);
-            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+            const index = configuration?.serverIndex ?? 0;
+            const operationBasePath = operationServerMap['ApiApi.downloadPopulationsExperiment']?.[index]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, operationBasePath || basePath);
         },
         /**
          * This viewset automatically provides `list` actions.
@@ -2904,7 +2938,9 @@ export const ApiApiFp = function(configuration?: Configuration) {
          */
         async listCollaborators(options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<Collaborator>>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.listCollaborators(options);
-            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+            const index = configuration?.serverIndex ?? 0;
+            const operationBasePath = operationServerMap['ApiApi.listCollaborators']?.[index]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, operationBasePath || basePath);
         },
         /**
          * This viewset automatically provides `list`, `create`, `retrieve`, `update` and `destroy` actions.
@@ -2913,7 +2949,9 @@ export const ApiApiFp = function(configuration?: Configuration) {
          */
         async listExperiments(options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<Experiment>>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.listExperiments(options);
-            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+            const index = configuration?.serverIndex ?? 0;
+            const operationBasePath = operationServerMap['ApiApi.listExperiments']?.[index]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, operationBasePath || basePath);
         },
         /**
          * This viewset automatically provides `list`, `create`, `retrieve`, `update` actions.  Additionally we also provide extra `magic` actions `members`, `members add` and `members delete`.
@@ -2922,7 +2960,9 @@ export const ApiApiFp = function(configuration?: Configuration) {
          */
         async listGroups(options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<Team>>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.listGroups(options);
-            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+            const index = configuration?.serverIndex ?? 0;
+            const operationBasePath = operationServerMap['ApiApi.listGroups']?.[index]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, operationBasePath || basePath);
         },
         /**
          * This viewset automatically provides `list` actions.
@@ -2931,7 +2971,9 @@ export const ApiApiFp = function(configuration?: Configuration) {
          */
         async listPopulations(options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<Population>>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.listPopulations(options);
-            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+            const index = configuration?.serverIndex ?? 0;
+            const operationBasePath = operationServerMap['ApiApi.listPopulations']?.[index]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, operationBasePath || basePath);
         },
         /**
          * This viewset automatically provides `list`
@@ -2940,7 +2982,9 @@ export const ApiApiFp = function(configuration?: Configuration) {
          */
         async listTags(options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<Tag>>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.listTags(options);
-            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+            const index = configuration?.serverIndex ?? 0;
+            const operationBasePath = operationServerMap['ApiApi.listTags']?.[index]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, operationBasePath || basePath);
         },
         /**
          * This viewset automatically provides `list`, `create`, `retrieve`, `update` actions.  The list action will always return the current user\'s userdetail as a list or an empty list if the current user has no userdetail
@@ -2949,7 +2993,9 @@ export const ApiApiFp = function(configuration?: Configuration) {
          */
         async listUserDetails(options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<UserDetail>>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.listUserDetails(options);
-            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+            const index = configuration?.serverIndex ?? 0;
+            const operationBasePath = operationServerMap['ApiApi.listUserDetails']?.[index]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, operationBasePath || basePath);
         },
         /**
          * This viewset automatically provides `list` actions.
@@ -2958,7 +3004,9 @@ export const ApiApiFp = function(configuration?: Configuration) {
          */
         async listUsers(options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<UserTeam>>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.listUsers(options);
-            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+            const index = configuration?.serverIndex ?? 0;
+            const operationBasePath = operationServerMap['ApiApi.listUsers']?.[index]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, operationBasePath || basePath);
         },
         /**
          * This viewset automatically provides `list`, `create`, `retrieve`, `update` actions.  The list action will always return the current user\'s userdetail as a list or an empty list if the current user has no userdetail
@@ -2967,7 +3015,9 @@ export const ApiApiFp = function(configuration?: Configuration) {
          */
         async meUserDetail(options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<UserDetail>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.meUserDetail(options);
-            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+            const index = configuration?.serverIndex ?? 0;
+            const operationBasePath = operationServerMap['ApiApi.meUserDetail']?.[index]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, operationBasePath || basePath);
         },
         /**
          * This viewset automatically provides `list`, `create`, `retrieve`, `update` actions.  Additionally we also provide extra `magic` actions `members`, `members add` and `members delete`.
@@ -2977,7 +3027,9 @@ export const ApiApiFp = function(configuration?: Configuration) {
          */
         async membersGroup(id: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Team>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.membersGroup(id, options);
-            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+            const index = configuration?.serverIndex ?? 0;
+            const operationBasePath = operationServerMap['ApiApi.membersGroup']?.[index]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, operationBasePath || basePath);
         },
         /**
          * This viewset automatically provides `list`, `create`, `retrieve`, `update` and `destroy` actions.
@@ -2986,7 +3038,9 @@ export const ApiApiFp = function(configuration?: Configuration) {
          */
         async mineExperiment(options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Experiment>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.mineExperiment(options);
-            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+            const index = configuration?.serverIndex ?? 0;
+            const operationBasePath = operationServerMap['ApiApi.mineExperiment']?.[index]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, operationBasePath || basePath);
         },
         /**
          * This viewset automatically provides `list`, `create`, `retrieve`, `update` and `destroy` actions.
@@ -2995,7 +3049,9 @@ export const ApiApiFp = function(configuration?: Configuration) {
          */
         async myteamsExperiment(options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Experiment>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.myteamsExperiment(options);
-            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+            const index = configuration?.serverIndex ?? 0;
+            const operationBasePath = operationServerMap['ApiApi.myteamsExperiment']?.[index]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, operationBasePath || basePath);
         },
         /**
          * This viewset automatically provides `list` actions.
@@ -3006,7 +3062,9 @@ export const ApiApiFp = function(configuration?: Configuration) {
          */
         async partialUpdateCollaborator(id: string, collaborator?: Collaborator, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Collaborator>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.partialUpdateCollaborator(id, collaborator, options);
-            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+            const index = configuration?.serverIndex ?? 0;
+            const operationBasePath = operationServerMap['ApiApi.partialUpdateCollaborator']?.[index]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, operationBasePath || basePath);
         },
         /**
          * This viewset automatically provides `list`, `create`, `retrieve`, `update` and `destroy` actions.
@@ -3028,7 +3086,9 @@ export const ApiApiFp = function(configuration?: Configuration) {
          */
         async partialUpdateExperiment(id: string, name: string, description: string, id2?: number, isPrivate?: boolean, dateCreated?: string, lastModified?: string, owner?: ExperimentOwner, teams?: Array<ExperimentOwnerGroupsInner>, collaborators?: Array<ExperimentCollaboratorsInner>, populations?: Array<ExperimentPopulationsInner>, tags?: Array<ExperimentTagsInner>, hasEditPermission?: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Experiment>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.partialUpdateExperiment(id, name, description, id2, isPrivate, dateCreated, lastModified, owner, teams, collaborators, populations, tags, hasEditPermission, options);
-            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+            const index = configuration?.serverIndex ?? 0;
+            const operationBasePath = operationServerMap['ApiApi.partialUpdateExperiment']?.[index]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, operationBasePath || basePath);
         },
         /**
          * This viewset automatically provides `list`, `create`, `retrieve`, `update` actions.  Additionally we also provide extra `magic` actions `members`, `members add` and `members delete`.
@@ -3039,7 +3099,9 @@ export const ApiApiFp = function(configuration?: Configuration) {
          */
         async partialUpdateGroup(id: string, team?: Team, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Team>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.partialUpdateGroup(id, team, options);
-            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+            const index = configuration?.serverIndex ?? 0;
+            const operationBasePath = operationServerMap['ApiApi.partialUpdateGroup']?.[index]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, operationBasePath || basePath);
         },
         /**
          * This viewset automatically provides `list` actions.
@@ -3050,7 +3112,9 @@ export const ApiApiFp = function(configuration?: Configuration) {
          */
         async partialUpdatePopulation(id: string, population?: Population, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Population>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.partialUpdatePopulation(id, population, options);
-            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+            const index = configuration?.serverIndex ?? 0;
+            const operationBasePath = operationServerMap['ApiApi.partialUpdatePopulation']?.[index]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, operationBasePath || basePath);
         },
         /**
          * This viewset automatically provides `list`, `create`, `retrieve`, `update` actions.  The list action will always return the current user\'s userdetail as a list or an empty list if the current user has no userdetail
@@ -3061,7 +3125,9 @@ export const ApiApiFp = function(configuration?: Configuration) {
          */
         async partialUpdateUserDetail(id: string, userDetail?: UserDetail, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<UserDetail>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.partialUpdateUserDetail(id, userDetail, options);
-            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+            const index = configuration?.serverIndex ?? 0;
+            const operationBasePath = operationServerMap['ApiApi.partialUpdateUserDetail']?.[index]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, operationBasePath || basePath);
         },
         /**
          * This viewset automatically provides `list`, `create`, `retrieve`, `update` and `destroy` actions.
@@ -3070,7 +3136,9 @@ export const ApiApiFp = function(configuration?: Configuration) {
          */
         async publicExperiment(options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Experiment>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.publicExperiment(options);
-            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+            const index = configuration?.serverIndex ?? 0;
+            const operationBasePath = operationServerMap['ApiApi.publicExperiment']?.[index]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, operationBasePath || basePath);
         },
         /**
          * This viewset automatically provides `list` actions.
@@ -3079,7 +3147,9 @@ export const ApiApiFp = function(configuration?: Configuration) {
          */
         async residentialPopulation(options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<Population>>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.residentialPopulation(options);
-            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+            const index = configuration?.serverIndex ?? 0;
+            const operationBasePath = operationServerMap['ApiApi.residentialPopulation']?.[index]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, operationBasePath || basePath);
         },
         /**
          * This viewset automatically provides `list` actions.
@@ -3089,7 +3159,9 @@ export const ApiApiFp = function(configuration?: Configuration) {
          */
         async retrieveCollaborator(id: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Collaborator>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.retrieveCollaborator(id, options);
-            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+            const index = configuration?.serverIndex ?? 0;
+            const operationBasePath = operationServerMap['ApiApi.retrieveCollaborator']?.[index]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, operationBasePath || basePath);
         },
         /**
          * This viewset automatically provides `list`, `create`, `retrieve`, `update` and `destroy` actions.
@@ -3099,7 +3171,9 @@ export const ApiApiFp = function(configuration?: Configuration) {
          */
         async retrieveExperiment(id: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Experiment>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.retrieveExperiment(id, options);
-            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+            const index = configuration?.serverIndex ?? 0;
+            const operationBasePath = operationServerMap['ApiApi.retrieveExperiment']?.[index]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, operationBasePath || basePath);
         },
         /**
          * This viewset automatically provides `list`, `create`, `retrieve`, `update` actions.  Additionally we also provide extra `magic` actions `members`, `members add` and `members delete`.
@@ -3109,7 +3183,9 @@ export const ApiApiFp = function(configuration?: Configuration) {
          */
         async retrieveGroup(id: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Team>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.retrieveGroup(id, options);
-            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+            const index = configuration?.serverIndex ?? 0;
+            const operationBasePath = operationServerMap['ApiApi.retrieveGroup']?.[index]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, operationBasePath || basePath);
         },
         /**
          * This viewset automatically provides `list` actions.
@@ -3119,7 +3195,9 @@ export const ApiApiFp = function(configuration?: Configuration) {
          */
         async retrievePopulation(id: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Population>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.retrievePopulation(id, options);
-            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+            const index = configuration?.serverIndex ?? 0;
+            const operationBasePath = operationServerMap['ApiApi.retrievePopulation']?.[index]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, operationBasePath || basePath);
         },
         /**
          * This viewset automatically provides `list`, `create`, `retrieve`, `update` actions.  The list action will always return the current user\'s userdetail as a list or an empty list if the current user has no userdetail
@@ -3129,7 +3207,9 @@ export const ApiApiFp = function(configuration?: Configuration) {
          */
         async retrieveUserDetail(id: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<UserDetail>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.retrieveUserDetail(id, options);
-            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+            const index = configuration?.serverIndex ?? 0;
+            const operationBasePath = operationServerMap['ApiApi.retrieveUserDetail']?.[index]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, operationBasePath || basePath);
         },
         /**
          * This viewset automatically provides `list`, `create`, `retrieve`, `update` and `destroy` actions.
@@ -3138,7 +3218,9 @@ export const ApiApiFp = function(configuration?: Configuration) {
          */
         async sharedwithmeExperiment(options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Experiment>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.sharedwithmeExperiment(options);
-            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+            const index = configuration?.serverIndex ?? 0;
+            const operationBasePath = operationServerMap['ApiApi.sharedwithmeExperiment']?.[index]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, operationBasePath || basePath);
         },
         /**
          * This viewset automatically provides `list` actions.
@@ -3149,7 +3231,9 @@ export const ApiApiFp = function(configuration?: Configuration) {
          */
         async updateCollaborator(id: string, collaborator?: Collaborator, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Collaborator>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.updateCollaborator(id, collaborator, options);
-            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+            const index = configuration?.serverIndex ?? 0;
+            const operationBasePath = operationServerMap['ApiApi.updateCollaborator']?.[index]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, operationBasePath || basePath);
         },
         /**
          * This viewset automatically provides `list`, `create`, `retrieve`, `update` and `destroy` actions.
@@ -3171,7 +3255,9 @@ export const ApiApiFp = function(configuration?: Configuration) {
          */
         async updateExperiment(id: string, name: string, description: string, id2?: number, isPrivate?: boolean, dateCreated?: string, lastModified?: string, owner?: ExperimentOwner, teams?: Array<ExperimentOwnerGroupsInner>, collaborators?: Array<ExperimentCollaboratorsInner>, populations?: Array<ExperimentPopulationsInner>, tags?: Array<ExperimentTagsInner>, hasEditPermission?: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Experiment>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.updateExperiment(id, name, description, id2, isPrivate, dateCreated, lastModified, owner, teams, collaborators, populations, tags, hasEditPermission, options);
-            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+            const index = configuration?.serverIndex ?? 0;
+            const operationBasePath = operationServerMap['ApiApi.updateExperiment']?.[index]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, operationBasePath || basePath);
         },
         /**
          * This viewset automatically provides `list`, `create`, `retrieve`, `update` actions.  Additionally we also provide extra `magic` actions `members`, `members add` and `members delete`.
@@ -3182,7 +3268,9 @@ export const ApiApiFp = function(configuration?: Configuration) {
          */
         async updateGroup(id: string, team?: Team, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Team>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.updateGroup(id, team, options);
-            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+            const index = configuration?.serverIndex ?? 0;
+            const operationBasePath = operationServerMap['ApiApi.updateGroup']?.[index]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, operationBasePath || basePath);
         },
         /**
          * This viewset automatically provides `list` actions.
@@ -3193,7 +3281,9 @@ export const ApiApiFp = function(configuration?: Configuration) {
          */
         async updatePopulation(id: string, population?: Population, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Population>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.updatePopulation(id, population, options);
-            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+            const index = configuration?.serverIndex ?? 0;
+            const operationBasePath = operationServerMap['ApiApi.updatePopulation']?.[index]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, operationBasePath || basePath);
         },
         /**
          * This viewset automatically provides `list`, `create`, `retrieve`, `update` actions.  The list action will always return the current user\'s userdetail as a list or an empty list if the current user has no userdetail
@@ -3204,7 +3294,9 @@ export const ApiApiFp = function(configuration?: Configuration) {
          */
         async updateUserDetail(id: string, userDetail?: UserDetail, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<UserDetail>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.updateUserDetail(id, userDetail, options);
-            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+            const index = configuration?.serverIndex ?? 0;
+            const operationBasePath = operationServerMap['ApiApi.updateUserDetail']?.[index]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, operationBasePath || basePath);
         },
         /**
          * This viewset automatically provides `list`, `create`, `retrieve`, `update` and `destroy` actions.
@@ -3216,7 +3308,9 @@ export const ApiApiFp = function(configuration?: Configuration) {
          */
         async uploadPairFilesExperiment(id: string, keyFile: File, dataFile: File, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ExperimentPairFileUpload>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.uploadPairFilesExperiment(id, keyFile, dataFile, options);
-            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+            const index = configuration?.serverIndex ?? 0;
+            const operationBasePath = operationServerMap['ApiApi.uploadPairFilesExperiment']?.[index]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, operationBasePath || basePath);
         },
         /**
          * This viewset automatically provides `list`, `create`, `retrieve`, `update` and `destroy` actions.
@@ -3227,7 +3321,9 @@ export const ApiApiFp = function(configuration?: Configuration) {
          */
         async uploadSingleFileExperiment(id: string, file: File, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ExperimentSingleFileUpload>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.uploadSingleFileExperiment(id, file, options);
-            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+            const index = configuration?.serverIndex ?? 0;
+            const operationBasePath = operationServerMap['ApiApi.uploadSingleFileExperiment']?.[index]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, operationBasePath || basePath);
         },
     }
 };
@@ -4291,5 +4387,6 @@ export class ApiApi extends BaseAPI {
         return ApiApiFp(this.configuration).uploadSingleFileExperiment(id, file, options).then((request) => request(this.axios, this.basePath));
     }
 }
+
 
 

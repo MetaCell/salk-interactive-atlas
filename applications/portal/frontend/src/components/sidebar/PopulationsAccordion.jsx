@@ -27,6 +27,7 @@ const PopulationsAccordion = ({
     icon,
     title,
     type,
+    handleOnEditPopulation,
     handleShowAllPopulations,
     hasEditPermission,
     handlePopulationColorChange,
@@ -137,6 +138,8 @@ const PopulationsAccordion = ({
                         }}>
                             <CustomAccordionSummary
                                 expanded={expanded}
+                                type={type}
+                                handleOnEditPopulation={handleOnEditPopulation}
                                 population={populations[pId]}
                                 isParent={populations[pId]?.children !== undefined}
                                 handlePopulationSwitch={handleParentPopulationSwitch}
@@ -159,6 +162,8 @@ const PopulationsAccordion = ({
                                                         id={index}
                                                         data={arr}
                                                         expanded={{}}
+                                                        type={type}
+                                                        handleOnEditPopulation={handleOnEditPopulation}
                                                         isParent={false}
                                                         population={populations[pId]?.children[nestedPId]}
                                                         handlePopulationSwitch={handleChildPopulationSwitch}
