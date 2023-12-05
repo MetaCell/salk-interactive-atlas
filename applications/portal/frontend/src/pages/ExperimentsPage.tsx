@@ -186,7 +186,6 @@ const ExperimentsPage: React.FC<{ residentialPopulations: any }> = ({ residentia
         const subPopulations = Object.values(population.children)
         const renamePromises = []
         const newPopulations = { ...populations };
-        console.log(subPopulations, populations)
         try {
             for (const subPopulation of subPopulations) {
                 // @ts-ignore

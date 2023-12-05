@@ -6,20 +6,20 @@ import { Alert } from '@material-ui/lab';
 
 
 export default function SnackMessage(props: any) {
-	const { message, setMessage } = props;
-	const handleSnackbarClose = () => {
-		setMessage('')
-	};
-	return (
-		<Box sx={{
-			width: 500,
-			position: 'absolute',
-		}} >
-			<Snackbar open={message !== null && message !== ''} autoHideDuration={SNACKBAR_TIMEOUT} onClose={handleSnackbarClose}>
-				<Alert onClose={handleSnackbarClose} severity="error">
-					{message}
-				</Alert>
-			</Snackbar>
-		</Box>
-	);
+  const { message, setMessage } = props;
+  const handleSnackbarClose = () => {
+    setMessage('')
+  };
+  return (
+    <Box sx={{
+      width: 500,
+      position: 'absolute',
+    }} >
+      <Snackbar open={message !== null && message !== ''} autoHideDuration={SNACKBAR_TIMEOUT} onClose={handleSnackbarClose}>
+        <Alert onClose={handleSnackbarClose} severity="error">
+          {message}
+        </Alert>
+      </Snackbar>
+    </Box>
+  );
 }
