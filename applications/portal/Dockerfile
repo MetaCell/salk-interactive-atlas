@@ -39,8 +39,8 @@ ENV BUILDDIR=/builddir
 ENV APP_DIR=/usr/src/app
 
 COPY --from=backend ${APP_DIR}/persistent/ ${BUILDDIR}/src/assets/atlas/salk_cord_10um/
-RUN rm -rf ${BUILDDIR}/src/assets/atlas/salk_cord_10um/populations
-RUN rm -rf ${BUILDDIR}/src/assets/atlas/salk_cord_10um/*.sqlite3
+RUN rm -rf ${BUILDDIR}/src/assets/atlas/salk_cord_10um/populations/*
+RUN rm -rf ${BUILDDIR}/src/assets/atlas/salk_cord_10um/*.json && rm -rf ${BUILDDIR}/src/assets/atlas/salk_cord_10um/*.sqlite3
 COPY frontend/package.json ${BUILDDIR}/package.json
 COPY frontend/yarn.lock ${BUILDDIR}/yarn.lock
 WORKDIR ${BUILDDIR}

@@ -81,7 +81,7 @@ const useStyles = makeStyles({
                 overflow: 'hidden',
             },
             '& .ellipsis': { width: '100%' },
-            '& .ellipsis-parent': { width: '3rem' },
+            '& .ellipsis-parent': { maxWidth: '3rem' },
             '& .MuiAccordionSummary-root': {
                 padding: '0.5rem 1rem 0.5rem 3rem',
                 flexDirection: 'row-reverse',
@@ -91,10 +91,10 @@ const useStyles = makeStyles({
                         display: 'block'
                     },
                     '& .ellipsis': {
-                        width: '5.25rem'
+                        maxWidth: '5.25rem'
                     },
                     '& .ellipsis-parent': {
-                        width: '2rem'
+                        maxWidth: '2rem'
                     }
                 },
                 '&.nested': {
@@ -112,7 +112,8 @@ const useStyles = makeStyles({
                     },
                     '& .trail-icon': {
                         width: 'auto',
-                        height: 'auto'
+                        height: 'auto',
+                        opacity: 'unset'
                     }
                 }
             },
@@ -147,14 +148,30 @@ const useStyles = makeStyles({
             fontSize: '0.75rem',
             marginLeft: '5px'
         },
-
+        '& .population-label-box': {
+            display: 'flex',
+            flex: '1',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            lineHeight: '0.938rem',
+            fontWeight: 400,
+            fontSize: '0.75rem',
+        },
         '& .population-color': {
             display: 'flex',
             alignItems: 'center',
             lineHeight: '0.938rem',
             fontWeight: 400,
+            fontSize: '0.75rem'
+        },
+        '& .population-label-box': {
+            display: 'flex',
+            flex: '1',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            lineHeight: '0.938rem',
+            fontWeight: 400,
             fontSize: '0.75rem',
-            paddingRight: '0.5rem',
         },
 
         '& .population-switch': {
@@ -293,6 +310,7 @@ const ExperimentSidebar = ({
     selectedAtlas,
     populations,
     handleAtlasChange,
+    handleOnEditPopulation,
     handleChildPopulationSwitch,
     handleParentPopulationSwitch,
     handleShowAllPopulations,
@@ -311,7 +329,6 @@ const ExperimentSidebar = ({
         setShrink((prevState) => !prevState)
     };
 
-    const SidebarRef = React.useRef(null);
     const activePopulations = Object.keys(populations).filter(
         (populationID) => populations[populationID].selected
     );
@@ -370,6 +387,7 @@ const ExperimentSidebar = ({
                     <PopulationsAccordion populations={residentialPopulationsWithChildren} icon={RESIDENTIAL_POPULATION}
                         title={"Data library"}
                         type={RESIDENTIAL_POPULATION_NAME}
+                        handleOnEditPopulation={handleOnEditPopulation}
                         handleShowAllPopulations={() => handleShowAllPopulations(residentialPopulationsWithChildren)}
                         hasEditPermission={false}
                         handlePopulationColorChange={handlePopulationColorChange}
@@ -384,6 +402,7 @@ const ExperimentSidebar = ({
                     <PopulationsAccordion populations={experimentPopulationsWithChildren} icon={POPULATION}
                         title={"Experimental Populations"}
                         type={EXPERIMENTAL_POPULATION_NAME}
+                        handleOnEditPopulation={handleOnEditPopulation}
                         handleShowAllPopulations={() => handleShowAllPopulations(experimentPopulationsWithChildren)}
                         hasEditPermission={hasEditPermission}
                         handlePopulationColorChange={handlePopulationColorChange}

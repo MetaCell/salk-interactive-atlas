@@ -10,8 +10,8 @@ import { WidgetStatus } from "@metacell/geppetto-meta-client/common/layout/model
 import { addWidget, deleteWidget, updateWidget } from '@metacell/geppetto-meta-client/common/layout/actions';
 // @ts-ignore
 import Loader from '@metacell/geppetto-meta-ui/loader/Loader'
-import {Box} from "@material-ui/core";
-import {bodyBgColor, font} from "../theme";
+import { Box } from "@material-ui/core";
+import { bodyBgColor, font } from "../theme";
 import Sidebar from "../components/sidebar/ExperimentSidebar";
 // @ts-ignore
 import {
@@ -19,6 +19,7 @@ import {
     POPULATION_FINISHED_STATE,
     PULL_TIME_MS
 } from "../utilities/constants"
+import { hasNoAtSign, isNameUnknown } from '../utils';
 import { getAtlas } from "../service/AtlasService";
 import { Experiment, ExperimentPopulationsInner, Population } from "../apiclient/workspaces";
 import { areAllPopulationsWithChildrenSelected } from "../utilities/functions";
@@ -28,6 +29,8 @@ import { useInterval } from "../utilities/hooks/useInterval";
 import { useParams } from "react-router";
 import { getCells } from "../helpers/CellsHelper";
 import NeuronDotSize from '../components/common/ExperimentDialogs/NeuronDotSize';
+import SnackMessage from '../components/snackbar/SnackMessage';
+
 
 type PopulationDataType = {
     [key: string]: {
@@ -73,7 +76,7 @@ const getSubdivisions = (sa: AtlasChoice) => {
 /**
  * The component that renders the FlexLayout component of the LayoutManager.
  */
-const ExperimentsPage: React.FC<{ residentialPopulations: any }> = ({residentialPopulations}) => {
+const ExperimentsPage: React.FC<{ residentialPopulations: any }> = ({ residentialPopulations }) => {
 
     const api = workspaceService.getApi()
     const classes = useStyles();
@@ -86,6 +89,7 @@ const ExperimentsPage: React.FC<{ residentialPopulations: any }> = ({residential
     const [dotSizeDialogOpen, setDotSizeDialogOpen] = useState(false);
     const [dialogPopulationsSelected, setDialogPopulationsSelected] = useState(null);
     const [populationDotSizes, setPopulationDotSizes] = useState<DotSizeType>({})
+    const [errorMessage, setErrorMessage] = React.useState('');
 
     const dispatch = useDispatch();
     const [LayoutComponent, setLayoutManager] = useState(undefined);
@@ -134,7 +138,7 @@ const ExperimentsPage: React.FC<{ residentialPopulations: any }> = ({residential
         }
     }) => {
         const areAllPopulationsActive = areAllPopulationsWithChildrenSelected(pops);
-        const nextPopulations = {...populations};
+        const nextPopulations = { ...populations };
 
         Object.values(pops).forEach((parentPopulation: any) => {
             Object.keys(parentPopulation.children).forEach(pId => {
@@ -148,7 +152,7 @@ const ExperimentsPage: React.FC<{ residentialPopulations: any }> = ({residential
     };
 
     const handleChildPopulationSwitch = (populationId: string) => {
-        const nextPopulations: any = {...populations};
+        const nextPopulations: any = { ...populations };
         nextPopulations[populationId].selected = !nextPopulations[populationId].selected;
 
         setPopulations(nextPopulations);
@@ -156,7 +160,7 @@ const ExperimentsPage: React.FC<{ residentialPopulations: any }> = ({residential
 
 
     const handleParentPopulationSwitch = (children: any, newSelectedState: boolean) => {
-        const nextPopulations: any = {...populations};
+        const nextPopulations: any = { ...populations };
         if (children) {
             Object.keys(children).forEach(childId => {
                 if (nextPopulations[childId]) {
@@ -168,15 +172,63 @@ const ExperimentsPage: React.FC<{ residentialPopulations: any }> = ({residential
         setPopulations(nextPopulations);
     };
 
+
+    const handleOnEditPopulation = (updatedName: string, isParent: boolean, population: any) => {
+        if (isParent) {
+            handleRenamePopulation(updatedName, population);
+        } else {
+            handleRenameSubPopulation(updatedName, population);
+        }
+    }
+
+    const handleRenamePopulation = async (updatedName: string, population: any) => {
+        if (!hasNoAtSign(updatedName)) { return }
+        const subPopulations = Object.values(population.children)
+        const renamePromises = []
+        const newPopulations = { ...populations };
+        try {
+            for (const subPopulation of subPopulations) {
+                // @ts-ignore
+                const newName = isNameUnknown(subPopulation.name) ? updatedName : (updatedName + "@" + subPopulation?.name)
+                // @ts-ignore
+                newPopulations[subPopulation.id].name = newName
+                // @ts-ignore
+                const subPopulationPromise = api.partialUpdatePopulation(subPopulation.id, { name: newName })
+                renamePromises.push(subPopulationPromise)
+            }
+            await Promise.all(renamePromises)
+            setPopulations(newPopulations)
+        } catch (e) {
+            setErrorMessage("Error renaming population");
+        }
+    }
+
+    const handleRenameSubPopulation = async (updatedName: string, population: any) => {
+        const newName = population.parent + "@" + updatedName
+        if (isNameUnknown(updatedName) || !hasNoAtSign(updatedName)) { return }
+        try {
+            // @ts-ignore
+            await api.partialUpdatePopulation(population.id, { name: newName })
+            const newPopulations = { ...populations };
+            // @ts-ignore
+            newPopulations[population.id].name = newName
+            setPopulations(newPopulations)
+        } catch (e) {
+            setErrorMessage("Error renaming subpopulation");
+        }
+
+    }
+
+
     const handlePopulationColorChange = async (id: string, color: string, opacity: string) => {
         if (id) {
             // @ts-ignore
-            await api.partialUpdatePopulation(id, {color, opacity})
+            await api.partialUpdatePopulation(id, { color, opacity })
         }
         // @ts-ignore
-        const nextPopulations = {...populations};
+        const nextPopulations = { ...populations };
         // @ts-ignore
-        nextPopulations[id] = {...nextPopulations[id], color, opacity}
+        nextPopulations[id] = { ...nextPopulations[id], color, opacity }
         setPopulations(nextPopulations)
     }
 
@@ -203,7 +255,7 @@ const ExperimentsPage: React.FC<{ residentialPopulations: any }> = ({residential
                 if (p.status !== POPULATION_FINISHED_STATE) return null;
                 const existingPopulation = experiment.populations.find((e: ExperimentPopulationsInner) => e.id === p.id)
                 if (existingPopulation !== undefined && typeof existingPopulation.cells !== "string"
-                    && existingPopulation.cells !== null){
+                    && existingPopulation.cells !== null) {
                     return existingPopulation.cells
                 }
                 return getCells(api, p);
@@ -212,7 +264,7 @@ const ExperimentsPage: React.FC<{ residentialPopulations: any }> = ({residential
             fetchedExperiment.populations.forEach((p, i) => {
                 const existingPopulation = experiment.populations.find((e: ExperimentPopulationsInner) => e.id === p.id)
                 if (existingPopulation === undefined || typeof existingPopulation.cells === "string" ||
-                    (existingPopulation.cells === null && cells[i] !== null)){
+                    (existingPopulation.cells === null && cells[i] !== null)) {
                     // previous population cells !== new population cells --> update the experiment data
                     shouldUpdateExperiment = true;
                 }
@@ -247,7 +299,7 @@ const ExperimentsPage: React.FC<{ residentialPopulations: any }> = ({residential
             const response = await api.retrieveExperiment(params.id)
             const data = response.data;
             const cells = await Promise.all(data.populations.map(async (p) => {
-                if (p.status !== POPULATION_FINISHED_STATE){
+                if (p.status !== POPULATION_FINISHED_STATE) {
                     return null;
                 }
                 return getCells(api, p);
@@ -319,6 +371,7 @@ const ExperimentsPage: React.FC<{ residentialPopulations: any }> = ({residential
             <Sidebar selectedAtlas={selectedAtlas}
                 populations={populations}
                 handleAtlasChange={handleAtlasChange}
+                handleOnEditPopulation={handleOnEditPopulation}
                 handleChildPopulationSwitch={handleChildPopulationSwitch}
                 handleParentPopulationSwitch={handleParentPopulationSwitch}
                 handleShowAllPopulations={handleShowAllPopulations}
@@ -342,6 +395,10 @@ const ExperimentsPage: React.FC<{ residentialPopulations: any }> = ({residential
                 />
                 {LayoutComponent === undefined ? <CircularProgress /> : <LayoutComponent />}
             </Box>
+            <SnackMessage
+                message={errorMessage}
+                setMesssage={setErrorMessage}
+            />
         </Box>
     ) : <Loader />
 }
