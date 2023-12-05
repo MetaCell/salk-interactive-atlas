@@ -267,10 +267,10 @@ const ExperimentsPage: React.FC<{ residentialPopulations: any }> = ({residential
         if (experiment != null) {
             const experimentPopulations = getPopulations(experiment, selectedAtlas)
             setPopulations(experimentPopulations)
-            dispatch(addWidget(threeDViewerWidget(selectedAtlas, {}, populationDotSizes)));
+            dispatch(addWidget(threeDViewerWidget(selectedAtlas, {}, populationDotSizes, experiment)));
             dispatch(addWidget(twoDViewerWidget(Object.keys(subdivisions), [], selectedAtlas,
                 WidgetStatus.ACTIVE)));
-            dispatch(addWidget(DetailsWidget(false, '457')));
+            dispatch(addWidget(DetailsWidget(false, '457', experiment.has_edit_permission)));
         }
     }, [experiment])
 
@@ -283,7 +283,7 @@ const ExperimentsPage: React.FC<{ residentialPopulations: any }> = ({residential
     function getWidget(widgetId: string) {
         switch (widgetId) {
             case widgetIds.threeDViewer:
-                return threeDViewerWidget(selectedAtlas, getActivePopulations(), populationDotSizes)
+                return threeDViewerWidget(selectedAtlas, getActivePopulations(), populationDotSizes, experiment)
             case widgetIds.twoDViewer:
                 return twoDViewerWidget(Object.keys(subdivisions), Object.values(getActivePopulations()), selectedAtlas,
                     getWidgetStatus(widgetId))
