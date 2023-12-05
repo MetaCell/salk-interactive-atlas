@@ -5,7 +5,8 @@ import {
   makeStyles,
 } from '@material-ui/core';
 
-import { EXPERIMENTAL_POPULATION_NAME, POPULATION_UNKNOWN_CHILD } from '../../utilities/constants';
+import { EXPERIMENTAL_POPULATION_NAME, POPULATION_FINISHED_STATE, POPULATION_UNKNOWN_CHILD } from '../../utilities/constants';
+import { getParentPopulationStatus } from '../../utilities/functions';
 
 
 const DoublePressInput = (props: any) => {
@@ -23,10 +24,19 @@ const DoublePressInput = (props: any) => {
     }
   };
 
+  const checkIfPopulationIsUnEditable = () => {
+    if (value.toString().startsWith(POPULATION_UNKNOWN_CHILD) ||
+      (isParent && getParentPopulationStatus(population) !== POPULATION_FINISHED_STATE)
+      || (!isParent && population !== POPULATION_FINISHED_STATE)
+    ) {
+      return true;
+    }
+    return false;
+  }
 
   return (
     <>
-      {(editPopulation && type === EXPERIMENTAL_POPULATION_NAME) && (!value.toString().startsWith(POPULATION_UNKNOWN_CHILD)) ? (
+      {(editPopulation && type === EXPERIMENTAL_POPULATION_NAME) && (!checkIfPopulationIsUnEditable()) ? (
         <Input
           defaultValue={value}
           autoFocus={true}
