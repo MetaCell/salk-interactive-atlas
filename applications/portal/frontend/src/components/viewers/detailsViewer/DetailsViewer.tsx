@@ -420,7 +420,7 @@ const DetailsViewer = (props: {
                     <Tabs value={tabIdx} onChange={handleTabChange} className={classes.tabs}>
                         {
                             PDF_CATEGORY_ENUM.map((option, index) => (
-                                <Tab key={index} disableRipple={true} label={option} />
+                                <Tab key={index} disableRipple={true} label={option === 'IoMapping' ? 'Input/Output' : option} />
                             ))
                         }
                     </Tabs>
