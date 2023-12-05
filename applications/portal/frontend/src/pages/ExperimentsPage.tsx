@@ -270,7 +270,7 @@ const ExperimentsPage: React.FC<{ residentialPopulations: any }> = ({residential
             dispatch(addWidget(threeDViewerWidget(selectedAtlas, {}, populationDotSizes)));
             dispatch(addWidget(twoDViewerWidget(Object.keys(subdivisions), [], selectedAtlas,
                 WidgetStatus.ACTIVE)));
-            dispatch(addWidget(DetailsWidget(false, null)));
+            dispatch(addWidget(DetailsWidget(false, '457')));
         }
     }, [experiment])
 
