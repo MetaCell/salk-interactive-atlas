@@ -184,9 +184,9 @@ const PopulationsAccordion = ({
                         disableRipple
                         onClick={() => downloadPopulationsData()}
                         disabled={!activePopulations.length}
-                        style={{ fontWeight: 400 }}
+                        style={{ fontWeight: 400, padding: '1.5rem 1rem 1rem 1rem' }}
                     >
-                        Download actives
+                        Download active populations
                         <img src={DOWNLOAD_ICON} alt="" />
                     </Button>
                 </Tooltip>
