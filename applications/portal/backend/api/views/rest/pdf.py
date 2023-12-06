@@ -34,11 +34,7 @@ class PDFViewSet(viewsets.ModelViewSet):
 
     def destroy(self, request, *args, **kwargs):
         instance = self.get_object()
-        experiment = instance.experiment
         population = instance.population
-
-        if experiment.owner != request.user:
-            return Response(status=status.HTTP_403_FORBIDDEN)
 
         pdf_storage_path = get_pdf_save_dir(population.storage_path, instance)
         if os.path.exists(pdf_storage_path):
