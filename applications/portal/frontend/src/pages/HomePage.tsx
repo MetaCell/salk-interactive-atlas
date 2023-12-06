@@ -61,6 +61,7 @@ export default (props: any) => {
     // selectedRef.current.scrollIntoView();
   }
   const [dialogOpen, setDialogOpen] = React.useState(false);
+  const [searchText, setSearchText] = React.useState('');
 
   const handleDialogToggle = () => {
     setDialogOpen((prevOpen) => !prevOpen);
@@ -78,17 +79,28 @@ export default (props: any) => {
     setShareMultipleDialogOpen((prevOpen) => !prevOpen);
   };
 
+  const searchedExperiments = React.useMemo(() => {
+    return experiments.filter((experiment: any) => {
+      return experiment.name.toLowerCase().includes(searchText.toLowerCase());
+    });
+  }, [experiments, searchText]);
+
   useEffect(() => {
     fetchExperiments().catch(console.error);
   }, [latestExperimentId])
 
   return (
     <Box display="flex">
-      <Sidebar experiments={experiments} executeScroll={(r: string) => executeScroll(r)} />
+      <Sidebar
+        experiments={experiments}
+        executeScroll={(r: string) => executeScroll(r)}
+        searchText={searchText}
+        setSearchText={(text: string) => setSearchText(text)}
+      />
       <Box className={classes.layoutContainer}>
         <div ref={myRef} id={EXPERIMENTS_HASH}>
           <ExperimentList
-            experiments={experiments} heading={"My experiments"}
+            experiments={searchedExperiments} heading={"My experiments"}
             description={`${experiments.length} experiments`} type={EXPERIMENTS_HASH}
             infoIcon={false}
             handleShareDialogToggle={handleShareDialogToggle} handleShareMultipleDialogToggle={handleShareMultipleDialogToggle}
