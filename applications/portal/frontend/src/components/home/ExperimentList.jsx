@@ -70,7 +70,7 @@ const useStyles = makeStyles(() => ({
       '& .MuiPopover-paper': {maxHeight: '11.875rem'},
     },
     '& .MuiPopover-paper': {
-      top: '5.9375rem !important',
+      top: '3.7rem !important',
       boxShadow: '0 0.75rem 2.5rem -0.25rem rgba(0, 0, 0, 0.3), 0 0.25rem 0.375rem -0.125rem rgba(0, 0, 0, 0.2)',
       maxWidth: '14.125rem',
       width: '100%',
