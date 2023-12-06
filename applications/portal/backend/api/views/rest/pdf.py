@@ -56,8 +56,6 @@ class PDFViewSet(viewsets.ModelViewSet):
         except (Population.DoesNotExist, Experiment.DoesNotExist):
             return Response(status=status.HTTP_404_NOT_FOUND)
 
-        if (experiment.is_private) and (experiment.has_object_write_permission(request) is False):
-            return Response(status=status.HTTP_403_FORBIDDEN)
         try:
             pdf_obj = Pdf.objects.create(
                 population=population, experiment=experiment,
