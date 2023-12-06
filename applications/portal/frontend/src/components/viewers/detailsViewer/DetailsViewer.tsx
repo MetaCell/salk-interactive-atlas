@@ -282,7 +282,8 @@ const DetailsViewer = (props: {
         file: any
     ) => {
         setSelectedFile(file)
-        setAnchorElMenu(null);
+        setAnchorElMenu(null)
+        setSearchQuery('')
     };
 
     const handleUploadPDF = async () => {
