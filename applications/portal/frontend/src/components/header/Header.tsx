@@ -15,7 +15,6 @@ import { headerBorderColor, headerButtonBorderColor, headerBg } from "../../them
 // @ts-ignore
 import LOGO from "../../assets/images/logo.svg";
 // @ts-ignore
-import USER from "../../assets/images/icons/user.svg";
 import { UserAccountDialog } from "./UserAccountDialog";
 import { CreateUpdateExperimentDialog } from "./ExperimentDialog/CreateUpdateExperimentDialog";
 import { EXPERIMENTS_ROUTE, HEADER_TITLE, SNACKBAR_TIMEOUT } from "../../utilities/constants";
@@ -224,7 +223,7 @@ export const Header = ({
                             My account
                         </Button>
 
-                        <Avatar alt={user.username} title={user.username} src={user.avatarUrl ? user.avatarUrl : USER} />
+                        <Avatar alt={user.username} title={user.username} src={user.avatarUrl ? user.avatarUrl : null} />
                     </>
                 ) : (
                     <>

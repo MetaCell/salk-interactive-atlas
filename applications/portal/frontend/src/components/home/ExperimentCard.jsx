@@ -21,7 +21,6 @@ import {
     cardTextColor,
     secondaryColor
 } from "../../theme";
-import USER from "../../assets/images/icons/user.svg";
 import POPULAR from "../../assets/images/icons/popular.svg";
 import CLONE from "../../assets/images/icons/clone.svg";
 import PLACEHOLDER from "../../assets/images/placeholder.png";
@@ -406,7 +405,7 @@ const ExperimentCard = ({
                                 {experiment.owner.username}
                             </Typography>
                         } placement="top">
-                            <Avatar src={experiment.owner.avatar ? experiment.owner.avatar : USER} alt={experiment.owner.username} />
+                            <Avatar src={experiment.owner.avatar ? experiment.owner.avatar : null} alt={experiment.owner.username} />
                         </Tooltip>
                     </CardContent>
                 </CardActionArea>
