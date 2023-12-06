@@ -182,42 +182,55 @@ const ExperimentsPage: React.FC<{ residentialPopulations: any }> = ({ residentia
     }
 
     const handleRenamePopulation = async (updatedName: string, population: any) => {
-        if (!hasNoAtSign(updatedName)) { return }
-        const subPopulations = Object.values(population.children)
-        const renamePromises = []
-        const newPopulations = { ...populations };
+        if (isNameUnknown(updatedName) || !hasNoAtSign(updatedName)) return;
+
+        const subPopulations: any[] = Object.values(population.children);
+        const renamePromises = subPopulations.map(subPopulation => {
+            const newName = isNameUnknown(subPopulation.name) ? updatedName : (updatedName + "@" + subPopulation?.name);
+            // @ts-ignore
+            return api.partialUpdatePopulation(subPopulation.id, { name: newName })
+                .then(() => ({ id: subPopulation.id, newName }))
+                .catch(() => null);
+        });
+
         try {
-            for (const subPopulation of subPopulations) {
-                // @ts-ignore
-                const newName = isNameUnknown(subPopulation.name) ? updatedName : (updatedName + "@" + subPopulation?.name)
-                // @ts-ignore
-                newPopulations[subPopulation.id].name = newName
-                // @ts-ignore
-                const subPopulationPromise = api.partialUpdatePopulation(subPopulation.id, { name: newName })
-                renamePromises.push(subPopulationPromise)
-            }
-            await Promise.all(renamePromises)
-            setPopulations(newPopulations)
+            const results = await Promise.all(renamePromises);
+            const newPopulations = { ...populations };
+            results.forEach(result => {
+                if (result) {
+                    // @ts-ignore
+                    newPopulations[result.id].name = result.newName;
+                }
+            });
+
+            setPopulations(newPopulations);
         } catch (e) {
             setErrorMessage("Error renaming population");
         }
-    }
+    };
+
 
     const handleRenameSubPopulation = async (updatedName: string, population: any) => {
-        const newName = population.parent + "@" + updatedName
-        if (isNameUnknown(updatedName) || !hasNoAtSign(updatedName)) { return }
+        const newName = population.parent + "@" + updatedName;
+        if (isNameUnknown(updatedName) || !hasNoAtSign(updatedName)) { return; }
+
         try {
             // @ts-ignore
-            await api.partialUpdatePopulation(population.id, { name: newName })
-            const newPopulations = { ...populations };
-            // @ts-ignore
-            newPopulations[population.id].name = newName
-            setPopulations(newPopulations)
+            await api.partialUpdatePopulation(population.id, { name: newName });
+
+            setPopulations(prevPopulations => {
+                const newPopulations = { ...prevPopulations };
+                if (newPopulations[population.id]) {
+                    // @ts-ignore
+                    newPopulations[population.id].name = newName;
+                }
+                return newPopulations;
+            });
         } catch (e) {
             setErrorMessage("Error renaming subpopulation");
         }
+    };
 
-    }
 
 
     const handlePopulationColorChange = async (id: string, color: string, opacity: string) => {
