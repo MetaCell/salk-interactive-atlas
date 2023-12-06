@@ -101,22 +101,22 @@ export const UserAccountDialog = (props: any) => {
           <Box className="detail-block">
             <Typography component="h4">Name</Typography>
             <Typography component={"p"}>{`${user?.firstName} ${user?.lastName}`}</Typography>
-            <Button disableRipple="true" variant="text">Edit</Button>
+            {/* <Button disableRipple="true" variant="text">Edit</Button> */}
           </Box>
 
           <Box className="detail-block">
             <Typography component="h4">Email</Typography>
             <Typography component={"p"}>{user?.email}</Typography>
-            <Button disableRipple="true" variant="text">Edit</Button>
+            {/* <Button disableRipple="true" variant="text">Edit</Button> */}
           </Box>
 
-          <Box className="detail-block">
+          {/* <Box className="detail-block">
             <Typography component="h4">Password</Typography>
             <Typography component={"p"}>●●●●●●●●●●●●●</Typography>
             <Button disableRipple="true" variant="text">Change password</Button>
-          </Box>
+          </Box> */}
 
-          <Divider />
+          {/* <Divider />
           <Box className="detail-block">
             <Typography component="h4">Notifications by email</Typography>
             {
@@ -125,13 +125,14 @@ export const UserAccountDialog = (props: any) => {
                   key={option}
                   control={<Switch />}
                   label={option}
+                  disabled
                 />
               ))
             }
           </Box>
           <Divider />
 
-          <Button variant="outlined">Delete my account</Button>
+          <Button variant="outlined" disabled>Delete my account</Button> */}
         </Box>
       </Box>
     </Modal>
