@@ -239,6 +239,8 @@ const ExperimentsPage: React.FC<{ residentialPopulations: any }> = ({ residentia
                 });
                 return nextPopulations;
             });
+            setErrorMessage("Just testing")
+
         } catch (error) {
             setErrorMessage("Couldn't update population color")
         }
@@ -409,7 +411,7 @@ const ExperimentsPage: React.FC<{ residentialPopulations: any }> = ({ residentia
             </Box>
             <SnackMessage
                 message={errorMessage}
-                setMesssage={setErrorMessage}
+                setMessage={setErrorMessage}
             />
         </Box>
     ) : <Loader />
