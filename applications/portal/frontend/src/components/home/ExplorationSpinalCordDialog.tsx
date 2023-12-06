@@ -176,7 +176,7 @@ export const ExplorationSpinalCordDialog = (props: any) => {
 
         <Box className={classes.formGroup}>
           <Typography component="label">Tags</Typography>
-          <TagsAutocomplete tags={tags} tagsOptions={tagsOptions.map((t: any) => t.name)} onChange={onTagsChange} />
+          <TagsAutocomplete tags={tags} tagsOptions={tagsOptions} onChange={onTagsChange} />
         </Box>
       </Box>
     </Modal>
