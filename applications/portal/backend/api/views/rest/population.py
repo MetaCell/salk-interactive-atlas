@@ -10,7 +10,8 @@ from rest_framework.schemas.openapi import AutoSchema
 from api.constants import PopulationPersistentFiles
 from api.models import Experiment, Population, Pdf
 from api.serializers import PopulationSerializer
-from api.services.population_service import get_cells
+from api.services.population_service import get_cells,  has_correct_at_sign_count
+from api.services.user_service import is_user_owner
 from api.utils import send_file
 
 log = logging.getLogger("__name__")
@@ -95,6 +96,12 @@ class PopulationViewSet(viewsets.ModelViewSet):
         queryset = Population.objects.filter(experiment__in=experiments)
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
+    
+    def partial_update(self, request, *args, **kwargs):
+        new_population_name = request.data.get("name")
+        if new_population_name and not has_correct_at_sign_count(new_population_name):
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+        return super().partial_update(request, *args, **kwargs)
 
     @action(detail=False)
     def residential(self, request, **kwargs):
@@ -163,3 +170,4 @@ class PopulationViewSet(viewsets.ModelViewSet):
             content_type="image/png"
         )
         return response
+

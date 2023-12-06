@@ -19,12 +19,12 @@ const SwitchLabel = ({ label, isParentLabel }) => {
     return (
         <Tooltip title={label} placement="top">
             <Box display="flex" alignItems="center" justifyContent="space-between">
-                <div style={{ display: 'flex' }}>
+                <div style={{ display: 'flex', gap: '0.25rem' }}>
                     <Typography className={`${classes.label} ${isParentLabel ? 'ellipsis-parent' : 'ellipsis'}`}>
                         {label.substr(0, MAX_STR_LENGTH_SIDEBAR)}
                     </Typography>
                     {
-                        isParentLabel && <span style={{ color: 'rgba(255, 255, 255, 0.40)', fontWeight: 400, fontSize: '0.65rem' }}> -parent</span>
+                        isParentLabel && <span style={{ color: 'rgba(255, 255, 255, 0.40)', fontWeight: 400, fontSize: '0.65rem' }}> - parent</span>
                     }
                 </div>
             </Box>

@@ -27,6 +27,7 @@ const PopulationsAccordion = ({
     icon,
     title,
     type,
+    handleOnEditPopulation,
     handleShowAllPopulations,
     hasEditPermission,
     handlePopulationColorChange,
@@ -52,15 +53,16 @@ const PopulationsAccordion = ({
         }
     }
 
-    const handlePopulationsWithChildrenColorChange = (population, color, opacity) => {
-        // If the population has children, call handlePopulationColorChange for each child
+    const handlePopulationsWithChildrenColorChange = async (population, color, opacity, setPopulations) => {
         const children = population.children;
         if (children) {
-            Object.keys(children).forEach(childId => {
-                handlePopulationColorChange(childId, color, opacity);
+            const updates = Object.keys(children).map(childId => {
+                return { id: childId, color, opacity };
             });
+
+            await handlePopulationColorChange(updates, setPopulations);
         }
-    }
+    };
     const activePopulations = Object.values(populations)
         .flatMap(population => population.children ? Object.values(population.children) : [])
         .filter(child => child.selected)
@@ -137,6 +139,8 @@ const PopulationsAccordion = ({
                         }}>
                             <CustomAccordionSummary
                                 expanded={expanded}
+                                type={type}
+                                handleOnEditPopulation={handleOnEditPopulation}
                                 population={populations[pId]}
                                 isParent={populations[pId]?.children !== undefined}
                                 handlePopulationSwitch={handleParentPopulationSwitch}
@@ -159,10 +163,18 @@ const PopulationsAccordion = ({
                                                         id={index}
                                                         data={arr}
                                                         expanded={{}}
+                                                        type={type}
+                                                        handleOnEditPopulation={handleOnEditPopulation}
                                                         isParent={false}
                                                         population={populations[pId]?.children[nestedPId]}
                                                         handlePopulationSwitch={handleChildPopulationSwitch}
-                                                        handlePopulationColorChange={handlePopulationColorChange}
+                                                        handlePopulationColorChange={(id, color, opacity) =>
+                                                            handlePopulationColorChange([{
+                                                                id: id,
+                                                                color: color,
+                                                                opacity: opacity
+                                                            }])}
+
                                                         hasEditPermission={hasEditPermission}
                                                     />
                                                 </Accordion>
@@ -179,9 +191,9 @@ const PopulationsAccordion = ({
                         disableRipple
                         onClick={() => downloadPopulationsData()}
                         disabled={!activePopulations.length}
-                        style={{ fontWeight: 400 }}
+                        style={{ fontWeight: 400, padding: '1.5rem 1rem 1rem 1rem' }}
                     >
-                        Download actives
+                        Download active populations
                         <img src={DOWNLOAD_ICON} alt="" />
                     </Button>
                 </Tooltip>

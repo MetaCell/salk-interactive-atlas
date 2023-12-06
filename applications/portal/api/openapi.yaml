@@ -167,6 +167,9 @@ paths:
           multipart/form-data:
             schema:
               $ref: '#/components/schemas/Experiment'
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Experiment'
       responses:
         '201':
           content:
@@ -279,6 +282,9 @@ paths:
           multipart/form-data:
             schema:
               $ref: '#/components/schemas/Experiment'
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Experiment'
       responses:
         '200':
           content:
@@ -303,6 +309,9 @@ paths:
       requestBody:
         content:
           multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Experiment'
+          application/json:
             schema:
               $ref: '#/components/schemas/Experiment'
       responses:
@@ -1148,6 +1157,9 @@ paths:
       requestBody:
         content:
           multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Tags'
+          application/json:
             schema:
               $ref: '#/components/schemas/Tags'
       responses:
