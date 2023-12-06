@@ -102,24 +102,10 @@ class Experiment(models.Model):
     def has_object_write_permission(self, request):
         return (
                 self.owner == request.user
-                or (
-                        self.teams
-                        and len(self.teams.filter(team__group__user=request.user)) > 0
-                )
-                or (
-                        self.collaborators
-                        and len(
-                    self.collaborator_set.filter(
-                        user=request.user.id, role=CollaboratorRole.EDITOR
-                    )
-                )
-                        > 0
-                )
+                or (self.teams and len(self.teams.filter(team__group__user=request.user)) > 0)
+                or (self.collaborators and
+                    len(self.collaborator_set.filter(user=request.user.id, role=CollaboratorRole.EDITOR)) > 0)
         )
 
-    @staticmethod
-    def has_retrieve_density_map_permission(request):
-        return True
-
-    def has_object_retrieve_density_map_permission(self, request):
-        return self.has_object_read_permission(request)
+    def has_object_destroy_permission(self, request):
+        return self.owner == request.user
