@@ -53,15 +53,16 @@ const PopulationsAccordion = ({
         }
     }
 
-    const handlePopulationsWithChildrenColorChange = (population, color, opacity) => {
-        // If the population has children, call handlePopulationColorChange for each child
+    const handlePopulationsWithChildrenColorChange = async (population, color, opacity, setPopulations) => {
         const children = population.children;
         if (children) {
-            Object.keys(children).forEach(childId => {
-                handlePopulationColorChange(childId, color, opacity);
+            const updates = Object.keys(children).map(childId => {
+                return { id: childId, color, opacity };
             });
+
+            await handlePopulationColorChange(updates, setPopulations);
         }
-    }
+    };
     const activePopulations = Object.values(populations)
         .flatMap(population => population.children ? Object.values(population.children) : [])
         .filter(child => child.selected)
@@ -167,7 +168,13 @@ const PopulationsAccordion = ({
                                                         isParent={false}
                                                         population={populations[pId]?.children[nestedPId]}
                                                         handlePopulationSwitch={handleChildPopulationSwitch}
-                                                        handlePopulationColorChange={handlePopulationColorChange}
+                                                        handlePopulationColorChange={(id, color, opacity) =>
+                                                            handlePopulationColorChange([{
+                                                                id: id,
+                                                                color: color,
+                                                                opacity: opacity
+                                                            }])}
+
                                                         hasEditPermission={hasEditPermission}
                                                     />
                                                 </Accordion>
