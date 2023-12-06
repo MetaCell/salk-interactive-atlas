@@ -37,6 +37,26 @@ export const areAllPopulationsWithChildrenSelected = (obj: {
     });
 }
 
+export const areAllPopulationsWithChildrenCells = (obj: {
+    [x: string]: {
+        children?: {
+            [childId: string]: {
+                cells: any
+            }
+        }
+    }
+}): boolean => {
+    return Object.keys(obj).every(pId => {
+        const children = obj[pId].children;
+        if (children) {
+            return Object.keys(children).every(childId => children[childId].cells === null || (Array.isArray(children[childId].cells) && children[childId].cells.length === 0));
+        }
+
+        return true;
+    });
+}
+
+
 export const areSomeSelected = (obj: {
     [x: string]: {
         selected: any
