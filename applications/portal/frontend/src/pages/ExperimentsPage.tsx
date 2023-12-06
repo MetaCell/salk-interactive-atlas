@@ -233,7 +233,7 @@ const ExperimentsPage: React.FC<{ residentialPopulations: any }> = ({ residentia
 
 
 
-    const handlePopulationColorChange = async (updates: Array<{ id: string, color: string, opacity: number }>) => {
+    const handlePopulationColorChange = async (updates: { id: string, color: string, opacity: number }[]) => {
         const updatePromises = updates.map(update =>
             // @ts-ignore
             api.partialUpdatePopulation(update.id, { color: update.color, opacity: update.opacity })
