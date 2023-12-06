@@ -252,7 +252,6 @@ const ExperimentsPage: React.FC<{ residentialPopulations: any }> = ({ residentia
                 });
                 return nextPopulations;
             });
-            setErrorMessage("Just testing")
 
         } catch (error) {
             setErrorMessage("Couldn't update population color")

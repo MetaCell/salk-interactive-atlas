@@ -10,7 +10,6 @@ import {
   FormControlLabel,
 } from "@material-ui/core";
 import { headerBorderColor, headerButtonBorderColor, headerBg, secondaryColor, switchActiveColor } from "../../theme";
-import USER from "../../assets/images/icons/user.svg";
 import Modal from "../common/BaseDialog";
 
 const useStyles = makeStyles(() => ({
@@ -96,7 +95,7 @@ export const UserAccountDialog = (props: any) => {
   return (
     <Modal open={Boolean(open)} handleClose={handleClose} title="My account">
       <Box display="flex" className={classes.myAccount}>
-        <Avatar alt="user" src={USER} />
+        <Avatar title={user?.username} src={user.avatarUrl ? user.avatarUrl : null} />
         <Box className="details">
           <Box className="detail-block">
             <Typography component="h4">Name</Typography>
