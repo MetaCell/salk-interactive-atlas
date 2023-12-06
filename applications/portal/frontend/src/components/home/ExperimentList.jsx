@@ -23,6 +23,7 @@ import FormLabel from '@material-ui/core/FormLabel';
 import Checkbox from '@material-ui/core/Checkbox';
 import { SalkTeamInfo } from "./SalkTeamInfo";
 import { SALK_TEAM } from "../../utilities/constants";
+import WorkspaceService from "../../service/WorkspaceService";
 
 const useStyles = makeStyles(() => ({
   subHeader: {
@@ -69,7 +70,7 @@ const useStyles = makeStyles(() => ({
       '& .MuiPopover-paper': {maxHeight: '11.875rem'},
     },
     '& .MuiPopover-paper': {
-      top: '5.9375rem !important',
+      top: '3.7rem !important',
       boxShadow: '0 0.75rem 2.5rem -0.25rem rgba(0, 0, 0, 0.3), 0 0.25rem 0.375rem -0.125rem rgba(0, 0, 0, 0.2)',
       maxWidth: '14.125rem',
       width: '100%',
@@ -170,12 +171,10 @@ const ExperimentList = (props) => {
   const classes = useStyles();
   const { experiments, refreshExperimentList } = props;
   const [anchorEl, setAnchorEl] = React.useState(null);
-  const [value, setValue] = React.useState('Alphabetical');
   const [filterAnchorEL, setFilterAnchorEL] = React.useState(null);
   const [infoDrawer, setInfoDrawer] = React.useState(false);
-  const handleChange = (event) => {
-    setValue(event.target.value);
-  };
+  const [tagsOptions, setTagsOptions] = React.useState([]);
+
   const openSortingMenu = (event) => {
     setAnchorEl(event.currentTarget);
   };
@@ -196,12 +195,92 @@ const ExperimentList = (props) => {
     setInfoDrawer((prevOpen) => !prevOpen )
   }
 
-  const tags = ["Project A", "Tag X", "Label 1"];
   const { heading, description, type, infoIcon, handleDialogToggle, handleShareMultipleDialogToggle, handleShareDialogToggle } = props;
-  const sortOptions = ["Alphabetical", "Date created", "Last viewed"];
-  const orderOptions = ["Oldest first", "Newest first"];
+
+  const sortOptions = {
+    0: "Alphabetical",
+    1: "Date created",
+    2: "Last modified"
+  }
+  const orderOptions = {
+    0: "Oldest first",
+    1: "Newest first"
+  }
+  const orderOptionsAlphabetical = {
+    0: "A-Z",
+    1: "Z-A"
+  }
+
+  // Default viewing option - Date created, Newest first
+  const [selectedSortIndex, setSelectedSortIndex] = React.useState(1);
+  const [selectedOrderIndex, setSelectedOrderIndex] = React.useState(1);
+
+  const [selectedTags, setSelectedTags] = React.useState([]);
+
+
+
+  const filterExperimentsByTags = (exp) => {
+    exp = exp.filter(exp => {
+      if (selectedTags.length === 0) {
+        return true;
+      } else {
+        return exp.tags.map(t => t.name).some(t => selectedTags.includes(t));
+      }
+    });
+    return exp;
+  }
+
+  const sortAndOrderExperiments = (exp) => {
+    let reversal = selectedOrderIndex === 0 ? false : true;
+    if (selectedSortIndex === 0) {
+      exp.sort((a, b) => a.name.localeCompare(b.name));
+    } else if (selectedSortIndex === 1) {
+      exp.sort((a, b) => new Date(a.date_created) - new Date(b.date_created));
+    } else if (selectedSortIndex === 2) {
+      exp.sort((a, b) => new Date(a.last_modified) - new Date(b.last_modified));
+    }
+
+    if (reversal) {
+      exp.reverse();
+    }
+    return exp;
+  }
+
+  const handleSortAndOrderChange = (sortindex, orderindex) => {
+    setSelectedSortIndex(sortindex);
+    setSelectedOrderIndex(orderindex);
+  }
+
+  const handleTagSelection = (event, tag) => {
+    const checked = event.target.checked;
+    if (checked) {
+      setSelectedTags([...selectedTags, tag]);
+    } else {
+      setSelectedTags(selectedTags.filter(t => t !== tag));
+    }
+  }
+
+  const experimentItems = React.useMemo(() => {
+    const sortedExperiments = sortAndOrderExperiments(experiments)
+    const filteredExperiments = filterExperimentsByTags(sortedExperiments)
+    return filteredExperiments;
+
+  }, [experiments, selectedTags, selectedSortIndex, selectedOrderIndex]);
+
 
   const hash = useLocation()?.hash;
+  const api = WorkspaceService.getApi();
+
+  React.useEffect(() => {
+    const fetchTagOptions = async () => {
+      const res = await api.listTags();
+      return res.data;
+    }
+    fetchTagOptions().then(data => {
+      setTagsOptions(data.map(tag => tag.name));
+    }).catch(console.error);
+  }, []);
+
 
   return (
     <>
@@ -213,7 +292,7 @@ const ExperimentList = (props) => {
         </Button>
         <Menu
           id="filter-menu"
-          className={`${classes.filterMenu} scrollable`}
+          className={`${classes.filterMenu} scrollable scrollbar`}
           anchorEl={filterAnchorEL}
           keepMounted
           open={Boolean(filterAnchorEL)}
@@ -225,9 +304,12 @@ const ExperimentList = (props) => {
               <Checkbox checkedIcon={<img src={CHECK} alt="" />} />
             }
             label={'All tags'}
+            disabled
           />
           {
-            tags.map((tag, i) => <FormControlLabel
+            tagsOptions.length < 1 ?
+              <Typography style={{ padding: '0.5rem 1rem', fontSize: '0.75rem', color: headerButtonBorderColor }}>No tags available</Typography>
+              : tagsOptions.map((tag, i) => <FormControlLabel
               labelPlacement="start"
               control={
                 <Checkbox checkedIcon={<img src={CHECK} alt="" />} />
@@ -239,6 +321,7 @@ const ExperimentList = (props) => {
                 </>
               }
               key={`filter_${i}`}
+              onChange={(e) => handleTagSelection(e, tag)}
             />)
           }
         </Menu>
@@ -272,18 +355,38 @@ const ExperimentList = (props) => {
         >
           <FormControl component="fieldset">
             <FormLabel component="legend">Sort by</FormLabel>
-            <RadioGroup aria-label="sort-by" name="sort-by" value={value} onChange={handleChange}>
+            <RadioGroup aria-label="sort-by" name="sort-by" >
               {
-                sortOptions.map((option) => <FormControlLabel key={option} value={option} control={<Radio checkedIcon={<img src={CHECK} alt="" />} />} label={option} />)
+                Object.keys(sortOptions).map((option, index) =>
+                  <FormControlLabel key={option} value={+option} control={
+                    <Radio
+                      checkedIcon={
+                        <img src={CHECK} alt="" />
+                      }
+                      checked={selectedSortIndex === +option}
+                      onChange={() => handleSortAndOrderChange(+option, selectedOrderIndex)}
+                    />
+                  } label={sortOptions[option]} />
+                )
               }
             </RadioGroup>
           </FormControl>
 
           <FormControl component="fieldset">
             <FormLabel component="legend">Order</FormLabel>
-            <RadioGroup aria-label="order" name="order" value={value} onChange={handleChange}>
+            <RadioGroup aria-label="order" name="order" >
               {
-                orderOptions.map((option) => <FormControlLabel key={option} value={option} control={<Radio checkedIcon={<img src={CHECK} alt="" />} />} label={option} />)
+                Object.keys(selectedSortIndex === 0 ? orderOptionsAlphabetical : orderOptions).map((option, index) =>
+                  <FormControlLabel key={option} value={+option} control={
+                    <Radio
+                      checkedIcon={
+                        <img src={CHECK} alt="" />
+                      }
+                      checked={selectedOrderIndex === +option}
+                      onChange={() => handleSortAndOrderChange(selectedSortIndex, +option)}
+                    />
+                  } label={selectedSortIndex === 0 ? orderOptionsAlphabetical[option] : orderOptions[option]} />
+                )
               }
             </RadioGroup>
           </FormControl>
@@ -291,9 +394,10 @@ const ExperimentList = (props) => {
       </Box>
       <Box p={5}>
         <Grid container item spacing={3}>
-          {experiments.map( exp => (
+          {experimentItems?.map(exp => (
             <ExperimentCard
               key={exp.id} experiment={exp} type={type} handleDialogToggle={handleDialogToggle}
+              tagsOptions={tagsOptions}
               handleShareDialogToggle={handleShareDialogToggle}
               handleShareMultipleDialogToggle={handleShareMultipleDialogToggle}
               refreshExperimentList={refreshExperimentList}

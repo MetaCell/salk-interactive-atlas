@@ -48,9 +48,10 @@ class Pdf(models.Model):
         return True
 
     def has_object_read_permission(self, request):
-        if request.user == self.created_by:
-            return True
-        return not self.experiment.is_private
+        return self.experiment.has_object_read_permission(request)
+
+    def has_object_write_permission(self, request):
+        return self.experiment.has_object_write_permission(request)
 
     def has_object_destroy_permission(self, request):
-        return request.user == self.created_by
+        return self.experiment.has_object_write_permission(request)
