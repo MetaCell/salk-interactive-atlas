@@ -318,7 +318,7 @@ const DetailsViewer = (props: {
         if (!filesData) {
             return filesData
         }
-        
+
         const categorySelected = Object.keys(PdfCategoryEnum)[tabIdx];
         const filterByCategory = filesData.filter((d: any) => d.category === categorySelected);
         if (!query) {
@@ -475,7 +475,7 @@ const DetailsViewer = (props: {
                                             <div className={classes.menuItemBox} key={index}>
                                                 <MenuItem
                                                     disableGutters={true}
-                                                    selected={file===selectedFile}
+                                                    selected={file === selectedFile}
                                                     onClick={(event) => handleMenuItemClick(event, file)}
                                                 >
                                                     {pdfNameOnFile(file.name)}
