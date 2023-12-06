@@ -304,9 +304,12 @@ const ExperimentList = (props) => {
               <Checkbox checkedIcon={<img src={CHECK} alt="" />} />
             }
             label={'All tags'}
+            disabled
           />
           {
-            tagsOptions.map((tag, i) => <FormControlLabel
+            tagsOptions.length < 1 ?
+              <Typography style={{ padding: '0.5rem 1rem', fontSize: '0.75rem', color: headerButtonBorderColor }}>No tags available</Typography>
+              : tagsOptions.map((tag, i) => <FormControlLabel
               labelPlacement="start"
               control={
                 <Checkbox checkedIcon={<img src={CHECK} alt="" />} />
