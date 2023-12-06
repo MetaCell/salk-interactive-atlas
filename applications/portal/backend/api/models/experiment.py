@@ -102,9 +102,8 @@ class Experiment(models.Model):
     def has_object_write_permission(self, request):
         return (
                 self.owner == request.user
-                or (self.teams and len(self.teams.filter(team__group__user=request.user)) > 0)
-                or (self.collaborators and
-                    len(self.collaborator_set.filter(user=request.user.id, role=CollaboratorRole.EDITOR)) > 0)
+                or self.teams.filter(user=request.user).exists()
+                or self.collaborators.filter(collaborator__user=request.user).exists()
         )
 
     def has_object_destroy_permission(self, request):
