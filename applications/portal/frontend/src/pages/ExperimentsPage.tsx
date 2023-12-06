@@ -86,7 +86,6 @@ const ExperimentsPage: React.FC<{ residentialPopulations: any }> = ({ residentia
     const [selectedAtlas, setSelectedAtlas] = useState(getDefaultAtlas());
     const [populations, setPopulations] = useState<PopulationDataType>({});
     const subdivisions = getSubdivisions(selectedAtlas);
-    const [dotSizeDialogOpen, setDotSizeDialogOpen] = useState(false);
     const [dialogPopulationsSelected, setDialogPopulationsSelected] = useState(null);
     const [populationDotSizes, setPopulationDotSizes] = useState<DotSizeType>({})
     const [errorMessage, setErrorMessage] = React.useState('');
@@ -390,7 +389,18 @@ const ExperimentsPage: React.FC<{ residentialPopulations: any }> = ({ residentia
         }
     }, [store])
 
-    const [populationRefPosition, setPopulationRefPosition] = useState(null)
+    const [anchorElDotSize, setAnchorElDotSize] = React.useState(null);
+
+    const handleDotSizeClick = (event: any) => {
+        setAnchorElDotSize(anchorElDotSize ? null : event.currentTarget);
+    };
+
+    const handleCloseDotSizePopover = () => {
+        setAnchorElDotSize(null);
+    };
+
+    const dotSizeOpen = Boolean(anchorElDotSize);
+    const dotSizeId = open ? 'simple-popper' : undefined;
 
     return experiment != null ? (
         <Box display="flex">
@@ -404,17 +414,17 @@ const ExperimentsPage: React.FC<{ residentialPopulations: any }> = ({ residentia
                 handleShowAllPopulations={handleShowAllPopulations}
                 handlePopulationColorChange={handlePopulationColorChange}
                 hasEditPermission={experiment.has_edit_permission}
-                dotSizeDialogOpen={dotSizeDialogOpen}
-                setDotSizeDialogOpen={setDotSizeDialogOpen}
+                handleDotSizeClick={handleDotSizeClick}
                 setDialogPopulationsSelected={setDialogPopulationsSelected}
-                setPopulationRefPosition={setPopulationRefPosition}
+                dotSizeId={dotSizeId}
             />
             <Box className={classes.layoutContainer}>
                 <NeuronDotSize
-                    open={dotSizeDialogOpen}
-                    onClose={() => setDotSizeDialogOpen(false)}
+                    open={dotSizeOpen}
+                    id={dotSizeId}
+                    onClose={handleCloseDotSizePopover}
                     populations={populations}
-                    anchorElement={populationRefPosition}
+                    anchorElement={anchorElDotSize}
                     activePopulations={getActivePopulations()}
                     handleSubPopulationDotSizeChange={handleSubPopulationDotSizeChange}
                     dialogPopulationsSelected={dialogPopulationsSelected}

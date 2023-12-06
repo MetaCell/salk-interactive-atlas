@@ -310,7 +310,8 @@ const ExperimentSidebar = ({
     dotSizeDialogOpen,
     setDotSizeDialogOpen,
     setDialogPopulationsSelected,
-    setPopulationRefPosition
+    handleDotSizeClick,
+    dotSizeId
 }) => {
     const classes = useStyles();
     const [shrink, setShrink] = useState(false);
@@ -387,7 +388,8 @@ const ExperimentSidebar = ({
                         dotSizeDialogOpen={dotSizeDialogOpen}
                         setDotSizeDialogOpen={setDotSizeDialogOpen}
                         setDialogPopulationsSelected={setDialogPopulationsSelected}
-                        setPopulationRefPosition={setPopulationRefPosition}
+                        handleDotSizeClick={handleDotSizeClick}
+                        dotSizeId={dotSizeId}
                     />
 
                     <PopulationsAccordion populations={experimentPopulationsWithChildren} icon={POPULATION}
@@ -402,7 +404,8 @@ const ExperimentSidebar = ({
                         dotSizeDialogOpen={dotSizeDialogOpen}
                         setDotSizeDialogOpen={setDotSizeDialogOpen}
                         setDialogPopulationsSelected={setDialogPopulationsSelected}
-                        setPopulationRefPosition={setPopulationRefPosition}
+                        handleDotSizeClick={handleDotSizeClick}
+                        dotSizeId={dotSizeId}
                     />
 
                 </>
