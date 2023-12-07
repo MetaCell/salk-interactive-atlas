@@ -61,15 +61,6 @@ class ExperimentViewSet(viewsets.ModelViewSet):
         )
         return Response(serializer.data)
 
-    def destroy(self, request, *args, **kwargs):
-        pk = kwargs.get("pk")
-        queryset = self.get_queryset()
-        instance = get_object_or_404(queryset, pk=pk)
-        if request.user == instance.owner:
-            self.perform_destroy(instance)
-            return Response(status=status.HTTP_204_NO_CONTENT)
-        return Response(status=status.HTTP_403_FORBIDDEN)
-
     @action(detail=False)
     def mine(self, request):
         queryset = Experiment.objects.my_experiments(request.user)
@@ -195,4 +186,3 @@ class ExperimentViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         experiment = serializer.save(owner=self.request.user)
-

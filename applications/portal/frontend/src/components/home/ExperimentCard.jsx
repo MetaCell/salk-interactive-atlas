@@ -21,7 +21,6 @@ import {
     cardTextColor,
     secondaryColor
 } from "../../theme";
-import USER from "../../assets/images/icons/user.svg";
 import POPULAR from "../../assets/images/icons/popular.svg";
 import CLONE from "../../assets/images/icons/clone.svg";
 import PLACEHOLDER from "../../assets/images/placeholder.png";
@@ -33,7 +32,6 @@ import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
 import ArrowRightIcon from '@material-ui/icons/ArrowRight';
-import WorkspaceService from "../../service/WorkspaceService";
 import { getDateFromDateTime } from "../../utils";
 import { DeleteExperimentDialog } from "../DeleteExperimentDialog";
 import { ExplorationSpinalCordDialog } from "./ExplorationSpinalCordDialog";
@@ -276,6 +274,7 @@ const ExperimentCard = ({
     experiment,
     type,
     handleDialogToggle,
+    tagsOptions,
     handleShareDialogToggle,
     handleShareMultipleDialogToggle,
     refreshExperimentList
@@ -286,11 +285,9 @@ const ExperimentCard = ({
         history.push(`/experiments/${experiment.id}`)
     }
 
-    const api = WorkspaceService.getApi();
     const [experimentMenuEl, setExperimentMenuEl] = React.useState(null);
     const [openDeleteDialog, setOpenDeleteDialog] = React.useState(false);
     const [explorationDialogOpen, setExplorationDialogOpen] = React.useState(false);
-    const [tagsOptions, setTagsOptions] = React.useState([]);
 
     const handleExplorationDialogToggle = () => {
         setExplorationDialogOpen((prevOpen) => !prevOpen);
@@ -313,14 +310,6 @@ const ExperimentCard = ({
         closeFilter();
         navigator.clipboard.writeText(`${window.location.origin}/experiments/${experiment.id}`);
     };
-
-    React.useEffect(() => {
-        const fetchTagOptions = async () => {
-            const res = await api.listTags()
-            setTagsOptions(res.data)
-        };
-        fetchTagOptions().catch(console.error);
-    }, []);
 
     return (
         <Grid item xs={12} md={3} key={`${experiment.name}experiment_${experiment.id}`}>
@@ -365,7 +354,7 @@ const ExperimentCard = ({
                     <Divider />
                     <ListItem button>
                         {type === EXPERIMENTS_HASH ? <ListItemText primary="Delete" onClick={() => handleDeleteDialog()} /> :
-                            <ListItemText primary="Clone this experiment" onClick={handleDialogToggle}/>}
+                            <ListItemText primary="Clone this experiment" onClick={handleDialogToggle} />}
                     </ListItem>
                 </Menu>
                 <CardActionArea>
@@ -416,7 +405,7 @@ const ExperimentCard = ({
                                 {experiment.owner.username}
                             </Typography>
                         } placement="top">
-                            <Avatar src={experiment.owner.avatar ? experiment.owner.avatar : USER} alt={experiment.owner.username} />
+                            <Avatar src={experiment.owner.avatar ? experiment.owner.avatar : null} alt={experiment.owner.username} />
                         </Tooltip>
                     </CardContent>
                 </CardActionArea>
