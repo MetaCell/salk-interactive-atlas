@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { makeStyles } from "@material-ui/core/styles";
 import {
     canvasBg, populationTitleColor, populationSubTitleColor,
@@ -30,6 +30,12 @@ import { PdfCategoryEnum, Population } from '../../../apiclient/workspaces';
 import { formatDateTime, pdfNameOnFile } from '../../../utils';
 import { useParams } from "react-router";
 
+const PdfCategoryLabels = {
+    [PdfCategoryEnum.Electrophysiology]: 'Electrophysiology',
+    [PdfCategoryEnum.Behaviour]: 'Behaviour',
+    [PdfCategoryEnum.IoMapping]: 'Input/Output'
+};
+const MAX_FILES = 1;
 
 const useStyles = makeStyles({
     container: {
@@ -42,7 +48,8 @@ const useStyles = makeStyles({
         }
     },
     titleBox: {
-        padding: '0.75rem'
+        padding: '0.75rem',
+        minHeight: '3.5rem'
     },
     title: {
         fontSize: '0.75rem',
@@ -208,6 +215,10 @@ const useStyles = makeStyles({
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'space-between',
+        width: '100%',
+        position: 'absolute',
+        backgroundColor: '#27292B',
+        bottom: 0,
         '& .MuiTypography-root': {
             fontSize: '0.75rem',
             fontWeight: 600,
@@ -223,8 +234,10 @@ const useStyles = makeStyles({
 
 const DetailsViewer = (props: {
     populationId: number
+    hasEditPermission: boolean
 }) => {
     const populationId = props.populationId ? props.populationId.toString() : null
+    const { hasEditPermission } = props
     const [population, setPopulation] = useState(null);
     const [pdfFiles, setPdfFiles] = useState<any[]>([]);
     const params = useParams<{ id: string }>();
@@ -232,13 +245,13 @@ const DetailsViewer = (props: {
     const commonClasses = common();
     const [tabIdx, setTabIdx] = useState<number>(0);
     const [anchorElMenu, setAnchorElMenu] = useState<null | HTMLElement>(null);
-    const [selectedIndex, setSelectedIndex] = useState(0);
     const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
     const [openUploadDialog, setOpenUploadDialog] = useState(false);
     const [searchQuery, setSearchQuery] = useState("");
     const [filteredData, setFilteredData] = useState([]);
     const [searchMenuData, setSearchMenuData] = useState([]);
     const [uploadedFiles, setUploadedFiles] = useState([]);
+    const [selectedFile, setSelectedFile] = useState(null);
 
     const [numPages, setNumPages] = useState<number>();
     const [currentPage, setCurrentPage] = useState(1);
@@ -251,7 +264,8 @@ const DetailsViewer = (props: {
     };
 
     const getRGBAColor = () => {
-        return getRGBAFromHexAlpha(population?.color, 0)
+        const {color, opacity} = population
+        return getRGBAFromHexAlpha(color, opacity)
     }
 
     const openMenu = Boolean(anchorElMenu);
@@ -265,10 +279,11 @@ const DetailsViewer = (props: {
 
     const handleMenuItemClick = (
         event: React.MouseEvent<HTMLElement>,
-        index: number,
+        file: any
     ) => {
-        setSelectedIndex(index);
-        setAnchorElMenu(null);
+        setSelectedFile(file)
+        setAnchorElMenu(null)
+        setSearchQuery('')
     };
 
     const handleUploadPDF = async () => {
@@ -290,8 +305,8 @@ const DetailsViewer = (props: {
 
     const handleDeletePDF = async () => {
         try {
-            await api.destroyPdf(filteredData[selectedIndex].id);
-            const tempPdfFiles = pdfFiles.filter((item: any) => item.id !== filteredData[selectedIndex].id);
+            await api.destroyPdf(selectedFile.id);
+            const tempPdfFiles = pdfFiles.filter((item: any) => item.id !== selectedFile.id)
             setPdfFiles(tempPdfFiles);
         } catch (err) {
             console.error(err)
@@ -303,7 +318,7 @@ const DetailsViewer = (props: {
         if (!filesData) {
             return filesData
         }
-        ;
+
         const categorySelected = Object.keys(PdfCategoryEnum)[tabIdx];
         const filterByCategory = filesData.filter((d: any) => d.category === categorySelected);
         if (!query) {
@@ -353,15 +368,17 @@ const DetailsViewer = (props: {
     useEffect(() => {
         const categorySelected = Object.keys(PdfCategoryEnum)[tabIdx];
         const newDataFiltered = onFilterData('', pdfFiles.filter(pdf => pdf.category === categorySelected));
-        setSelectedIndex(0);
+
         setFilteredData(newDataFiltered)
         setSearchMenuData(newDataFiltered);
+
+        // Set selectedFile to the first file in newDataFiltered
+        setSelectedFile(newDataFiltered.length > 0 ? newDataFiltered[0] : null);
     }, [pdfFiles, tabIdx])
 
 
     useEffect(() => {
         const newDataFiltered = onFilterData(searchQuery, pdfFiles);
-        setSelectedIndex(0);
         setSearchMenuData(newDataFiltered);
     }, [searchQuery])
 
@@ -390,7 +407,6 @@ const DetailsViewer = (props: {
         }
     }, [population])
 
-
     return (!population) ? (
         <ShowEmptyMessage message="Select a population to start viewing details" />
     ) : (
@@ -405,22 +421,20 @@ const DetailsViewer = (props: {
                         </span>
                         <Typography className={classes.title}>{population?.name}</Typography>
                     </Box>
-                    <Button variant="outlined" onClick={() => setOpenUploadDialog(true)}>Upload PDF</Button>
+                    {hasEditPermission && <Button variant="outlined" onClick={() => setOpenUploadDialog(true)}>Upload PDF</Button>}
                 </Box>
                 <Box sx={{ bgcolor: 'transparent' }}>
                     <Tabs value={tabIdx} onChange={handleTabChange} className={classes.tabs}>
-                        {
-                            Object.keys(PdfCategoryEnum).map((option, index) => (
-                                <Tab key={index} disableRipple={true} label={option} />
-                            ))
-                        }
+                        {Object.values(PdfCategoryEnum).map((categoryValue, index) => (
+                          <Tab key={index} disableRipple={true} label={PdfCategoryLabels[categoryValue]} />
+                        ))}
                     </Tabs>
                 </Box>
                 {
                     (filteredData.length === 0) ? (
                         <ShowEmptyMessage message="No PDFs uploaded yet" />
                     ) :
-                        (filteredData && filteredData[selectedIndex]) && (
+                        (filteredData && selectedFile) && (
                             <Box display="flex" alignItems="center" justifyContent="space-between"
                                 className={classes.tabPanelActions}>
                                 <Button
@@ -435,7 +449,7 @@ const DetailsViewer = (props: {
                                     endIcon={<img src={DOWN_ICON} alt='' />}
                                 >
                                     <span className={classes.ellipsisText}>
-                                        {pdfNameOnFile(filteredData[selectedIndex]?.name)}
+                                        {pdfNameOnFile(selectedFile?.name)}
                                     </span>
                                 </Button>
                                 <Menu
@@ -461,13 +475,13 @@ const DetailsViewer = (props: {
                                             <div className={classes.menuItemBox} key={index}>
                                                 <MenuItem
                                                     disableGutters={true}
-                                                    selected={index === selectedIndex}
-                                                    onClick={(event) => handleMenuItemClick(event, index)}
+                                                    selected={file === selectedFile}
+                                                    onClick={(event) => handleMenuItemClick(event, file)}
                                                 >
                                                     {pdfNameOnFile(file.name)}
                                                 </MenuItem>
                                                 {
-                                                    selectedIndex === index && <ListItemIcon>
+                                                    selectedFile === file && <ListItemIcon>
                                                         <img src={CHECK} alt='' />
                                                     </ListItemIcon>
                                                 }
@@ -484,8 +498,8 @@ const DetailsViewer = (props: {
                                                 <span>Uploaded by</span>
                                             </div>
                                             <div className={classes.textBlock} style={{ alignItems: 'flex-end' }}>
-                                                <span>{formatDateTime(filteredData[selectedIndex].created_at)}</span>
-                                                <span>{filteredData[selectedIndex].created_by}</span>
+                                                <span>{formatDateTime(selectedFile.created_at)}</span>
+                                                <span>{selectedFile.created_by}</span>
                                             </div>
                                         </div>}
                                         placement="bottom-end"
@@ -495,20 +509,20 @@ const DetailsViewer = (props: {
                                             <img src={INFO_ICON} alt="" />
                                         </IconButton>
                                     </Tooltip>
-                                    <Button variant="contained" className={classes.deleteBtn} onClick={() => setOpenDeleteDialog(true)}>Delete file</Button>
+                                    {hasEditPermission && <Button variant="contained" className={classes.deleteBtn} onClick={() => setOpenDeleteDialog(true)}>Delete file</Button>}
                                 </Box>
                             </Box>
                         )
                 }
                 {
-                    (filteredData && filteredData[selectedIndex]) && (
+                    (filteredData && selectedFile) && (
                         <Box display="flex" className="scrollbar" style={{ flexDirection: 'column', justifyContent: 'space-between', height: '100%' }}>
 
                             <Box display="flex" alignItems="center" justifyContent="center" py={4} style={{
                                 width: '100%',
                             }}>
                                 <PdfToPage
-                                    filepath={filteredData && filteredData[selectedIndex]?.file}
+                                    filepath={filteredData && selectedFile.file}
                                     setNumPages={setNumPages}
                                     currentPage={currentPage}
                                     setCurrentPage={setCurrentPage}
@@ -533,7 +547,7 @@ const DetailsViewer = (props: {
                 }
             </div>
             {
-                filteredData && filteredData[selectedIndex] && (
+                filteredData && selectedFile && (
                     <DeleteDialog
                         open={openDeleteDialog}
                         handleClose={() => setOpenDeleteDialog(false)}
@@ -544,7 +558,7 @@ const DetailsViewer = (props: {
                     >
                         <Box className={classes.deleteModalBox}>
                             <Typography>This action cannot be undone. Are you sure you want to delete
-                                "{filteredData.length > 0 && filteredData[selectedIndex].name}"?</Typography>
+                                "{filteredData.length > 0 && selectedFile.name}"?</Typography>
                         </Box>
                     </DeleteDialog>
                 )
@@ -570,7 +584,7 @@ const DetailsViewer = (props: {
                             showPreviews={false}
                             showPreviewsInDropzone={false}
                             onChange={(files: any) => handleFileUpload(files)}
-                            filesLimit={1}
+                            filesLimit={MAX_FILES}
                             acceptedFiles={['.pdf']}
                             showAlerts={['error']}
                             classes={{ icon: "MuiButton-outlined primary" }}

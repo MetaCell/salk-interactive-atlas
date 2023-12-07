@@ -95,7 +95,7 @@ export const UserAccountDialog = (props: any) => {
   return (
     <Modal open={Boolean(open)} handleClose={handleClose} title="My account">
       <Box display="flex" className={classes.myAccount}>
-        <Avatar title={user?.username} src={user.avatarUrl ? user.avatarUrl : null} />
+        <Avatar title={user?.username} src={user?.avatarUrl ? user.avatarUrl : null} />
         <Box className="details">
           <Box className="detail-block">
             <Typography component="h4">Name</Typography>

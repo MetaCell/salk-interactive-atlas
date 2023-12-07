@@ -333,7 +333,7 @@ class ThreeDViewer extends Component {
             const mesh = this.scene.getObjectByProperty('uuid', nearestSelectionUUID)
             if (mesh) {
                 // @ts-ignore
-                this.props.updateWidget(DetailsWidget(true, mesh.populationId))
+                this.props.updateWidget(DetailsWidget(true, mesh.populationId, this.props.experiment.has_edit_permission))
             }
         }
     }

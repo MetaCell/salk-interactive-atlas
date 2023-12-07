@@ -270,8 +270,8 @@ export const CreateUpdateExperimentDialog = ({
      */
     const handleCreateAction = async () => {
         const experimentOwner: ExperimentOwner = {
-            username: user.username,
-            avatar: user.avatarUrl,
+            username: user?.username,
+            avatar: user?.avatarUrl,
         };
 
         const res = await api.createExperiment(name, description, null, true,

@@ -223,7 +223,7 @@ export const Header = ({
                             My account
                         </Button>
 
-                        <Avatar alt={user.username} title={user.username} src={user.avatarUrl ? user.avatarUrl : null} />
+                        <Avatar alt={user?.username} title={user?.username} src={user?.avatarUrl ? user.avatarUrl : null} />
                     </>
                 ) : (
                     <>
