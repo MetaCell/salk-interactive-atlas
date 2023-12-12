@@ -16,7 +16,7 @@ import UP_ICON from "../../assets/images/icons/up.svg";
 import CustomAccordionSummary from "./CustomAccordionSummary";
 import DOWNLOAD_ICON from "../../assets/images/icons/download_icon.svg";
 import { downloadFile } from "../../utils";
-import { areAllPopulationsWithChildrenSelected } from "../../utilities/functions";
+import { areAllPopulationsWithChildrenSelected, areAllPopulationsWithStatusFinished } from "../../utilities/functions";
 import workspaceService from "../../service/WorkspaceService";
 import { useParams } from "react-router";
 import { DotSizeButton } from './DotSizeButton';
@@ -127,6 +127,7 @@ const PopulationsAccordion = ({
                             }
                             onChange={handleShowAllPopulations}
                             checked={areAllPopulationsWithChildrenSelected(populations)}
+                            disabled={areAllPopulationsWithStatusFinished(populations)}
                         />
                     </Box>
                 </Box>

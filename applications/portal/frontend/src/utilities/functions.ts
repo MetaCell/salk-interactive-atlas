@@ -30,12 +30,32 @@ export const areAllPopulationsWithChildrenSelected = (obj: {
     return Object.keys(obj).every(pId => {
         const children = obj[pId].children;
         if (children) {
-            return Object.keys(children).every(childId => children[childId].selected);
+            return Object.keys(children).some(childId => children[childId].selected);
         }
 
         return true;
     });
 }
+
+export const areAllPopulationsWithStatusFinished = (obj: {
+    [x: string]: {
+        children?: {
+            [childId: string]: {
+                status: string
+            }
+        }
+    }
+}): boolean => {
+    return Object.keys(obj).every(pId => {
+        const children = obj[pId].children;
+        if (children) {
+            return Object.keys(children).every(childId => children[childId].status !== POPULATION_FINISHED_STATE);
+        }
+
+        return true;
+    });
+}
+
 
 export const areSomeSelected = (obj: {
     [x: string]: {
