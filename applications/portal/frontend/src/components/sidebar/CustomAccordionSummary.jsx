@@ -36,10 +36,9 @@ const CustomAccordionSummary = ({
     handlePopulationSwitch,
     handlePopulationColorChange,
     hasEditPermission,
-    dotSizeDialogOpen,
-    setDotSizeDialogOpen,
     setDialogPopulationsSelected,
-    setPopulationRefPosition
+    handleDotSizeClick,
+    dotSizeId
 }) => {
     const [popoverAnchorEl, setPopoverAnchorEl] = React.useState(null);
     const [selectedPopoverId, setSelectedPopoverId] = React.useState(null);
@@ -80,8 +79,9 @@ const CustomAccordionSummary = ({
     const status = isParent ? getParentPopulationStatus(population) : population.status
     const checked = isParent ? areAllSelected(population.children) : population.selected
 
-    const selectPopulationForDotSizeChange = (population) => {
-        setDotSizeDialogOpen(!dotSizeDialogOpen)
+    const selectPopulationForDotSizeChange = (e, population) => {
+
+        handleDotSizeClick(e)
 
         const children = population?.children
         if (children) {
@@ -175,8 +175,8 @@ const CustomAccordionSummary = ({
                             {
                                 checked && (
                                     <DotSizeButton
-                                        onClickFunc={() => selectPopulationForDotSizeChange(population)}
-                                        setPopulationRefPosition={setPopulationRefPosition}
+                                        dotSizeId={dotSizeId}
+                                        onClickFunc={(e) => selectPopulationForDotSizeChange(e, population)}
                                     />
                                 )
                             }

@@ -33,10 +33,9 @@ const PopulationsAccordion = ({
     handlePopulationColorChange,
     handleChildPopulationSwitch,
     handleParentPopulationSwitch,
-    dotSizeDialogOpen,
-    setDotSizeDialogOpen,
     setDialogPopulationsSelected,
-    setPopulationRefPosition
+    handleDotSizeClick,
+    dotSizeId
 }) => {
     const [expanded, setExpanded] = React.useState({});
     const api = workspaceService.getApi()
@@ -72,8 +71,10 @@ const PopulationsAccordion = ({
         ? 'Download active populations data'
         : 'No active populations to download';
 
-    const selectAllPopulationsForDotSizeChange = () => {
-        setDotSizeDialogOpen(!dotSizeDialogOpen)
+    const selectAllPopulationsForDotSizeChange = (e) => {
+
+        handleDotSizeClick(e)
+
         let populationsToSelect = {}
         for (const populationId in populations) {
             const population = populations[populationId]
@@ -114,11 +115,8 @@ const PopulationsAccordion = ({
                         {
                             areAllPopulationsWithChildrenSelected(populations) && (
                                 <DotSizeButton
-                                    onClickFunc={() => {
-                                        setDotSizeDialogOpen(!dotSizeDialogOpen)
-                                        selectAllPopulationsForDotSizeChange()
-                                    }}
-                                    setPopulationRefPosition={setPopulationRefPosition}
+                                    dotSizeId={dotSizeId}
+                                    onClickFunc={(e) => selectAllPopulationsForDotSizeChange(e)}
                                 />
                             )
                         }
@@ -148,10 +146,9 @@ const PopulationsAccordion = ({
                                     handlePopulationsWithChildrenColorChange(populations[pId], color, opacity)
                                 }
                                 hasEditPermission={hasEditPermission}
-                                dotSizeDialogOpen={dotSizeDialogOpen}
-                                setDotSizeDialogOpen={setDotSizeDialogOpen}
                                 setDialogPopulationsSelected={setDialogPopulationsSelected}
-                                setPopulationRefPosition={setPopulationRefPosition}
+                                handleDotSizeClick={handleDotSizeClick}
+                                dotSizeId={dotSizeId}
                             />
                             {
                                 populations[pId]?.children && <AccordionDetails>
@@ -176,6 +173,8 @@ const PopulationsAccordion = ({
                                                             }])}
 
                                                         hasEditPermission={hasEditPermission}
+                                                        handleDotSizeClick={handleDotSizeClick}
+                                                        dotSizeId={dotSizeId}
                                                     />
                                                 </Accordion>
                                             </span>

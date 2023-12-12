@@ -1,13 +1,18 @@
 import React, { useCallback } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
-import { Box, Typography, Slider, Divider, IconButton, Dialog, DialogTitle, DialogContent, Button } from '@material-ui/core';
-import { headerBorderColor } from "../../../theme";
+import { Box, Typography, Slider, Divider, IconButton, Button, Popover } from '@material-ui/core';
+import { headerBorderColor, switchActiveColor } from "../../../theme";
 import CLOSE from "../../../assets/images/icons/close.svg";
 import { EXPERIMENTAL_POPULATION_NAME, RESIDENTIAL_POPULATION_NAME } from "../../../utilities/constants";
 
 
 const useStyles = makeStyles((theme) => ({
-  dialogContent: {
+  titleBox:{
+    padding: '0.75rem', 
+    color: 'rgba(255, 255, 255, 0.80)',
+    borderBottom: `1px solid ${headerBorderColor}`,
+  },
+  popoverContent: {
     display: 'flex',
     flexDirection: 'column',
     padding: theme.spacing(2),
@@ -41,23 +46,25 @@ const useStyles = makeStyles((theme) => ({
     '& .row-container': {
       display: 'flex',
       alignItems: 'center',
-      marginBottom: theme.spacing(1),
+      '& .MuiTypography-body1': {
+        color: 'rgba(255, 255, 255, 0.80)'
+      }
     },
     '& .row-slider': {
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'space-between',
-      marginBottom: theme.spacing(2),
     },
     '& .disable-text': {
       fontWeight: 400,
       fontSize: '0.75rem',
-      color: '#999999',
+      color: 'rgba(255, 255, 255, 0.40)',
     },
 
   },
   slider: {
     width: '80%',
+    color: switchActiveColor,
   },
   closeButton: {
     marginTop: theme.spacing(2),
@@ -67,32 +74,23 @@ const useStyles = makeStyles((theme) => ({
     width: '100%',
     maxWidth: '25rem',
     margin: '0rem',
-    '& .MuiDialogContent-root': {
-      padding: '0rem',
+    borderRadius: '0.25rem',
+    border: '1px solid #353739',
+    background: '#1E1E1E', 
+    boxShadow: '0px 4px 6px -2px rgba(0, 0, 0, 0.20), 0px 12px 40px -4px rgba(0, 0, 0, 0.30)',
+    '& .MuiIconButton-root': {
+      padding: 0
     },
     '& .MuiButton-label': {
       padding: 0,
-    },
-    '& .MuiButton-root': {
-      padding: '0.4rem',
-      minWidth: '40px',
-    },
-    '& .MuiDialogTitle-root': {
-      padding: '0.125rem 0.25rem 0.125rem 0.8rem',
-    },
-
-  },
-  dialogContainer: {
-    '& .MuiDialog-container': {
-      display: 'block',
-    },
-  },
+    }
+  }
 }));
 
 const NeuronDotSize = ({
-  open, onClose, populations, anchorElement,
+  id, open, onClose, populations, anchorElement,
   activePopulations, handleSubPopulationDotSizeChange,
-  dialogPopulationsSelected, populationDotSizes,
+  dialogPopulationsSelected, populationDotSizes
 }) => {
   const classes = useStyles();
   const [globalDotSize, setGlobalDotSize] = React.useState({
@@ -117,16 +115,6 @@ const NeuronDotSize = ({
       value: 100,
     },
   ];
-  const getPositionStyles = () => {
-    if (!anchorElement) {
-      return {};
-    }
-    return {
-      marginLeft: anchorElement?.left + anchorElement?.width + 60,
-      marginTop: anchorElement?.top,
-    };
-  };
-
 
 
   const populationSelected = dialogPopulationsSelected?.populations;
@@ -160,23 +148,35 @@ const NeuronDotSize = ({
   }, [handleSubPopulationDotSizeChange]);
 
   return (
-    <Dialog open={open} onClose={onClose}
+    <Popover
       classes={{
         paper: classes.popupContainer,
       }}
-      className={classes.dialogContainer}
-      fullWidth={true}
-      style={{ ...getPositionStyles() }}
+      id={id}
+      open={open}
+      anchorEl={anchorElement}
+      onClose={onClose}
+      anchorOrigin={{
+        vertical: 'center',
+        horizontal: 'right',
+      }}
+      transformOrigin={{
+        vertical: 'center',
+        horizontal: 'left',
+      }}
+      style={{
+        marginLeft: '70px'
+      }}
     >
-      <DialogTitle>
+      <Box className={classes.titleBox} display="flex" alignItems="center" justifyContent="space-between">
         Neuron Size
         <IconButton onClick={onClose}>
           <img src={CLOSE} alt="close" />
         </IconButton>
-      </DialogTitle>
-      <DialogContent>
+      </Box>
+      <Box>
 
-        <Box className={classes.dialogContent}>
+        <Box className={classes.popoverContent}>
           <Box >
             {
               dialogPopulationsSelected?.showAll && (
@@ -241,9 +241,9 @@ const NeuronDotSize = ({
             }
           </Box>
         </Box>
-      </DialogContent>
+      </Box>
 
-    </Dialog>
+    </Popover>
   );
 };
 

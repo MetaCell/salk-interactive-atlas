@@ -3,18 +3,14 @@ import { IconButton } from "@material-ui/core";
 import { SliderIcon } from "../icons";
 
 
-export const DotSizeButton = ({ onClickFunc, setPopulationRefPosition }) => {
-  const myRef = React.useRef(null);
+export const DotSizeButton = ({ dotSizeId, onClickFunc}) => {
   return (
     <IconButton
       edge="end"
       color="inherit"
-      onClick={() => {
-        onClickFunc()
-        setPopulationRefPosition(myRef.current.getBoundingClientRect())
-      }}
+      aria-describedby={dotSizeId}
+      onClick={onClickFunc}
       className='slider-icon'
-      ref={myRef}
     >
       <SliderIcon style={{ height: '0.90rem' }} />
     </IconButton>
