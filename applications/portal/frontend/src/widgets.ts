@@ -9,7 +9,7 @@ export const widgetIds = {
     detailsViewer: 'detailsViewer'
 }
 
-export const threeDViewerWidget = (selectedAtlas: AtlasChoice, activePopulations: any) => {
+export const threeDViewerWidget = (selectedAtlas: AtlasChoice, activePopulations: any, populationDotSizes: any, experiment: any) => {
     return {
         id: widgetIds.threeDViewer,
         name: "3D Viewer",
@@ -20,11 +20,13 @@ export const threeDViewerWidget = (selectedAtlas: AtlasChoice, activePopulations
         config: {
             selectedAtlas,
             activePopulations,
+            populationDotSizes,
+            experiment
         }
     }
 };
 
-export const DetailsWidget = (active: boolean, populationName: string) => {
+export const DetailsWidget = (active: boolean, populationId: string, hasEditPermission: boolean) => {
     return {
         id: widgetIds.detailsViewer,
         name: "Details Viewer",
@@ -34,7 +36,8 @@ export const DetailsWidget = (active: boolean, populationName: string) => {
         enableClose: false,
         status: active ? WidgetStatus.ACTIVE : WidgetStatus.HIDDEN,
         config: {
-            populationName,
+            populationId,
+            hasEditPermission
         }
     }
 };

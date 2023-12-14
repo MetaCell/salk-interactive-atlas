@@ -1,6 +1,6 @@
 import * as React from "react";
-import {useHistory} from "react-router-dom"
-import {makeStyles} from "@material-ui/core/styles";
+import { useHistory } from "react-router-dom"
+import { makeStyles } from "@material-ui/core/styles";
 import Card from '@material-ui/core/Card';
 import CardActionArea from '@material-ui/core/CardActionArea';
 import CardContent from '@material-ui/core/CardContent';
@@ -21,11 +21,10 @@ import {
     cardTextColor,
     secondaryColor
 } from "../../theme";
-import USER from "../../assets/images/icons/user.svg";
 import POPULAR from "../../assets/images/icons/popular.svg";
 import CLONE from "../../assets/images/icons/clone.svg";
 import PLACEHOLDER from "../../assets/images/placeholder.png";
-import {COMMUNITY_HASH, EXPERIMENTS_HASH} from "../../utilities/constants"
+import { COMMUNITY_HASH, EXPERIMENTS_HASH } from "../../utilities/constants"
 import Tooltip from "@material-ui/core/Tooltip";
 import Menu from "@material-ui/core/Menu";
 import Divider from "@material-ui/core/Divider";
@@ -33,8 +32,9 @@ import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
 import ArrowRightIcon from '@material-ui/icons/ArrowRight';
-import {CircularProgress} from "@material-ui/core";
 import { getDateFromDateTime } from "../../utils";
+import { DeleteExperimentDialog } from "../DeleteExperimentDialog";
+import { ExplorationSpinalCordDialog } from "./ExplorationSpinalCordDialog";
 
 
 const commonStyle = {
@@ -106,7 +106,7 @@ const useStyles = makeStyles(() => ({
             },
         },
 
-        '& .MuiCardMedia-root': {...imageStyles},
+        '& .MuiCardMedia-root': { ...imageStyles },
 
         '& .MuiCardContent-root': {
             boxShadow: `inset 0 0.03125rem 0 ${headerBorderColor}`,
@@ -114,8 +114,8 @@ const useStyles = makeStyles(() => ({
             alignItems: 'flex-end',
             flexWrap: 'wrap',
             '& > .MuiBox-root': {
-              paddingRight: '0.75rem',
-              width: 'calc(100% - 1.5rem)',
+                paddingRight: '0.75rem',
+                width: 'calc(100% - 1.5rem)',
             },
 
             '& .MuiChip-root': {
@@ -129,8 +129,8 @@ const useStyles = makeStyles(() => ({
                     marginRight: '0.25rem',
                 },
 
-                '&.MuiChip-colorPrimary': {background: primaryChipBg,},
-                '&.MuiChip-colorSecondary': {background: secondaryChipBg,},
+                '&.MuiChip-colorPrimary': { background: primaryChipBg, },
+                '&.MuiChip-colorSecondary': { background: secondaryChipBg, },
 
                 '& .MuiChip-label': {
                     padding: '0 0.375rem',
@@ -160,7 +160,7 @@ const useStyles = makeStyles(() => ({
                 display: 'flex',
                 alignItems: 'center',
 
-                '& img': {marginRight: '0.5rem'},
+                '& img': { marginRight: '0.5rem' },
             },
         },
     },
@@ -228,56 +228,57 @@ const useStyles = makeStyles(() => ({
     },
 
     tagsWrapper: {
-      width: '100% !important',
-      paddingRight: '0 !important',
+        width: '100% !important',
+        paddingRight: '0 !important',
     },
 
     ellipsesWrapper: {
-      flex: '1 1 100%',
-      minWidth: 0,
-      minHeight: '1.5625rem'
+        flex: '1 1 100%',
+        minWidth: 0,
+        minHeight: '1.5625rem'
     },
 
     tagsEllipses: {
-      overflow: 'hidden',
-      textOverflow: 'ellipsis',
-      whiteSpace: 'nowrap',
+        overflow: 'hidden',
+        textOverflow: 'ellipsis',
+        whiteSpace: 'nowrap',
     },
 
     tagsTooltip: {
-      '& .MuiChip-root': {
-          margin: 0,
-          height: '1.0625rem',
-          background: defaultChipBg,
-          marginBottom: '0.5rem',
-          borderRadius: '0.25rem',
+        '& .MuiChip-root': {
+            margin: 0,
+            height: '1.0625rem',
+            background: defaultChipBg,
+            marginBottom: '0.5rem',
+            borderRadius: '0.25rem',
 
-          '&:not(:last-child)': {
-              marginRight: '0.25rem',
-          },
+            '&:not(:last-child)': {
+                marginRight: '0.25rem',
+            },
 
-          '&.MuiChip-colorPrimary': {background: primaryChipBg,},
-          '&.MuiChip-colorSecondary': {background: secondaryChipBg,},
+            '&.MuiChip-colorPrimary': { background: primaryChipBg, },
+            '&.MuiChip-colorSecondary': { background: secondaryChipBg, },
 
-          '& .MuiChip-label': {
-              padding: '0 0.375rem',
-              fontWeight: '600',
-              fontSize: '0.625rem',
-              lineHeight: '0.75rem',
-              color: chipTextColor,
-          },
-      },
+            '& .MuiChip-label': {
+                padding: '0 0.375rem',
+                fontWeight: '600',
+                fontSize: '0.625rem',
+                lineHeight: '0.75rem',
+                color: chipTextColor,
+            },
+        },
     },
 }))
 
 const ExperimentCard = ({
-                            experiment,
-                            type,
-                            handleDialogToggle,
-                            handleExplorationDialogToggle,
-                            handleShareDialogToggle,
-                            handleShareMultipleDialogToggle
-                        }) => {
+    experiment,
+    type,
+    handleDialogToggle,
+    tagsOptions,
+    handleShareDialogToggle,
+    handleShareMultipleDialogToggle,
+    refreshExperimentList
+}) => {
     const classes = useStyles();
     const history = useHistory()
     const handleClick = () => {
@@ -285,6 +286,12 @@ const ExperimentCard = ({
     }
 
     const [experimentMenuEl, setExperimentMenuEl] = React.useState(null);
+    const [openDeleteDialog, setOpenDeleteDialog] = React.useState(false);
+    const [explorationDialogOpen, setExplorationDialogOpen] = React.useState(false);
+
+    const handleExplorationDialogToggle = () => {
+        setExplorationDialogOpen((prevOpen) => !prevOpen);
+    };
 
     const handleCardActions = (event) => {
         setExperimentMenuEl(event.currentTarget);
@@ -292,6 +299,16 @@ const ExperimentCard = ({
 
     const closeFilter = () => {
         setExperimentMenuEl(null);
+    };
+
+    const handleDeleteDialog = () => {
+        closeFilter();
+        setOpenDeleteDialog(!openDeleteDialog);
+    };
+
+    const handleCopyLink = () => {
+        closeFilter();
+        navigator.clipboard.writeText(`${window.location.origin}/experiments/${experiment.id}`);
     };
 
     return (
@@ -313,71 +330,74 @@ const ExperimentCard = ({
                     onClose={closeFilter}
                 >
                     <ListItem button onClick={handleClick}>
-                        <ListItemText primary="Open experiment"/>
+                        <ListItemText primary="Open experiment" />
                     </ListItem>
                     <ListItem button onClick={handleExplorationDialogToggle}>
-                        <ListItemText primary="Edit info and tags"/>
+                        <ListItemText primary="Edit info and tags" />
                     </ListItem>
-                    <Divider/>
-                    <ListItem button>
-                        <ListItemText primary="Copy link"/>
+                    <Divider />
+                    <ListItem button onClick={handleCopyLink}>
+                        <ListItemText primary="Copy link" />
                     </ListItem>
-                    <ListItem>
-                        <ListItemText primary="Share" secondary={<ArrowRightIcon/>}/>
+                    {/* Disabled Feature: for future */}
+                    {/* <ListItem>
+                        <ListItemText primary="Share" secondary={<ArrowRightIcon />} />
                         <List component="nav" aria-label="secondary mailbox folders">
                             <ListItem button onClick={handleShareDialogToggle}>
-                                <ListItemText primary="Share this experiment"/>
+                                <ListItemText primary="Share this experiment" />
                             </ListItem>
                             <ListItem button onClick={handleShareMultipleDialogToggle}>
-                                <ListItemText primary="Share multiple experiments"/>
+                                <ListItemText primary="Share multiple experiments" />
                             </ListItem>
                         </List>
-                    </ListItem>
-                    <Divider/>
+                    </ListItem> */}
+                    <Divider />
                     <ListItem button>
-                        {type === EXPERIMENTS_HASH ? <ListItemText primary="Delete"/> :
-                            <ListItemText primary="Clone this experiment" onClick={handleDialogToggle}/>}
+                        {type === EXPERIMENTS_HASH ? <ListItemText primary="Delete" onClick={() => handleDeleteDialog()} /> :
+                            <ListItemText primary="Clone this experiment" onClick={handleDialogToggle} />}
                     </ListItem>
                 </Menu>
                 <CardActionArea>
                     <CardContent>
-                        <Box className={classes.tagsWrapper}>
-                          <Tooltip
-                            placement="top-start"
-                            title={type != COMMUNITY_HASH ? (
-                              <Box className={classes.tagsTooltip}>
-                                {experiment.tags?.map((tag, i) => (
-                                   <Chip
-                                    key={`${experiment.name}_${i}_${tag.name}`} label={tag.name}
-                                    color={i == 1 ? 'primary' : i === 2 ? 'secondary' : 'default'}
-                                  />
-                                ))}
-                              </Box>
-                            ) : ''}
-                          >
-                            <Box className={classes.ellipsesWrapper}>
-                              {type != COMMUNITY_HASH &&
-                                <Box className={classes.tagsEllipses}>
-                                  {experiment.tags?.map((tag, i) =>(
-                                    <Chip
-                                      key={`${experiment.name}_${i}_${tag.name}`} label={tag.name}
-                                      color={i == 1 ? 'primary' : i === 2 ? 'secondary' : 'default'}
-                                    />
-                                  ))}
-                                </Box>
-                              }
+                        {
+                            experiment.tags.length > 0 && <Box className={classes.tagsWrapper}>
+                                <Tooltip
+                                    placement="top-start"
+                                    title={type != COMMUNITY_HASH && (
+                                        <Box className={classes.tagsTooltip}>
+                                            {experiment.tags?.map((tag, i) => (
+                                                <Chip
+                                                    key={`${experiment.name}_${i}_${tag.name}`} label={tag.name}
+                                                    color={i == 1 ? 'primary' : i === 2 ? 'secondary' : 'default'}
+                                                />
+                                            ))}
+                                        </Box>
+                                    )}
+                                >
+                                    <Box className={classes.ellipsesWrapper}>
+                                        {type != COMMUNITY_HASH &&
+                                            <Box className={classes.tagsEllipses}>
+                                                {experiment.tags?.map((tag, i) => (
+                                                    <Chip
+                                                        key={`${experiment.name}_${i}_${tag.name}`} label={tag.name}
+                                                        color={i == 1 ? 'primary' : i === 2 ? 'secondary' : 'default'}
+                                                    />
+                                                ))}
+                                            </Box>
+                                        }
+                                    </Box>
+                                </Tooltip>
                             </Box>
-                          </Tooltip>
-                        </Box>
+                        }
 
                         <Box>
-                          <Typography component="h3" onClick={handleClick}>
-                              {experiment.name || 'fff'}
-                          </Typography>
-                          <Typography component="p">
-                              {type === COMMUNITY_HASH && <img src={CLONE} alt="clone"/>}
-                              { type !== EXPERIMENTS_HASH && 'Shared on' } {getDateFromDateTime(experiment.date_created)}
-                          </Typography>
+                            <Typography component="h3" onClick={handleClick}>
+                                {experiment.name || 'fff'}
+                            </Typography>
+                            <Typography component="p">
+                                {type === COMMUNITY_HASH && <img src={CLONE} alt="clone" />}
+                                {type !== EXPERIMENTS_HASH && 'Shared on'} {getDateFromDateTime(experiment.date_created)}
+                            </Typography>
                         </Box>
                         <Tooltip arrow title={
                             <Typography>
@@ -385,11 +405,26 @@ const ExperimentCard = ({
                                 {experiment.owner.username}
                             </Typography>
                         } placement="top">
-                            <Avatar src={experiment.owner.avatar? experiment.owner.avatar : USER} alt={experiment.owner.username}/>
+                            <Avatar src={experiment.owner.avatar ? experiment.owner.avatar : null} alt={experiment.owner.username} />
                         </Tooltip>
                     </CardContent>
                 </CardActionArea>
             </Card>
+            <ExplorationSpinalCordDialog
+                experimentId={experiment.id}
+                experiment={experiment}
+                tagsOptions={tagsOptions}
+                open={explorationDialogOpen}
+                handleClose={handleExplorationDialogToggle}
+                refreshExperimentList={refreshExperimentList}
+                setExperimentMenuEl={setExperimentMenuEl}
+            />
+            <DeleteExperimentDialog
+                experimentId={experiment.id} open={openDeleteDialog}
+                handleClose={() => setOpenDeleteDialog(false)}
+                refreshExperimentList={refreshExperimentList}
+            />
+
         </Grid>
     );
 }

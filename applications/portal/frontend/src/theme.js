@@ -13,7 +13,8 @@ vars.gutter = vars.gutter.replace('px', '') * 1;
 
 export const {
   primaryColor, secondaryColor, font, fontColor, linkColor, teal, purple, brown, skyBlue, bgLightest, paragraph, bgLightestShade,
-  bgLight, bgRegular, bgDark, bgDarker, bgDarkest, bgInputs, gutter, radius, checkBoxColor, bgLighter, textColor, canvasBg, headerBorderColor,headerButtonBorderColor, bodyBgColor, headerBg, switchActiveColor, canvasIconColor, breadcrumbTextColor, sidebarBadgeBg, sidebarTextColor, defaultChipBg, primaryChipBg, secondaryChipBg, chipTextColor, cardTextColor, inputFocusShadow, backdropBg, logoHoverbg, textDisabled, chipDeleteIcon, filesBg
+  bgLight, bgRegular, bgDark, bgDarker, bgDarkest, bgInputs, gutter, radius, checkBoxColor, bgLighter, textColor, canvasBg, headerBorderColor,headerButtonBorderColor, bodyBgColor, headerBg, switchActiveColor, canvasIconColor, breadcrumbTextColor, sidebarBadgeBg, sidebarTextColor, defaultChipBg, primaryChipBg, secondaryChipBg, chipTextColor, cardTextColor, inputFocusShadow, backdropBg, logoHoverbg, textDisabled, chipDeleteIcon, filesBg, indicatorLabelColor,
+  populationTitleColor, populationSubTitleColor, deleteBtnTextColor, deleteBtnBgColor
 } = vars;
 
 const verticalFill = {
@@ -101,7 +102,7 @@ const theme = {
       default: bgDarker,
       paper: bgRegular
     },
-    button: { main: primaryColor },
+    button: { main: primaryColor, danger: '#F24822' },
   },
   typography: {
     fontFamily: font,
@@ -246,7 +247,6 @@ const theme = {
             backgroundColor: switchActiveColor,
           },
       },
-
       outlinedPrimary: {
         borderColor: secondaryColor,
         color: secondaryColor,
@@ -279,7 +279,7 @@ const theme = {
     MuiIcon: { fontSizeLarge: { fontSize: '1.75rem' } },
     MuiAccordionSummary: {
       root: {
-        padding: '0 .5rem 0 1rem !important', margin: 0, minHeight: '3rem !important', display: "flex",
+        padding: '4px', margin: 0, minHeight: 'auto !important', display: "flex"
       },
       content: {
         margin: '0 !important',
@@ -300,7 +300,7 @@ const theme = {
       },
       expandIcon: { marginRight: 0 }
     },
-    MuiAccordionDetails: { root: { padding: '1rem 1rem 1rem 3rem', margin: 0, minHeight: 'unset!important', flexDirection: 'column', } },
+    MuiAccordionDetails: { root: { padding: 0, paddingBottom: '8px', margin: 0, minHeight: 'unset!important', flexDirection: 'column', } },
     MuiAccordion: {
       root: {
         padding: 0, margin: '0 !important', minHeight: 'unset', background: 'transparent',

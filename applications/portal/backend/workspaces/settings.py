@@ -126,7 +126,7 @@ PROJECT_NAME = "WORKSPACES"
 # Persistent storage
 PERSISTENT_ROOT = os.path.join(BASE_DIR, "persistent")
 LAMINAS_PATH = os.path.join(PERSISTENT_ROOT, "laminas")
-ANNOTATIONS_PATH = os.path.join(PERSISTENT_ROOT, "annotation")
+BACKGROUND_PATH = os.path.join(PERSISTENT_ROOT, "background")
 CANAL_PATH = os.path.join(PERSISTENT_ROOT, "canal")
 GRID_PATH = os.path.join(PERSISTENT_ROOT, "grid")
 
@@ -223,10 +223,16 @@ FIGURE_DPI = 100
 
 UM_TO_MM = 10
 
-POSITION_WITHIN_SUBSEGMENT = 0.5  # Position (in percentage) of the slice to pick from a subsegment
+POSITION_WITHIN_SUBDIVISION = 0.5  # Position (in percentage) of the slice to pick from a subdivision
 
 # for postgres configure to use the database pool
-if DATABASES.get("default", None) and DATABASES.get("default").get("ENGINE", None) == "django.db.backends.postgresql":
-    DATABASES.get("default").update({
-        "ENGINE": "django_postgrespool2"
-    })
+# if DATABASES.get("default", None) and DATABASES.get("default").get("ENGINE", None) == "django.db.backends.postgresql":
+#     DATABASES.get("default").update({
+#         "ENGINE": "django_postgrespool2"
+#     })
+
+FILE_UPLOAD_MAX_MEMORY_SIZE = 0  # Forces all uploaded files to be of type TemporaryUploadedFile opposed to InMemoryUploadedFile
+UPSCALE_FACTOR = 4
+GREY_MATTER_REGION_KEY = "GM"
+WHITE_MATTER_REGION_KEY = "WM"
+CENTRAL_CANAL_REGION_KEY = "CC"

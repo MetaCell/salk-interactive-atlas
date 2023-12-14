@@ -1,8 +1,8 @@
 import os
 import sys
-from tifffile import imread
 
 import numpy as np
+from tifffile import imread
 
 from cordmap.entry_points.register_3D import main as cordmap_run
 

@@ -1,12 +1,12 @@
 import logging
+from pathlib import Path
 
 import numpy as np
-
-from pathlib import Path
-from tifffile import imsave
 from skimage.filters import gaussian
-from cordmap.utils.misc import ensure_directory_exists
+from tifffile import imsave
+
 from cordmap.utils.image import mask_image_threshold
+from cordmap.utils.misc import ensure_directory_exists
 
 """
 Mostly from github.com/brainglobe/cellfinder
@@ -50,7 +50,45 @@ def generate_prob_map(
     if mask:
         logging.debug("Masking image based on registered atlas")
         probability_map = mask_image_threshold(
-            probability_map, atlas.annotation
+            probability_map, atlas.annotation > 1
+        )
+
+    logging.debug("Saving probability map")
+
+    if save_map:
+        logging.debug("Ensuring output directory exists")
+        ensure_directory_exists(output_filename.parent)
+
+        logging.debug("Saving heatmap image")
+        imsave(output_filename, probability_map)
+
+    return probability_map
+
+
+def generate_prob_map_2D(
+    output_directory,
+    points,
+    atlas,
+    save_map=True,
+    smoothing=None,
+    mask=True,
+    normalise=True,
+):
+    output_directory = Path(output_directory)
+    output_filename = output_directory / "probability_map.tiff"
+
+    bins = get_bins(atlas.annotation.shape[1:], (1, 1))
+    probability_map, _ = np.histogramdd(points, bins=bins, density=normalise)
+
+    if smoothing is not None:
+        logging.debug("Smoothing probability map")
+        smoothing = [int(round(smoothing / res)) for res in atlas.resolution]
+        probability_map = gaussian(probability_map, sigma=smoothing)
+
+    if mask:
+        logging.debug("Masking image based on registered atlas")
+        probability_map = mask_image_threshold(
+            probability_map, atlas.annotation > 1
         )
 
     logging.debug("Saving probability map")

@@ -1,5 +1,3 @@
-from unicodedata import name
-
 from django.urls import include, path
 from rest_framework.routers import DefaultRouter
 
@@ -10,6 +8,7 @@ router = DefaultRouter()
 router.register("collaborator", rest_views.CollaboratorViewSet)
 router.register("experiments", rest_views.ExperimentViewSet)
 router.register("population", rest_views.PopulationViewSet)
+router.register("pdf", rest_views.PDFViewSet)
 router.register("tags", rest_views.TagViewSet)
 router.register("teams", rest_views.GroupViewSet)
 router.register("users", rest_views.UserViewSet)

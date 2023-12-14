@@ -36,7 +36,7 @@ export const Banner = (props: any) => {
   };
 
   const text1 =
-    user === null ? "Welcome to SALK preview" : `Welcome back ${user.firstName}`;
+    user === null ? "Welcome to SALK preview" : `Welcome back ${user?.firstName}`;
   const text2 =
     user === null
       ? "Coming soon ..."

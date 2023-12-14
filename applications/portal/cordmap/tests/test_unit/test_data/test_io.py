@@ -1,8 +1,7 @@
 import os
-
 from pathlib import Path
-from cordmap.data import io
 
+from cordmap.data import io
 
 data_file = "V3_Cord1_Data_subset.csv"
 metadata_file = "V3_Cord1_Key_subset.csv"

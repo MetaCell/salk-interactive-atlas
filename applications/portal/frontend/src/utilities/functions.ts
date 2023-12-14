@@ -1,6 +1,13 @@
 import {getAtlas} from "../service/AtlasService";
-import {ARROW_KEY_LEFT, ARROW_KEY_RIGHT, AtlasChoice} from "./constants";
+import {
+    ARROW_KEY_LEFT,
+    ARROW_KEY_RIGHT,
+    AtlasChoice, POPULATION_ERROR_STATE,
+    POPULATION_FINISHED_STATE,
+    POPULATION_PENDING_STATE, POPULATION_RUNNING_STATE, POPULATION_UNKNOWN_CHILD
+} from "./constants";
 import Range from "../models/Range";
+import {Population} from "../apiclient/workspaces";
 
 
 export const areAllSelected = (obj: {
@@ -10,6 +17,45 @@ export const areAllSelected = (obj: {
 }): boolean => {
     return Object.keys(obj).reduce((acc, pId) => obj[pId].selected && acc, true)
 }
+
+export const areAllPopulationsWithChildrenSelected = (obj: {
+    [x: string]: {
+        children?: {
+            [childId: string]: {
+                selected: any
+            }
+        }
+    }
+}): boolean => {
+    return Object.keys(obj).every(pId => {
+        const children = obj[pId].children;
+        if (children) {
+            return Object.keys(children).some(childId => children[childId].selected);
+        }
+
+        return true;
+    });
+}
+
+export const areAllPopulationsWithStatusFinished = (obj: {
+    [x: string]: {
+        children?: {
+            [childId: string]: {
+                status: string
+            }
+        }
+    }
+}): boolean => {
+    return Object.keys(obj).every(pId => {
+        const children = obj[pId].children;
+        if (children) {
+            return Object.keys(children).every(childId => children[childId].status !== POPULATION_FINISHED_STATE);
+        }
+
+        return true;
+    });
+}
+
 
 export const areSomeSelected = (obj: {
     [x: string]: {
@@ -58,6 +104,11 @@ export function getRGBAFromHexAlpha(hex: string, opacity: number) {
     return rgb ? {...rgb, a: opacity} : {r: 0, g: 0, b: 0, a: 1}
 }
 
+export const getRGBAColor = (populations: any, pId: number) => {
+    const {color, opacity} = populations[pId]
+    return getRGBAFromHexAlpha(color, opacity)
+}
+
 export function getRGBAString(rgba: { r: number; g: number; b: number; a: number; }) {
     return `rgba(${rgba.r},${rgba.g},${rgba.b},${rgba.a})`
 }
@@ -92,7 +143,9 @@ export function scrollStop(element: any, onEvent: (arg0: any) => void, callback:
 
 }
 
-export const onWheel = (event: { preventDefault: () => void; deltaY: number; }, currentRef: { current: number; }, len: number, callback: (arg0: number) => void) => {
+export const onWheel = (event: { preventDefault: () => void; deltaY: number; }, currentRef: {
+    current: number;
+},                      len: number, callback: (arg0: number) => void) => {
     event.preventDefault()
     const direction = Math.sign(event.deltaY) * -1
     const nextCursor = mod(currentRef.current + direction, len)
@@ -100,7 +153,9 @@ export const onWheel = (event: { preventDefault: () => void; deltaY: number; }, 
     currentRef.current = nextCursor
 }
 
-export const onKeyboard = (event: { keyCode: number; }, currentRef: { current: number; }, len: number, callback: (arg0: number) => void) => {
+export const onKeyboard = (event: { keyCode: number; }, currentRef: {
+    current: number;
+},                         len: number, callback: (arg0: number) => void) => {
     const direction = event.keyCode === ARROW_KEY_RIGHT ? 1 : event.keyCode === ARROW_KEY_LEFT ? -1 : null
     if (!direction) {
         return
@@ -133,4 +188,108 @@ export function dictZip(keys: string[], values: any[]) {
         return
     }
     return keys.reduce((o, currentValue, currentIndex) => ({...o, [currentValue]: values[currentIndex]}), {})
+}
+
+
+export const groupPopulations = (populations: Record<string, Population>) => {
+    if (populations === undefined) {
+        return
+    }
+
+    const sortedKeys = Object.entries(populations)
+        .sort((a, b) => a[1].name.localeCompare(b[1].name))
+        .map(entry => entry[0]);
+
+
+    return sortSubpopulation(sortedKeys, populations);
+}
+
+function sortSubpopulation(populationKeys: string[], populations: any) {
+    const newPopulations = {} as any;
+    populationKeys.forEach((key) => {
+        const population = populations[key];
+        const {name, color, opacity} = population
+        const nameSplit = name.split('@');
+        if (nameSplit.length === 1) {
+            newPopulations[name] = {name, color, opacity};
+            newPopulations[name].children = {
+                [population.id]: {
+                    ...population,
+                    parent: name,
+                    name: POPULATION_UNKNOWN_CHILD,
+                }
+            };
+        } else {
+            const parentName = nameSplit[0];
+            const childName = nameSplit[1];
+
+            if (newPopulations[parentName] === undefined) {
+                newPopulations[parentName] = {
+                    name: parentName,
+                    color,
+                    opacity,
+                    children: {
+                        [key]: {
+                            ...population, // subpopulation also takes the color of the parent population
+                            parent: parentName,
+                            name: childName
+                        }
+                    }
+                };
+            } else {
+                newPopulations[parentName].children = {
+                    ...newPopulations[parentName].children,
+                    [key]: {
+                        ...population,
+                        parent: parentName,
+                        name: childName,
+                    }
+                };
+            }
+        }
+    });
+    return newPopulations;
+}
+
+export function splitPopulations(populations: any) {
+    const residentialPopulations: any = {};
+    const experimentalPopulations: any = {};
+
+    Object.keys(populations).forEach((key) => {
+        const population = populations[key];
+        if (population.experiment === null) {
+            residentialPopulations[key] = population;
+        } else {
+            experimentalPopulations[key] = population;
+        }
+    });
+
+    return {residentialPopulations, experimentalPopulations};
+}
+
+export function getParentPopulationStatus(population: any) {
+    let allFinished = true;
+    let hasRunning = false;
+    let hasPending = false;
+    let status = POPULATION_ERROR_STATE
+
+    Object.values(population.children).forEach((child: any) => {
+        if (child.status !== POPULATION_FINISHED_STATE) {
+            allFinished = false;
+            if (child.status === POPULATION_RUNNING_STATE) {
+                hasRunning = true;
+            } else if (child.status === POPULATION_PENDING_STATE) {
+                hasPending = true;
+            }
+        }
+    });
+
+    if (allFinished) {
+        status = POPULATION_FINISHED_STATE;
+    } else if (hasRunning) {
+        status = POPULATION_RUNNING_STATE;
+    } else if (hasPending) {
+        status = POPULATION_PENDING_STATE;
+    }
+    return status
 }

@@ -188,6 +188,29 @@ class ThreeDViewer extends Component {
                         ))
                 ))
         }
+
+        // @ts-ignore
+        if (prevProps.populationDotSizes !== this.props.populationDotSizes) {
+            this.updatePopulationDotSizes();
+        }
+    }
+
+    updatePopulationDotSizes() {
+        // @ts-ignore
+        const { threeDObjects } = this.state;
+        // @ts-ignore
+        const { activePopulations } = this.props;
+        const activePopulationsIds = Object.keys(activePopulations);
+        const nextThreeDObjects = { ...threeDObjects };
+        for (const ptr of activePopulationsIds) {
+            this.removePopulation(ptr, nextThreeDObjects);
+        }
+        for (const pta of activePopulationsIds) {
+            this.addPopulation(activePopulations[pta], nextThreeDObjects);
+        }
+        if (activePopulationsIds.length > 0) {
+            this.setState({ threeDObjects: nextThreeDObjects });
+        }
     }
 
     getInstancesToShow() {
@@ -247,7 +270,7 @@ class ThreeDViewer extends Component {
 
     addPopulation(population: Population, threeDObjects: { [x: string]: THREE.InstancedMesh; }) {
         // @ts-ignore
-        const {selectedAtlas} = this.props
+        const { selectedAtlas, populationDotSizes } = this.props
         // @ts-ignore
         const {subdivisions} = this.state
         const activeSubdivisions = getActiveSubdivisionsSet(subdivisions)
@@ -259,7 +282,8 @@ class ThreeDViewer extends Component {
         const ranges = getAllowedRanges(selectedAtlas, activeSubdivisions)
         const minOffset = ranges.reduce((min, r) => r.start < min ? r.start : min, ranges[0].start)
         // @ts-ignore
-        const geometry = new THREE.SphereGeometry(1, 32, 16);
+        const populationRadius = populationDotSizes[population.id] || 1
+        const geometry = new THREE.SphereGeometry(populationRadius, 32, 16);
         const dummy = new THREE.Object3D();
         const position = new THREE.Vector3();
         const material = new THREE.MeshBasicMaterial(
@@ -270,6 +294,8 @@ class ThreeDViewer extends Component {
         mesh.position.x = minOffset
         mesh.frustumCulled = false
         mesh.name = population.name
+        // @ts-ignore
+        mesh.populationId = population.id
         for (let i = 0; i < population.cells.length; i++) {
 
             const cell = population.cells[i]
@@ -307,7 +333,7 @@ class ThreeDViewer extends Component {
             const mesh = this.scene.getObjectByProperty('uuid', nearestSelectionUUID)
             if (mesh) {
                 // @ts-ignore
-                this.props.updateWidget(DetailsWidget(true, mesh.name))
+                this.props.updateWidget(DetailsWidget(true, mesh.populationId, this.props.experiment.has_edit_permission))
             }
         }
     }

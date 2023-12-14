@@ -167,6 +167,9 @@ paths:
           multipart/form-data:
             schema:
               $ref: '#/components/schemas/Experiment'
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Experiment'
       responses:
         '201':
           content:
@@ -279,6 +282,9 @@ paths:
           multipart/form-data:
             schema:
               $ref: '#/components/schemas/Experiment'
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Experiment'
       responses:
         '200':
           content:
@@ -305,6 +311,9 @@ paths:
           multipart/form-data:
             schema:
               $ref: '#/components/schemas/Experiment'
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Experiment'
       responses:
         '200':
           content:
@@ -328,6 +337,34 @@ paths:
           type: string
       responses:
         '204':
+          description: ''
+      tags:
+      - api
+  /api/experiments/{id}/download_populations/{active_populations}/:
+    get:
+      operationId: downloadPopulationsExperiment
+      description: 'This viewset automatically provides `list`, `create`, `retrieve`,
+
+        `update` and `destroy` actions.'
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: A unique integer value identifying this experiment.
+        schema:
+          type: string
+      - name: active_populations
+        in: path
+        required: true
+        description: ''
+        schema:
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DownloadPopulations'
           description: ''
       tags:
       - api
@@ -371,6 +408,22 @@ paths:
           description: ''
       tags:
       - api
+  /api/population/residential/:
+    get:
+      operationId: residentialPopulation
+      description: This viewset automatically provides `list` actions.
+      parameters: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Population'
+          description: Successful retrieval of the residential populations
+      tags:
+      - api
   /api/population/{id}/:
     get:
       operationId: retrievePopulation
@@ -382,6 +435,12 @@ paths:
         description: A unique integer value identifying this population.
         schema:
           type: string
+      - name: experiment_id
+        in: query
+        required: false
+        description: Optional experiment ID to filter PDFs
+        schema:
+          type: integer
       responses:
         '200':
           content:
@@ -512,9 +571,9 @@ paths:
           description: ''
       tags:
       - api
-  /api/population/{id}/probability_map/{subdivision}/:
+  /api/population/{id}/contour_plot/{subdivision}/{type}/:
     get:
-      operationId: probabilityMapPopulation
+      operationId: contourPlotPopulation
       description: This viewset automatically provides `list` actions.
       parameters:
       - name: id
@@ -529,12 +588,144 @@ paths:
         description: ''
         schema:
           type: string
+      - name: type
+        in: path
+        required: true
+        description: ''
+        schema:
+          type: string
       responses:
         '200':
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Population'
+          description: ''
+      tags:
+      - api
+  /api/pdf/:
+    get:
+      operationId: listPdfs
+      description: This viewset automatically provides `list` actions.
+      parameters: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Pdf'
+          description: ''
+      tags:
+      - api
+    post:
+      operationId: createPdf
+      description: This viewset automatically provides `list` actions.
+      parameters: []
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Pdf'
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Pdf'
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Pdf'
+          description: ''
+      tags:
+      - api
+  /api/pdf/{id}/:
+    get:
+      operationId: retrievePdf
+      description: This viewset automatically provides `list` actions.
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: A unique integer value identifying this pdf.
+        schema:
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Pdf'
+          description: ''
+      tags:
+      - api
+    put:
+      operationId: updatePdf
+      description: This viewset automatically provides `list` actions.
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: A unique integer value identifying this pdf.
+        schema:
+          type: string
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Pdf'
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Pdf'
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Pdf'
+          description: ''
+      tags:
+      - api
+    patch:
+      operationId: partialUpdatePdf
+      description: This viewset automatically provides `list` actions.
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: A unique integer value identifying this pdf.
+        schema:
+          type: string
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Pdf'
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Pdf'
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Pdf'
+          description: ''
+      tags:
+      - api
+    delete:
+      operationId: destroyPdf
+      description: This viewset automatically provides `list` actions.
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: A unique integer value identifying this pdf.
+        schema:
+          type: string
+      responses:
+        '204':
           description: ''
       tags:
       - api
@@ -968,6 +1159,9 @@ paths:
           multipart/form-data:
             schema:
               $ref: '#/components/schemas/Tags'
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Tags'
       responses:
         '201':
           content:
@@ -977,9 +1171,9 @@ paths:
           description: ''
       tags:
       - api
-  /api/experiments/{id}/upload-files/:
+  /api/experiments/{id}/upload-pair-files/:
     post:
-      operationId: uploadFilesExperiment
+      operationId: uploadPairFilesExperiment
       description: 'This viewset automatically provides `list`, `create`, `retrieve`,
 
         `update` and `destroy` actions.'
@@ -994,13 +1188,40 @@ paths:
         content:
           multipart/form-data:
             schema:
-              $ref: '#/components/schemas/ExperimentFileUpload'
+              $ref: '#/components/schemas/ExperimentPairFileUpload'
       responses:
         '201':
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ExperimentFileUpload'
+                $ref: '#/components/schemas/ExperimentPairFileUpload'
+          description: ''
+      tags:
+      - api
+  /api/experiments/{id}/upload-single-file/:
+    post:
+      operationId: uploadSingleFileExperiment
+      description: 'This viewset automatically provides `list`, `create`, `retrieve`,
+
+        `update` and `destroy` actions.'
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: A unique integer value identifying this experiment.
+        schema:
+          type: string
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ExperimentSingleFileUpload'
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExperimentSingleFileUpload'
           description: ''
       tags:
       - api
@@ -1247,10 +1468,10 @@ components:
                 maxLength: 7
               experiment:
                 type: integer
+                nullable: true
               atlas:
                 enum:
                 - salk_cord_10um
-                - allen_cord_20um
                 type: string
               cells:
                 type: string
@@ -1260,6 +1481,9 @@ components:
                 maximum: 1.0
                 minimum: 0.0
               status:
+                type: string
+                readOnly: true
+              pdfs:
                 type: string
                 readOnly: true
             required:
@@ -1285,6 +1509,15 @@ components:
       required:
       - name
       - description
+    DownloadPopulations:
+      type: object
+      properties:
+        active_populations:
+          type: array
+          items:
+            type: integer
+      required:
+      - active_populations
     Population:
       type: object
       properties:
@@ -1299,10 +1532,10 @@ components:
           maxLength: 7
         experiment:
           type: integer
+          nullable: true
         atlas:
           enum:
           - salk_cord_10um
-          - allen_cord_20um
           type: string
         cells:
           type: string
@@ -1314,11 +1547,48 @@ components:
         status:
           type: string
           readOnly: true
+        pdfs:
+          type: string
+          readOnly: true
       required:
       - name
       - color
       - experiment
       - cells
+    Pdf:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        name:
+          type: string
+          readOnly: true
+        category:
+          enum:
+          - ELECTROPHYSIOLOGY
+          - BEHAVIOUR
+          - IO_MAPPING
+          type: string
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        created_by:
+          type: string
+          readOnly: true
+        file:
+          type: string
+          format: binary
+        experiment:
+          type: integer
+        population:
+          type: integer
+      required:
+      - category
+      - file
+      - experiment
+      - population
     Tag:
       type: object
       properties:
@@ -1428,7 +1698,7 @@ components:
             type: string
       required:
       - tags
-    ExperimentFileUpload:
+    ExperimentPairFileUpload:
       type: object
       properties:
         key_file:
@@ -1440,6 +1710,14 @@ components:
       required:
       - key_file
       - data_file
+    ExperimentSingleFileUpload:
+      type: object
+      properties:
+        file:
+          type: string
+          format: binary
+      required:
+      - file
     Member:
       type: object
       properties:

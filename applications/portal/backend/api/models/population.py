@@ -1,22 +1,22 @@
 import logging
 import os
 
+from PIL import Image
 from django.conf import settings
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
-from PIL import Image
 
+from . import PopulationStatus
+from .text_choices import AtlasesChoice
+from .experiment import Experiment
 from ..constants import (
     POPULATIONS_DATA,
     POPULATIONS_SPLIT_DATA,
     PopulationPersistentFiles,
 )
-from ..helpers.generate_population_cells import get_cells_filepath
-from ..services.filesystem_service import create_dir, remove_dir, remove_file
+from ..services.filesystem_service import create_dir_if_not_exists, remove_dir
 from ..services.population_service import generate_images, split_cells_per_segment
 from ..utils import has_property, is_valid_hex_str
-from .atlas import AtlasesChoice
-from .experiment import Experiment
 
 
 class PopulationObjectsManager(models.Manager):
@@ -30,16 +30,9 @@ class PopulationObjectsManager(models.Manager):
         )
 
 
-class PopulationStatus(models.TextChoices):
-    ERROR = "error"
-    PENDING = "pending"
-    RUNNING = "running"
-    FINISHED = "finished"
-
-
 class Population(models.Model):
     DEFAULT_COLOR = "#000000"
-    experiment = models.ForeignKey(Experiment, on_delete=models.CASCADE)
+    experiment = models.ForeignKey(Experiment, on_delete=models.CASCADE, null=True, blank=True)
     atlas = models.CharField(
         max_length=100, choices=AtlasesChoice.choices, default=AtlasesChoice.SLK10
     )
@@ -48,24 +41,25 @@ class Population(models.Model):
     opacity = models.FloatField(
         validators=[MinValueValidator(0.0), MaxValueValidator(1.0)], default=1.0
     )
-    cells = models.FileField(upload_to=POPULATIONS_DATA)
+    cells = models.FileField(upload_to=POPULATIONS_DATA, max_length=255)
     status = models.CharField(
         choices=PopulationStatus.choices,
         editable=False,
         default=PopulationStatus.PENDING,
         max_length=8,
     )
+    is_fiducial = models.BooleanField(default=False)
 
     # objects = models.Manager()
     objects = PopulationObjectsManager()
 
     @property
     def storage_path(self) -> str:
-        return os.path.join(settings.PERSISTENT_ROOT, POPULATIONS_DATA)
+        return os.path.join(settings.PERSISTENT_ROOT, POPULATIONS_DATA, str(self.id))
 
     @property
     def split_storage_path(self) -> str:
-        return os.path.join(self.storage_path, str(self.id), POPULATIONS_SPLIT_DATA)
+        return os.path.join(self.storage_path, POPULATIONS_SPLIT_DATA)
 
     def get_subdivision_storage_path(
         self, subdivision, content: PopulationPersistentFiles
@@ -76,7 +70,7 @@ class Population(models.Model):
         remove_dir(self.split_storage_path)
 
     def create_split_storage(self):
-        create_dir(self.split_storage_path)
+        create_dir_if_not_exists(self.split_storage_path)
 
     def save(
         self, force_insert=False, force_update=False, using=None, update_fields=None
@@ -90,9 +84,9 @@ class Population(models.Model):
             )
             execute_generate_population_static_files_workflow(self.id)
 
-    def delete(self, using=None, keep_parents=False):
-        remove_file(self.cells.path)
-        super(Population, self).delete(using, keep_parents)
+    def delete(self, *args, **kwargs):
+        remove_dir(self.storage_path)
+        super(Population, self).delete(*args, **kwargs)
 
     def _has_file_changed(self):
         try:
@@ -105,16 +99,6 @@ class Population(models.Model):
             has_property(self.cells, "file")
             and self.cells.file.name != current.cells.file.name
         )
-
-    def generate_cells(self, data_filepath: str):
-        self.status = PopulationStatus.RUNNING
-        self.save()
-        try:
-            self.cells.name = get_cells_filepath(self.name, data_filepath, self.storage_path)
-        except Exception as e:
-            logging.exception(e)
-            self.status = PopulationStatus.ERROR
-        self.save()
 
     def generate_static_files(self):
         self.status = PopulationStatus.RUNNING
@@ -161,17 +145,17 @@ class Population(models.Model):
             return True
 
     def has_object_read_permission(self, request):
-        return self.experiment.has_object_read_permission(request)
+        return self.experiment is None or self.experiment.has_object_read_permission(request)
 
     def has_object_write_permission(self, request):
-        return self.experiment.has_object_write_permission(request)
+        return self.experiment and self.experiment.has_object_write_permission(request)
 
     def update_color(self):
         if not is_valid_hex_str(self.color):
             self.color = Population.DEFAULT_COLOR
 
     def __str__(self):
-        return f"{self.experiment} {self.name}"
+        return f"{self.experiment} {self.name}" if self.experiment else f"Residential {self.name}"
 
     class Meta:
         unique_together = [["experiment", "name"]]

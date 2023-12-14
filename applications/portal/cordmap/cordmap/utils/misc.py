@@ -1,12 +1,10 @@
-import os
 import logging
-
-import numpy as np
-
+import os
 from pathlib import Path
 
-import PIL.ImageDraw as ImageDraw
+import numpy as np
 import PIL.Image as Image
+import PIL.ImageDraw as ImageDraw
 
 
 def check_set_intersections(set_dict, remove=False, max_overlap=0):

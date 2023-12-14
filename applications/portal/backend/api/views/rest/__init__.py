@@ -4,3 +4,4 @@ from .group import *
 from .population import *
 from .tag import *
 from .user import *
+from .pdf import *

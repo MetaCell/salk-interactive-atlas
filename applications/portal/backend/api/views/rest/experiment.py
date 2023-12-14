@@ -1,23 +1,26 @@
 import logging
 
+from django.http import HttpResponse
+from django.shortcuts import get_object_or_404
 from dry_rest_permissions.generics import DRYPermissions
 from rest_framework import status, viewsets
 from rest_framework.decorators import action
 from rest_framework.parsers import MultiPartParser
 from rest_framework.response import Response
 
-from api.constants import CORDMAP_DATA
-from api.helpers.exceptions import InvalidInputError
+from api.helpers.download_populations import get_populations_zip
+from api.helpers.exceptions import InvalidPopulationFile, DuplicatedPopulationError, InvalidInputError
 from api.models import Experiment
 from api.serializers import (
-    ExperimentFileUploadSerializer,
+    ExperimentPairFileUploadSerializer,
     ExperimentSerializer,
     TagSerializer,
-    TagsSerializer,
+    TagsSerializer, ExperimentSingleFileUploadSerializer, DownloadPopulationsSerializer,
 )
-from api.services.experiment_service import add_tag, delete_tag, upload_files
-from api.services.filesystem_service import create_temp_dir, move_files
-from api.validators.upload_files import validate_input_files
+from api.services.experiment_service import add_tag, delete_tag, start_non_fiducial_experiment_registration_workflow, \
+    start_fiducial_experiment_registration_workflow
+from api.services.filesystem_service import move_files
+from api.validators.upload_files import validate_multiple_files_input, validate_single_file_input
 
 log = logging.getLogger("__name__")
 
@@ -30,13 +33,14 @@ class ExperimentViewSet(viewsets.ModelViewSet):
     This viewset automatically provides `list`, `create`, `retrieve`,
     `update` and `destroy` actions.
     """
-
     permission_classes = (DRYPermissions,)
     queryset = Experiment.objects.all()
     parser_classes = (MultiPartParser,)
     custom_serializer_map = {
-        "upload_files": ExperimentFileUploadSerializer,
+        "upload_pair_files": ExperimentPairFileUploadSerializer,
+        "upload_single_file": ExperimentSingleFileUploadSerializer,
         "add_tags": TagsSerializer,
+        'download_populations': DownloadPopulationsSerializer,
     }
 
     def get_serializer_class(self):
@@ -104,7 +108,6 @@ class ExperimentViewSet(viewsets.ModelViewSet):
     )
     def delete_tag(self, request, tag_name, **kwargs):
         instance = self.get_object()
-        tag_name = request.data.get("name")
         delete_tag(instance, tag_name)
         return Response(status=status.HTTP_204_NO_CONTENT)
 
@@ -112,28 +115,74 @@ class ExperimentViewSet(viewsets.ModelViewSet):
         detail=True,
         methods=["post"],
         parser_classes=(MultiPartParser,),
-        name="experiment-upload-file",
-        url_path="upload-files",
+        name="experiment-upload-pair-files",
+        url_path="upload-pair-files",
     )
-    def upload_files(self, request, **kwargs):
+    def upload_pair_files(self, request, **kwargs):
         instance = self.get_object()
         key_file = request.FILES.get("key_file")
         data_file = request.FILES.get("data_file")
         try:
-            validate_input_files(key_file, data_file)
+            validate_multiple_files_input(key_file, data_file, instance.id)
         except InvalidInputError:
             return Response(status=status.HTTP_400_BAD_REQUEST)
+        except DuplicatedPopulationError as e:
+            return Response(data={'detail': str(e)}, status=status.HTTP_409_CONFLICT)
+        except InvalidPopulationFile as e:
+            return Response(data={'detail': str(e)}, status=status.HTTP_422_UNPROCESSABLE_ENTITY)
         try:
-            dir_path = create_temp_dir(CORDMAP_DATA)
-            filepaths = move_files([key_file, data_file], dir_path)
-        except Exception as e:
+            filepaths = move_files([key_file, data_file], instance.storage_path)
+        except Exception:
             return Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR)
         try:
-            created = upload_files(instance, filepaths[KEY_INDEX], filepaths[DATA_INDEX])
-            response_status = status.HTTP_201_CREATED if created else status.HTTP_200_OK
-        except InvalidInputError:
+            start_non_fiducial_experiment_registration_workflow(instance.id, filepaths[KEY_INDEX],
+                                                                filepaths[DATA_INDEX])
+            response_status = status.HTTP_201_CREATED
+        except InvalidPopulationFile:
             response_status = status.HTTP_400_BAD_REQUEST
         return Response(status=response_status)
+
+    @action(
+        detail=True,
+        methods=["post"],
+        parser_classes=(MultiPartParser,),
+        name="experiment-upload-single-file",
+        url_path="upload-single-file",
+    )
+    def upload_single_file(self, request, **kwargs):
+        instance = self.get_object()
+        file = request.FILES.get("file")
+        try:
+            validate_single_file_input(file, instance.id)
+        except InvalidInputError:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+        except DuplicatedPopulationError as e:
+            return Response(data={'detail': str(e)}, status=status.HTTP_409_CONFLICT)
+        try:
+            filepaths = move_files([file], instance.storage_path)
+        except Exception:
+            return Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        try:
+            start_fiducial_experiment_registration_workflow(instance.id,
+                                                            filepaths[KEY_INDEX])
+            response_status = status.HTTP_201_CREATED
+        except InvalidPopulationFile:
+            response_status = status.HTTP_400_BAD_REQUEST
+        return Response(status=response_status)
+
+    @action(detail=True, methods=['get'], url_path='download_populations/(?P<active_populations>[^/.]+)')
+    def download_populations(self, request, pk=None, active_populations=None):
+        experiment = self.get_object()
+
+        active_populations = active_populations.split(',')
+        if not active_populations or len(active_populations) == 0:
+            return Response(status=status.HTTP_204_NO_CONTENT)
+
+        zip_file, filename = get_populations_zip(active_populations, experiment)
+        response = HttpResponse(zip_file.read(), content_type='application/octet-stream')
+        response['Content-Disposition'] = f'attachment; filename="{filename}"'
+        zip_file.close()
+        return response
 
     def perform_create(self, serializer):
         experiment = serializer.save(owner=self.request.user)

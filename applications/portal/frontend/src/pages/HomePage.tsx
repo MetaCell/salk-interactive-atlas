@@ -11,7 +11,6 @@ import {
   ACME_TEAM,
   COMMUNITY_HASH,
   SHARED_HASH,
-  PULL_TIME_MS
 } from "../utilities/constants";
 import { CloneExperimentDialog } from "../components/home/CloneExperimentDialog";
 import { ExplorationSpinalCordDialog } from "../components/home/ExplorationSpinalCordDialog";
@@ -62,15 +61,10 @@ export default (props: any) => {
     // selectedRef.current.scrollIntoView();
   }
   const [dialogOpen, setDialogOpen] = React.useState(false);
+  const [searchText, setSearchText] = React.useState('');
 
   const handleDialogToggle = () => {
     setDialogOpen((prevOpen) => !prevOpen);
-  };
-
-  const [explorationDialogOpen, setExplorationDialogOpen] = React.useState(false);
-
-  const handleExplorationDialogToggle = () => {
-    setExplorationDialogOpen((prevOpen) => !prevOpen);
   };
 
   const [shareDialogOpen, setShareDialogOpen] = React.useState(false);
@@ -85,16 +79,33 @@ export default (props: any) => {
     setShareMultipleDialogOpen((prevOpen) => !prevOpen);
   };
 
+  const searchedExperiments = React.useMemo(() => {
+    return experiments.filter((experiment: any) => {
+      return experiment.name.toLowerCase().includes(searchText.toLowerCase());
+    });
+  }, [experiments, searchText]);
+
   useEffect(() => {
     fetchExperiments().catch(console.error);
   }, [latestExperimentId])
 
   return (
     <Box display="flex">
-      <Sidebar experiments={experiments} executeScroll={(r: string) => executeScroll(r)} />
+      <Sidebar
+        experiments={experiments}
+        executeScroll={(r: string) => executeScroll(r)}
+        searchText={searchText}
+        setSearchText={(text: string) => setSearchText(text)}
+      />
       <Box className={classes.layoutContainer}>
         <div ref={myRef} id={EXPERIMENTS_HASH}>
-          <ExperimentList experiments={experiments} heading={"My experiments"} description={`${experiments.length} experiments`} type={EXPERIMENTS_HASH} handleExplorationDialogToggle={handleExplorationDialogToggle} infoIcon={false} handleShareDialogToggle={handleShareDialogToggle} handleShareMultipleDialogToggle={handleShareMultipleDialogToggle}/>
+          <ExperimentList
+            experiments={searchedExperiments} heading={"My experiments"}
+            description={`${experiments.length} experiments`} type={EXPERIMENTS_HASH}
+            infoIcon={false}
+            handleShareDialogToggle={handleShareDialogToggle} handleShareMultipleDialogToggle={handleShareMultipleDialogToggle}
+            refreshExperimentList={fetchExperiments}
+          />
         </div>
         {/*<div ref={shared} id={SHARED_HASH}>*/}
         {/*  <ExperimentList heading={"Shared with me"} description={"28 experiments"} type={SHARED_HASH} handleDialogToggle={handleDialogToggle} handleExplorationDialogToggle={handleExplorationDialogToggle} infoIcon={false} handleShareDialogToggle={handleShareDialogToggle} handleShareMultipleDialogToggle={handleShareMultipleDialogToggle} />*/}
@@ -112,7 +123,6 @@ export default (props: any) => {
         {/*</Box>*/}
       </Box>
       <CloneExperimentDialog open={dialogOpen} handleClose={handleDialogToggle} user={props?.user} />
-      <ExplorationSpinalCordDialog open={explorationDialogOpen} handleClose={handleExplorationDialogToggle} />
       <ShareExperimentDialog open={shareDialogOpen} handleClose={handleShareDialogToggle} />
       <ShareMultipleExperimentDialog open={shareMultipleDialogOpen} handleClose={handleShareMultipleDialogToggle} />
     </Box>

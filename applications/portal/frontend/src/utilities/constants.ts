@@ -19,11 +19,10 @@ export const ACME_TEAM = 'acmeteam';
 export const SALK_TEAM = 'salkteam';
 export const COMMUNITY_HASH = 'community';
 
-export const PROBABILITY_MAP_ID = 'probabilityMap'
+export const CONTOUR_PLOT_ID = 'contourPlot'
 export const NEURONAL_LOCATIONS_ID = 'neuronalLocations'
 
 export const OVERLAYS = {
-    [PROBABILITY_MAP_ID]: new OverlayMetadata(PROBABILITY_MAP_ID, "Probability Map"),
     [NEURONAL_LOCATIONS_ID]:  new OverlayMetadata(NEURONAL_LOCATIONS_ID, "Neuronal Locations"),
 } as any
 
@@ -36,17 +35,21 @@ export enum RequestState {
 export const ROSTRAL = "Rostral"
 export const CAUDAL = "Caudal"
 
-export enum DensityMapTypes {
-    PROBABILITY_DATA = "probabilityData",
-    CENTROIDS_DATA = "centroidsData"
+export const ContourImageTypes = {
+    OFF : {label: "Contours Off", value: ''},
+    CONTOUR : {label: "Contours On", value: 'base'},
+    HEATMAP : {label: "Heatmap On", value: 'heatmap'},
 }
 
 export const PULL_TIME_MS = 30 * 1000
 export const POPULATION_FINISHED_STATE = "finished"
+export const POPULATION_RUNNING_STATE = "running"
+export const POPULATION_PENDING_STATE = "pending"
+export const POPULATION_ERROR_STATE = "error"
 export const MAX_STR_LENGTH_SIDEBAR = 15
 
 export enum DensityImages {
-    ANNOTATION = "annotation",
+    GREY_AND_WHITE_MATTER = "background",
     CANAL = "canal",
     GRID = "grid",
 }
@@ -75,3 +78,15 @@ export enum Details {
 export const POPULATION_V1 = "V1"
 export const POPULATION_V2A = "V2a"
 export const alphanumericCollator = new Intl.Collator(undefined, {numeric: true, sensitivity: 'base'});
+export const COMING_SOON = "(coming soon)"
+
+export const HEADER_TITLE = "Salk Mouse Cord Atlas";
+export const EXPERIMENTS_ROUTE = '/experiments/:id'
+
+export const SNACKBAR_TIMEOUT = 5000
+export const POPULATION_ICONS_OPACITY = 0.4
+
+export const POPULATION_UNKNOWN_CHILD = 'unknown'
+
+export const EXPERIMENTAL_POPULATION_NAME = 'experimental'
+export const RESIDENTIAL_POPULATION_NAME = 'residential'

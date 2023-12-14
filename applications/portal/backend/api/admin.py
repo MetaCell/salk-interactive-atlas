@@ -1,8 +1,6 @@
 from django.contrib import admin
 
-from api.models import Collaborator, Experiment, Population, Tag, UserDetail
-
-# Register your models here.
+from api.models import Collaborator, Experiment, Population, Tag, UserDetail, Pdf
 
 
 class PopulationInline(admin.TabularInline):
@@ -41,7 +39,12 @@ class TagAdmin(admin.ModelAdmin):
     pass
 
 
+class PDFAdmin(admin.ModelAdmin):
+    pass
+
+
 admin.site.register(UserDetail, UserDetailAdmin)
 admin.site.register(Experiment, ExperimentAdmin)
 admin.site.register(Collaborator, CollaboratorAdmin)
 admin.site.register(Tag, TagAdmin)
+admin.site.register(Pdf, PDFAdmin)

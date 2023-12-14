@@ -1,4 +1,5 @@
 import fire
+
 from cordmap.main import register_sections_3D
 
 
@@ -28,6 +29,7 @@ def register_cord_section_3D(
     mask_prob_map: bool = True,
     prob_map_normalise: bool = True,
     prob_map_smoothing: float = 50,
+    population_upsampling_factor: int = 1,
 ):
     """
     Entry point to register a single cord image to a BrainGlobe atlas.
@@ -100,6 +102,7 @@ def register_cord_section_3D(
         mask_prob_map=mask_prob_map,
         prob_map_normalise=prob_map_normalise,
         prob_map_smoothing=prob_map_smoothing,
+        population_upsampling_factor=population_upsampling_factor,
     )
 
 

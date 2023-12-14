@@ -6,8 +6,6 @@ import {
   Avatar,
 } from "@material-ui/core";
 import { headerButtonBorderColor, sidebarTextColor } from "../../../theme";
-import USER from "../../../assets/images/icons/user.svg";
-
 const useStyles = makeStyles(() => ({
   ownerInfo: {
     '& .MuiTypography-root': {
@@ -33,7 +31,7 @@ export const OwnerInfo = (props) => {
 
   return (
     <Box display="flex" alignItems={"center"} className={classes.ownerInfo}>
-      <Avatar title={user?.username} src={user.avatarUrl ? user.avatarUrl : USER} />
+      <Avatar title={user?.username} src={user?.avatarUrl ? user.avatarUrl : null} />
       <Typography>
         {`${user?.firstName} ${user?.lastName}`} <Typography component="span">(You)</Typography>
       </Typography>

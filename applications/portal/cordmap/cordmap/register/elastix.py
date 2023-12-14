@@ -1,10 +1,10 @@
 import os
-import itk
 import tempfile
+from pathlib import Path
 
+import itk
 import numpy as np
 
-from pathlib import Path
 from cordmap.utils.misc import ensure_directory_exists
 
 TEMP_DIRECTORY = Path(tempfile.mkdtemp(prefix="cordmap_elastix_"))
@@ -25,6 +25,23 @@ def register(
     fixed_points=None,
     moving_points=None,
 ):
+    """
+
+    :param fixed_image: 2d image of the sample (gm and wm masks only)
+    :param moving_image: atlas image that we want to register the sample to
+    :param rigid:
+    :param affine:
+    :param bspline:
+    :param registration_metric:
+    :param affine_iterations:
+    :param log:
+    :param use_control_points:
+    :param image_metric_weight:
+    :param point_metric_weight:
+    :param fixed_points:
+    :param moving_points:
+    :return:
+    """
     # convert to ITK, view only
     fixed_image = itk.GetImageViewFromArray(fixed_image)
     moving_image = itk.GetImageViewFromArray(moving_image)

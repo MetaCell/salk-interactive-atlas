@@ -5,7 +5,7 @@ from PIL import Image
 from matplotlib import pyplot as plt
 from matplotlib import rcParams
 
-from api.helpers.ICustomAtlas import ICustomAtlas
+from api.helpers.icustom_atlas import ICustomAtlas
 from api.helpers.atlas import get_subdivision_boundaries
 from api.helpers.image_manipulation import fig_to_img, pad_image
 from api.utils import get_closest_multiple
@@ -17,7 +17,7 @@ from workspaces.settings import (
     UM_TO_MM, GRID_FONT_SIZE, GRID_X_RANGE, GRID_Y_RANGE, GRID_Z_TITLE_PAD, GRID_X_LABEL_ROTATION,
     GRID_Z_TITLE_VERTICAL_AXES_LOCATION, GRID_AXIS_LABEL_PAD, GRID_X_LABEL_LOC, GRID_Y_LABEL_LOC, GRID_Z_TITLE_LOC,
     GRID_Z_TITLE_VERTICAL_ALIGNMENT, GRID_Z_TITLE_HORIZONTAL_ALIGNMENT, GRID_UNIT, GRID_Z_TITLE, GRID_TICK_STEP,
-    GRID_Z_TITLE_BACKGROUND_COLOR,
+    GRID_Z_TITLE_BACKGROUND_COLOR, UPSCALE_FACTOR,
 )
 
 
@@ -46,12 +46,14 @@ def get_grid_images(
     ax.set_xticklabels(x_ticks_labels, rotation=GRID_X_LABEL_ROTATION)
     ax.set_yticklabels(y_ticks_labels)
 
-    ax.set_xlabel(GRID_UNIT, labelpad=GRID_AXIS_LABEL_PAD, loc=GRID_X_LABEL_LOC, fontsize=GRID_FONT_SIZE)
-    ax.set_ylabel(GRID_UNIT, labelpad=GRID_AXIS_LABEL_PAD, loc=GRID_Y_LABEL_LOC, fontsize=GRID_FONT_SIZE)
+    fontsize = GRID_FONT_SIZE * UPSCALE_FACTOR
+
+    ax.set_xlabel(GRID_UNIT, labelpad=GRID_AXIS_LABEL_PAD, loc=GRID_X_LABEL_LOC, fontsize=fontsize)
+    ax.set_ylabel(GRID_UNIT, labelpad=GRID_AXIS_LABEL_PAD, loc=GRID_Y_LABEL_LOC, fontsize=fontsize)
     ax.set_title(
         f"{GRID_Z_TITLE} {_get_subdivision_depth(bg_atlas, subdivision, resolution_z)} {GRID_UNIT}",
         fontdict={
-            "fontsize": GRID_FONT_SIZE,
+            "fontsize": fontsize,
             "fontweight": rcParams["axes.titleweight"],
             "color": GRID_COLOR,
             "verticalalignment": GRID_Z_TITLE_VERTICAL_ALIGNMENT,
@@ -78,7 +80,7 @@ def get_grid_images(
             + ax.get_xticklabels()
             + ax.get_yticklabels()
     ):
-        item.set_fontsize(GRID_FONT_SIZE)
+        item.set_fontsize(fontsize)
 
     plt.grid(False)
     frame_img = fig_to_img(fig)
@@ -105,6 +107,8 @@ def get_grid_dimensions(bg_atlas: ICustomAtlas, tick_step: float = GRID_TICK_STE
     resolution_height = 1 / (bg_atlas.resolution[1] * UM_TO_MM)
     resolution_width = 1 / (bg_atlas.resolution[2] * UM_TO_MM)
     _, atlas_height, atlas_width = bg_atlas.shape
+    atlas_width *= UPSCALE_FACTOR
+    atlas_height *= UPSCALE_FACTOR
 
     return _get_best_grid_dimension(atlas_width * resolution_width, tick_step, tolerance), \
            _get_best_grid_dimension(atlas_height * resolution_height, tick_step, tolerance)
