@@ -16,7 +16,7 @@ image which is then the basis of registration. The z position is used to select 
 appropriate 2d image from the atlas to use in this registration.
 
 Data types that are of the type "point" will be treated as cell populations to be 
-transformed into atlas space. Contours will be loaded
+transformed into atlas space. Contours will be loaded using:
 
 ```python
 cordmap.data.io.load_data
