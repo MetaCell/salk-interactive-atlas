@@ -74,11 +74,19 @@ def get_atlas_z_position(z_position_sample, segment_length=1000):
     return int(atlas_pos)
 
 
+def get_scaling_factor(markers_sample, markers_atlas):
+    x_scale = markers_atlas["x"].max() / markers_sample["x"].max()
+    y_scale = markers_atlas["y"].max() / markers_sample["y"].max()
+    return np.mean([x_scale, y_scale])
+
+
 def register_fiducial_single_section(
     atlas,
     sample,
     z_position_sample=30,
     image_padding=10,
+    T1_border=-1000,
+    C1_border=8000,
 ):
     """
     Registers a single sample section to the atlas.
@@ -89,30 +97,35 @@ def register_fiducial_single_section(
     :param image_padding:
     :return:
     """
-    if z_position_sample < -1000:  # atlas does not go beyond T1
+    if z_position_sample < T1_border:  # atlas does not go beyond T1
         return None
 
-    elif z_position_sample > 8000:  # atlas does not go beyond C1
+    elif z_position_sample > C1_border:  # atlas does not go beyond C1
         return None
 
     try:
         z_position_atlas = get_atlas_z_position(z_position_sample)
         logging.info(f"z position atlas: {z_position_atlas}")
-
-        markers, cells, cells_labels = load_df_preprocessed(
+        markers_sample, cells, cells_labels = load_df_preprocessed(
             sample,
             z_position_sample,
             normalise=True,
-            scale_factor=20,
+            # scale_factor=20,
         )
-
-        fixed_image = get_as_image(markers, padding=image_padding).astype(
-            np.float32
-        )
-        sample_points = np.array(markers[["x", "y"]])
-        sample_points += image_padding
-
         markers_atlas = get_atlas_slice_fiducial_raw(z_position_atlas, atlas)
+
+        scale_factor = get_scaling_factor(markers_sample, markers_atlas)
+
+        for item in [markers_sample, cells]:
+            item["x"] *= scale_factor
+            item["y"] *= scale_factor
+
+        fixed_image = get_as_image(
+            markers_sample, padding=image_padding
+        ).astype(np.float32)
+
+        sample_points = np.array(markers_sample[["x", "y"]])
+        sample_points += image_padding
 
         atlas_pad_x = markers_atlas["x"].min()
         atlas_pad_y = markers_atlas["y"].min()

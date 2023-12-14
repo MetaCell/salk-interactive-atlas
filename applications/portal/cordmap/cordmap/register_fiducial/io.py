@@ -99,7 +99,7 @@ def correct_raw_coordinates(markers_df_slice):
     ]["x"].values
 
 
-def load_df_preprocessed(sample, z, normalise=True, scale_factor=20):
+def load_df_preprocessed(sample, z, normalise=True):
     """
     Loads single axial slice of a cord sample and applies all
     preprocessing to prepare sample image for registration.
@@ -121,8 +121,12 @@ def load_df_preprocessed(sample, z, normalise=True, scale_factor=20):
             return np.nan
 
     def correct_single_side_offset(df_slice_z):
-        if np.count_nonzero(df_slice_z.iloc[0:9]["x"] < 0) == 3:
-            return True
+        return all(
+            df_slice_z[df_slice_z["point"].isin(["L7", "L8", "L9"])][
+                "x"
+            ].values
+            < 0
+        )
 
     df_slice_z["label"] = [get_label(point) for point in df_slice_z["point"]]
 
@@ -131,10 +135,6 @@ def load_df_preprocessed(sample, z, normalise=True, scale_factor=20):
 
     if normalise:
         df_slice_z = remove_padding(df_slice_z)
-
-    if scale_factor is not None:
-        df_slice_z["x"] *= scale_factor
-        df_slice_z["y"] *= scale_factor
 
     fiducial_markers = df_slice_z[df_slice_z["point"].isin(MARKER_LABELS)]
     cells = df_slice_z[~df_slice_z["point"].isin(MARKER_LABELS)]
